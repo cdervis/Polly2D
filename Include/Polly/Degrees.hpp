@@ -1,0 +1,48 @@
+// Copyright (C) 2025 Cemalettin Dervis
+// This file is part of Polly.
+// For conditions of distribution and use, see copyright notice in LICENSE.
+
+#pragma once
+
+#include <compare>
+
+namespace Polly
+{
+struct Radians;
+
+/// Represents degree values.
+///
+/// The reason behind this is to provide an extra layer of type-safety and to
+/// show intent in functions where degrees are expected, instead of radians.
+///
+/// A degree value can be created via the constructor or by using the user-defined literal.
+///
+/// Example:
+///
+/// @code
+/// auto someDegrees = 45.0_deg; // Same as Degrees(45.0f)
+/// @endcode
+struct Degrees
+{
+    float value = 0.0f;
+
+    /// Creates a zero degree value.
+    constexpr Degrees() = default;
+
+    explicit constexpr Degrees(float value)
+        : value(value)
+    {
+    }
+
+    explicit constexpr operator Radians() const;
+
+    auto operator<=>(const Degrees&) const = default;
+};
+} // namespace Polly
+
+constexpr Polly::Degrees operator""_deg(long double value)
+{
+    return Polly::Degrees(static_cast<float>(value));
+}
+
+#include "Polly/Details/Degrees.inl"

@@ -1,0 +1,5 @@
+if (POLLY_BUILD_APPS)
+	add_subdirectory(Testbed)
+	add_subdirectory(DemoBrowser)
+	add_subdirectory(SpaceShooter)
+endif()

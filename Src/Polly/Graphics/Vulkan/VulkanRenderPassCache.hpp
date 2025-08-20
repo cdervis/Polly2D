@@ -1,0 +1,49 @@
+#pragma once
+
+#include <compare>
+#include <Polly/BlendState.hpp>
+#include <Polly/CopyMoveMacros.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPrerequisites.hpp>
+#include <Polly/SortedMap.hpp>
+
+namespace Polly
+{
+class VulkanGraphicsDevice;
+class GraphicsResource;
+
+class VulkanRenderPassCache final
+{
+  public:
+    struct Key
+    {
+        VkFormat      renderTargetFormat = VK_FORMAT_UNDEFINED;
+        VkImageLayout initialLayout      = VK_IMAGE_LAYOUT_UNDEFINED;
+        VkImageLayout finalLayout        = VK_IMAGE_LAYOUT_UNDEFINED;
+        Maybe<Color>  clearColor;
+
+        defineDefaultEqualityOperations(Key);
+    };
+
+    explicit VulkanRenderPassCache(VulkanGraphicsDevice& parentDevice);
+
+    deleteCopyAndMove(VulkanRenderPassCache);
+
+    ~VulkanRenderPassCache() noexcept;
+
+    VkRenderPass get(const Key& key);
+
+    void clear();
+
+  private:
+    struct KeyLess
+    {
+        bool operator()(const Key& lhs, const Key& rhs) const
+        {
+            return lhs < rhs;
+        }
+    };
+
+    VulkanGraphicsDevice&        _parentDevice;
+    SortedMap<Key, VkRenderPass> _cache;
+};
+} // namespace Polly

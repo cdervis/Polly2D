@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>${bundle_identifier}</string>
+    <key>CFBundleVersion</key>
+    <string>${bundle_version}</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${bundle_version}</string>
+    <key>CFBundleName</key>
+    <string>${bundle_name}</string>
+    <key>CFBundleDisplayName</key>
+    <string>${bundle_display_name}</string>
+    <key>CFBundleExecutable</key>
+    <string>${executable_name}</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
+    <key>UIPrerenderedIcon</key>
+    <true />
+	<key>UIRequiresFullScreen</key>
+	<true />
+    <key>UIStatusBarHidden</key>
+    <true />
+	<key>UILaunchStoryboardName</key>
+	<string>GameLaunchStoryboard.storyboard</string>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.games</string>
+    <key>MetalCaptureEnabled</key>
+    <${metal_capture_enabled_value}/>
+</dict>
+</plist>

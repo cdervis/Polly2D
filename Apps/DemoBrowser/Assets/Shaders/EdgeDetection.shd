@@ -1,0 +1,24 @@
+#type sprite
+
+Vec2 ImageSize;
+float Offset;
+
+Vec4 main()
+{
+    auto d = Vec2(Offset) / ImageSize;
+
+    auto o = sample( pl_sprite_image, pl_sprite_uv + Vec2( 0,    0   ) );
+    auto n = sample( pl_sprite_image, pl_sprite_uv + Vec2( 0,    d.y ) );
+    auto e = sample( pl_sprite_image, pl_sprite_uv + Vec2( d.x,  0   ) );
+    auto s = sample( pl_sprite_image, pl_sprite_uv + Vec2( 0,    -d.y ) );
+    auto w = sample( pl_sprite_image, pl_sprite_uv + Vec2( -d.x, 0  ) );
+    
+    auto dy = ( n - s ) * 0.5;
+    auto dx = ( e - w ) * 0.5;
+    
+    auto edge = sqrt( dx*dx + dy*dy );
+    auto opacity = o.w;
+
+    return Vec4( edge.xyz * 5.0, opacity );
+}
+

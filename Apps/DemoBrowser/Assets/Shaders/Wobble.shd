@@ -1,0 +1,24 @@
+#type sprite
+
+float TotalTime;
+bool VerticalWobble;
+float WaveFrequency;
+float WaveSpeed;
+float WaveAamplitude;
+float Scale;
+
+Vec4 main() {
+    auto uv = pl_spriteUV;
+    auto wave =
+        sin(
+            (VerticalWobble ? uv.x : uv.y) * WaveFrequency
+            + TotalTime * WaveSpeed)
+        * WaveAmplitude;
+
+    uv += VerticalWobble ? Vec2(0, wave) : Vec2(wave, 0);
+
+    uv = uv * scale;
+
+    return sample(pl_spriteImage, uv) * pl_spriteColor;
+}
+
