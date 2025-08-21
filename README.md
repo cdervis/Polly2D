@@ -6,13 +6,9 @@
 
 Minimal 2D Game Framework for C++
 
-**[Homepage] &nbsp;&nbsp;&bull;&nbsp;&nbsp;**
-**[License] &nbsp;&nbsp;&bull;&nbsp;&nbsp;**
-**[Getting Started]**
-
-[Homepage]: https://polly2d.org
-[License]: LICENSE.md
-[Getting Started]: https://polly2d.org
+[![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org)
+[![License](https://img.shields.io/github/license/cdervis/Polly)](https://github.com/cdervis/Polly/blob/main/LICENSE.md)
+[![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](https://polly2d.org/getting-started)
 
 </div>
 
