@@ -222,8 +222,9 @@ class LinkedList
 
         while (node)
         {
+            const auto next = node->next;
             destroyNode<false, false>(node);
-            node = node->next;
+            node = next;
         }
 
         _front = nullptr;
