@@ -9,9 +9,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     polly_log("Enabling optimizations for Release mode")
 
     include(CheckIPOSupported)
+    check_ipo_supported(RESULT lto_supported OUTPUT error)
 
-    check_ipo_supported(RESULT ltoSupported OUTPUT error)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ltoSupported})
+    if (lto_supported)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ltoSupported})
+    endif ()
 
     if (MSVC)
         add_compile_options(/GL) # Whole Program Optimization
