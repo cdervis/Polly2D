@@ -7,7 +7,7 @@
 #include "Polly/Game/WindowImpl.hpp"
 #include <QuartzCore/CAMetalLayer.hpp>
 
-namespace pl
+namespace Polly
 {
 class MetalWindow final : public Window::Impl
 {
@@ -22,22 +22,22 @@ class MetalWindow final : public Window::Impl
 
     ~MetalWindow() noexcept override;
 
-    void set_mtl_device(MTL::Device* device);
+    void setMtlDevice(MTL::Device* device);
 
-    SDL_MetalView sdl_metal_view() const;
+    SDL_MetalView sdlMetalView() const;
 
-    CA::MetalLayer* ca_metal_layer() const;
+    CA::MetalLayer* caMetalLayer() const;
 
     void onResized(u32 width, u32 height) override;
 
-    void update_ca_metal_layer_drawable_size_to_window_px_size() const;
+    void updateCaMetalLayerDrawableSizeToWindowPxSize() const;
 
     void setIsDisplaySyncEnabled(bool value) override;
 
   private:
-    MTL::Device*                _mtl_device     = nullptr;
-    SDL_MetalView               _sdl_metal_view = nullptr;
-    CA::MetalLayer*             _ca_metal_layer = nullptr;
-    NS::SharedPtr<MTL::Texture> _back_buffer;
+    MTL::Device*                _mtlDevice    = nullptr;
+    SDL_MetalView               _sdlMetalView = nullptr;
+    CA::MetalLayer*             _caMetalLayer = nullptr;
+    NS::SharedPtr<MTL::Texture> _backBuffer;
 };
-} // namespace pl
+} // namespace Polly

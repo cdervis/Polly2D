@@ -6,20 +6,20 @@
 
 #include "Polly/Defer.hpp"
 #include "Polly/Graphics/Metal/MetalConversion.hpp"
-#include "Polly/Graphics/Metal/MetalGraphicsDevice.hpp"
 #include "Polly/Graphics/Metal/MetalHelper.hpp"
+#include "Polly/Graphics/Metal/MetalPainter.hpp"
 
-namespace pl
+namespace Polly
 {
-MTL::Texture* create_mtl_texture(
-    MetalGraphicsDevice& device,
-    u32                  width,
-    u32                  height,
-    ImageFormat          format,
-    bool                 is_canvas,
-    const void*          data)
+MTL::Texture* createMtlTexture(
+    MetalPainter& device,
+    u32           width,
+    u32           height,
+    ImageFormat   format,
+    bool          isCanvas,
+    const void*   data)
 {
-    auto* mtl_device = device.mtl_device();
+    auto* mtlDevice = device.mtlDevice();
 
     auto arp = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
@@ -31,23 +31,23 @@ MTL::Texture* create_mtl_texture(
     desc->setDepth(1);
 
     {
-        const auto maybe_format = convert_to_mtl(format);
+        const auto maybeFormat = convert_to_mtl(format);
 
-        if (not maybe_format)
+        if (not maybeFormat)
         {
             throw Error("Failed to convert image format to Metal pixel format.");
         }
 
-        desc->setPixelFormat(*maybe_format);
+        desc->setPixelFormat(*maybeFormat);
     }
 
     desc->setMipmapLevelCount(1);
     desc->setSampleCount(1);
     desc->setArrayLength(1);
 
-    if (is_canvas)
+    if (isCanvas)
     {
-        desc->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
+        desc->setUsage(MTL::TextureUsageRenderTarget bitor MTL::TextureUsageShaderRead);
         desc->setStorageMode(MTL::StorageModePrivate);
     }
     else
@@ -56,66 +56,61 @@ MTL::Texture* create_mtl_texture(
         desc->setStorageMode(MTL::StorageModeShared);
     }
 
-    auto* mtl_texture = mtl_device->newTexture(desc);
+    auto* mtlTexture = mtlDevice->newTexture(desc);
 
-    defer_named(mtl_texture_guard)
+    deferNamed(mtlTextureGuard)
     {
-        if (mtl_texture)
+        if (mtlTexture)
         {
-            mtl_texture->release();
+            mtlTexture->release();
         }
     };
 
     if (data)
     {
-        const auto row_pitch   = image_row_pitch(width, format);
-        const auto slice_pitch = image_slice_pitch(width, height, format);
+        const auto rowPitch   = imageRowPitch(width, format);
+        const auto slicePitch = imageSlicePitch(width, height, format);
 
-        mtl_texture->replaceRegion(MTL::Region(0, 0, width, height), 0, 0, data, row_pitch, slice_pitch);
+        mtlTexture->replaceRegion(MTL::Region(0, 0, width, height), 0, 0, data, rowPitch, slicePitch);
     }
 
-    mtl_texture_guard.dismiss();
+    mtlTextureGuard.dismiss();
 
-    return mtl_texture;
+    return mtlTexture;
 }
 
-MetalImage::MetalImage(
-    GraphicsDevice::Impl& parent_device_impl,
-    u32                   width,
-    u32                   height,
-    ImageFormat           format,
-    const void*           data)
-    : Impl(parent_device_impl, false, width, height, format)
+MetalImage::MetalImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format, const void* data)
+    : Impl(painter, false, width, height, format)
 {
-    auto& metal_device = static_cast<MetalGraphicsDevice&>(parent_device_impl);
+    auto& metalPainter = static_cast<MetalPainter&>(painter);
 
-    _mtl_texture = create_mtl_texture(metal_device, width, height, format, false, data);
+    _mtlTexture = createMtlTexture(metalPainter, width, height, format, false, data);
 }
 
-MetalImage::MetalImage(GraphicsDevice::Impl& parent_device_impl, u32 width, u32 height, ImageFormat format)
-    : Impl(parent_device_impl, true, width, height, format)
+MetalImage::MetalImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format)
+    : Impl(painter, true, width, height, format)
 {
-    auto& metal_device = static_cast<MetalGraphicsDevice&>(parent_device_impl);
+    auto& metalPainter = static_cast<MetalPainter&>(painter);
 
-    _mtl_texture = create_mtl_texture(metal_device, width, height, format, true, nullptr);
+    _mtlTexture = createMtlTexture(metalPainter, width, height, format, true, nullptr);
 }
 
 MetalImage::~MetalImage() noexcept
 {
-    if (_mtl_texture)
+    if (_mtlTexture)
     {
-        _mtl_texture->release();
+        _mtlTexture->release();
     }
 }
 
-MTL::Texture* MetalImage::mtl_texture() const
+MTL::Texture* MetalImage::mtlTexture() const
 {
-    return _mtl_texture;
+    return _mtlTexture;
 }
 
-void MetalImage::set_debugging_label(StringView name)
+void MetalImage::setDebuggingLabel(StringView name)
 {
-    const auto name_str = String(name);
-    _mtl_texture->setLabel(NSStringFromC(name_str.cstring()));
+    const auto nameStr = String(name);
+    _mtlTexture->setLabel(NSStringFromC(nameStr.cstring()));
 }
-} // namespace pl
+} // namespace Polly

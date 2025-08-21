@@ -10,84 +10,84 @@
 #include "Polly/PlatformInfo.hpp"
 #include <Metal/MTLDevice.hpp>
 
-namespace pl
+namespace Polly
 {
 MetalWindow::MetalWindow(
     StringView    title,
-    Maybe<Vec2>   initial_window_size,
-    Maybe<u32>    full_screen_display_index,
+    Maybe<Vec2>   initialWindowSize,
+    Maybe<u32>    fullScreenDisplayIndex,
     Span<Display> displays)
     : Impl(title)
 {
     auto arp = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-    int additional_flags = 0;
+    int additionalFlags = 0;
 
-    additional_flags |= SDL_WINDOW_METAL;
-    additional_flags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
+    additionalFlags |= SDL_WINDOW_METAL;
+    additionalFlags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
-    if (platform::current() == TargetPlatform::iOS)
+    if (Platform::current() == TargetPlatform::iOS)
     {
-        additional_flags |= SDL_WINDOW_FULLSCREEN;
-        additional_flags |= SDL_WINDOW_BORDERLESS;
+        additionalFlags |= SDL_WINDOW_FULLSCREEN;
+        additionalFlags |= SDL_WINDOW_BORDERLESS;
     }
 
-    create_sdl_window(additional_flags, initial_window_size, full_screen_display_index, displays);
+    createSDLWindow(additionalFlags, initialWindowSize, fullScreenDisplayIndex, displays);
 
-    _sdl_metal_view = SDL_Metal_CreateView(sdl_window());
-    _ca_metal_layer = static_cast<CA::MetalLayer*>(SDL_Metal_GetLayer(_sdl_metal_view));
+    _sdlMetalView = SDL_Metal_CreateView(sdlWindow());
+    _caMetalLayer = static_cast<CA::MetalLayer*>(SDL_Metal_GetLayer(_sdlMetalView));
 
-    set_default_ca_metal_layer_props(_ca_metal_layer);
+    setDefaultCaMetalLayerProps(_caMetalLayer);
 }
 
 MetalWindow::~MetalWindow() noexcept
 {
-    log_verbose("Destroying Metal window '{}'", title());
+    logVerbose("Destroying Metal window '{}'", title());
 
-    if (_sdl_metal_view)
+    if (_sdlMetalView)
     {
-        SDL_Metal_DestroyView(_sdl_metal_view);
+        SDL_Metal_DestroyView(_sdlMetalView);
     }
 }
 
-void MetalWindow::set_mtl_device(MTL::Device* device)
+void MetalWindow::setMtlDevice(MTL::Device* device)
 {
-    _mtl_device = device;
+    _mtlDevice = device;
 }
 
-SDL_MetalView MetalWindow::sdl_metal_view() const
+SDL_MetalView MetalWindow::sdlMetalView() const
 {
-    return _sdl_metal_view;
+    return _sdlMetalView;
 }
 
-CA::MetalLayer* MetalWindow::ca_metal_layer() const
+CA::MetalLayer* MetalWindow::caMetalLayer() const
 {
-    return _ca_metal_layer;
+    return _caMetalLayer;
 }
 
-void MetalWindow::on_resized([[maybe_unused]] u32 width, [[maybe_unused]] u32 height)
+void MetalWindow::onResized([[maybe_unused]] u32 width, [[maybe_unused]] u32 height)
 {
 }
 
-void MetalWindow::update_ca_metal_layer_drawable_size_to_window_px_size() const
+void MetalWindow::updateCaMetalLayerDrawableSizeToWindowPxSize() const
 {
-    const auto current_drawable_size = _ca_metal_layer->drawableSize();
-    const auto window_size_px        = size_px();
+    const auto currentDrawableSize = _caMetalLayer->drawableSize();
+    const auto windowSizePx        = sizePx();
 
-    if (current_drawable_size.width != window_size_px.x or current_drawable_size.height != window_size_px.y)
+    if (currentDrawableSize.width != windowSizePx.x or currentDrawableSize.height != windowSizePx.y)
     {
-        log_verbose(
+        logVerbose(
             "Resizing MetalWindow to {}x{}",
-            static_cast<int>(window_size_px.x),
-            static_cast<int>(window_size_px.y));
+            static_cast<int>(windowSizePx.x),
+            static_cast<int>(windowSizePx.y));
 
-        _ca_metal_layer->setDrawableSize(CGSizeMake(window_size_px.x, window_size_px.y));
+        _caMetalLayer->setDrawableSize(CGSizeMake(windowSizePx.x, windowSizePx.y));
     }
 }
 
-void MetalWindow::set_is_display_sync_enabled(bool value)
+void MetalWindow::setIsDisplaySyncEnabled(bool value)
 {
-    Impl::set_is_display_sync_enabled(value);
-    set_ca_metal_layer_display_sync(_ca_metal_layer, value);
+    Impl::setIsDisplaySyncEnabled(value);
+    setCaMetalLayerDisplaySync(_caMetalLayer, value);
 }
-} // namespace pl
+} // namespace Polly

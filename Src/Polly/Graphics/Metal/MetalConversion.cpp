@@ -9,7 +9,7 @@
 #include "Polly/Image.hpp"
 #include "Polly/Sampler.hpp"
 
-namespace pl
+namespace Polly
 {
 Maybe<MTL::PixelFormat> convert_to_mtl(ImageFormat format)
 {

@@ -129,7 +129,8 @@ function(polly_add_game)
         set(info_plist_dst_filename "${binary_dir}/Info.plist")
         configure_file("${script_dir}/Info.plist.in" ${info_plist_dst_filename})
 
-        target_sources(${target_name} PRIVATE ${info_plist_dst_filename} ${misc_dir}/Assets.xcassets)
+        # TODO:
+        #target_sources(${target_name} PRIVATE ${info_plist_dst_filename} ${misc_dir}/Assets.xcassets)
 
         set_target_properties(${target_name} PROPERTIES
             MACOSX_BUNDLE_GUI_IDENTIFIER ${bundle_display_name}

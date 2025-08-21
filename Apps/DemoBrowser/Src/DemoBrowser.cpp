@@ -1,7 +1,6 @@
 #include "DemoBrowser.hpp"
 
 #include "Demos/InputDemo.hpp"
-#include "Demos/ParticlesDemo.hpp"
 #include "Demos/ShadersDemo.hpp"
 #include "Demos/SpineDemo.hpp"
 #include "Demos/SpritesDemo.hpp"
@@ -110,11 +109,11 @@ void DemoBrowser::onImGui(ImGui& imgui)
 {
     const bool shouldHideSidebar = _current_demo->shouldHideSidebar();
 
-    auto       window       = this->window();
+    auto       window      = this->window();
     const auto scaleFactor = window.currentDisplayScaleFactor();
 
     const auto [width, height] = window.size();
-    const auto menuWidth      = Demo::demoMenuFixedWidth * scaleFactor;
+    const auto menuWidth       = Demo::demoMenuFixedWidth * scaleFactor;
 
     imgui.setNextWindowPosition({width - menuWidth, 0});
 
@@ -178,7 +177,7 @@ void DemoBrowser::onImGui(ImGui& imgui)
 #define CREATE_DEMO(name)                                                                                    \
     [this]                                                                                                   \
     {                                                                                                        \
-        return makeUnique<name>(this);                                                                      \
+        return makeUnique<name>(this);                                                                       \
     }
 
 void DemoBrowser::create_factory_functions()
@@ -188,15 +187,12 @@ void DemoBrowser::create_factory_functions()
         CREATE_DEMO(SpritesDemo),
         CREATE_DEMO(TextDemo),
         CREATE_DEMO(InputDemo),
-        CREATE_DEMO(ParticlesDemo),
         CREATE_DEMO(ShadersDemo),
     };
 }
 
 void DemoBrowser::set_default_window_size()
 {
-    auto           window       = this->window();
     constexpr auto defaultSize = Vec2(1280, 720);
-
-    window.setSize(defaultSize * window.currentDisplayScaleFactor(), /*recenter:*/ false);
+    window().setSize(defaultSize * window().currentDisplayScaleFactor(), /*recenter:*/ false);
 }

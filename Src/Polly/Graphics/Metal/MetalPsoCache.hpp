@@ -10,9 +10,9 @@
 #include "Polly/Pair.hpp"
 #include <Metal/Metal.hpp>
 
-namespace pl
+namespace Polly
 {
-class MetalGraphicsDevice;
+class MetalPainter;
 enum class VertexElement;
 
 class MetalPsoCache final
@@ -21,15 +21,15 @@ class MetalPsoCache final
     struct Key final
     {
         BlendState       blendState;
-        MTL::PixelFormat color_attachment_format = MTL::PixelFormatInvalid;
-        MTL::Function*   vertex_shader           = nullptr;
-        MTL::Function*   pixel_shader            = nullptr;
-        u32              sample_count            = 1;
+        MTL::PixelFormat colorAttachmentFormat = MTL::PixelFormatInvalid;
+        MTL::Function*   vertexShader           = nullptr;
+        MTL::Function*   pixelShader            = nullptr;
+        u32              sampleCount            = 1;
 
-        pl_default_equality_ops(Key);
+        defineDefaultEqualityOperations(Key);
     };
 
-    explicit MetalPsoCache(MetalGraphicsDevice& device);
+    explicit MetalPsoCache(MetalPainter& device);
 
     deleteCopyAndMove(MetalPsoCache);
 
@@ -38,7 +38,7 @@ class MetalPsoCache final
     MTL::RenderPipelineState* operator[](const Key& key);
 
   private:
-    MetalGraphicsDevice&                                     _device;
+    MetalPainter&                                            _device;
     List<Pair<Key, NS::SharedPtr<MTL::RenderPipelineState>>> _list;
 };
-} // namespace pl
+} // namespace Polly

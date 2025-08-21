@@ -10,14 +10,14 @@
 #include "Polly/Sampler.hpp"
 #include <Metal/Metal.hpp>
 
-namespace pl
+namespace Polly
 {
-class MetalGraphicsDevice;
+class MetalPainter;
 
 class MetalSamplerStateCache final
 {
   public:
-    explicit MetalSamplerStateCache(MetalGraphicsDevice& device);
+    explicit MetalSamplerStateCache(MetalPainter& device);
 
     deleteCopyAndMove(MetalSamplerStateCache);
 
@@ -26,7 +26,7 @@ class MetalSamplerStateCache final
     MTL::SamplerState* operator[](const Sampler& state);
 
   private:
-    MetalGraphicsDevice&                                  _device;
+    MetalPainter&                                         _device;
     List<Pair<Sampler, NS::SharedPtr<MTL::SamplerState>>> _list;
 };
-} // namespace pl
+} // namespace Polly

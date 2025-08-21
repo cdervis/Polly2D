@@ -5,12 +5,12 @@
 #include "Polly/Graphics/Metal/MetalCBufferAllocator.hpp"
 
 #include "Polly/Core/PlatformDetection.hpp"
-#include "Polly/Graphics/Metal/MetalGraphicsDevice.hpp"
 #include "Polly/Graphics/Metal/MetalHelper.hpp"
+#include "Polly/Graphics/Metal/MetalPainter.hpp"
 #include "Polly/Logging.hpp"
 #include <algorithm>
 
-namespace pl
+namespace Polly
 {
 static constexpr auto maxCBufferSize = int(std::numeric_limits<uint16_t>::max());
 
@@ -24,7 +24,7 @@ static constexpr auto requiredCBufferOffsetAlignment = 256u;
 #error "Unknown Apple platform"
 #endif
 
-MetalCBufferAllocator::MetalCBufferAllocator(MetalGraphicsDevice& device)
+MetalCBufferAllocator::MetalCBufferAllocator(MetalPainter& device)
     : _device(device)
 {
 }
@@ -41,50 +41,50 @@ MetalCBufferAllocator::Allocation MetalCBufferAllocator::allocate(u32 size)
 {
     assume(size < maxCBufferSize);
 
-    auto new_position = _position_in_buffer + size;
+    auto newPosition = _positionInBuffer + size;
 
-    if (not _current_buffer or new_position > _buffers[*_current_buffer]->allocatedSize())
+    if (not _currentBuffer or newPosition > _buffers[*_currentBuffer]->allocatedSize())
     {
-        log_verbose("MetalCBufferAllocator: Creating buffer of size {}", maxCBufferSize);
+        logVerbose("MetalCBufferAllocator: Creating buffer of size {}", maxCBufferSize);
 
-        const auto mtl_device = _device.mtl_device();
-        auto*      mtl_buffer = mtl_device->newBuffer(maxCBufferSize, MTL::ResourceStorageModeShared);
+        const auto mtlDevice = _device.mtlDevice();
+        auto*      mtlBuffer = mtlDevice->newBuffer(maxCBufferSize, MTL::ResourceStorageModeShared);
 
-        if (not mtl_buffer)
+        if (not mtlBuffer)
         {
             throw Error("Failed to allocate a Metal buffer.");
         }
 
         const auto name = formatString("cbuffer{}", _buffers.size());
-        mtl_buffer->setLabel(NSStringFromC(name.cstring()));
+        mtlBuffer->setLabel(NSStringFromC(name.cstring()));
 
-        _buffers.add(mtl_buffer);
+        _buffers.add(mtlBuffer);
 
-        _current_buffer     = _buffers.size() - 1;
-        _position_in_buffer = 0;
+        _currentBuffer    = _buffers.size() - 1;
+        _positionInBuffer = 0;
     }
 
-    const auto next_binding_point =
-        _position_in_buffer > 0 ? next_aligned_number(new_position, requiredCBufferOffsetAlignment) : 0;
+    const auto nextBindingPoint =
+        _positionInBuffer > 0 ? nextAlignedNumber(newPosition, requiredCBufferOffsetAlignment) : 0;
 
-    new_position = max(next_binding_point, new_position);
+    newPosition = max(nextBindingPoint, newPosition);
 
-    auto* current_buffer = _buffers[*_current_buffer];
-    auto* ptr            = static_cast<std::byte*>(current_buffer->contents()) + next_binding_point;
+    auto* currentBuffer = _buffers[*_currentBuffer];
+    auto* ptr           = static_cast<std::byte*>(currentBuffer->contents()) + nextBindingPoint;
 
-    _position_in_buffer = new_position;
+    _positionInBuffer = newPosition;
 
     return Allocation{
-        .data        = ptr,
-        .buffer      = current_buffer,
-        .size        = static_cast<NS::UInteger>(size),
-        .bind_offset = static_cast<NS::UInteger>(next_binding_point),
+        .data       = ptr,
+        .buffer     = currentBuffer,
+        .size       = static_cast<NS::UInteger>(size),
+        .bindOffset = static_cast<NS::UInteger>(nextBindingPoint),
     };
 }
 
 void MetalCBufferAllocator::reset()
 {
-    _current_buffer     = _buffers.isEmpty() ? Maybe<int>() : 0;
-    _position_in_buffer = 0;
+    _currentBuffer    = _buffers.isEmpty() ? Maybe<int>() : 0;
+    _positionInBuffer = 0;
 }
-} // namespace pl
+} // namespace Polly

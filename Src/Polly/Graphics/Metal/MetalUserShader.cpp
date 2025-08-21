@@ -4,36 +4,36 @@
 
 #include "Polly/Graphics/Metal/MetalUserShader.hpp"
 
-#include "Polly/Graphics/Metal/MetalGraphicsDevice.hpp"
 #include "Polly/Graphics/Metal/MetalHelper.hpp"
+#include "Polly/Graphics/Metal/MetalPainter.hpp"
 
-namespace pl
+namespace Polly
 {
 MetalUserShader::MetalUserShader(
-    GraphicsDevice::Impl& parent_device,
-    ShaderType            shader_type,
-    String                metal_source_code,
-    ParameterList         parameters,
-    int                   flags,
-    u16                   cbuffer_size)
-    : Impl(parent_device, shader_type, std::move(parameters), flags, cbuffer_size)
+    Painter::Impl&  painter,
+    ShaderType      shaderType,
+    String          metalSourceCode,
+    ParameterList   parameters,
+    UserShaderFlags flags,
+    u16             cbufferSize)
+    : Impl(painter, shaderType, std::move(parameters), flags, cbufferSize)
 #ifndef NDEBUG
-    , _metal_source_code(std::move(metal_source_code))
+    , _metalSourceCode(std::move(metalSourceCode))
 #endif
 {
-    auto& metal_device = static_cast<MetalGraphicsDevice&>(parent_device);
-    auto* mtl_device   = metal_device.mtl_device();
+    auto& metalPainter = static_cast<MetalPainter&>(painter);
+    auto* mtlDevice    = metalPainter.mtlDevice();
 
     // Cast to non-const because NS::String::init() expects void*.
     // This is fine, because it optionally frees the specified buffer.
     // But since we pass false (don't free the buffer), it's a read-only operation.
-    const auto metal_src_code_str = NS::String::alloc()->init(
+    const auto metalSrcCodeStr = NS::String::alloc()->init(
 #ifndef NDEBUG
-        /*pBytes=*/_metal_source_code.data(),
-        /*len=*/_metal_source_code.size(),
+        /*pBytes=*/_metalSourceCode.data(),
+        /*len=*/_metalSourceCode.size(),
 #else
-        /*pBytes=*/metal_source_code.data(),
-        /*len=*/metal_source_code.size(),
+        /*pBytes=*/metalSourceCode.data(),
+        /*len=*/metalSourceCode.size(),
 #endif
         /*encoding=*/NS::StringEncoding::UTF8StringEncoding,
         /*freeBuffer=*/false);
@@ -44,27 +44,27 @@ MetalUserShader::MetalUserShader(
     opts->setFastMathEnabled(false);
     opts->setOptimizationLevel(MTL::LibraryOptimizationLevelDefault);
 
-    NS::Error* error       = nullptr;
-    const auto mtl_library = NS::TransferPtr(mtl_device->newLibrary(metal_src_code_str, opts.get(), &error));
+    NS::Error* error      = nullptr;
+    const auto mtlLibrary = NS::TransferPtr(mtlDevice->newLibrary(metalSrcCodeStr, opts.get(), &error));
 
-    check_ns_error(error);
+    checkNSError(error);
 
-    _mtl_function = find_mtl_library_function(mtl_library.get(), "ps_main");
+    _mtlFunction = findMtlLibraryFunction(mtlLibrary.get(), "ps_main");
 
-    if (not _mtl_function)
+    if (not _mtlFunction)
     {
-        throw pl::Error("Invalid user-shader loaded.");
+        throw Polly::Error("Invalid user-shader loaded.");
     }
 }
 
-MTL::Function* MetalUserShader::mtl_function() const
+MTL::Function* MetalUserShader::mtlFunction() const
 {
-    return _mtl_function;
+    return _mtlFunction;
 }
 
-void MetalUserShader::set_debugging_label(StringView name)
+void MetalUserShader::setDebuggingLabel(StringView name)
 {
-    const auto name_str = String(name);
-    _mtl_function->setLabel(NSStringFromC(name_str.cstring()));
+    const auto nameStr = String(name);
+    _mtlFunction->setLabel(NSStringFromC(nameStr.cstring()));
 }
-} // namespace pl
+} // namespace Polly

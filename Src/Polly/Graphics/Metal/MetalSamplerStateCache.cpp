@@ -6,12 +6,12 @@
 
 #include "Polly/Core/PlatformDetection.hpp"
 #include "Polly/Graphics/Metal/MetalConversion.hpp"
-#include "Polly/Graphics/Metal/MetalGraphicsDevice.hpp"
+#include "Polly/Graphics/Metal/MetalPainter.hpp"
 #include "Polly/Logging.hpp"
 
-namespace pl
+namespace Polly
 {
-MetalSamplerStateCache::MetalSamplerStateCache(MetalGraphicsDevice& device)
+MetalSamplerStateCache::MetalSamplerStateCache(MetalPainter& device)
     : _device(device)
 {
 }
@@ -30,7 +30,7 @@ MTL::SamplerState* MetalSamplerStateCache::operator[](const Sampler& state)
     }
     else
     {
-        log_verbose("Allocating new MTLSamplerState");
+        logVerbose("Allocating new MTLSamplerState");
 
         NS::SharedPtr<NS::AutoreleasePool> arp = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
@@ -54,12 +54,12 @@ MTL::SamplerState* MetalSamplerStateCache::operator[](const Sampler& state)
                 break;
         }
 
-        desc->setSAddressMode(*convert_to_mtl(state.address_u));
-        desc->setTAddressMode(*convert_to_mtl(state.address_v));
+        desc->setSAddressMode(*convert_to_mtl(state.addressU));
+        desc->setTAddressMode(*convert_to_mtl(state.addressV));
 
 #if TARGET_OS_OSX
         desc->setBorderColor(
-            [color = state.border_color]
+            [color = state.borderColor]
             {
                 switch (color)
                 {
@@ -77,7 +77,7 @@ MTL::SamplerState* MetalSamplerStateCache::operator[](const Sampler& state)
 
         desc->setMaxAnisotropy(1);
 
-        mtl_sampler_state = _device.mtl_device()->newSamplerState(desc);
+        mtl_sampler_state = _device.mtlDevice()->newSamplerState(desc);
 
         _list.emplace(state, NS::TransferPtr(mtl_sampler_state));
     }

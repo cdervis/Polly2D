@@ -7,11 +7,11 @@ Vec4 main()
 {
     auto d = Vec2(Offset) / ImageSize;
 
-    auto o = sample( pl_sprite_image, pl_sprite_uv + Vec2( 0,    0   ) );
-    auto n = sample( pl_sprite_image, pl_sprite_uv + Vec2( 0,    d.y ) );
-    auto e = sample( pl_sprite_image, pl_sprite_uv + Vec2( d.x,  0   ) );
-    auto s = sample( pl_sprite_image, pl_sprite_uv + Vec2( 0,    -d.y ) );
-    auto w = sample( pl_sprite_image, pl_sprite_uv + Vec2( -d.x, 0  ) );
+    auto o = sample( pl_spriteImage, pl_spriteUV + Vec2( 0,    0   ) );
+    auto n = sample( pl_spriteImage, pl_spriteUV + Vec2( 0,    d.y ) );
+    auto e = sample( pl_spriteImage, pl_spriteUV + Vec2( d.x,  0   ) );
+    auto s = sample( pl_spriteImage, pl_spriteUV + Vec2( 0,    -d.y ) );
+    auto w = sample( pl_spriteImage, pl_spriteUV + Vec2( -d.x, 0  ) );
     
     auto dy = ( n - s ) * 0.5;
     auto dx = ( e - w ) * 0.5;

@@ -67,7 +67,7 @@ int main()
 
 - **App Framework**: Based on an optimized SDL fork, with easy-to-use input, window and event handling.
 
-- **Modern 2D Renderer**: Efficient GPU-based rendering using the platform's native graphics API, such as Vulkan and Metal.
+- **Modern 2D Renderer**: Efficient 2D rendering using the platform's native graphics API, such as Vulkan and Metal.
 
 - **Audio**: Easy-to-use audio API, including faders and channels for playback control.
 

@@ -1,25 +1,12 @@
-set(metal_files
-    MetalCBufferAllocator.cpp
-    MetalCBufferAllocator.hpp
-    MetalConversion.hpp
-    MetalConversion.cpp
-    MetalGraphicsDevice.cpp
-    MetalGraphicsDevice.hpp
-    MetalImage.cpp
-    MetalImage.hpp
-    MetalPsoCache.cpp
-    MetalPsoCache.hpp
-    MetalSamplerStateCache.cpp
-    MetalSamplerStateCache.hpp
-    MetalUserShader.cpp
-    MetalUserShader.hpp
-    MetalWindow.cpp
-    MetalWindow.hpp
-    MetalHelper.hpp
-    MetalHelper.mm
-)
+file(GLOB metal_header_files CONFIGURE_DEPENDS "*.hpp")
+file(GLOB metal_source_files CONFIGURE_DEPENDS "*.cpp")
+file(GLOB metal_objc_files CONFIGURE_DEPENDS "*.mm")
 
-target_sources(Polly PRIVATE ${metal_files})
+target_sources(Polly PRIVATE
+        FILE_SET HEADERS
+        FILES ${metal_header_files}
+        PRIVATE ${metal_source_files} ${metal_objc_files}
+)
 
 target_compile_definitions(Polly PRIVATE
     -Dpolly_have_gfx_metal=1

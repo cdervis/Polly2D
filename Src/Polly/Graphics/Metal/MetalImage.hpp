@@ -7,30 +7,25 @@
 #include "Polly/Graphics/ImageImpl.hpp"
 #include <Metal/Metal.hpp>
 
-namespace pl
+namespace Polly
 {
 class MetalImage final : public Image::Impl
 {
   public:
-    explicit MetalImage(
-        GraphicsDevice::Impl& parent_device_impl,
-        u32                   width,
-        u32                   height,
-        ImageFormat           format,
-        const void*           data);
+    explicit MetalImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format, const void* data);
 
     // Canvas overload
-    explicit MetalImage(GraphicsDevice::Impl& parent_device_impl, u32 width, u32 height, ImageFormat format);
+    explicit MetalImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format);
 
     deleteCopyAndMove(MetalImage);
 
     ~MetalImage() noexcept override;
 
-    MTL::Texture* mtl_texture() const;
+    MTL::Texture* mtlTexture() const;
 
     void setDebuggingLabel(StringView name) override;
 
   private:
-    MTL::Texture* _mtl_texture = nullptr;
+    MTL::Texture* _mtlTexture = nullptr;
 };
-} // namespace pl
+} // namespace Polly

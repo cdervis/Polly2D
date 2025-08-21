@@ -9,9 +9,9 @@
 #include "Polly/Maybe.hpp"
 #include <Metal/Metal.hpp>
 
-namespace pl
+namespace Polly
 {
-class MetalGraphicsDevice;
+class MetalPainter;
 
 class MetalCBufferAllocator final
 {
@@ -23,10 +23,10 @@ class MetalCBufferAllocator final
         NS::UInteger size   = 0;
 
         /// The position at which the buffer should be bound.
-        NS::UInteger bind_offset = 0;
+        NS::UInteger bindOffset = 0;
     };
 
-    explicit MetalCBufferAllocator(MetalGraphicsDevice& device);
+    explicit MetalCBufferAllocator(MetalPainter& device);
 
     deleteCopyAndMove(MetalCBufferAllocator);
 
@@ -37,9 +37,9 @@ class MetalCBufferAllocator final
     void reset();
 
   private:
-    MetalGraphicsDevice& _device;
-    List<MTL::Buffer*>   _buffers;
-    Maybe<int>           _current_buffer;
-    u32                  _position_in_buffer = 0;
+    MetalPainter&      _device;
+    List<MTL::Buffer*> _buffers;
+    Maybe<int>         _currentBuffer;
+    u32                _positionInBuffer = 0;
 };
-} // namespace pl
+} // namespace Polly

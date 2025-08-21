@@ -7,28 +7,28 @@
 #include "Polly/Graphics/ShaderImpl.hpp"
 #include <Metal/Metal.hpp>
 
-namespace pl
+namespace Polly
 {
 class MetalUserShader final : public Shader::Impl
 {
   public:
     explicit MetalUserShader(
-        GraphicsDevice::Impl& parent_device,
-        ShaderType            shader_type,
-        String                metal_source_code,
-        ParameterList         parameters,
-        int                   flags,
-        u16                   cbuffer_size);
+        Painter::Impl&  painter,
+        ShaderType      shaderType,
+        String          metalSourceCode,
+        ParameterList   parameters,
+        UserShaderFlags flags,
+        u16             cbufferSize);
 
-    MTL::Function* mtl_function() const;
+    MTL::Function* mtlFunction() const;
 
-    void set_debugging_label(StringView name) override;
+    void setDebuggingLabel(StringView name) override;
 
   private:
-    MTL::Function* _mtl_function = nullptr;
+    MTL::Function* _mtlFunction = nullptr;
 
 #ifndef NDEBUG
-    String _metal_source_code;
+    String _metalSourceCode;
 #endif
 };
-} // namespace pl
+} // namespace Polly

@@ -289,7 +289,7 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
 
 #ifdef polly_have_gfx_metal
         const auto& metal_image = static_cast<const Polly::MetalImage&>(*page.atlas.impl());
-        auto*       mtl_texture = metal_image.mtl_texture();
+        auto*       mtl_texture = metal_image.mtlTexture();
 
         const auto row_pitch = imageRowPitch(metal_image.width(), metal_image.format());
 

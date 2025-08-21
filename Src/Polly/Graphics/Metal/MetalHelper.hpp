@@ -11,20 +11,20 @@
 
 #define NSStringFromC(str) NS::String::string(str, NS::UTF8StringEncoding) // NOLINT(*-macro-usage)
 
-namespace pl
+namespace Polly
 {
 class String;
 class StringView;
 
-void set_default_ca_metal_layer_props(CA::MetalLayer* layer);
+void setDefaultCaMetalLayerProps(CA::MetalLayer* layer);
 
-void set_ca_metal_layer_display_sync(CA::MetalLayer* layer, bool enabled);
+void setCaMetalLayerDisplaySync(CA::MetalLayer* layer, bool enabled);
 
-void remove_file_system_item(const String& path);
+void removeFileSystemItem(const String& path);
 
-void check_ns_error(const NS::Error* error);
+void checkNSError(const NS::Error* error);
 
-MTL::Function* find_mtl_library_function(MTL::Library* library, StringView name);
+MTL::Function* findMtlLibraryFunction(MTL::Library* library, StringView name);
 
-MTL::Library* create_mtl_library(MTL::Device* device, StringView src_code);
+MTL::Library* createMtlLibrary(MTL::Device* device, StringView src_code);
 } // namespace pl

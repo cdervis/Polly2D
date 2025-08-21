@@ -9,7 +9,7 @@
 #include "Polly/Pair.hpp"
 #include <Metal/Metal.hpp>
 
-namespace pl
+namespace Polly
 {
 enum class ImageFormat;
 enum class ImageAddressMode;

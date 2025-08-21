@@ -4,7 +4,7 @@ float TotalTime;
 bool VerticalWobble;
 float WaveFrequency;
 float WaveSpeed;
-float WaveAamplitude;
+float WaveAmplitude;
 float Scale;
 
 Vec4 main() {
@@ -17,7 +17,7 @@ Vec4 main() {
 
     uv += VerticalWobble ? Vec2(0, wave) : Vec2(wave, 0);
 
-    uv = uv * scale;
+    uv = uv * Scale;
 
     return sample(pl_spriteImage, uv) * pl_spriteColor;
 }
