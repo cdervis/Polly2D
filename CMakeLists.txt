@@ -75,16 +75,12 @@ configure_file(
 add_subdirectory(Src)
 add_subdirectory(Apps)
 
-if (MSVC)
-    set(natvis_files
-        ${CMAKE_CURRENT_SOURCE_DIR}/Misc/DebugVis/visualstudio/Polly.natvis
-        ${CMAKE_CURRENT_SOURCE_DIR}/Misc/DebugVis/visualstudio/small_vector.natvis)
-
-    foreach (File ${natvis_files})
-        target_link_options(Polly PRIVATE /NATVIS:${File})
-        target_sources(Polly PRIVATE ${File})
-    endforeach ()
-endif ()
+# TODO: natvis support
+#if (MSVC)
+#    set(natvis_file ${CMAKE_CURRENT_SOURCE_DIR}/Misc/DebugVis/VS/Polly.natvis)
+#    target_link_options(Polly PRIVATE /NATVIS:${natvis_file})
+#    target_sources(Polly PRIVATE ${natvis_file})
+#endif ()
 
 target_sources(Polly PRIVATE ${misc_cmake_files_in_sources})
 source_group("Misc" FILES ${misc_cmake_files_in_sources})
