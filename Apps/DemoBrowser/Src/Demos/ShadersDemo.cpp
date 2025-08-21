@@ -31,7 +31,7 @@ void ShadersDemo::draw(Painter painter)
 
 void ShadersDemo::doImGui(ImGui imgui)
 {
-    const auto items = SmallList{
+    const auto items = SmallList<Vec2>{
         "Wobble"_sv,
         "Grayscale"_sv,
         "Edge-Detection"_sv,
