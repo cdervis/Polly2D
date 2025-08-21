@@ -27,4 +27,4 @@ void checkNSError(const NS::Error* error);
 MTL::Function* findMtlLibraryFunction(MTL::Library* library, StringView name);
 
 MTL::Library* createMtlLibrary(MTL::Device* device, StringView src_code);
-} // namespace pl
+} // namespace Polly

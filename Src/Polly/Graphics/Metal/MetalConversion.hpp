@@ -30,4 +30,4 @@ Maybe<Pair<MTL::VertexFormat, int>> convert_to_mtl(VertexElement element);
 Maybe<MTL::SamplerAddressMode> convert_to_mtl(ImageAddressMode mode);
 
 Maybe<MTL::ClearColor> convert_to_mtl_clear_color(const Color& color);
-} // namespace pl
+} // namespace Polly

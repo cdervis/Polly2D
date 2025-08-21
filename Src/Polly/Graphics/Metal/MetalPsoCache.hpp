@@ -22,9 +22,9 @@ class MetalPsoCache final
     {
         BlendState       blendState;
         MTL::PixelFormat colorAttachmentFormat = MTL::PixelFormatInvalid;
-        MTL::Function*   vertexShader           = nullptr;
-        MTL::Function*   pixelShader            = nullptr;
-        u32              sampleCount            = 1;
+        MTL::Function*   vertexShader          = nullptr;
+        MTL::Function*   pixelShader           = nullptr;
+        u32              sampleCount           = 1;
 
         defineDefaultEqualityOperations(Key);
     };
