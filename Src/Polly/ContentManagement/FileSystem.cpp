@@ -236,6 +236,33 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
     return data;
 }
 
+Maybe<String> FileSystem::loadTextFileFromDisk(StringView filename)
+{
+#if defined(__ANDROID__) || TARGET_OS_IPHONE
+    throw Error("Loading files from disk is not supported on the current system.");
+#else
+    auto* ifs = SDL_IOFromFile(String(filename).cstring(), "r");
+
+    if (not ifs)
+    {
+        return none;
+    }
+
+    defer
+    {
+        SDL_CloseIO(ifs);
+    };
+
+    const auto fileSize = SDL_GetIOSize(ifs);
+    auto str = String();
+    str.ensureSize(narrow<u32>(fileSize));
+
+    SDL_ReadIO(ifs, str.data(), fileSize);
+
+    return str;
+#endif
+}
+
 Maybe<ByteBlob> FileSystem::loadFileFromDisk([[maybe_unused]] StringView filename)
 {
 #if defined(__ANDROID__) || TARGET_OS_IPHONE

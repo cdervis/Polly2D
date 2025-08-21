@@ -13,6 +13,8 @@ namespace Polly::FileSystem
 /// Loads the entire data of an archived asset unconditionally.
 Maybe<ByteBlob> loadAssetData(StringView filename);
 
+Maybe<String> loadTextFileFromDisk(StringView filename);
+
 /// Loads a file from disk.
 [[nodiscard]]
 Maybe<ByteBlob> loadFileFromDisk(StringView filename);
