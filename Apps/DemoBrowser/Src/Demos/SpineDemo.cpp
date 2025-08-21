@@ -193,7 +193,7 @@ void SpineDemo::switch_to_spine_entry(u32 index)
     _animation_state_data = SpineAnimationStateData(_skeleton_data);
     _animation_state_data.setDefaultMix(0.1f);
 
-    if (_skeleton_data.hasAnimationsNamed(SmallList{"jump"_sv, "walk"_sv}))
+    if (_skeleton_data.hasAnimationsNamed(SmallList<StringView>{"jump"_sv, "walk"_sv}))
     {
         _animation_state_data.setMix("jump", "walk", 0.5f);
     }

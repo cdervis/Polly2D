@@ -290,13 +290,13 @@ void Painter::fillPolygon(Span<Vec2> vertices, const Color& color)
 void Painter::drawTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color, const float strokeWidth)
 {
     declareThisImpl;
-    impl->drawPolygon(SmallList{a, b, c}, color, strokeWidth);
+    impl->drawPolygon(SmallList<Vec2>{a, b, c}, color, strokeWidth);
 }
 
 void Painter::fillTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color)
 {
     declareThisImpl;
-    impl->fillPolygon(SmallList{a, b, c}, color);
+    impl->fillPolygon(SmallList<Vec2>{a, b, c}, color);
 }
 
 void Painter::drawDirectedTriangle(
