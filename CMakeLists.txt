@@ -30,7 +30,7 @@ project(
     Polly
     DESCRIPTION "Polly is a 2D game framework for C++"
     HOMEPAGE_URL "https://polly2d.org"
-    LANGUAGES C CXX
+    LANGUAGES CXX
     VERSION ${POLLY_VERSION})
 
 if (APPLE)

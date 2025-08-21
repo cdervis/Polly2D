@@ -40,6 +40,12 @@ polly_download_dep_file(
 
 target_sources(Polly PRIVATE ${polly_deps_headers_dir}/volk.c)
 
+set_source_files_properties(${polly_deps_headers_dir}/volk.c
+    PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+)
+
+set_source_files_properties(${polly_deps_headers_dir}/volk.c PROPERTIES LANGUAGE CXX)
+
 # GLSlang for compiling our GLSL shaders to SPIR-V at runtime.
 # We only need the standalone library, no executables.
 CPMAddPackage(

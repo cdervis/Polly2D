@@ -8,7 +8,7 @@ else ()
 endif ()
 
 add_library(Polly STATIC)
-target_compile_features(Polly PUBLIC c_std_17 cxx_std_20)
+target_compile_features(Polly PUBLIC cxx_std_20)
 
 set(polly_include_dir ${polly_root_dir}/Include)
 set(polly_src_dir ${CMAKE_CURRENT_SOURCE_DIR})
@@ -106,4 +106,27 @@ foreach (file ${polly_sources})
         polly_embed_file(Polly ${file})
     endif ()
 endforeach ()
+
+# Precompiled headers
+target_precompile_headers(Polly PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/List.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Details/ListBase.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Details/ListData.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/String.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/StringView.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Algorithm.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Maybe.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Details/magic_enum.hpp$<ANGLE-R>>"
+    "$<$<COMPILE_LANGUAGE:CXX>:<memory$<ANGLE-R>>"
+)
+
+target_precompile_headers(Spine PRIVATE
+    <spine/SpineObject.h>
+    <spine/Vector.h>
+)
+
+if (WIN32)
+    target_compile_definitions(Polly PRIVATE -DNOMINMAX -DWIN32_LEAN_AND_MEAN)
+    target_precompile_headers(Polly PRIVATE <windows.h>)
+endif()
 
