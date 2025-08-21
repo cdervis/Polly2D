@@ -20,8 +20,8 @@ endif ()
 
 CPMAddPackage(
     NAME SDL
-    VERSION v3.2.20
-    URL https://github.com/cdervis/SDL/archive/refs/tags/v3.2.20.zip
+    VERSION v3.2.20-1
+    URL https://github.com/cdervis/SDL/archive/refs/tags/v3.2.20-1.zip
     OPTIONS
     "SDL_STATIC ON"
     "SDL_CLOCK_GETTIME OFF"

@@ -51,7 +51,7 @@ void Details::logInternal(String message, LogMessageType type)
             return ANDROID_LOG_INFO;
         }();
 
-        __android_log_print(log_priority, "Polly", "%s", message.GetCString());
+        __android_log_print(log_priority, "Polly", "%s", message.cstring());
 #else
         switch (type)
         {
