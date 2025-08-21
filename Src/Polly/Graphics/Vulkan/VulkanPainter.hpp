@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Polly/Array.hpp>
-#include <Polly/Graphics/GraphicsDeviceImpl.hpp>
+#include <Polly/Graphics/PainterImpl.hpp>
 #include <Polly/Graphics/Tessellation2D.hpp>
 #include <Polly/Graphics/Vulkan/VulkanBuffer.hpp>
 #include <Polly/Graphics/Vulkan/VulkanFramebufferCache.hpp>
@@ -17,19 +17,19 @@
 
 namespace Polly
 {
-class VulkanGraphicsDevice final : public GraphicsDevice::Impl
+class VulkanPainter final : public Painter::Impl
 {
   public:
-    explicit VulkanGraphicsDevice(
+    explicit VulkanPainter(
         Window::Impl&         windowImpl,
         GamePerformanceStats& performanceStats,
         VkInstance            vkInstance,
         u32                   vkApiVersion,
         bool                  haveVkDebugLayer);
 
-    deleteCopyAndMove(VulkanGraphicsDevice);
+    deleteCopyAndMove(VulkanPainter);
 
-    ~VulkanGraphicsDevice() noexcept override;
+    ~VulkanPainter() noexcept override;
 
     void startFrame() override;
 
@@ -344,7 +344,7 @@ class VulkanGraphicsDevice final : public GraphicsDevice::Impl
 };
 
 template<typename Action>
-void VulkanGraphicsDevice::submitImmediateGraphicsCommands(const Action& function)
+void VulkanPainter::submitImmediateGraphicsCommands(const Action& function)
 {
     checkVkResult(vkResetFences(_vkDevice, 1, &_vkImmediateFence), "Failed to reset internal fence.");
 

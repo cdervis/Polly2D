@@ -12,7 +12,7 @@
 
 namespace Polly
 {
-/// Defines various flip factors for 2D sprites that are drawn using GraphicsDevice::drawSprite().
+/// Defines various flip factors for 2D sprites that are drawn using Painter::drawSprite().
 enum class SpriteFlip
 {
     /// The sprite is drawn normally, without any flipping.
@@ -25,7 +25,7 @@ enum class SpriteFlip
     Vertically = 2,
 
     /// The sprite is flipped both horizontally and vertically around its center.
-    Both = Horizontally | Vertically,
+    Both = Horizontally bitor Vertically,
 };
 
 defineEnumFlagOperations(SpriteFlip);

@@ -16,7 +16,7 @@ struct GamePerformanceStats
 
     /// The number of sprite entries that were processed.
     /// This includes text rendering, since text glyphs are
-    /// drawn using GraphicsDevice::drawSprite().
+    /// drawn using Painter::drawSprite().
     u32 spriteCount = 0;
 
     /// The number of polygon entries that were processed

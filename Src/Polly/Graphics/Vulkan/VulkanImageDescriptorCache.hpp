@@ -7,7 +7,7 @@
 
 namespace Polly
 {
-class VulkanGraphicsDevice;
+class VulkanPainter;
 class GraphicsResource;
 class VulkanImage;
 
@@ -29,7 +29,7 @@ class VulkanImageDescriptorCache final
 
     ~VulkanImageDescriptorCache() noexcept = default;
 
-    void init(VulkanGraphicsDevice* parentDevice, VkDescriptorSetLayout descriptorSetLayout);
+    void init(VulkanPainter* parentDevice, VkDescriptorSetLayout descriptorSetLayout);
 
     VkDescriptorSet get(const Key& key);
 
@@ -42,7 +42,7 @@ class VulkanImageDescriptorCache final
   private:
     void createDescriptorPool();
 
-    VulkanGraphicsDevice*           _parentDevice          = nullptr;
+    VulkanPainter*           _parentDevice          = nullptr;
     VkDescriptorPool                _vkDescriptorPool      = VK_NULL_HANDLE;
     VkDescriptorSetLayout           _vkDescriptorSetLayout = VK_NULL_HANDLE;
     SortedMap<Key, VkDescriptorSet> _cache;

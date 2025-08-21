@@ -1,11 +1,11 @@
 #include <Polly/Graphics/Vulkan/VulkanRenderPassCache.hpp>
 
-#include <Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 #include <Polly/Logging.hpp>
 
 namespace Polly
 {
-VulkanRenderPassCache::VulkanRenderPassCache(VulkanGraphicsDevice& parentDevice)
+VulkanRenderPassCache::VulkanRenderPassCache(VulkanPainter& parentDevice)
     : _parentDevice(parentDevice)
 {
 }

@@ -18,8 +18,7 @@ using GlyphAction = Function<bool(char32_t codepoint, const Rectf& rect)>;
 
 /// Represents a font to draw simple text.
 ///
-/// Fonts can be drawn using GraphicsDevice::drawString() and `GraphicsDevice::drawText()
-/// function.
+/// Fonts can be drawn using Painter::drawString() and Painter::drawText() function.
 class Font final
 {
     pl_object(Font);

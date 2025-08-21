@@ -25,9 +25,9 @@ struct PreshapedGlyph
     Rectf    srcRect;
 };
 
-/// Represents a pre-shaped, immutable text object that can be used in GraphicsDevice::drawText().
+/// Represents a pre-shaped, immutable text object that can be used in Painter::drawText().
 ///
-/// @tip Use a (cached) Text object instead of GraphicsDevice::drawString()
+/// @tip Use a (cached) Text object instead of Painter::drawString()
 ///       when the text rarely changes, since pre-shaping text is more efficient
 ///       than shaping it in every draw operation.
 class Text

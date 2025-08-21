@@ -15,29 +15,29 @@ void SpritesDemo::tick(GameTime time)
     }
 }
 
-void SpritesDemo::draw(GraphicsDevice gfx)
+void SpritesDemo::draw(Painter painter)
 {
     const auto x_advance = m_logo.widthf() + 32.0f;
 
-    gfx.drawSprite(m_logo, {100, 100});
+    painter.drawSprite(m_logo, {100, 100});
 
     // Draw a sprite with alpha blending disabled.
-    gfx.setBlendState(opaque);
-    gfx.drawSprite(m_logo, {100 + x_advance, 100});
+    painter.setBlendState(opaque);
+    painter.drawSprite(m_logo, {100 + x_advance, 100});
 
     // Switch to additive alpha blending and draw some more sprites.
-    gfx.setBlendState(additive);
-    gfx.drawSprite(m_logo, {100 + x_advance * 2, 100});
-    gfx.drawSprite(m_logo, {100 + x_advance * 2.2f, 140});
-    gfx.drawSprite(m_logo, {100 + x_advance * 2.4f, 180});
+    painter.setBlendState(additive);
+    painter.drawSprite(m_logo, {100 + x_advance * 2, 100});
+    painter.drawSprite(m_logo, {100 + x_advance * 2.2f, 140});
+    painter.drawSprite(m_logo, {100 + x_advance * 2.4f, 180});
 
     // Now draw the user-configurable sprite.
-    gfx.setBlendState(m_enableAlphaBlending ? non_premultiplied : opaque);
+    painter.setBlendState(m_enableAlphaBlending ? non_premultiplied : opaque);
 
     // Depending on whether interpolation is requested, change the sampler.
     const auto addressMode = m_samplerMirror ? ImageAddressMode::Mirror : ImageAddressMode::Repeat;
 
-    gfx.setSampler(
+    painter.setSampler(
         Sampler{
             .filter    = m_enableInterpolation ? ImageFilter::Linear : ImageFilter::Point,
             .addressU = addressMode,
@@ -45,7 +45,7 @@ void SpritesDemo::draw(GraphicsDevice gfx)
         });
 
     // Draw a sprite by using the full Sprite structure, which provides more options.
-    gfx.drawSprite(
+    painter.drawSprite(
         Sprite{
             .image    = m_logoTiny,
             .dstRect = {600, 600, 128.0f * m_imageScale},

@@ -1,7 +1,7 @@
 #include <Polly/Graphics/Vulkan/VulkanImageDescriptorCache.hpp>
 
-#include <Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp>
 #include <Polly/Graphics/Vulkan/VulkanImage.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 #include <Polly/Logging.hpp>
 
 namespace Polly
@@ -9,7 +9,7 @@ namespace Polly
 static constexpr auto defaultDescriptorSetSize = 1024;
 
 void VulkanImageDescriptorCache::init(
-    VulkanGraphicsDevice* parentDevice,
+    VulkanPainter* parentDevice,
     VkDescriptorSetLayout descriptorSetLayout)
 {
     assume(parentDevice);

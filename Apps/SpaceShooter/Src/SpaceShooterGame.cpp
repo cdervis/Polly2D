@@ -37,23 +37,23 @@ void SpaceShooterGame::update(GameTime time)
     _currentState->update(time);
 }
 
-void SpaceShooterGame::draw(GraphicsDevice gfx)
+void SpaceShooterGame::draw(Painter painter)
 {
     const auto shouldDrawIntoLowResCanvas = _currentState->drawsIntoLowResCanvas();
 
     if (shouldDrawIntoLowResCanvas)
     {
-        gfx.setCanvas(_mainCanvas, black);
-        gfx.setSampler(pointClamp);
+        painter.setCanvas(_mainCanvas, black);
+        painter.setSampler(pointClamp);
     }
 
-    _currentState->draw(gfx);
+    _currentState->draw(painter);
 
     if (shouldDrawIntoLowResCanvas)
     {
-        gfx.setCanvas(none, none);
+        painter.setCanvas(none, none);
 
-        gfx.drawSprite(
+        painter.drawSprite(
             Sprite{
                 .image    = _mainCanvas,
                 .dstRect = {_cameraShakeOffset.valueOr(Vec2()), window().sizePx()},

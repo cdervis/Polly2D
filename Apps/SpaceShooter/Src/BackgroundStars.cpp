@@ -50,10 +50,10 @@ void BackgroundStars::update(float elapsedTime)
     }
 }
 
-void BackgroundStars::draw(GraphicsDevice gfx)
+void BackgroundStars::draw(Painter painter)
 {
     for (const auto& star : _stars)
     {
-        gfx.drawSprite(_starImage, star.pos, white.withAlpha(star.opacity));
+        painter.drawSprite(_starImage, star.pos, white.withAlpha(star.opacity));
     }
 }

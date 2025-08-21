@@ -4,7 +4,7 @@
 
 #include "Polly/Graphics/Vulkan/VulkanUBOAllocator.hpp"
 
-#include "Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp"
+#include "Polly/Graphics/Vulkan/VulkanPainter.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/PlatformInfo.hpp"
 
@@ -14,7 +14,7 @@ static constexpr auto maxCBufferSize = static_cast<size_t>(std::numeric_limits<u
 static constexpr auto requiredCBufferOffsetAlignment = 16u;
 
 VulkanUBOAllocator::VulkanUBOAllocator(
-    VulkanGraphicsDevice& device,
+    VulkanPainter& device,
     VkDescriptorPool      vkDescriptorPool,
     VkDescriptorSetLayout vkDescriptorSetLayout)
     : _device(device)

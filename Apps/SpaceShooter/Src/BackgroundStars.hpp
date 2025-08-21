@@ -11,7 +11,7 @@ class BackgroundStars
 
     void update(float elapsedTime);
 
-    void draw(GraphicsDevice gfx);
+    void draw(Painter painter);
 
   private:
     struct Star

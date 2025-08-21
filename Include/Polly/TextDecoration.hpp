@@ -38,7 +38,7 @@ enum class TextDecorationType
 };
 
 /// Defines various styles for 2D text object that are drawn using
-/// GraphicsDevice::drawString() and GraphicsDevice::drawText().
+/// Painter::drawString() and Painter::drawText().
 ///
 /// When drawing text, you may specify a decoration.
 ///
@@ -46,10 +46,10 @@ enum class TextDecorationType
 ///
 /// @code
 /// // Strikethrough with default values:
-/// gfx.DrawString(..., TextDecoration::Strikethrough());
+/// painter.drawString(..., TextDecoration::Strikethrough());
 ///
 /// // Underline with explicit values:
-/// gfx.DrawString(..., TextDecoration::Underline {
+/// painter.drawString(..., TextDecoration::Underline {
 ///    .thickness = 2.0f,
 ///    .color = red,
 /// });

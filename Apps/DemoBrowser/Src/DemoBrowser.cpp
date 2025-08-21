@@ -8,7 +8,7 @@
 #include "Demos/TextDemo.hpp"
 
 DemoBrowser::DemoBrowser()
-    : Game(formatString("Polly Demo Browser ({})", GraphicsDevice::backendName()), "Polly")
+    : Game(formatString("Polly Demo Browser ({})", Painter::backendName()), "Polly")
 {
     set_default_window_size();
     create_factory_functions();
@@ -24,9 +24,9 @@ void DemoBrowser::update(GameTime time)
     _current_demo->tick(time);
 }
 
-void DemoBrowser::draw(GraphicsDevice gfx)
+void DemoBrowser::draw(Painter painter)
 {
-    _current_demo->draw(gfx);
+    _current_demo->draw(painter);
 }
 
 void DemoBrowser::onKeyPressed(const KeyEvent& event)

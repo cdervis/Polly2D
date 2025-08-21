@@ -9,7 +9,7 @@ enum class VertexElement;
 
 namespace Polly
 {
-class VulkanGraphicsDevice;
+class VulkanPainter;
 class GraphicsResource;
 
 class VulkanFramebufferCache final
@@ -25,7 +25,7 @@ class VulkanFramebufferCache final
         defineDefaultEqualityOperations(Key);
     };
 
-    explicit VulkanFramebufferCache(VulkanGraphicsDevice& parentDevice);
+    explicit VulkanFramebufferCache(VulkanPainter& parentDevice);
 
     deleteCopyAndMove(VulkanFramebufferCache);
 
@@ -38,7 +38,7 @@ class VulkanFramebufferCache final
     void clear();
 
   private:
-    VulkanGraphicsDevice&         _parentDevice;
+    VulkanPainter&         _parentDevice;
     SortedMap<Key, VkFramebuffer> _cache;
 };
 } // namespace Polly

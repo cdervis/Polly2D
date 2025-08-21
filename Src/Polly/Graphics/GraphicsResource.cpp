@@ -4,13 +4,13 @@
 
 #include "GraphicsResource.hpp"
 
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
 #include "Polly/Graphics/ImageImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 
 namespace Polly
 {
 GraphicsResource::GraphicsResource(
-    GraphicsDevice::Impl& parentDeviceImpl,
+    Painter::Impl& parentDeviceImpl,
     GraphicsResourceType  type)
     : _parentDevice(parentDeviceImpl)
     , _resourceType(type)
@@ -69,7 +69,7 @@ String GraphicsResource::displayString() const
     return formatString("{} [{}]", label, typeName);
 }
 
-GraphicsDevice::Impl& GraphicsResource::parentDevice()
+Painter::Impl& GraphicsResource::parentDevice()
 {
     return _parentDevice;
 }

@@ -13,7 +13,7 @@ class VulkanUserShader final : public Shader::Impl
 {
   public:
     explicit VulkanUserShader(
-        GraphicsDevice::Impl& parentDevice,
+        Painter::Impl& parentDevice,
         ShaderType            shaderType,
         Span<u8>              spirvByteCode,
         ParameterList         parameters,

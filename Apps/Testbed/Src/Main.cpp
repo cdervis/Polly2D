@@ -13,9 +13,9 @@ class Testbed final : public Game
     {
     }
 
-    void draw(GraphicsDevice gfx) override
+    void draw(Painter painter) override
     {
-        gfx.drawSprite(img, {100, 100});
+        painter.drawSprite(img, {100, 100});
     }
 
     Image img;

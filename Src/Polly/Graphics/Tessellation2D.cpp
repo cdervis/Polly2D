@@ -5,7 +5,7 @@
 #include "Tessellation2D.hpp"
 
 #include "Polly/Array.hpp"
-#include "Polly/GraphicsDevice.hpp"
+#include "Polly/Painter.hpp"
 
 namespace Polly
 {

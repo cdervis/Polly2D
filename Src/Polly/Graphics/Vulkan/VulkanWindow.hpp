@@ -2,8 +2,8 @@
 
 #include <Polly/Game/WindowImpl.hpp>
 #include <Polly/Graphics/Vulkan/VulkanPrerequisites.hpp>
-#include <Polly/GraphicsDevice.hpp>
 #include <Polly/List.hpp>
+#include <Polly/Painter.hpp>
 
 namespace Polly
 {
@@ -22,7 +22,7 @@ class VulkanWindow : public Window::Impl
     ~VulkanWindow() noexcept override;
 
     void createInitialSwapChain(
-        GraphicsDevice::Impl* parentDevice,
+        Painter::Impl* parentDevice,
         VkDevice              vkDevice,
         VkPhysicalDevice      vkPhysicalDevice,
         u32                   graphicsFamilyQueueIndex,
@@ -69,7 +69,7 @@ class VulkanWindow : public Window::Impl
 
     void destroySwapChainImageViews();
 
-    GraphicsDevice::Impl* _parentDevice     = nullptr;
+    Painter::Impl* _parentDevice     = nullptr;
     VkInstance            _vkInstance       = VK_NULL_HANDLE;
     VkDevice              _vkDevice         = VK_NULL_HANDLE;
     VkPhysicalDevice      _vkPhysicalDevice = VK_NULL_HANDLE;

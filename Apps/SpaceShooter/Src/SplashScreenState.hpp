@@ -11,7 +11,7 @@ class SplashScreenState final : public GameState
 
     void update(GameTime time) override;
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 
     bool drawsIntoLowResCanvas() const override;
 

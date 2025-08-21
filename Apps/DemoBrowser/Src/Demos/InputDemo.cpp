@@ -26,7 +26,7 @@ void InputDemo::tick([[maybe_unused]] GameTime time)
     }
 }
 
-void InputDemo::draw(GraphicsDevice gfx)
+void InputDemo::draw(Painter painter)
 {
     // Draw mouse information.
     {
@@ -37,7 +37,7 @@ void InputDemo::draw(GraphicsDevice gfx)
         const auto radius         = clamp(mouseMovement * 2.0f, 15.0f, 50.0f);
         const auto color          = lerp(lime, red, clamp(mouseMovement * 0.02f, 0.0f, 1.0f));
 
-        gfx.drawEllipse(_mousePos * pixelRatio, Vec2(radius), color, 5.0f);
+        painter.drawEllipse(_mousePos * pixelRatio, Vec2(radius), color, 5.0f);
     }
 
     // If any gamepads are connected, draw information about the first one.
@@ -61,12 +61,12 @@ void InputDemo::draw(GraphicsDevice gfx)
 
             if (gamepad.isButtonDown(GamepadButton::LeftStick))
             {
-                gfx.fillEllipse(stickPos, axisCircleRadius, darkGray);
+                painter.fillEllipse(stickPos, axisCircleRadius, darkGray);
             }
 
-            gfx.drawEllipse(stickPos, axisCircleRadius, gray, 3.0f);
+            painter.drawEllipse(stickPos, axisCircleRadius, gray, 3.0f);
 
-            gfx.fillEllipse(stickPos + xyOffset, stickRadius, cornflowerblue);
+            painter.fillEllipse(stickPos + xyOffset, stickRadius, cornflowerblue);
 
             auto triggerRect = Rectf(
                 stickPos.x - axisCircleRadius.x - 100.0f,
@@ -74,12 +74,12 @@ void InputDemo::draw(GraphicsDevice gfx)
                 50.0f,
                 triggerRectHeight);
 
-            gfx.drawRoundedRectangle(triggerRect, 8.0f, darkGray, 3.0f);
+            painter.drawRoundedRectangle(triggerRect, 8.0f, darkGray, 3.0f);
 
             if (triggerValue > 0.05f)
             {
                 triggerRect.height *= triggerValue;
-                gfx.fillRoundedRectangle(triggerRect, 8.0f, cornflowerblue);
+                painter.fillRoundedRectangle(triggerRect, 8.0f, cornflowerblue);
             }
         }
 
@@ -94,11 +94,11 @@ void InputDemo::draw(GraphicsDevice gfx)
 
             if (gamepad.isButtonDown(GamepadButton::RightStick))
             {
-                gfx.fillEllipse(stickPos, axisCircleRadius, darkGray);
+                painter.fillEllipse(stickPos, axisCircleRadius, darkGray);
             }
 
-            gfx.drawEllipse(stickPos, axisCircleRadius, gray, 3.0f);
-            gfx.fillEllipse(stickPos + xyOffset, stickRadius, cornflowerblue);
+            painter.drawEllipse(stickPos, axisCircleRadius, gray, 3.0f);
+            painter.fillEllipse(stickPos + xyOffset, stickRadius, cornflowerblue);
 
             auto trigger_rect = Rectf(
                 stickPos.x + axisCircleRadius.x + 50.0f,
@@ -106,12 +106,12 @@ void InputDemo::draw(GraphicsDevice gfx)
                 50.0f,
                 triggerRectHeight);
 
-            gfx.drawRoundedRectangle(trigger_rect, 8.0f, darkGray, 3.0f);
+            painter.drawRoundedRectangle(trigger_rect, 8.0f, darkGray, 3.0f);
 
             if (triggerValue > 0.05f)
             {
                 trigger_rect.height *= triggerValue;
-                gfx.fillRoundedRectangle(trigger_rect, 8.0f, cornflowerblue);
+                painter.fillRoundedRectangle(trigger_rect, 8.0f, cornflowerblue);
             }
         }
 
@@ -122,29 +122,29 @@ void InputDemo::draw(GraphicsDevice gfx)
             constexpr auto eastPos  = Vec2(1520, 700);
             constexpr auto northPos = Vec2(1450, 630);
 
-            gfx.drawEllipse(northPos, actionButtonRadius, yellow, 3.0f);
-            gfx.drawEllipse(eastPos, actionButtonRadius, red, 3.0f);
-            gfx.drawEllipse(southPos, actionButtonRadius, lime, 3.0f);
-            gfx.drawEllipse(westPos, actionButtonRadius, cornflowerblue, 3.0f);
+            painter.drawEllipse(northPos, actionButtonRadius, yellow, 3.0f);
+            painter.drawEllipse(eastPos, actionButtonRadius, red, 3.0f);
+            painter.drawEllipse(southPos, actionButtonRadius, lime, 3.0f);
+            painter.drawEllipse(westPos, actionButtonRadius, cornflowerblue, 3.0f);
 
             if (gamepad.isButtonDown(GamepadButton::ActionWest))
             {
-                gfx.fillEllipse(westPos, actionButtonRadius, cornflowerblue);
+                painter.fillEllipse(westPos, actionButtonRadius, cornflowerblue);
             }
 
             if (gamepad.isButtonDown(GamepadButton::ActionSouth))
             {
-                gfx.fillEllipse(southPos, actionButtonRadius, lime);
+                painter.fillEllipse(southPos, actionButtonRadius, lime);
             }
 
             if (gamepad.isButtonDown(GamepadButton::ActionEast))
             {
-                gfx.fillEllipse(eastPos, actionButtonRadius, red);
+                painter.fillEllipse(eastPos, actionButtonRadius, red);
             }
 
             if (gamepad.isButtonDown(GamepadButton::ActionNorth))
             {
-                gfx.fillEllipse(northPos, actionButtonRadius, yellow);
+                painter.fillEllipse(northPos, actionButtonRadius, yellow);
             }
         }
 
@@ -156,29 +156,29 @@ void InputDemo::draw(GraphicsDevice gfx)
             constexpr auto downPos  = Vec2(800, 1100);
             constexpr auto radius    = 30.0f;
 
-            gfx.drawDirectedTriangle(leftPos, radius, Direction::Left, gray, 3.0f);
-            gfx.drawDirectedTriangle(upPos, radius, Direction::Up, gray, 3.0f);
-            gfx.drawDirectedTriangle(rightPos, radius, Direction::Right, gray, 3.0f);
-            gfx.drawDirectedTriangle(downPos, radius, Direction::Down, gray, 3.0f);
+            painter.drawDirectedTriangle(leftPos, radius, Direction::Left, gray, 3.0f);
+            painter.drawDirectedTriangle(upPos, radius, Direction::Up, gray, 3.0f);
+            painter.drawDirectedTriangle(rightPos, radius, Direction::Right, gray, 3.0f);
+            painter.drawDirectedTriangle(downPos, radius, Direction::Down, gray, 3.0f);
 
             if (gamepad.isButtonDown(GamepadButton::DPadLeft))
             {
-                gfx.fillDirectedTriangle(leftPos, radius, Direction::Left, lightGray);
+                painter.fillDirectedTriangle(leftPos, radius, Direction::Left, lightGray);
             }
 
             if (gamepad.isButtonDown(GamepadButton::DPadUp))
             {
-                gfx.fillDirectedTriangle(upPos, radius, Direction::Up, lightGray);
+                painter.fillDirectedTriangle(upPos, radius, Direction::Up, lightGray);
             }
 
             if (gamepad.isButtonDown(GamepadButton::DPadRight))
             {
-                gfx.fillDirectedTriangle(rightPos, radius, Direction::Right, lightGray);
+                painter.fillDirectedTriangle(rightPos, radius, Direction::Right, lightGray);
             }
 
             if (gamepad.isButtonDown(GamepadButton::DPadDown))
             {
-                gfx.fillDirectedTriangle(downPos, radius, Direction::Down, lightGray);
+                painter.fillDirectedTriangle(downPos, radius, Direction::Down, lightGray);
             }
         }
     }

@@ -6,7 +6,7 @@
 #include "Polly/Direction.hpp"
 #include "Polly/Font.hpp"
 #include "Polly/Game/GameImpl.hpp"
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Image.hpp"
 #include "Polly/ParticleSystem.hpp"
 #include "Polly/Spine.hpp"
@@ -19,21 +19,21 @@
 
 namespace Polly
 {
-pl_implement_object(GraphicsDevice);
+pl_implement_object(Painter);
 
-void GraphicsDevice::setScissorRects(const Span<Rectf> scissorRects)
+void Painter::setScissorRects(const Span<Rectf> scissorRects)
 {
     declareThisImpl;
     impl->setScissorRects(scissorRects);
 }
 
-Image GraphicsDevice::currentCanvas() const
+Image Painter::currentCanvas() const
 {
     declareThisImpl;
     return impl->currentCanvas();
 }
 
-void GraphicsDevice::setCanvas(Image canvas, Maybe<Color> clearColor)
+void Painter::setCanvas(Image canvas, Maybe<Color> clearColor)
 {
     if (canvas and not canvas.isCanvas())
     {
@@ -44,25 +44,25 @@ void GraphicsDevice::setCanvas(Image canvas, Maybe<Color> clearColor)
     impl->setCanvas(canvas, clearColor, true);
 }
 
-Matrix GraphicsDevice::transformation() const
+Matrix Painter::transformation() const
 {
     declareThisImpl;
     return impl->transformation();
 }
 
-void GraphicsDevice::setTransformation(Matrix transformation)
+void Painter::setTransformation(Matrix transformation)
 {
     declareThisImpl;
     impl->setTransformation(transformation);
 }
 
-Shader GraphicsDevice::currentSpriteShader() const
+Shader Painter::currentSpriteShader() const
 {
     declareThisImpl;
     return impl->currentShader(BatchMode::Sprites);
 }
 
-void GraphicsDevice::setSpriteShader(Shader shader)
+void Painter::setSpriteShader(Shader shader)
 {
     if (shader)
     {
@@ -78,13 +78,13 @@ void GraphicsDevice::setSpriteShader(Shader shader)
     impl->setShader(BatchMode::Sprites, shader);
 }
 
-Shader GraphicsDevice::currentPolygonShader() const
+Shader Painter::currentPolygonShader() const
 {
     declareThisImpl;
     return impl->currentShader(BatchMode::Polygons);
 }
 
-void GraphicsDevice::setPolygonShader(Shader shader)
+void Painter::setPolygonShader(Shader shader)
 {
     if (shader)
     {
@@ -100,31 +100,31 @@ void GraphicsDevice::setPolygonShader(Shader shader)
     impl->setShader(BatchMode::Polygons, shader);
 }
 
-Sampler GraphicsDevice::currentSampler() const
+Sampler Painter::currentSampler() const
 {
     declareThisImpl;
     return impl->currentSampler();
 }
 
-void GraphicsDevice::setSampler(const Sampler& sampler)
+void Painter::setSampler(const Sampler& sampler)
 {
     declareThisImpl;
     impl->setSampler(sampler);
 }
 
-BlendState GraphicsDevice::currentBlendState() const
+BlendState Painter::currentBlendState() const
 {
     declareThisImpl;
     return impl->currentBlendState();
 }
 
-void GraphicsDevice::setBlendState(const BlendState& blendState)
+void Painter::setBlendState(const BlendState& blendState)
 {
     declareThisImpl;
     impl->setBlendState(blendState);
 }
 
-void GraphicsDevice::drawSprite(const Image& image, const Vec2 position, const Color color)
+void Painter::drawSprite(const Image& image, const Vec2 position, const Color color)
 {
     if (not image)
     {
@@ -142,7 +142,7 @@ void GraphicsDevice::drawSprite(const Image& image, const Vec2 position, const C
         SpriteShaderKind::Default);
 }
 
-void GraphicsDevice::drawSprite(const Sprite& sprite)
+void Painter::drawSprite(const Sprite& sprite)
 {
     if (not sprite.image)
     {
@@ -153,7 +153,7 @@ void GraphicsDevice::drawSprite(const Sprite& sprite)
     impl->drawSprite(sprite, SpriteShaderKind::Default);
 }
 
-void GraphicsDevice::drawSprites(Span<Sprite> sprites)
+void Painter::drawSprites(Span<Sprite> sprites)
 {
     declareThisImpl;
 
@@ -166,7 +166,7 @@ void GraphicsDevice::drawSprites(Span<Sprite> sprites)
     }
 }
 
-void GraphicsDevice::drawString(
+void Painter::drawString(
     StringView            text,
     Font                  font,
     float                 fontSize,
@@ -187,7 +187,7 @@ void GraphicsDevice::drawString(
     impl->pushStringToQueue(text, font, fontSize, position, color, decoration);
 }
 
-void GraphicsDevice::drawStringWithBasicShadow(
+void Painter::drawStringWithBasicShadow(
     StringView            text,
     Font                  font,
     float                 fontSize,
@@ -208,7 +208,7 @@ void GraphicsDevice::drawStringWithBasicShadow(
     auto& tmpGlyphs          = impl->tmpGlyphs;
     auto& tmpDecorationRects = impl->tmpDecorationRects;
 
-    // This is the same as GraphicsDeviceImpl::pushStringToQueue().
+    // This is the same as Painter::pushStringToQueue().
     // But instead of calling it twice (and therefore shaping the text twice),
     // we shape the text once here.
     shapeText(text, font, fontSize, decoration, tmpGlyphs, tmpDecorationRects);
@@ -224,7 +224,7 @@ void GraphicsDevice::drawStringWithBasicShadow(
     impl->doInternalPushTextToQueue(tmpGlyphs, tmpDecorationRects, position, color);
 }
 
-void GraphicsDevice::drawText(const Text& text, Vec2 position, Color color)
+void Painter::drawText(const Text& text, Vec2 position, Color color)
 {
     declareThisImpl;
 
@@ -239,7 +239,7 @@ void GraphicsDevice::drawText(const Text& text, Vec2 position, Color color)
     impl->pushTextToQueue(text, position, color);
 }
 
-void GraphicsDevice::drawTextWithBasicShadow(const Text& text, Vec2 position, Color color)
+void Painter::drawTextWithBasicShadow(const Text& text, Vec2 position, Color color)
 {
     declareThisImpl;
 
@@ -263,43 +263,43 @@ static float clampStrokeWidth(const float width)
     return clamp(width, 1.0f, 100.0f);
 }
 
-void GraphicsDevice::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
+void Painter::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
 {
     declareThisImpl;
     impl->drawRectangle(rectangle, color, clampStrokeWidth(strokeWidth));
 }
 
-void GraphicsDevice::fillRectangle(const Rectf& rectangle, const Color& color)
+void Painter::fillRectangle(const Rectf& rectangle, const Color& color)
 {
     declareThisImpl;
     impl->fillRectangle(rectangle, color);
 }
 
-void GraphicsDevice::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
+void Painter::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
 {
     declareThisImpl;
     impl->drawPolygon(vertices, color, strokeWidth);
 }
 
-void GraphicsDevice::fillPolygon(Span<Vec2> vertices, const Color& color)
+void Painter::fillPolygon(Span<Vec2> vertices, const Color& color)
 {
     declareThisImpl;
     impl->fillPolygon(vertices, color);
 }
 
-void GraphicsDevice::drawTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color, const float strokeWidth)
+void Painter::drawTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color, const float strokeWidth)
 {
     declareThisImpl;
     impl->drawPolygon(SmallList{a, b, c}, color, strokeWidth);
 }
 
-void GraphicsDevice::fillTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color)
+void Painter::fillTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color)
 {
     declareThisImpl;
     impl->fillPolygon(SmallList{a, b, c}, color);
 }
 
-void GraphicsDevice::drawDirectedTriangle(
+void Painter::drawDirectedTriangle(
     Vec2         center,
     float        radius,
     Direction    direction,
@@ -343,7 +343,7 @@ void GraphicsDevice::drawDirectedTriangle(
     }
 }
 
-void GraphicsDevice::fillDirectedTriangle(Vec2 center, float radius, Direction direction, const Color& color)
+void Painter::fillDirectedTriangle(Vec2 center, float radius, Direction direction, const Color& color)
 {
     switch (direction)
     {
@@ -378,13 +378,13 @@ void GraphicsDevice::fillDirectedTriangle(Vec2 center, float radius, Direction d
     }
 }
 
-void GraphicsDevice::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
+void Painter::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
 {
     declareThisImpl;
     impl->drawLine(start, end, color, clampStrokeWidth(strokeWidth));
 }
 
-void GraphicsDevice::drawRoundedRectangle(
+void Painter::drawRoundedRectangle(
     const Rectf& rectangle,
     float        cornerRadius,
     const Color& color,
@@ -398,25 +398,25 @@ void GraphicsDevice::drawRoundedRectangle(
         clampStrokeWidth(strokeWidth));
 }
 
-void GraphicsDevice::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
+void Painter::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
 {
     declareThisImpl;
     impl->fillRoundedRectangle(rectangle, clamp(cornerRadius, 1.0f, 100.0f), color);
 }
 
-void GraphicsDevice::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
+void Painter::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
 {
     declareThisImpl;
     impl->drawEllipse(center, radius, color, clampStrokeWidth(strokeWidth));
 }
 
-void GraphicsDevice::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
+void Painter::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
 {
     declareThisImpl;
     impl->fillEllipse(center, radius, color);
 }
 
-void GraphicsDevice::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image image)
+void Painter::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image image)
 {
     if (vertices.isEmpty() or indices.isEmpty())
     {
@@ -430,7 +430,7 @@ void GraphicsDevice::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices,
     impl->drawMesh(vertices, indices, imageImpl);
 }
 
-void GraphicsDevice::drawSpineSkeleton(SpineSkeleton skeleton)
+void Painter::drawSpineSkeleton(SpineSkeleton skeleton)
 {
     if (not skeleton)
     {
@@ -441,7 +441,7 @@ void GraphicsDevice::drawSpineSkeleton(SpineSkeleton skeleton)
     impl->drawSpineSkeleton(skeleton);
 }
 
-void GraphicsDevice::drawParticles(const ParticleSystem& particleSystem)
+void Painter::drawParticles(const ParticleSystem& particleSystem)
 {
     if (not particleSystem or particleSystem.totalActiveParticles() == 0)
     {
@@ -452,25 +452,25 @@ void GraphicsDevice::drawParticles(const ParticleSystem& particleSystem)
     impl->pushParticlesToQueue(particleSystem);
 }
 
-Vec2 GraphicsDevice::viewSize() const
+Vec2 Painter::viewSize() const
 {
     declareThisImpl;
     return impl->currentCanvasSize();
 }
 
-float GraphicsDevice::viewAspectRatio() const
+float Painter::viewAspectRatio() const
 {
     const auto viewSize = this->viewSize();
     return viewSize.x / viewSize.y;
 }
 
-float GraphicsDevice::pixelRatio() const
+float Painter::pixelRatio() const
 {
     declareThisImpl;
     return impl->pixelRatio();
 }
 
-void GraphicsDevice::readCanvasDataInto(
+void Painter::readCanvasDataInto(
     const Image& canvas,
     u32          x,
     u32          y,
@@ -523,7 +523,7 @@ void GraphicsDevice::readCanvasDataInto(
     impl->readCanvasDataInto(canvas, x, y, width, height, destination);
 }
 
-List<u8> GraphicsDevice::readCanvasData(const Image& canvas, u32 x, u32 y, u32 width, u32 height)
+List<u8> Painter::readCanvasData(const Image& canvas, u32 x, u32 y, u32 width, u32 height)
 {
     if (not canvas)
     {
@@ -550,7 +550,7 @@ List<u8> GraphicsDevice::readCanvasData(const Image& canvas, u32 x, u32 y, u32 w
     return data;
 }
 
-void GraphicsDevice::saveCanvasToFile(const Image& canvas, StringView filename, ImageFileFormat format)
+void Painter::saveCanvasToFile(const Image& canvas, StringView filename, ImageFileFormat format)
 {
     if (not canvas)
     {
@@ -606,7 +606,7 @@ void GraphicsDevice::saveCanvasToFile(const Image& canvas, StringView filename, 
     }
 }
 
-Maybe<List<u8>> GraphicsDevice::saveCanvasToMemory(const Image& canvas, ImageFileFormat format)
+Maybe<List<u8>> Painter::saveCanvasToMemory(const Image& canvas, ImageFileFormat format)
 {
     if (not canvas)
     {
@@ -681,13 +681,13 @@ Maybe<List<u8>> GraphicsDevice::saveCanvasToMemory(const Image& canvas, ImageFil
     return myContext.savedData;
 }
 
-GraphicsCapabilities GraphicsDevice::capabilities() const
+PainterCapabilities Painter::capabilities() const
 {
     declareThisImpl;
     return impl->capabilities();
 }
 
-StringView GraphicsDevice::backendName()
+StringView Painter::backendName()
 {
 #ifdef __APPLE__
     return "Metal";

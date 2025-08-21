@@ -38,7 +38,7 @@ void SplashScreenState::update(GameTime time)
     }
 }
 
-void SplashScreenState::draw(GraphicsDevice gfx)
+void SplashScreenState::draw(Painter painter)
 {
     const auto isBackgroundFading = _logoTweenChain.currentTweenerIndex() == 2;
     auto       backgroundColor     = white;
@@ -48,13 +48,13 @@ void SplashScreenState::draw(GraphicsDevice gfx)
         backgroundColor = lerp(white, black, _logoTweenChain.currentTweener().percentage());
     }
 
-    gfx.setCanvas({}, backgroundColor);
+    painter.setCanvas({}, backgroundColor);
 
     if (not isBackgroundFading)
     {
-        gfx.drawSprite(
+        painter.drawSprite(
             _logo,
-            (gfx.viewSize() - _logo.size()) / 2,
+            (painter.viewSize() - _logo.size()) / 2,
             white.withAlpha(_logoTweenChain.value()));
     }
 }

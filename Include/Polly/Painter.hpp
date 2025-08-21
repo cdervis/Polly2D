@@ -45,7 +45,7 @@ enum class ImageFileFormat
 ///
 /// Graphics capabilities may be used to determine certain limits
 /// of the graphics device, i.e. before creating images of a specific size or format.
-struct GraphicsCapabilities
+struct PainterCapabilities
 {
     u32 maxImageExtent  = 0;
     u32 maxCanvasWidth  = 0;
@@ -60,9 +60,9 @@ struct GraphicsCapabilities
 /// This is done by attaching a callback function to the game using
 /// Game::draw(), where the callback function then receives a valid
 /// graphics device.
-class GraphicsDevice final
+class Painter final
 {
-    pl_object(GraphicsDevice);
+    pl_object(Painter);
 
   public:
     /// Sets the active set of scissor rectangles.
@@ -82,12 +82,12 @@ class GraphicsDevice final
     /// @code
     /// auto canvas = Image(256, 256, ImageFormat::R8G8B8A8_UNorm);
     ///
-    /// gfx.setCanvas(canvas);                // Set canvas as active.
-    /// gfx.drawSprite(mySprite, {0, 0});     // Draws the sprite into the canvas.
+    /// painter.setCanvas(canvas);                // Set canvas as active.
+    /// painter.drawSprite(mySprite, {0, 0});     // Draws the sprite into the canvas.
     ///
-    /// gfx.setCanvas(none, none);                    // Set current window as render target.
-    /// gfx.drawSprite(canvas, {0, 0});       // Draws the canvas into the window.
-    /// gfx.drawSprite(mySprite, {100, 100}); // Draws the sprite on top.
+    /// painter.setCanvas(none, none);                    // Set current window as render target.
+    /// painter.drawSprite(canvas, {0, 0});       // Draws the canvas into the window.
+    /// painter.drawSprite(mySprite, {100, 100}); // Draws the sprite on top.
     /// @endcode
     void setCanvas(Image canvas, Maybe<Color> clearColor);
 
@@ -233,7 +233,7 @@ class GraphicsDevice final
 
     /// Draws 2D text from a pre-created Text object.
     ///
-    /// @note This is a convenience function for GraphicsDevice::drawText() that
+    /// @note This is a convenience function for Painter::drawText() that
     /// draws a simple shadow underneath the actual text, with a slight offset.
     ///
     /// @param text The text object to draw.
@@ -462,7 +462,7 @@ class GraphicsDevice final
     Maybe<List<u8>> saveCanvasToMemory(const Image& canvas, ImageFileFormat format = ImageFileFormat::png);
 
     /// Gets the device's capabilities.
-    GraphicsCapabilities capabilities() const;
+    PainterCapabilities capabilities() const;
 
     /// Gets the name of the graphics API that's used on the current platform.
     static StringView backendName();

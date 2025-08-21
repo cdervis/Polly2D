@@ -7,7 +7,7 @@ class TextDemo final : public Demo
   public:
     TextDemo(DemoBrowser* browser);
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 
     void doImGui(ImGui imgui) override;
 

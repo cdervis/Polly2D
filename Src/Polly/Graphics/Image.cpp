@@ -7,8 +7,8 @@
 #include "Polly/ContentManagement/ContentManager.hpp"
 #include "Polly/ContentManagement/ImageIO.hpp"
 #include "Polly/Game/GameImpl.hpp"
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
 #include "Polly/Graphics/ImageImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/ToString.hpp"
 
 // NOLINTBEGIN
@@ -33,9 +33,9 @@ Image::Image(u32 width, u32 height, ImageFormat format, const void* data)
             format));
     }
 
-    auto& deviceImpl = *Game::Impl::instance().graphicsDevice().impl();
+    auto& deviceImpl = *Game::Impl::instance().painter().impl();
 
-    const GraphicsCapabilities caps = deviceImpl.capabilities();
+    const PainterCapabilities caps = deviceImpl.capabilities();
 
     if (width > caps.maxImageExtent or height > caps.maxImageExtent)
     {
@@ -52,7 +52,7 @@ Image::Image(u32 width, u32 height, ImageFormat format, const void* data)
 Image::Image(Span<u8> memory)
     : Image()
 {
-    auto& deviceImpl = *Game::Impl::instance().graphicsDevice().impl();
+    auto& deviceImpl = *Game::Impl::instance().painter().impl();
 
     setImpl(*this, ImageIO().loadImageFromMemory(deviceImpl, memory).release());
 }
@@ -67,7 +67,7 @@ Image::Image(StringView assetName)
 Image::Image(u32 width, u32 height, ImageFormat format)
     : Image()
 {
-    auto& deviceImpl = *Game::Impl::instance().graphicsDevice().impl();
+    auto& deviceImpl = *Game::Impl::instance().painter().impl();
 
     const auto caps = deviceImpl.capabilities();
 

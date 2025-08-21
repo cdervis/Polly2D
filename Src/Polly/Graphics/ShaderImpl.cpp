@@ -5,7 +5,7 @@
 #include "Polly/Graphics/ShaderImpl.hpp"
 
 #include "Polly/Algorithm.hpp"
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/Util.hpp"
 
@@ -37,7 +37,7 @@ String Shader::Impl::shaderParameterTypeString(ShaderParameterType type)
 }
 
 Shader::Impl::Impl(
-    GraphicsDevice::Impl& parentDevice,
+    Painter::Impl& parentDevice,
     ShaderType            shaderType,
     ParameterList         parameters,
     UserShaderFlags                   flags,

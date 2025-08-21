@@ -12,12 +12,12 @@
 #include "Polly/Function.hpp"
 #include "Polly/Graphics/ShaderImpl.hpp"
 #include "Polly/Graphics/TextImpl.hpp"
-#include "Polly/GraphicsDevice.hpp"
 #include "Polly/Image.hpp"
 #include "Polly/Linalg.hpp"
 #include "Polly/Line.hpp"
 #include "Polly/List.hpp"
 #include "Polly/Maybe.hpp"
+#include "Polly/Painter.hpp"
 #include "Polly/Pair.hpp"
 #include "Polly/Rectf.hpp"
 #include "Polly/Sampler.hpp"
@@ -70,7 +70,7 @@ struct MeshEntry
     List<uint16_t, 16 * 3> indices;
 };
 
-class GraphicsDevice::Impl : public Object
+class Painter::Impl : public Object
 {
   protected:
     explicit Impl(Window::Impl& windowImpl, GamePerformanceStats& performanceStats);
@@ -208,7 +208,7 @@ class GraphicsDevice::Impl : public Object
 
     virtual void requestFrameCapture() = 0;
 
-    GraphicsCapabilities capabilities() const;
+    PainterCapabilities capabilities() const;
 
     template<size_t SpriteCount>
     static auto createSpriteIndicesList()
@@ -263,7 +263,7 @@ class GraphicsDevice::Impl : public Object
   protected:
     Window::Impl& window() const;
 
-    void postInit(const GraphicsCapabilities& capabilities);
+    void postInit(const PainterCapabilities& capabilities);
 
     void preBackendDtor();
 
@@ -319,7 +319,7 @@ class GraphicsDevice::Impl : public Object
     List<GraphicsResource*> _resources;
     GamePerformanceStats&   _performanceStats;
     Image                   _whiteImage;
-    GraphicsCapabilities    _capabilities;
+    PainterCapabilities    _capabilities;
     Rectf                   _viewport;
     Matrix                  _viewportTransformation;
     Matrix                  _combinedTransformation;
@@ -345,7 +345,7 @@ class GraphicsDevice::Impl : public Object
 // Inline function implementations
 
 template<typename T, typename Action>
-void GraphicsDevice::Impl::fillSpriteVertices(
+void Painter::Impl::fillSpriteVertices(
     T*                   dst,
     Span<InternalSprite> sprites,
     const Rectf&         imageSizeAndInverse,
@@ -360,7 +360,7 @@ void GraphicsDevice::Impl::fillSpriteVertices(
 }
 
 template<typename T, typename Action>
-void GraphicsDevice::Impl::renderSprite(
+void Painter::Impl::renderSprite(
     const InternalSprite& sprite,
     T*                    dstVertices,
     const Rectf&          imageSizeAndInverse,

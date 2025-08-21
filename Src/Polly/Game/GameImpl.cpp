@@ -37,12 +37,12 @@ int Polly::Details::runGame(int a, char* b[], MainFunction c, [[maybe_unused]] v
 #endif
 
 #if polly_have_gfx_metal
-#include "Polly/Graphics/Metal/MetalGraphicsDevice.hpp"
+#include "Polly/Graphics/Metal/MetalPainter.hpp"
 #include "Polly/Graphics/Metal/MetalWindow.hpp"
 #endif
 
 #ifdef polly_have_gfx_vulkan
-#include <Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 #include <Polly/Graphics/Vulkan/VulkanWindow.hpp>
 
 #include <SDL3/SDL_vulkan.h>
@@ -108,7 +108,7 @@ Game::Impl::Impl(const GameInitArgs& args)
     createWindow(args.title, args.initialWindowSize, args.fullScreenDisplayIndex);
     openInitialGamepads();
     initializeImGui();
-    createGraphicsDevice();
+    createPainter();
     createAudioDevice(not args.enableAudio);
 
     _contentManager = makeUnique<ContentManager>();
@@ -191,9 +191,9 @@ void Game::Impl::run(NotNull<Game*> backLink)
 
         if (not _window.isMinimized())
         {
-            auto& graphicsDeviceImpl = *_graphicsDevice.impl();
+            auto& painterImpl = *_painter.impl();
 
-            graphicsDeviceImpl.startFrame();
+            painterImpl.startFrame();
 
             _isDrawing = true;
 
@@ -202,12 +202,12 @@ void Game::Impl::run(NotNull<Game*> backLink)
                 _isDrawing = false;
             };
 
-            _backLink->draw(_graphicsDevice);
+            _backLink->draw(_painter);
 
-            _graphicsDevice.setTransformation({});
-            drawOnScreenLogMessages(graphicsDeviceImpl);
+            _painter.setTransformation({});
+            drawOnScreenLogMessages(painterImpl);
 
-            graphicsDeviceImpl.endFrame(_imgui, [this](ImGui imgui) { _backLink->onImGui(imgui); });
+            painterImpl.endFrame(_imgui, [this](ImGui imgui) { _backLink->onImGui(imgui); });
         }
 
         _isFirstTick = false;
@@ -307,22 +307,20 @@ bool Game::Impl::isAudioDeviceInitialized() const
     return static_cast<bool>(_audioDevice);
 }
 
-GraphicsDevice& Game::Impl::graphicsDevice()
+Painter& Game::Impl::painter()
 {
-    if (not _graphicsDevice)
+    if (not _painter)
     {
         throw Error(
-            "Attempting to load graphics resources or draw something using a GraphicsDevice while "
-            "no Game instance is "
-            "alive.");
+            "Attempting to load graphics resources or draw something using a Painter while no Game instance is alive.");
     }
 
-    return _graphicsDevice;
+    return _painter;
 }
 
-const GraphicsDevice& Game::Impl::graphicsDevice() const
+const Painter& Game::Impl::painter() const
 {
-    return _graphicsDevice;
+    return _painter;
 }
 
 AudioDevice& Game::Impl::audioDevice()
@@ -436,19 +434,19 @@ void Game::Impl::createAudioDevice(bool useNullDevice)
     logDebug("Audio initialized successfully");
 }
 
-void Game::Impl::createGraphicsDevice()
+void Game::Impl::createPainter()
 {
     logDebug("Initializing graphics device");
 
-    auto impl = UniquePtr<GraphicsDevice::Impl>();
+    auto impl = UniquePtr<Painter::Impl>();
 
 #if defined(polly_have_gfx_metal)
-    impl = makeUnique<MetalGraphicsDevice>(*_window.impl(), _performanceStats);
+    impl = makeUnique<MetalPainter>(*_window.impl(), _performanceStats);
 #elif defined(polly_have_gfx_vulkan)
     assume(_vkInstance != VK_NULL_HANDLE);
     assume(_vkApiVersion != 0);
 
-    impl = makeUnique<VulkanGraphicsDevice>(
+    impl = makeUnique<VulkanPainter>(
         *_window.impl(),
         _performanceStats,
         _vkInstance,
@@ -458,7 +456,7 @@ void Game::Impl::createGraphicsDevice()
 #error "Unsupported"
 #endif
 
-    _graphicsDevice = GraphicsDevice(impl.release());
+    _painter = Painter(impl.release());
 }
 
 void Game::Impl::processEvents()
@@ -894,7 +892,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
     }
 }
 
-void Game::Impl::drawOnScreenLogMessages(GraphicsDevice::Impl& graphicsDeviceImpl)
+void Game::Impl::drawOnScreenLogMessages(Painter::Impl& painterImpl)
 {
     setIsLoggingSuspended(true);
 
@@ -908,7 +906,7 @@ void Game::Impl::drawOnScreenLogMessages(GraphicsDevice::Impl& graphicsDeviceImp
 
     if (not entries.isEmpty())
     {
-        graphicsDeviceImpl.setBlendState(non_premultiplied);
+        painterImpl.setBlendState(non_premultiplied);
 
         // TODO: consider window logging position (anchor)
         auto       pos         = Vec2(50, 50);
@@ -928,7 +926,7 @@ void Game::Impl::drawOnScreenLogMessages(GraphicsDevice::Impl& graphicsDeviceImp
             color.a = entry.ttl / OnScreenLogEntry::defaultTimeToLive;
 
             const auto text = Text(entry.message, font, fontSize);
-            graphicsDeviceImpl.pushTextToQueue(text, pos, color);
+            painterImpl.pushTextToQueue(text, pos, color);
             pos.y += text.height();
         }
     }

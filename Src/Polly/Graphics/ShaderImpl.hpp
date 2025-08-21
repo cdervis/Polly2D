@@ -6,9 +6,9 @@
 
 #include "Polly/Graphics/GraphicsResource.hpp"
 #include "Polly/Graphics/ShaderParameter.hpp"
-#include "Polly/GraphicsDevice.hpp"
 #include "Polly/List.hpp"
 #include "Polly/Logging.hpp"
+#include "Polly/Painter.hpp"
 #include "Polly/Shader.hpp"
 #include "Polly/SortedSet.hpp"
 #include "Polly/Span.hpp"
@@ -28,7 +28,7 @@ defineEnumFlagOperations(UserShaderFlags);
 
 class Shader::Impl : public GraphicsResource
 {
-    friend GraphicsDevice::Impl;
+    friend Painter::Impl;
 
   public:
     using ParameterList     = List<ShaderParameter, 8>;
@@ -36,7 +36,7 @@ class Shader::Impl : public GraphicsResource
 
   protected:
     explicit Impl(
-        GraphicsDevice::Impl& parentDevice,
+        Painter::Impl& parentDevice,
         ShaderType            shaderType,
         ParameterList         parameters,
         UserShaderFlags       flags,

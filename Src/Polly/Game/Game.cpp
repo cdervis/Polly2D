@@ -6,7 +6,7 @@
 #include "Polly/ContentManagement/ContentManager.hpp"
 #include "Polly/Function.hpp"
 #include "Polly/Game/GameImpl.hpp"
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Logging.hpp"
 #include <SDL3/SDL_messagebox.h>
 
@@ -142,7 +142,7 @@ void Game::requestFrameCapture()
             "Game::OnDraw() is called."));
     }
 
-    _impl->graphicsDevice().impl()->requestFrameCapture();
+    _impl->painter().impl()->requestFrameCapture();
 }
 
 Game::Game(StringView title, StringView companyName)
@@ -162,7 +162,7 @@ void Game::update([[maybe_unused]] GameTime time)
     // Nothing to do.
 }
 
-void Game::draw(GraphicsDevice gfx)
+void Game::draw(Painter painter)
 {
     // Nothing to do.
 }

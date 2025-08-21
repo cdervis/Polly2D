@@ -11,7 +11,7 @@ class ParticleSystems
 
     void update(float dt);
 
-    void draw(GraphicsDevice gfx);
+    void draw(Painter painter);
 
     ParticleSystem playerShot;
     ParticleSystem bulletImpact;

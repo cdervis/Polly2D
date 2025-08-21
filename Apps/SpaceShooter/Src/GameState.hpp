@@ -17,7 +17,7 @@ class GameState
 
     virtual void update(GameTime time) = 0;
 
-    virtual void draw(GraphicsDevice gfx) = 0;
+    virtual void draw(Painter painter) = 0;
 
     virtual bool drawsIntoLowResCanvas() const
     {

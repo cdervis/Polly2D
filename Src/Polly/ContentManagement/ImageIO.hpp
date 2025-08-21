@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "Polly/GraphicsDevice.hpp"
 #include "Polly/Image.hpp"
+#include "Polly/Painter.hpp"
 #include "Polly/UniquePtr.hpp"
 
 namespace Polly
@@ -18,15 +18,15 @@ class ImageIO final
 {
   public:
     // Loads an image from memory that represents general image data, such as PNG and JPEG.
-    UniquePtr<Image::Impl> loadImageFromMemory(GraphicsDevice::Impl& device, Span<u8> memory);
+    UniquePtr<Image::Impl> loadImageFromMemory(Painter::Impl& device, Span<u8> memory);
 
     /// Loads an image from a file on disk.
     /// This is just a shortcut for `load_image_from_memory()`.
     ///
     /// @throw Error When the image load failed.
-    UniquePtr<Image::Impl> loadImageFromDisk(GraphicsDevice::Impl& device, StringView filename);
+    UniquePtr<Image::Impl> loadImageFromDisk(Painter::Impl& device, StringView filename);
 
   private:
-    UniquePtr<Image::Impl> tryLoadMisc(GraphicsDevice::Impl& device, Span<u8> memory);
+    UniquePtr<Image::Impl> tryLoadMisc(Painter::Impl& device, Span<u8> memory);
 };
 } // namespace Polly

@@ -16,7 +16,7 @@
 namespace Polly
 {
 class Window;
-class GraphicsDevice;
+class Painter;
 class AudioDevice;
 class ImGui;
 struct GamePerformanceStats;
@@ -181,7 +181,7 @@ class Game
     virtual void update(GameTime time);
 
     /// Attaches a callback function to when the game's visuals should be drawn.
-    virtual void draw(GraphicsDevice gfx);
+    virtual void draw(Painter painter);
 
     /// Sets the function that should be called in order to perform ImGui drawing.
     ///

@@ -16,15 +16,15 @@ void ShadersDemo::tick(GameTime time)
     _wobbleShader.set("TotalTime", static_cast<float>(time.total()));
 }
 
-void ShadersDemo::draw(GraphicsDevice gfx)
+void ShadersDemo::draw(Painter painter)
 {
-    gfx.setSampler(linearRepeat);
+    painter.setSampler(linearRepeat);
 
     switch (_shaderIndex)
     {
-        case 0: drawWobble(gfx); break;
-        case 1: drawGrayscale(gfx); break;
-        case 2: drawEdgeDetection(gfx); break;
+        case 0: drawWobble(painter); break;
+        case 1: drawGrayscale(painter); break;
+        case 2: drawEdgeDetection(painter); break;
         default: break;
     }
 }
@@ -55,7 +55,7 @@ void ShadersDemo::doImGui(ImGui imgui)
     }
 }
 
-void ShadersDemo::drawWobble(GraphicsDevice gfx)
+void ShadersDemo::drawWobble(Painter painter)
 {
     const auto window = browser().window();
 
@@ -65,9 +65,9 @@ void ShadersDemo::drawWobble(GraphicsDevice gfx)
     _wobbleShader.set("WaveAmplitude", _waveAmplitude);
     _wobbleShader.set("Scale", _wobbleScale);
 
-    gfx.setSpriteShader(_wobbleShader);
+    painter.setSpriteShader(_wobbleShader);
 
-    gfx.drawSprite(
+    painter.drawSprite(
         Sprite{
             .image   = _logo,
             .dstRect = {(window.sizePx() - _logo.size()) / 2, _logo.size()},
@@ -75,31 +75,31 @@ void ShadersDemo::drawWobble(GraphicsDevice gfx)
         });
 }
 
-void ShadersDemo::drawGrayscale(GraphicsDevice gfx)
+void ShadersDemo::drawGrayscale(Painter painter)
 {
     const auto window = browser().window();
 
     _grayscaleShader.set("Saturation", _grayscaleSaturation);
 
-    gfx.setSpriteShader(_grayscaleShader);
+    painter.setSpriteShader(_grayscaleShader);
 
-    gfx.drawSprite(
+    painter.drawSprite(
         Sprite{
             .image   = _logo,
             .dstRect = Rectf((window.sizePx() - _logo.size()) / 2, _logo.size()),
         });
 }
 
-void ShadersDemo::drawEdgeDetection(GraphicsDevice gfx)
+void ShadersDemo::drawEdgeDetection(Painter painter)
 {
     auto window = browser().window();
 
     _edgeDetectionShader.set("ImageSize", _logo.size());
     _edgeDetectionShader.set("Offset", _edgeDetectionOffset);
 
-    gfx.setSpriteShader(_edgeDetectionShader);
+    painter.setSpriteShader(_edgeDetectionShader);
 
-    gfx.drawSprite(
+    painter.drawSprite(
         Sprite{
             .image   = _logo,
             .dstRect = Rectf((window.sizePx() - _logo.size()) / 2, _logo.size()),

@@ -11,12 +11,12 @@
 #include "Polly/Game/Timer.hpp"
 #include "Polly/Gamepad.hpp"
 #include "Polly/GamePerformanceStats.hpp"
-#include "Polly/GraphicsDevice.hpp"
 #include "Polly/ImGui.hpp"
 #include "Polly/Input/InputImpl.hpp"
 #include "Polly/Linalg.hpp"
 #include "Polly/List.hpp"
 #include "Polly/NotNull.hpp"
+#include "Polly/Painter.hpp"
 #include "Polly/Span.hpp"
 #include "Polly/UniquePtr.hpp"
 #include "Polly/Window.hpp"
@@ -68,9 +68,9 @@ class Game::Impl final : public Object
 
     bool isAudioDeviceInitialized() const;
 
-    GraphicsDevice& graphicsDevice();
+    Painter& painter();
 
-    const GraphicsDevice& graphicsDevice() const;
+    const Painter& painter() const;
 
     AudioDevice& audioDevice();
 
@@ -122,13 +122,13 @@ class Game::Impl final : public Object
 
     void createAudioDevice(bool useNullDevice);
 
-    void createGraphicsDevice();
+    void createPainter();
 
     void processEvents();
 
     void processSingleEvent(const SDL_Event& event, InputImpl& inputImpl);
 
-    void drawOnScreenLogMessages(GraphicsDevice::Impl& graphicsDeviceImpl);
+    void drawOnScreenLogMessages(Painter::Impl& painterImpl);
 
     Maybe<const Gamepad&> findGamepadBySDLJoystickId(SDL_JoystickID sdlJoystickId) const;
 
@@ -191,7 +191,7 @@ class Game::Impl final : public Object
     AudioDevice               _audioDevice;
     Window                    _window;
     ImGui                     _imgui;
-    GraphicsDevice            _graphicsDevice;
+    Painter            _painter;
     UniquePtr<ContentManager> _contentManager;
 
     Vec2          _previousMousePos;

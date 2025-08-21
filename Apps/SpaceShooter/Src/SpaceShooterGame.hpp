@@ -9,7 +9,7 @@ class SpaceShooterGame final : public Game
 
     void update(GameTime time) override;
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 
     template<typename T, typename... Args>
     void switchToState(Args&&... args)

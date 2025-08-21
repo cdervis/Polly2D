@@ -4,12 +4,12 @@
 
 #include <Polly/Graphics/Vulkan/VulkanUserShader.hpp>
 
-#include <Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 
 namespace Polly
 {
 VulkanUserShader::VulkanUserShader(
-    GraphicsDevice::Impl& parentDevice,
+    Painter::Impl& parentDevice,
     ShaderType            shaderType,
     Span<u8>              spirvByteCode,
     ParameterList         parameters,
@@ -17,7 +17,7 @@ VulkanUserShader::VulkanUserShader(
     u16                   cbufferSize)
     : Impl(parentDevice, shaderType, std::move(parameters), flags, cbufferSize)
 {
-    auto&      vulkanDevice = static_cast<VulkanGraphicsDevice&>(parentDevice);
+    auto&      vulkanDevice = static_cast<VulkanPainter&>(parentDevice);
     const auto vkDevice     = vulkanDevice.vkDevice();
 
     assume((spirvByteCode.size() % 4) == 0);
@@ -41,7 +41,7 @@ void VulkanUserShader::setDebuggingLabel(StringView name)
 {
     GraphicsResource::setDebuggingLabel(name);
 
-    auto&      vulkanDevice = static_cast<VulkanGraphicsDevice&>(parentDevice());
+    auto&      vulkanDevice = static_cast<VulkanPainter&>(parentDevice());
     const auto str           = String(name);
 
     vulkanDevice.setResourceDebugName(*this, str);

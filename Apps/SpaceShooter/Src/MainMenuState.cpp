@@ -12,6 +12,6 @@ void MainMenuState::update(GameTime time)
 {
 }
 
-void MainMenuState::draw(GraphicsDevice gfx)
+void MainMenuState::draw(Painter painter)
 {
 }

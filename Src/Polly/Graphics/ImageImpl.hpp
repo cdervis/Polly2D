@@ -15,7 +15,7 @@ class Image::Impl : public GraphicsResource
 {
   public:
     explicit Impl(
-        GraphicsDevice::Impl& parentDevice,
+        Painter::Impl& parentDevice,
         bool                  isCanvas,
         u32                   width,
         u32                   height,

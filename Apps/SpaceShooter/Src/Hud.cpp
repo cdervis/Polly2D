@@ -14,16 +14,16 @@ void Hud::update(GameTime time)
 {
 }
 
-void Hud::draw(GraphicsDevice gfx)
+void Hud::draw(Painter painter)
 {
-    gfx.drawSprite(
+    painter.drawSprite(
         Sprite{
             .image    = _spritesheet,
             .dstRect = Rectf(Vec2(), hudSrcRect.size()),
             .srcRect = hudSrcRect,
         });
 
-    gfx.drawString(toString(_scoreRef), _font, 12.0f, {43, 5});
+    painter.drawString(toString(_scoreRef), _font, 12.0f, {43, 5});
 
     // Draw hearts based on the player's health.
     {
@@ -32,7 +32,7 @@ void Hud::draw(GraphicsDevice gfx)
 
         for (auto i = 0u; i < _healthRef; ++i)
         {
-            gfx.drawSprite(
+            painter.drawSprite(
                 Sprite{
                     .image    = _spritesheet,
                     .dstRect = Rectf(x, 8.0f, heartSrcRect.size()),

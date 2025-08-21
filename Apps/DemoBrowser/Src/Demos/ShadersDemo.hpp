@@ -9,16 +9,16 @@ class ShadersDemo final : public Demo
 
     void tick(GameTime time) override;
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 
     void doImGui(ImGui imgui) override;
 
   private:
-    void drawWobble(GraphicsDevice gfx);
+    void drawWobble(Painter painter);
 
-    void drawGrayscale(GraphicsDevice gfx);
+    void drawGrayscale(Painter painter);
 
-    void drawEdgeDetection(GraphicsDevice gfx);
+    void drawEdgeDetection(Painter painter);
 
     Image _logo;
 

@@ -53,8 +53,8 @@ void ParticleSystems::update(float dt)
     bulletImpact.update(dt);
 }
 
-void ParticleSystems::draw(GraphicsDevice gfx)
+void ParticleSystems::draw(Painter painter)
 {
-    gfx.drawParticles(playerShot);
-    gfx.drawParticles(bulletImpact);
+    painter.drawParticles(playerShot);
+    painter.drawParticles(bulletImpact);
 }

@@ -7,8 +7,8 @@
 #include "Polly/ByteBlob.hpp"
 #include "Polly/Defer.hpp"
 #include "Polly/FileSystem.hpp"
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
 #include "Polly/Graphics/ImageImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Image.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/UniquePtr.hpp"
@@ -36,7 +36,7 @@
 
 namespace Polly
 {
-UniquePtr<Image::Impl> ImageIO::loadImageFromMemory(GraphicsDevice::Impl& device, Span<u8> memory)
+UniquePtr<Image::Impl> ImageIO::loadImageFromMemory(Painter::Impl& device, Span<u8> memory)
 {
     // Try loading misc image first
     if (auto image = tryLoadMisc(device, memory))
@@ -47,7 +47,7 @@ UniquePtr<Image::Impl> ImageIO::loadImageFromMemory(GraphicsDevice::Impl& device
     throw Error("Failed to load the image (unknown image type).");
 }
 
-UniquePtr<Image::Impl> ImageIO::loadImageFromDisk(GraphicsDevice::Impl& device, StringView filename)
+UniquePtr<Image::Impl> ImageIO::loadImageFromDisk(Painter::Impl& device, StringView filename)
 {
     if (const auto data = FileSystem::loadFileFromDisk(filename))
     {
@@ -59,7 +59,7 @@ UniquePtr<Image::Impl> ImageIO::loadImageFromDisk(GraphicsDevice::Impl& device, 
     }
 }
 
-UniquePtr<Image::Impl> ImageIO::tryLoadMisc(GraphicsDevice::Impl& device, Span<u8> memory)
+UniquePtr<Image::Impl> ImageIO::tryLoadMisc(Painter::Impl& device, Span<u8> memory)
 {
     const auto dataSize = static_cast<int>(memory.size());
     const auto isHDR    = stbi_is_hdr_from_memory(memory.data(), dataSize) != 0;

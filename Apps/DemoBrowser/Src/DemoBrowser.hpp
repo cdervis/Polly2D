@@ -15,7 +15,7 @@ class DemoBrowser final : public Game
 
     void update(GameTime time) override;
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 
     void onKeyPressed(const KeyEvent& event) override;
     void onKeyReleased(const KeyEvent& event) override;

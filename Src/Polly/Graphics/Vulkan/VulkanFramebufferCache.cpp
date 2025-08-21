@@ -1,11 +1,11 @@
 #include <Polly/Graphics/Vulkan/VulkanFramebufferCache.hpp>
 
-#include <Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 #include <Polly/Logging.hpp>
 
 namespace Polly
 {
-VulkanFramebufferCache::VulkanFramebufferCache(VulkanGraphicsDevice& parentDevice)
+VulkanFramebufferCache::VulkanFramebufferCache(VulkanPainter& parentDevice)
     : _parentDevice(parentDevice)
 {
 }

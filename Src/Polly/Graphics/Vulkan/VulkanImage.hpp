@@ -10,14 +10,14 @@ class VulkanImage final : public Image::Impl
 {
   public:
     VulkanImage(
-        GraphicsDevice::Impl& parentDevice,
+        Painter::Impl& parentDevice,
         u32                   width,
         u32                   height,
         ImageFormat           format,
         const void*           data);
 
     // Canvas overload
-    explicit VulkanImage(GraphicsDevice::Impl& parentDevice, u32 width, u32 height, ImageFormat format);
+    explicit VulkanImage(Painter::Impl& parentDevice, u32 width, u32 height, ImageFormat format);
 
     deleteCopyAndMove(VulkanImage);
 

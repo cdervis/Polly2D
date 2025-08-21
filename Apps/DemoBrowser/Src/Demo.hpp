@@ -15,7 +15,7 @@ class Demo
 
     virtual void tick(GameTime time);
 
-    virtual void draw(GraphicsDevice gfx);
+    virtual void draw(Painter painter);
 
     virtual void doImGui(ImGui imgui);
 

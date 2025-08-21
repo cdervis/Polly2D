@@ -11,7 +11,7 @@ class InputDemo final : public Demo
 
     void tick(GameTime time) override;
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 
     void doImGui(ImGui imgui) override;
 

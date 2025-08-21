@@ -11,7 +11,7 @@ class Hud
 
     void update(GameTime time);
 
-    void draw(GraphicsDevice gfx);
+    void draw(Painter painter);
 
   private:
     Image _spritesheet;

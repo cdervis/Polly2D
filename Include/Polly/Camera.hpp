@@ -21,7 +21,7 @@ namespace Polly
 ///
 /// By taking some parameters, this camera type provides a matrix that performs
 /// such a desired transformation.
-/// Such a matrix is then used in conjunction with GraphicsDevice::setTransformation()
+/// Such a matrix is then used in conjunction with Painter::setTransformation()
 /// prior to drawing the scene.
 struct Camera
 {
@@ -30,7 +30,7 @@ struct Camera
     /// @param viewSize The size of the viewport for which to generate the projection matrix.
     ///
     /// @return The matrix that represents the camera's transformation. Typically used as input for
-    /// GraphicsDevice::setTransformation().
+    /// Painter::setTransformation().
     Matrix transformation(Vec2 viewSize) const;
 
     /// The zoom factor of the camera, where a lower value zooms the camera in

@@ -14,7 +14,7 @@ class GameplayState final : public GameState
 
     void update(GameTime time) override;
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 
   private:
     struct Enemy
@@ -43,9 +43,9 @@ class GameplayState final : public GameState
 
     void spawnEnemies(StringView enemyRows);
 
-    void drawPlayer(GraphicsDevice gfx);
+    void drawPlayer(Painter painter);
 
-    void drawEnemies(GraphicsDevice gfx);
+    void drawEnemies(Painter painter);
 
     Maybe<Enemy&> checkCollisionWithEnemy(const Rectf& rect);
 

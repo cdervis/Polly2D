@@ -6,7 +6,7 @@
 
 #include "Polly/ContentManagement/Asset.hpp"
 #include "Polly/Core/Object.hpp"
-#include "Polly/GraphicsDevice.hpp"
+#include "Polly/Painter.hpp"
 #include "Polly/String.hpp"
 
 namespace Polly
@@ -21,14 +21,14 @@ class GraphicsResource : public Object,
                          public Asset
 {
   protected:
-    explicit GraphicsResource(GraphicsDevice::Impl& parentDevice, GraphicsResourceType type);
+    explicit GraphicsResource(Painter::Impl& parentDevice, GraphicsResourceType type);
 
   public:
     deleteCopyAndMove(GraphicsResource);
 
     ~GraphicsResource() noexcept override;
 
-    GraphicsDevice::Impl& parentDevice();
+    Painter::Impl& parentDevice();
 
     GraphicsResourceType type() const;
 
@@ -40,7 +40,7 @@ class GraphicsResource : public Object,
     String displayString() const;
 
   private:
-    GraphicsDevice::Impl& _parentDevice;
+    Painter::Impl& _parentDevice;
     GraphicsResourceType  _resourceType;
     String                _label;
 };

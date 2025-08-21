@@ -11,8 +11,8 @@
 #include "Polly/Font.hpp"
 #include "Polly/Game/GameImpl.hpp"
 #include "Polly/Graphics/FontImpl.hpp"
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
 #include "Polly/Graphics/ImageImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Graphics/ShaderImpl.hpp"
 #include "Polly/Image.hpp"
 #include "Polly/Logging.hpp"
@@ -63,8 +63,7 @@ static bool isAssetReferenceEqual(
         case ContentManager::AssetKind::Shader: return &asset == loadedAsset.u.shader;
         case ContentManager::AssetKind::Font: return &asset == loadedAsset.u.font;
         case ContentManager::AssetKind::SpineAtlas: return &asset == loadedAsset.u.spineAtlas;
-        case ContentManager::AssetKind::SpineSkeletonData:
-            return &asset == loadedAsset.u.spineSkeletonData;
+        case ContentManager::AssetKind::SpineSkeletonData: return &asset == loadedAsset.u.spineSkeletonData;
     }
 
     return false;
@@ -111,9 +110,7 @@ ContentManager::~ContentManager() noexcept
             case AssetKind::Shader: asset.u.shader->detachFromContentManager(); break;
             case AssetKind::Font: asset.u.font->detachFromContentManager(); break;
             case AssetKind::SpineAtlas: asset.u.spineAtlas->detachFromContentManager(); break;
-            case AssetKind::SpineSkeletonData:
-                asset.u.spineSkeletonData->detachFromContentManager();
-                break;
+            case AssetKind::SpineSkeletonData: asset.u.spineSkeletonData->detachFromContentManager(); break;
         }
     }
 }
@@ -129,9 +126,9 @@ Image ContentManager::loadImage(StringView name)
             const auto [type, unpacked_data] = _archive.unpackAsset(assetName);
             verifyAssetType(assetName, type, 'i', "an image");
 
-            auto& graphicsDeviceImpl = *Game::Impl::instance().graphicsDevice().impl();
+            auto& painterImpl = *Game::Impl::instance().painter().impl();
 
-            auto img = _imageIO.loadImageFromMemory(graphicsDeviceImpl, unpacked_data);
+            auto img = _imageIO.loadImageFromMemory(painterImpl, unpacked_data);
             img->setAssetName(assetName);
             img->setDebuggingLabel(assetName);
 
@@ -152,11 +149,11 @@ Shader ContentManager::loadShader(StringView name)
 
             verifyAssetType(assetName, type, 's', "a shader");
 
-            auto& graphicsDeviceImpl = *Game::Impl::instance().graphicsDevice().impl();
+            auto& painterImpl = *Game::Impl::instance().painter().impl();
 
             const auto sourceCode = reader.readEncryptedString();
 
-            auto shaderImpl = graphicsDeviceImpl.createUserShader(sourceCode, assetName);
+            auto shaderImpl = painterImpl.createUserShader(sourceCode, assetName);
             shaderImpl->setAssetName(assetName);
 
             auto shader = Shader(shaderImpl.release());
@@ -250,10 +247,10 @@ SpineAtlas ContentManager::loadSpineAtlas(StringView name)
 
 SpineSkeletonData ContentManager::loadSpineSkeletonData(StringView name, SpineAtlas atlas, float scale)
 {
-    const auto atlasName        = atlas.assetName();
-    auto       scaleStr         = String();
+    const auto atlasName       = atlas.assetName();
+    auto       scaleStr        = String();
     const auto isUnnormalScale = scale != 1.0f;
-    auto       keyLength        = name.size() + atlasName.size() + 1;
+    auto       keyLength       = name.size() + atlasName.size() + 1;
 
     if (isUnnormalScale)
     {
@@ -277,8 +274,7 @@ SpineSkeletonData ContentManager::loadSpineSkeletonData(StringView name, SpineAt
     return lazyLoad<SpineSkeletonData, SpineSkeletonData::Impl, AssetKind::SpineSkeletonData>(
         name,
         key,
-        [](ReferenceToLoadedAsset& asset) -> SpineSkeletonData::Impl*&
-        { return asset.u.spineSkeletonData; },
+        [](ReferenceToLoadedAsset& asset) -> SpineSkeletonData::Impl*& { return asset.u.spineSkeletonData; },
         [this, &atlas, scale, &key](StringView assetName)
         {
             const auto [type, unpacked_data] = _archive.unpackAsset(assetName);
@@ -299,4 +295,4 @@ SpineSkeletonData ContentManager::loadSpineSkeletonData(StringView name, SpineAt
             return SpineSkeletonData(impl.release());
         });
 }
-} // namespace pl
+} // namespace Polly

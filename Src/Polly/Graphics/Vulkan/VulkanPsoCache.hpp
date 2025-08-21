@@ -12,7 +12,7 @@ enum class VertexElement;
 
 namespace Polly
 {
-class VulkanGraphicsDevice;
+class VulkanPainter;
 class GraphicsResource;
 
 class VulkanPsoCache final
@@ -31,7 +31,7 @@ class VulkanPsoCache final
         defineDefaultEqualityOperations(Key);
     };
 
-    explicit VulkanPsoCache(VulkanGraphicsDevice& parentDevice);
+    explicit VulkanPsoCache(VulkanPainter& parentDevice);
 
     deleteCopyAndMove(VulkanPsoCache);
 
@@ -65,7 +65,7 @@ class VulkanPsoCache final
         VkPipeline _vkPipeline = VK_NULL_HANDLE;
     };
 
-    VulkanGraphicsDevice&         _parentDevice;
+    VulkanPainter&         _parentDevice;
     SortedMap<Key, PipelineValue> _cache;
 };
 } // namespace Polly

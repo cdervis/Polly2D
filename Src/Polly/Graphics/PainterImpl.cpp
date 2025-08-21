@@ -2,7 +2,7 @@
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "Polly/Graphics/GraphicsDeviceImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 
 #include "Casting.hpp"
 #include "Polly/Array.hpp"
@@ -67,7 +67,7 @@ static constexpr auto sSpineBlendStateTable = Array{
     },
 };
 
-GraphicsDevice::Impl::Impl(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
+Painter::Impl::Impl(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
     : _windowImpl(windowImpl)
     , _performanceStats(performanceStats)
     , _currentSampler(linearClamp)
@@ -143,7 +143,7 @@ static ShaderParameterType convertShdTypeToParamType(const ShaderCompiler::Type*
     throw Error("Unknown shader parameter type specified.");
 }
 
-UniquePtr<Shader::Impl> GraphicsDevice::Impl::createUserShader(StringView sourceCode, StringView filenameHint)
+UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, StringView filenameHint)
 {
     auto shader = UniquePtr<Shader::Impl>();
 
@@ -216,14 +216,14 @@ UniquePtr<Shader::Impl> GraphicsDevice::Impl::createUserShader(StringView source
     return shader;
 }
 
-void GraphicsDevice::Impl::notifyResourceCreated(GraphicsResource& resource)
+void Painter::Impl::notifyResourceCreated(GraphicsResource& resource)
 {
     assume(not containsWhere(_resources, [&resource](const auto& e) { return e == &resource; }));
 
     _resources.add(&resource);
 }
 
-void GraphicsDevice::Impl::notifyResourceDestroyed(GraphicsResource& resource)
+void Painter::Impl::notifyResourceDestroyed(GraphicsResource& resource)
 {
     const auto idx = indexOfWhere(_resources, [&resource](const auto& e) { return e == &resource; });
 
@@ -232,27 +232,27 @@ void GraphicsDevice::Impl::notifyResourceDestroyed(GraphicsResource& resource)
     _resources.removeAt(*idx);
 }
 
-void GraphicsDevice::Impl::notifyUserShaderDestroyed(Shader::Impl& resource)
+void Painter::Impl::notifyUserShaderDestroyed(Shader::Impl& resource)
 {
 }
 
-GraphicsDevice::Impl::~Impl() noexcept
+Painter::Impl::~Impl() noexcept
 {
-    logVerbose("Destroying GraphicsDevice::Impl");
+    logVerbose("Destroying PainterImpl");
     ShaderCompiler::Type::destroyPrimitiveTypes();
 }
 
-const List<GraphicsResource*>& GraphicsDevice::Impl::allResources() const
+const List<GraphicsResource*>& Painter::Impl::allResources() const
 {
     return _resources;
 }
 
-Image GraphicsDevice::Impl::currentCanvas() const
+Image Painter::Impl::currentCanvas() const
 {
     return _currentCanvas;
 }
 
-void GraphicsDevice::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool force)
+void Painter::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool force)
 {
     if (_currentCanvas != canvas or force)
     {
@@ -288,12 +288,12 @@ void GraphicsDevice::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool
     }
 }
 
-const Matrix& GraphicsDevice::Impl::transformation() const
+const Matrix& Painter::Impl::transformation() const
 {
     return _currentTransformation;
 }
 
-void GraphicsDevice::Impl::setTransformation(const Matrix& transformation)
+void Painter::Impl::setTransformation(const Matrix& transformation)
 {
     if (_currentTransformation != transformation)
     {
@@ -304,17 +304,17 @@ void GraphicsDevice::Impl::setTransformation(const Matrix& transformation)
     }
 }
 
-Shader& GraphicsDevice::Impl::currentShader(BatchMode mode)
+Shader& Painter::Impl::currentShader(BatchMode mode)
 {
     return _currentShaders[static_cast<int>(mode)];
 }
 
-const Shader& GraphicsDevice::Impl::currentShader(BatchMode mode) const
+const Shader& Painter::Impl::currentShader(BatchMode mode) const
 {
     return _currentShaders[static_cast<int>(mode)];
 }
 
-void GraphicsDevice::Impl::setShader(BatchMode mode, const Shader& shader)
+void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
 {
     auto& shaderField = currentShader(mode);
 
@@ -338,12 +338,12 @@ void GraphicsDevice::Impl::setShader(BatchMode mode, const Shader& shader)
     }
 }
 
-const Sampler& GraphicsDevice::Impl::currentSampler() const
+const Sampler& Painter::Impl::currentSampler() const
 {
     return _currentSampler;
 }
 
-void GraphicsDevice::Impl::setSampler(const Sampler& sampler)
+void Painter::Impl::setSampler(const Sampler& sampler)
 {
     if (_currentSampler != sampler)
     {
@@ -353,12 +353,12 @@ void GraphicsDevice::Impl::setSampler(const Sampler& sampler)
     }
 }
 
-const BlendState& GraphicsDevice::Impl::currentBlendState() const
+const BlendState& Painter::Impl::currentBlendState() const
 {
     return _currentBlendState;
 }
 
-void GraphicsDevice::Impl::setBlendState(const BlendState& blendState)
+void Painter::Impl::setBlendState(const BlendState& blendState)
 {
     if (_currentBlendState != blendState)
     {
@@ -368,7 +368,7 @@ void GraphicsDevice::Impl::setBlendState(const BlendState& blendState)
     }
 }
 
-void GraphicsDevice::Impl::pushStringToQueue(
+void Painter::Impl::pushStringToQueue(
     StringView            text,
     Font&                 font,
     float                 fontSize,
@@ -381,14 +381,14 @@ void GraphicsDevice::Impl::pushStringToQueue(
     doInternalPushTextToQueue(tmpGlyphs, tmpDecorationRects, position, color);
 }
 
-void GraphicsDevice::Impl::pushTextToQueue(const Text& text, Vec2 position, const Color& color)
+void Painter::Impl::pushTextToQueue(const Text& text, Vec2 position, const Color& color)
 {
     assume(text);
     const auto& textImpl = *text.impl();
     doInternalPushTextToQueue(textImpl.glyphs(), textImpl.decorationRects(), position, color);
 }
 
-void GraphicsDevice::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
+void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
 {
     const auto  previousBlendState = _currentBlendState;
     const auto& particleSystemImpl = *particleSystem.impl();
@@ -430,7 +430,7 @@ void GraphicsDevice::Impl::pushParticlesToQueue(const ParticleSystem& particleSy
     }
 }
 
-void GraphicsDevice::Impl::fillRectangleUsingSprite(
+void Painter::Impl::fillRectangleUsingSprite(
     const Rectf& rectangle,
     const Color& color,
     Radians      rotation,
@@ -449,7 +449,7 @@ void GraphicsDevice::Impl::fillRectangleUsingSprite(
         SpriteShaderKind::Default);
 }
 
-void GraphicsDevice::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
+void Painter::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
 {
     const auto firstPoint    = vertices[0];
     auto       previousPoint = firstPoint;
@@ -465,7 +465,7 @@ void GraphicsDevice::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, 
     drawLine(previousPoint, firstPoint, color, strokeWidth);
 }
 
-void GraphicsDevice::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
+void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
 {
     auto       vertices         = List<MeshVertex>();
     auto&      skeletonImpl    = *skeleton.impl();
@@ -501,7 +501,7 @@ void GraphicsDevice::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
     setBlendState(prevBlendState);
 }
 
-void GraphicsDevice::Impl::resetCurrentStates()
+void Painter::Impl::resetCurrentStates()
 {
     _currentCanvas          = {};
     _currentTransformation  = {};
@@ -515,17 +515,17 @@ void GraphicsDevice::Impl::resetCurrentStates()
     }
 }
 
-const Rectf& GraphicsDevice::Impl::currentViewport() const
+const Rectf& Painter::Impl::currentViewport() const
 {
     return _viewport;
 }
 
-const Matrix& GraphicsDevice::Impl::combinedTransformation() const
+const Matrix& Painter::Impl::combinedTransformation() const
 {
     return _combinedTransformation;
 }
 
-Matrix GraphicsDevice::Impl::computeViewportTransformation(const Rectf& viewport)
+Matrix Painter::Impl::computeViewportTransformation(const Rectf& viewport)
 {
     const auto xScale = viewport.width > 0 ? 2.0f / viewport.width : 0.0f;
     const auto yScale = viewport.height > 0 ? 2.0f / viewport.height : 0.0f;
@@ -544,12 +544,12 @@ Matrix GraphicsDevice::Impl::computeViewportTransformation(const Rectf& viewport
 #endif
 }
 
-void GraphicsDevice::Impl::computeCombinedTransformation()
+void Painter::Impl::computeCombinedTransformation()
 {
     _combinedTransformation = _currentTransformation * _viewportTransformation;
 }
 
-void GraphicsDevice::Impl::doResourceLeakCheck()
+void Painter::Impl::doResourceLeakCheck()
 {
     if (_resources.isEmpty())
     {
@@ -567,7 +567,7 @@ void GraphicsDevice::Impl::doResourceLeakCheck()
     }
 }
 
-void GraphicsDevice::Impl::doInternalPushTextToQueue(
+void Painter::Impl::doInternalPushTextToQueue(
     Span<PreshapedGlyph>     glyphs,
     Span<TextDecorationRect> decorationRects,
     const Vec2&              offset,
@@ -591,22 +591,22 @@ void GraphicsDevice::Impl::doInternalPushTextToQueue(
     }
 }
 
-Vec2 GraphicsDevice::Impl::currentCanvasSize() const
+Vec2 Painter::Impl::currentCanvasSize() const
 {
     return _viewport.size();
 }
 
-GraphicsCapabilities GraphicsDevice::Impl::capabilities() const
+PainterCapabilities Painter::Impl::capabilities() const
 {
     return _capabilities;
 }
 
-Window::Impl& GraphicsDevice::Impl::window() const
+Window::Impl& Painter::Impl::window() const
 {
     return _windowImpl;
 }
 
-void GraphicsDevice::Impl::postInit(const GraphicsCapabilities& capabilities)
+void Painter::Impl::postInit(const PainterCapabilities& capabilities)
 {
     _capabilities = capabilities;
 
@@ -625,9 +625,9 @@ void GraphicsDevice::Impl::postInit(const GraphicsCapabilities& capabilities)
     }
 }
 
-void GraphicsDevice::Impl::preBackendDtor()
+void Painter::Impl::preBackendDtor()
 {
-    logVerbose("GraphicsDevice::Impl::PreBackendDtor()");
+    logVerbose("PainterImpl::preBackendDtor()");
 
     resetCurrentStates();
 

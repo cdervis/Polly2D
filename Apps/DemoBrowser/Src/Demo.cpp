@@ -11,7 +11,7 @@ void Demo::tick(GameTime time)
     // A demo does nothing by default.
 }
 
-void Demo::draw(GraphicsDevice gfx)
+void Demo::draw(Painter painter)
 {
     // A demo draws nothing by default.
 }

@@ -14,7 +14,7 @@
 #endif
 
 #if polly_have_gfx_vulkan
-#include "Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp"
+#include "Polly/Graphics/Vulkan/VulkanPainter.hpp"
 #endif
 
 #define STB_TRUETYPE_IMPLEMENTATION
@@ -250,7 +250,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(
 
 void Font::Impl::appendNewPage()
 {
-    const auto caps = Game::Impl::instance().graphicsDevice().capabilities();
+    const auto caps = Game::Impl::instance().painter().capabilities();
 
     const auto width  = min(2048u, caps.maxImageExtent);
     const auto height = width;
@@ -296,8 +296,8 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
         mtl_texture
             ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), row_pitch);
 #elif polly_have_gfx_vulkan
-        auto& deviceImpl   = *Game::Impl::instance().graphicsDevice().impl();
-        auto& vulkanDevice = static_cast<VulkanGraphicsDevice&>(deviceImpl);
+        auto& deviceImpl   = *Game::Impl::instance().painter().impl();
+        auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);
         auto  vmaAllocator = vulkanDevice.vmaAllocator();
         auto& vulkanImage  = static_cast<VulkanImage&>(*page.atlas.impl());
         auto  vkImage      = vulkanImage.vkImage();

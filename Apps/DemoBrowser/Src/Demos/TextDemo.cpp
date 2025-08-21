@@ -9,17 +9,17 @@ TextDemo::TextDemo(DemoBrowser* browser)
     String::rawConcat(m_inputText.data(), "Hello World!");
 }
 
-void TextDemo::draw(GraphicsDevice gfx)
+void TextDemo::draw(Painter painter)
 {
     const auto pixelRatio = browser().window().pixelRatio();
 
     const auto font = Font::builtin();
 
     // Disable any kind of filtering when drawing text.
-    gfx.setSampler(pointClamp);
+    painter.setSampler(pointClamp);
 
     // Use DrawString for simple fire-and-forget text drawing.
-    gfx.drawString("Enter some text in the sidebar! >>>", font, static_cast<int>(48 * pixelRatio), {50, 50});
+    painter.drawString("Enter some text in the sidebar! >>>", font, static_cast<int>(48 * pixelRatio), {50, 50});
 
     auto decoration = Maybe<TextDecoration>();
     switch (m_decoration)
@@ -42,7 +42,7 @@ void TextDemo::draw(GraphicsDevice gfx)
     const auto text    = Text(m_inputText.data(), font, m_fontSize * pixelRatio, decoration);
     const auto textPos = Vec2(300, 300);
 
-    gfx.drawText(text, textPos, m_textColor);
+    painter.drawText(text, textPos, m_textColor);
 
     const auto mousePos = currentMousePosition() * pixelRatio;
 
@@ -52,7 +52,7 @@ void TextDemo::draw(GraphicsDevice gfx)
 
         if (glyphRect.contains(mousePos))
         {
-            gfx.fillRectangle(glyphRect, red.withAlpha(0.5f));
+            painter.fillRectangle(glyphRect, red.withAlpha(0.5f));
         }
     }
 }

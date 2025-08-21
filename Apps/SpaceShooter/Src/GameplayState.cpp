@@ -79,13 +79,13 @@ void GameplayState::update(GameTime time)
     updateEnemies(time);
 }
 
-void GameplayState::draw(GraphicsDevice gfx)
+void GameplayState::draw(Painter painter)
 {
-    _background_stars.draw(gfx);
-    drawPlayer(gfx);
-    drawEnemies(gfx);
-    _particle_systems.draw(gfx);
-    _hud.draw(gfx);
+    _background_stars.draw(painter);
+    drawPlayer(painter);
+    drawEnemies(painter);
+    _particle_systems.draw(painter);
+    _hud.draw(painter);
 }
 
 Rectf GameplayState::Enemy::rect() const
@@ -283,9 +283,9 @@ void GameplayState::spawnEnemies(StringView enemyRows)
     _level_enemy_count = _enemies.size();
 }
 
-void GameplayState::drawPlayer(GraphicsDevice gfx)
+void GameplayState::drawPlayer(Painter painter)
 {
-    gfx.drawSprite(
+    painter.drawSprite(
         Sprite{
             .image   = _spritesheet,
             .dstRect = _player.rect(),
@@ -297,7 +297,7 @@ void GameplayState::drawPlayer(GraphicsDevice gfx)
     {
         const auto bulletSrcRect = *randomItem(sPlayerBulletSrcRects);
 
-        gfx.drawSprite(
+        painter.drawSprite(
             Sprite{
                 .image   = _spritesheet,
                 .dstRect = Rectf(*_player.bulletPos, Vec2(8, 8)),
@@ -307,13 +307,13 @@ void GameplayState::drawPlayer(GraphicsDevice gfx)
     }
 }
 
-void GameplayState::drawEnemies(GraphicsDevice gfx)
+void GameplayState::drawEnemies(Painter painter)
 {
     for (const auto& e : _enemies)
     {
         const auto srcRect = sEnemyRects[e.srcRectIdx][_enemy_anim_idx];
 
-        gfx.drawSprite(
+        painter.drawSprite(
             Sprite{
                 .image   = _spritesheet,
                 .dstRect = {e.pos, srcRect.size()},
@@ -324,7 +324,7 @@ void GameplayState::drawEnemies(GraphicsDevice gfx)
 
     for (const auto& bullet : _enemy_bullets)
     {
-        gfx.drawSprite(
+        painter.drawSprite(
             Sprite{
                 .image   = _spritesheet,
                 .dstRect = Rectf(bullet, sEnemyBulletRect.size()),

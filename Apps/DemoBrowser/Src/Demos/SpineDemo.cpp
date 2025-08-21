@@ -94,40 +94,40 @@ void SpineDemo::tick(GameTime time)
     }
 }
 
-void SpineDemo::draw(GraphicsDevice gfx)
+void SpineDemo::draw(Painter painter)
 {
     const auto window        = browser().window();
-    const auto pixel_ratio   = gfx.pixelRatio();
-    const auto cam_transform = _camera.transformation(gfx.viewSize());
+    const auto pixel_ratio   = painter.pixelRatio();
+    const auto cam_transform = _camera.transformation(painter.viewSize());
 
     // Apply the camera's transformation to the scene.
-    gfx.setTransformation(cam_transform);
+    painter.setTransformation(cam_transform);
 
     // Draw the entire Spine skeleton instance.
-    gfx.drawSpineSkeleton(_skeleton);
+    painter.drawSpineSkeleton(_skeleton);
 
     // Draw some extra information about the skeleton.
     if (_should_draw_extras)
     {
         for (const auto& bone : _skeleton.bones())
         {
-            gfx.drawEllipse(bone.worldPosition(), Vec2(12, 12), lime.withAlpha(0.5f), 3.0f);
+            painter.drawEllipse(bone.worldPosition(), Vec2(12, 12), lime.withAlpha(0.5f), 3.0f);
         }
 
-        gfx.drawRectangle(_skeleton.bounds(), red, 5.0f);
+        painter.drawRectangle(_skeleton.bounds(), red, 5.0f);
     }
 
     // Reset the drawing transformation in order to draw neutral text.
-    gfx.setTransformation({});
+    painter.setTransformation({});
 
-    gfx.drawStringWithBasicShadow(
+    painter.drawStringWithBasicShadow(
         "This demo shows how to load and play Spine sprites.\nVisit https://esotericsoftware.com "
         "for more information.",
         Font::builtin(),
         16 * pixel_ratio,
         Vec2(50, 50));
 
-    gfx.drawStringWithBasicShadow(
+    painter.drawStringWithBasicShadow(
         formatString("{}", browser().performanceStats()),
         Font::builtin(),
         32,

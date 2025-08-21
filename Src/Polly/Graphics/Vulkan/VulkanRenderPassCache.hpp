@@ -8,7 +8,7 @@
 
 namespace Polly
 {
-class VulkanGraphicsDevice;
+class VulkanPainter;
 class GraphicsResource;
 
 class VulkanRenderPassCache final
@@ -24,7 +24,7 @@ class VulkanRenderPassCache final
         defineDefaultEqualityOperations(Key);
     };
 
-    explicit VulkanRenderPassCache(VulkanGraphicsDevice& parentDevice);
+    explicit VulkanRenderPassCache(VulkanPainter& parentDevice);
 
     deleteCopyAndMove(VulkanRenderPassCache);
 
@@ -43,7 +43,7 @@ class VulkanRenderPassCache final
         }
     };
 
-    VulkanGraphicsDevice&        _parentDevice;
+    VulkanPainter&        _parentDevice;
     SortedMap<Key, VkRenderPass> _cache;
 };
 } // namespace Polly

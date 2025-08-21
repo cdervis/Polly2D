@@ -1,14 +1,14 @@
 #include <Polly/Graphics/Vulkan/VulkanImage.hpp>
 
 #include <Polly/Defer.hpp>
-#include <Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 #include <Polly/Logging.hpp>
 #include <Polly/Util.hpp>
 
 namespace Polly
 {
 VulkanImage::VulkanImage(
-    GraphicsDevice::Impl& parentDevice,
+    Painter::Impl& parentDevice,
     u32                   width,
     uint32_t              height,
     ImageFormat           format,
@@ -19,7 +19,7 @@ VulkanImage::VulkanImage(
 }
 
 VulkanImage::VulkanImage(
-    GraphicsDevice::Impl& parentDevice,
+    Painter::Impl& parentDevice,
     uint32_t              width,
     uint32_t              height,
     ImageFormat           format)
@@ -52,7 +52,7 @@ void VulkanImage::setDebuggingLabel(StringView value)
 {
     GraphicsResource::setDebuggingLabel(value);
 
-    auto&      vulkanDevice = static_cast<VulkanGraphicsDevice&>(parentDevice());
+    auto&      vulkanDevice = static_cast<VulkanPainter&>(parentDevice());
     const auto str           = String(value);
 
     vulkanDevice.setResourceDebugName(*this, str);
@@ -64,9 +64,9 @@ void VulkanImage::setDebuggingLabel(StringView value)
 
 void VulkanImage::createVkImage(const void* data)
 {
-    auto&      vulkanGraphicsDevice = static_cast<VulkanGraphicsDevice&>(parentDevice());
-    const auto vkDevice              = vulkanGraphicsDevice.vkDevice();
-    const auto vmaAllocator          = vulkanGraphicsDevice.vmaAllocator();
+    auto&      vulkanPainter = static_cast<VulkanPainter&>(parentDevice());
+    const auto vkDevice              = vulkanPainter.vkDevice();
+    const auto vmaAllocator          = vulkanPainter.vmaAllocator();
     _vk_format                        = convert(format());
 
     // Create the VkImage first.
@@ -162,7 +162,7 @@ void VulkanImage::createVkImage(const void* data)
 
         if (data)
         {
-            vulkanGraphicsDevice.submitImmediateGraphicsCommands(
+            vulkanPainter.submitImmediateGraphicsCommands(
                 [&](VkCommandBuffer cmd)
                 {
                     auto range       = VkImageSubresourceRange();

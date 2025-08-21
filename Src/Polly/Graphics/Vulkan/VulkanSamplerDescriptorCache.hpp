@@ -7,7 +7,7 @@
 
 namespace Polly
 {
-class VulkanGraphicsDevice;
+class VulkanPainter;
 
 // For VulkanSpriteBatch only (set 1)
 class VulkanSamplerDescriptorCache final
@@ -19,7 +19,7 @@ class VulkanSamplerDescriptorCache final
 
     ~VulkanSamplerDescriptorCache() noexcept = default;
 
-    void init(VulkanGraphicsDevice* parentDevice, VkDescriptorSetLayout descriptorSetLayout);
+    void init(VulkanPainter* parentDevice, VkDescriptorSetLayout descriptorSetLayout);
 
     VkDescriptorSet get(VkSampler key);
 
@@ -30,7 +30,7 @@ class VulkanSamplerDescriptorCache final
   private:
     void createDescriptorPool();
 
-    VulkanGraphicsDevice*                 _parentDevice             = nullptr;
+    VulkanPainter*                 _parentDevice             = nullptr;
     VkDescriptorPool                      _vk_descriptor_pool       = VK_NULL_HANDLE;
     VkDescriptorSetLayout                 _vk_descriptor_set_layout = VK_NULL_HANDLE;
     SortedMap<VkSampler, VkDescriptorSet> _cache;

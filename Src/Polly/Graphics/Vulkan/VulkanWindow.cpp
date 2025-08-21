@@ -1,7 +1,7 @@
 #include <Polly/Graphics/Vulkan/VulkanWindow.hpp>
 
 #include <Polly/Game/GameImpl.hpp>
-#include <Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp>
+#include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 #include <Polly/Logging.hpp>
 
 #include <SDL3/SDL_vulkan.h>
@@ -25,7 +25,7 @@ VulkanWindow::VulkanWindow(
 }
 
 void VulkanWindow::createInitialSwapChain(
-    GraphicsDevice::Impl* parentDevice,
+    Painter::Impl* parentDevice,
     VkDevice              vkDevice,
     VkPhysicalDevice      vkPhysicalDevice,
     uint32_t              graphicsFamilyQueueIndex,
@@ -138,7 +138,7 @@ void VulkanWindow::onResized([[maybe_unused]] uint32_t width, [[maybe_unused]] u
 {
     const auto [widthPx, heightPx] = sizePxUInt();
 
-    const auto& vulkanGraphicsDevice = static_cast<const VulkanGraphicsDevice&>(*_parentDevice);
+    const auto& vulkanPainter = static_cast<const VulkanPainter&>(*_parentDevice);
 
     vkDeviceWaitIdle(_vkDevice);
 
@@ -147,8 +147,8 @@ void VulkanWindow::onResized([[maybe_unused]] uint32_t width, [[maybe_unused]] u
     createSwapChain(
         _vkDevice,
         _vkPhysicalDevice,
-        vulkanGraphicsDevice.graphicsQueueFamilyIndex(),
-        vulkanGraphicsDevice.presentQueueFamilyIndex(),
+        vulkanPainter.graphicsQueueFamilyIndex(),
+        vulkanPainter.presentQueueFamilyIndex(),
         widthPx,
         heightPx,
         isDisplaySyncEnabled());
@@ -408,15 +408,15 @@ bool VulkanWindow::isSwapChainRecreationRequested() const
 
 void VulkanWindow::recreateSwapChainWithCurrentParams()
 {
-    const auto& vulkanGraphicsDevice = static_cast<const VulkanGraphicsDevice&>(*_parentDevice);
+    const auto& vulkanPainter = static_cast<const VulkanPainter&>(*_parentDevice);
 
     destroySwapChain(false);
 
     createSwapChain(
         _vkDevice,
         _vkPhysicalDevice,
-        vulkanGraphicsDevice.graphicsQueueFamilyIndex(),
-        vulkanGraphicsDevice.presentQueueFamilyIndex(),
+        vulkanPainter.graphicsQueueFamilyIndex(),
+        vulkanPainter.presentQueueFamilyIndex(),
         _swapChainExtent.width,
         _swapChainExtent.height,
         isDisplaySyncEnabled());

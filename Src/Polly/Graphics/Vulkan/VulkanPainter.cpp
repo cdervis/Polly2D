@@ -6,8 +6,8 @@
 #include "Polly/Defer.hpp"
 #include "Polly/GamePerformanceStats.hpp"
 #include "Polly/Graphics/Vulkan/GLSLToSpirVCompiler.hpp"
-#include "Polly/Graphics/Vulkan/VulkanGraphicsDevice.hpp"
 #include "Polly/Graphics/Vulkan/VulkanImage.hpp"
+#include "Polly/Graphics/Vulkan/VulkanPainter.hpp"
 #include "Polly/Graphics/Vulkan/VulkanUserShader.hpp"
 #include "Polly/Graphics/Vulkan/VulkanWindow.hpp"
 #include "Polly/ImGui.hpp"
@@ -70,7 +70,7 @@ static VKAPI_ATTR VkBool32 vulkanDebugCallback(
 #endif
 
 
-VulkanGraphicsDevice::VulkanGraphicsDevice(
+VulkanPainter::VulkanPainter(
     Window::Impl&         windowImpl,
     GamePerformanceStats& performanceStats,
     VkInstance            vkInstance,
@@ -163,7 +163,7 @@ VulkanGraphicsDevice::VulkanGraphicsDevice(
         _presentQueueFamilyIndex);
 
     // Determine capabilities
-    auto caps = GraphicsCapabilities{
+    auto caps = PainterCapabilities{
         .maxImageExtent  = max(0u, _vkPhysicalDeviceProps.limits.maxImageDimension2D),
         .maxCanvasWidth  = max(0u, _vkPhysicalDeviceProps.limits.maxFramebufferWidth),
         .maxCanvasHeight = max(0u, _vkPhysicalDeviceProps.limits.maxFramebufferHeight),
@@ -236,9 +236,9 @@ VulkanGraphicsDevice::VulkanGraphicsDevice(
     }
 }
 
-VulkanGraphicsDevice::~VulkanGraphicsDevice() noexcept
+VulkanPainter::~VulkanPainter() noexcept
 {
-    logVerbose("Destroying VulkanGraphicsDevice");
+    logVerbose("Destroying VulkanPainter");
 
     if (_vkDevice != VK_NULL_HANDLE)
     {
@@ -407,7 +407,7 @@ VulkanGraphicsDevice::~VulkanGraphicsDevice() noexcept
     }
 }
 
-void VulkanGraphicsDevice::startFrame()
+void VulkanPainter::startFrame()
 {
     auto& vulkanWindow = static_cast<VulkanWindow&>(window());
 
@@ -476,7 +476,7 @@ void VulkanGraphicsDevice::startFrame()
     assume(frameData.meshQueue.isEmpty());
 }
 
-void VulkanGraphicsDevice::endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawFunc)
+void VulkanPainter::endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawFunc)
 {
     auto&      frameData   = _frameData[_currentFrameIndex];
     const auto vkCmdBuffer = frameData.vkCommandBuffer;
@@ -557,7 +557,7 @@ void VulkanGraphicsDevice::endFrame(ImGui imgui, const Function<void(ImGui)>& im
     destroyQueuedVulkanObjects();
 }
 
-void VulkanGraphicsDevice::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rectf oldViewport)
+void VulkanPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rectf oldViewport)
 {
     flushAll();
 
@@ -612,7 +612,7 @@ void VulkanGraphicsDevice::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused
     }
 }
 
-void VulkanGraphicsDevice::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport)
+void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport)
 {
     auto& frameData          = _frameData[_currentFrameIndex];
     auto  vkCmdBuffer        = frameData.vkCommandBuffer;
@@ -736,7 +736,7 @@ void VulkanGraphicsDevice::onAfterCanvasChanged(Image newCanvas, Maybe<Color> cl
     }
 }
 
-void VulkanGraphicsDevice::setScissorRects([[maybe_unused]] Span<Rectf> scissorRects)
+void VulkanPainter::setScissorRects([[maybe_unused]] Span<Rectf> scissorRects)
 {
 #if 0
 #ifndef __ANDROID__
@@ -774,12 +774,12 @@ void VulkanGraphicsDevice::setScissorRects([[maybe_unused]] Span<Rectf> scissorR
 #endif
 }
 
-UniquePtr<Image::Impl> VulkanGraphicsDevice::createCanvas(u32 width, u32 height, ImageFormat format)
+UniquePtr<Image::Impl> VulkanPainter::createCanvas(u32 width, u32 height, ImageFormat format)
 {
     return makeUnique<VulkanImage>(*this, width, height, format);
 }
 
-UniquePtr<Image::Impl> VulkanGraphicsDevice::createImage(
+UniquePtr<Image::Impl> VulkanPainter::createImage(
     u32         width,
     u32         height,
     ImageFormat format,
@@ -788,7 +788,7 @@ UniquePtr<Image::Impl> VulkanGraphicsDevice::createImage(
     return makeUnique<VulkanImage>(*this, width, height, format, data);
 }
 
-UniquePtr<Shader::Impl> VulkanGraphicsDevice::onCreateNativeUserShader(
+UniquePtr<Shader::Impl> VulkanPainter::onCreateNativeUserShader(
     const ShaderCompiler::Ast&          ast,
     const ShaderCompiler::SemaContext&  context,
     const ShaderCompiler::FunctionDecl* entryPoint,
@@ -799,7 +799,7 @@ UniquePtr<Shader::Impl> VulkanGraphicsDevice::onCreateNativeUserShader(
     notImplemented();
 }
 
-void VulkanGraphicsDevice::readCanvasDataInto(
+void VulkanPainter::readCanvasDataInto(
     [[maybe_unused]] const Image& canvas,
     [[maybe_unused]] uint32_t     x,
     [[maybe_unused]] uint32_t     y,
@@ -811,62 +811,62 @@ void VulkanGraphicsDevice::readCanvasDataInto(
     throw Error("Reading canvas data is not supported in the Vulkan back end yet.");
 }
 
-VkPhysicalDevice VulkanGraphicsDevice::vkPhysicalDevice() const
+VkPhysicalDevice VulkanPainter::vkPhysicalDevice() const
 {
     return _vkPhysicalDevice;
 }
 
-const VkPhysicalDeviceProperties& VulkanGraphicsDevice::vkPhysicalDeviceProps() const
+const VkPhysicalDeviceProperties& VulkanPainter::vkPhysicalDeviceProps() const
 {
     return _vkPhysicalDeviceProps;
 }
 
-VkDevice VulkanGraphicsDevice::vkDevice() const
+VkDevice VulkanPainter::vkDevice() const
 {
     return _vkDevice;
 }
 
-uint32_t VulkanGraphicsDevice::graphicsQueueFamilyIndex() const
+uint32_t VulkanPainter::graphicsQueueFamilyIndex() const
 {
     return _graphicsQueueFamilyIndex;
 }
 
-uint32_t VulkanGraphicsDevice::currentFrameIndex() const
+uint32_t VulkanPainter::currentFrameIndex() const
 {
     return _currentFrameIndex;
 }
 
-uint32_t VulkanGraphicsDevice::presentQueueFamilyIndex() const
+uint32_t VulkanPainter::presentQueueFamilyIndex() const
 {
     return _presentQueueFamilyIndex;
 }
 
-VmaAllocator VulkanGraphicsDevice::vmaAllocator() const
+VmaAllocator VulkanPainter::vmaAllocator() const
 {
     return _vmaAllocator;
 }
 
-VulkanPsoCache& VulkanGraphicsDevice::psoCache()
+VulkanPsoCache& VulkanPainter::psoCache()
 {
     return _psoCache;
 }
 
-VulkanFramebufferCache& VulkanGraphicsDevice::framebufferCache()
+VulkanFramebufferCache& VulkanPainter::framebufferCache()
 {
     return _framebufferCache;
 }
 
-VulkanRenderPassCache& VulkanGraphicsDevice::renderPassCache()
+VulkanRenderPassCache& VulkanPainter::renderPassCache()
 {
     return _renderPassCache;
 }
 
-VulkanSamplerCache& VulkanGraphicsDevice::samplerCache()
+VulkanSamplerCache& VulkanPainter::samplerCache()
 {
     return _samplerCache;
 }
 
-List<String> VulkanGraphicsDevice::determineVkPhysicalDevice(
+List<String> VulkanPainter::determineVkPhysicalDevice(
     VkInstance        vkInstance,
     VkSurfaceKHR      surface,
     Span<const char*> requiredExtensions)
@@ -1115,7 +1115,7 @@ List<String> VulkanGraphicsDevice::determineVkPhysicalDevice(
     return supportedExtensionsList;
 }
 
-void VulkanGraphicsDevice::createVkLogicalDevice(Span<const char*> requiredExtensions)
+void VulkanPainter::createVkLogicalDevice(Span<const char*> requiredExtensions)
 {
     logDebug("Creating the Vulkan device");
 
@@ -1232,7 +1232,7 @@ void VulkanGraphicsDevice::createVkLogicalDevice(Span<const char*> requiredExten
     vkGetDeviceQueue(_vkDevice, _presentQueueFamilyIndex, 0, &_vkPresentQueue);
 }
 
-void VulkanGraphicsDevice::createVkCommandPool()
+void VulkanPainter::createVkCommandPool()
 {
     auto info             = VkCommandPoolCreateInfo();
     info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -1244,7 +1244,7 @@ void VulkanGraphicsDevice::createVkCommandPool()
         "Failed to create the Vulkan command pool.");
 }
 
-void VulkanGraphicsDevice::createVkCommandBuffers()
+void VulkanPainter::createVkCommandBuffers()
 {
     logVerbose("Creating Vulkan command buffers");
 
@@ -1300,7 +1300,7 @@ void VulkanGraphicsDevice::createVkCommandBuffers()
     }
 }
 
-void VulkanGraphicsDevice::createSyncObjects()
+void VulkanPainter::createSyncObjects()
 {
     auto semaphoreInfo  = VkSemaphoreCreateInfo();
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -1330,7 +1330,7 @@ void VulkanGraphicsDevice::createSyncObjects()
         "Failed to create a fence.");
 }
 
-void VulkanGraphicsDevice::createVmaAllocator(VkInstance vkInstance, uint32_t vkApiVersion)
+void VulkanPainter::createVmaAllocator(VkInstance vkInstance, uint32_t vkApiVersion)
 {
     auto info             = VmaAllocatorCreateInfo();
     info.physicalDevice   = _vkPhysicalDevice;
@@ -1349,7 +1349,7 @@ void VulkanGraphicsDevice::createVmaAllocator(VkInstance vkInstance, uint32_t vk
 }
 
 #ifndef NDEBUG
-void VulkanGraphicsDevice::createVkDebugMessenger()
+void VulkanPainter::createVkDebugMessenger()
 {
     const auto pfnCreateDebugUtilsMessengerExt = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
         vkGetInstanceProcAddr(_vkInstance, "vkCreateDebugUtilsMessengerEXT"));
@@ -1389,7 +1389,7 @@ void VulkanGraphicsDevice::createVkDebugMessenger()
     }
 }
 
-void VulkanGraphicsDevice::createVkDebugMarker()
+void VulkanPainter::createVkDebugMarker()
 {
     _vkSetObjectName = reinterpret_cast<PFN_vkDebugMarkerSetObjectNameEXT>(
         vkGetDeviceProcAddr(_vkDevice, "vkDebugMarkerSetObjectNameEXT"));
@@ -1403,7 +1403,7 @@ void VulkanGraphicsDevice::createVkDebugMarker()
 
 #endif
 
-void VulkanGraphicsDevice::notifyResourceDestroyed(GraphicsResource& resource)
+void VulkanPainter::notifyResourceDestroyed(GraphicsResource& resource)
 {
     const auto type = resource.type();
 
@@ -1421,7 +1421,7 @@ void VulkanGraphicsDevice::notifyResourceDestroyed(GraphicsResource& resource)
     Impl::notifyResourceDestroyed(resource);
 }
 
-void VulkanGraphicsDevice::prepareDrawCall()
+void VulkanPainter::prepareDrawCall()
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -1736,7 +1736,7 @@ void VulkanGraphicsDevice::prepareDrawCall()
     frameData.dirtyFlags = df;
 }
 
-void VulkanGraphicsDevice::flushSprites()
+void VulkanPainter::flushSprites()
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -1797,7 +1797,7 @@ void VulkanGraphicsDevice::flushSprites()
     frameData.spriteQueue.clear();
 }
 
-void VulkanGraphicsDevice::flushPolys()
+void VulkanPainter::flushPolys()
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -1847,7 +1847,7 @@ void VulkanGraphicsDevice::flushPolys()
     frameData.polyQueue.clear();
 }
 
-void VulkanGraphicsDevice::flushMeshes()
+void VulkanPainter::flushMeshes()
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -1930,7 +1930,7 @@ void VulkanGraphicsDevice::flushMeshes()
     frameData.meshQueue.clear();
 }
 
-void VulkanGraphicsDevice::flushAll()
+void VulkanPainter::flushAll()
 {
     const auto& frameData = _frameData[_currentFrameIndex];
 
@@ -1947,7 +1947,7 @@ void VulkanGraphicsDevice::flushAll()
     }
 }
 
-void VulkanGraphicsDevice::prepareForBatchMode(BatchMode mode)
+void VulkanPainter::prepareForBatchMode(BatchMode mode)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -1966,7 +1966,7 @@ void VulkanGraphicsDevice::prepareForBatchMode(BatchMode mode)
     frameData.currentBatchMode = mode;
 }
 
-void VulkanGraphicsDevice::createPipelineLayouts()
+void VulkanPainter::createPipelineLayouts()
 {
     // Set 0
     {
@@ -2075,7 +2075,7 @@ void VulkanGraphicsDevice::createPipelineLayouts()
     setVulkanObjectName(_vkPipelineLayout, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT, "TheLayout");
 }
 
-void VulkanGraphicsDevice::createShaderModules()
+void VulkanPainter::createShaderModules()
 {
     _spriteVs =
         compileBuiltinVkShader("sprite_vs", SpriteBatchVs_vert_string_view(), VulkanShaderType::Vertex);
@@ -2096,7 +2096,7 @@ void VulkanGraphicsDevice::createShaderModules()
     _meshPs = compileBuiltinVkShader("mesh_ps", MeshPs_frag_string_view(), VulkanShaderType::Fragment);
 }
 
-void VulkanGraphicsDevice::createSpriteRenderingResources()
+void VulkanPainter::createSpriteRenderingResources()
 {
     // Vertex buffer
     for (uint32_t i = 0; auto& data : _frameData)
@@ -2127,7 +2127,7 @@ void VulkanGraphicsDevice::createSpriteRenderingResources()
     }
 }
 
-void VulkanGraphicsDevice::createPolyRenderingResources()
+void VulkanPainter::createPolyRenderingResources()
 {
     for (auto& data : _frameData)
     {
@@ -2148,7 +2148,7 @@ void VulkanGraphicsDevice::createPolyRenderingResources()
     }
 }
 
-void VulkanGraphicsDevice::createMeshRenderingResources()
+void VulkanPainter::createMeshRenderingResources()
 {
     for (auto& data : _frameData)
     {
@@ -2184,7 +2184,7 @@ void VulkanGraphicsDevice::createMeshRenderingResources()
     }
 }
 
-VulkanBuffer VulkanGraphicsDevice::createSingleSpriteVertexBuffer(uint32_t index)
+VulkanBuffer VulkanPainter::createSingleSpriteVertexBuffer(uint32_t index)
 {
     const auto nameStr = formatString("SpriteVB[{}]", index);
 
@@ -2203,14 +2203,14 @@ VulkanBuffer VulkanGraphicsDevice::createSingleSpriteVertexBuffer(uint32_t index
     return buffer;
 }
 
-bool VulkanGraphicsDevice::mustUpdateShaderParams() const
+bool VulkanPainter::mustUpdateShaderParams() const
 {
     const auto& frameData = _frameData[_currentFrameIndex];
 
     return (frameData.dirtyFlags bitand DF_UserShaderParams) == DF_UserShaderParams;
 }
 
-void VulkanGraphicsDevice::destroyQueuedVulkanObjects()
+void VulkanPainter::destroyQueuedVulkanObjects()
 {
     const auto isThereAnythingToDestroy =
         not _destruction_queue.imageAndViewPairs.isEmpty() or not _destruction_queue.shaderModules.isEmpty();
@@ -2251,7 +2251,7 @@ void VulkanGraphicsDevice::destroyQueuedVulkanObjects()
     _destruction_queue.shaderModules.clear();
 }
 
-VkShaderModule VulkanGraphicsDevice::compileBuiltinVkShader(
+VkShaderModule VulkanPainter::compileBuiltinVkShader(
     StringView       name,
     StringView       glslCode,
     VulkanShaderType type)
@@ -2274,36 +2274,36 @@ VkShaderModule VulkanGraphicsDevice::compileBuiltinVkShader(
     return mod;
 }
 
-void VulkanGraphicsDevice::notifyShaderParamAboutToChangeWhileBound(
+void VulkanPainter::notifyShaderParamAboutToChangeWhileBound(
     [[maybe_unused]] const Shader::Impl& shaderImpl)
 {
     flushAll();
 }
 
-void VulkanGraphicsDevice::notifyShaderParamHasChangedWhileBound(
+void VulkanPainter::notifyShaderParamHasChangedWhileBound(
     [[maybe_unused]] const Shader::Impl& shaderImpl)
 {
     auto& frameData = _frameData[_currentFrameIndex];
     frameData.dirtyFlags |= DF_UserShaderParams;
 }
 
-void VulkanGraphicsDevice::onBeforeTransformationChanged()
+void VulkanPainter::onBeforeTransformationChanged()
 {
     flushAll();
 }
 
-void VulkanGraphicsDevice::onAfterTransformationChanged([[maybe_unused]] const Matrix& transformation)
+void VulkanPainter::onAfterTransformationChanged([[maybe_unused]] const Matrix& transformation)
 {
     auto& frameData = _frameData[_currentFrameIndex];
     frameData.dirtyFlags |= DF_GlobalCBufferParams;
 }
 
-void VulkanGraphicsDevice::onBeforeShaderChanged([[maybe_unused]] BatchMode mode)
+void VulkanPainter::onBeforeShaderChanged([[maybe_unused]] BatchMode mode)
 {
     flushAll();
 }
 
-void VulkanGraphicsDevice::onAfterShaderChanged(
+void VulkanPainter::onAfterShaderChanged(
     [[maybe_unused]] BatchMode mode,
     [[maybe_unused]] Shader&   shader)
 {
@@ -2312,29 +2312,29 @@ void VulkanGraphicsDevice::onAfterShaderChanged(
     frameData.dirtyFlags |= DF_UserShaderParams;
 }
 
-void VulkanGraphicsDevice::onBeforeSamplerChanged()
+void VulkanPainter::onBeforeSamplerChanged()
 {
     flushAll();
 }
 
-void VulkanGraphicsDevice::onAfterSamplerChanged([[maybe_unused]] const Sampler& sampler)
+void VulkanPainter::onAfterSamplerChanged([[maybe_unused]] const Sampler& sampler)
 {
     auto& frameData = _frameData[_currentFrameIndex];
     frameData.dirtyFlags |= DF_Sampler;
 }
 
-void VulkanGraphicsDevice::onBeforeBlendStateChanged()
+void VulkanPainter::onBeforeBlendStateChanged()
 {
     flushAll();
 }
 
-void VulkanGraphicsDevice::onAfterBlendStateChanged([[maybe_unused]] const BlendState& blendState)
+void VulkanPainter::onAfterBlendStateChanged([[maybe_unused]] const BlendState& blendState)
 {
     auto& frameData = _frameData[_currentFrameIndex];
     frameData.dirtyFlags |= DF_PipelineState;
 }
 
-void VulkanGraphicsDevice::drawSprite(
+void VulkanPainter::drawSprite(
     const Sprite&                     sprite,
     [[maybe_unused]] SpriteShaderKind spriteShaderKind)
 {
@@ -2398,7 +2398,7 @@ void VulkanGraphicsDevice::drawSprite(
     ++performanceStats().spriteCount;
 }
 
-void VulkanGraphicsDevice::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
+void VulkanPainter::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2415,7 +2415,7 @@ void VulkanGraphicsDevice::drawLine(Vec2 start, Vec2 end, const Color& color, fl
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::drawLinePath(Span<Line> lines, const Color& color, float strokeWidth)
+void VulkanPainter::drawLinePath(Span<Line> lines, const Color& color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2431,7 +2431,7 @@ void VulkanGraphicsDevice::drawLinePath(Span<Line> lines, const Color& color, fl
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
+void VulkanPainter::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2447,7 +2447,7 @@ void VulkanGraphicsDevice::drawRectangle(const Rectf& rectangle, const Color& co
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::fillRectangle(const Rectf& rectangle, const Color& color)
+void VulkanPainter::fillRectangle(const Rectf& rectangle, const Color& color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2462,7 +2462,7 @@ void VulkanGraphicsDevice::fillRectangle(const Rectf& rectangle, const Color& co
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::fillPolygon(Span<Vec2> vertices, const Color& color)
+void VulkanPainter::fillPolygon(Span<Vec2> vertices, const Color& color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2477,7 +2477,7 @@ void VulkanGraphicsDevice::fillPolygon(Span<Vec2> vertices, const Color& color)
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image)
+void VulkanPainter::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2504,7 +2504,7 @@ void VulkanGraphicsDevice::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> in
     ++performanceStats().meshCount;
 }
 
-void VulkanGraphicsDevice::drawRoundedRectangle(
+void VulkanPainter::drawRoundedRectangle(
     const Rectf& rectangle,
     float        cornerRadius,
     const Color& color,
@@ -2525,7 +2525,7 @@ void VulkanGraphicsDevice::drawRoundedRectangle(
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::fillRoundedRectangle(
+void VulkanPainter::fillRoundedRectangle(
     const Rectf& rectangle,
     float        cornerRadius,
     const Color& color)
@@ -2544,7 +2544,7 @@ void VulkanGraphicsDevice::fillRoundedRectangle(
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
+void VulkanPainter::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2561,7 +2561,7 @@ void VulkanGraphicsDevice::drawEllipse(Vec2 center, Vec2 radius, const Color& co
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
+void VulkanPainter::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2577,14 +2577,14 @@ void VulkanGraphicsDevice::fillEllipse(Vec2 center, Vec2 radius, const Color& co
     ++performanceStats().polygonCount;
 }
 
-void VulkanGraphicsDevice::requestFrameCapture()
+void VulkanPainter::requestFrameCapture()
 {
     throw Error(
         "Frame capturing is not supported on non-Apple platforms yet. You may use RenderDoc to "
         "capture a frame externally instead.");
 }
 
-void VulkanGraphicsDevice::setResourceDebugName(
+void VulkanPainter::setResourceDebugName(
     [[maybe_unused]] GraphicsResource& resource,
     [[maybe_unused]] StringView        name)
 {

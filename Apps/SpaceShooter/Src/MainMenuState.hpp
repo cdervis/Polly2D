@@ -9,5 +9,5 @@ class MainMenuState final : public GameState
 
     void update(GameTime time) override;
 
-    void draw(GraphicsDevice gfx) override;
+    void draw(Painter painter) override;
 };
