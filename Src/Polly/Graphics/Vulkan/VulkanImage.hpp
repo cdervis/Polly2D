@@ -9,15 +9,10 @@ namespace Polly
 class VulkanImage final : public Image::Impl
 {
   public:
-    VulkanImage(
-        Painter::Impl& parentDevice,
-        u32                   width,
-        u32                   height,
-        ImageFormat           format,
-        const void*           data);
+    VulkanImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format, const void* data);
 
     // Canvas overload
-    explicit VulkanImage(Painter::Impl& parentDevice, u32 width, u32 height, ImageFormat format);
+    explicit VulkanImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format);
 
     deleteCopyAndMove(VulkanImage);
 

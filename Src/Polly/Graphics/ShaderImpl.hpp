@@ -36,11 +36,11 @@ class Shader::Impl : public GraphicsResource
 
   protected:
     explicit Impl(
-        Painter::Impl& parentDevice,
-        ShaderType            shaderType,
-        ParameterList         parameters,
-        UserShaderFlags       flags,
-        u16                   cbufferSize);
+        Painter::Impl&  painterImpl,
+        ShaderType      shaderType,
+        ParameterList   parameters,
+        UserShaderFlags flags,
+        u16             cbufferSize);
 
   public:
     deleteCopyAndMove(Impl);
@@ -95,13 +95,13 @@ class Shader::Impl : public GraphicsResource
         }
 
         // Notify the device with our current data.
-        notifyParentDeviceBeforeParamChanged();
+        notifyPainterBeforeParamChanged();
 
         *dstData = srcData;
         _dirtyScalarParameters.add(param);
 
         // Notify the device with the fresh cbuffer data.
-        notifyParentDeviceAfterParamChanged();
+        notifyPainterAfterParamChanged();
 
         logVerbose("Updated scalar parameter '{}'", name);
     }
@@ -142,7 +142,7 @@ class Shader::Impl : public GraphicsResource
 
         constexpr auto incrementPerElement = ShaderParameter::arrayElementBaseAlignment;
 
-        notifyParentDeviceBeforeParamChanged();
+        notifyPainterBeforeParamChanged();
 
         auto* dstData = _cbufferData.data() + param->offset;
         dstData += (static_cast<size_t>(offset * incrementPerElement));
@@ -153,7 +153,7 @@ class Shader::Impl : public GraphicsResource
         }
 
         _dirtyScalarParameters.add(param);
-        notifyParentDeviceAfterParamChanged();
+        notifyPainterAfterParamChanged();
 
         logVerbose("Updated scalar array parameter '{}'", name);
     }
@@ -184,9 +184,9 @@ class Shader::Impl : public GraphicsResource
   private:
     void setDefaultParameterValues();
 
-    void notifyParentDeviceBeforeParamChanged();
+    void notifyPainterBeforeParamChanged();
 
-    void notifyParentDeviceAfterParamChanged();
+    void notifyPainterAfterParamChanged();
 
     Polly::ShaderType                 _shaderType;
     List<u8, 64>                      _cbufferData;

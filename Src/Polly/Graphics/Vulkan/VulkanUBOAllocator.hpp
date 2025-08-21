@@ -25,7 +25,7 @@ class VulkanUBOAllocator final
     };
 
     explicit VulkanUBOAllocator(
-        VulkanPainter& device,
+        VulkanPainter&        device,
         VkDescriptorPool      vkDescriptorPool,
         VkDescriptorSetLayout vkDescriptorSetLayout);
 
@@ -42,7 +42,7 @@ class VulkanUBOAllocator final
         VkDescriptorSet set;
     };
 
-    VulkanPainter& _device;
+    VulkanPainter&        _device;
     VkDescriptorPool      _vkDescriptorPool      = VK_NULL_HANDLE;
     VkDescriptorSetLayout _vkDescriptorSetLayout = VK_NULL_HANDLE;
     List<Entry>           _entries;

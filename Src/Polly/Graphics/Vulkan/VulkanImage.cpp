@@ -8,22 +8,22 @@
 namespace Polly
 {
 VulkanImage::VulkanImage(
-    Painter::Impl& parentDevice,
+    Painter::Impl& painter,
     u32                   width,
     uint32_t              height,
     ImageFormat           format,
     const void*           data)
-    : Impl(parentDevice, false, width, height, format)
+    : Impl(painter, false, width, height, format)
 {
     createVkImage(data);
 }
 
 VulkanImage::VulkanImage(
-    Painter::Impl& parentDevice,
+    Painter::Impl& painter,
     uint32_t              width,
     uint32_t              height,
     ImageFormat           format)
-    : Impl(parentDevice, true, width, height, format)
+    : Impl(painter, true, width, height, format)
 {
     createVkImage(nullptr);
 }
@@ -52,7 +52,7 @@ void VulkanImage::setDebuggingLabel(StringView value)
 {
     GraphicsResource::setDebuggingLabel(value);
 
-    auto&      vulkanDevice = static_cast<VulkanPainter&>(parentDevice());
+    auto&      vulkanDevice = static_cast<VulkanPainter&>(painter());
     const auto str           = String(value);
 
     vulkanDevice.setResourceDebugName(*this, str);
@@ -64,7 +64,7 @@ void VulkanImage::setDebuggingLabel(StringView value)
 
 void VulkanImage::createVkImage(const void* data)
 {
-    auto&      vulkanPainter = static_cast<VulkanPainter&>(parentDevice());
+    auto&      vulkanPainter = static_cast<VulkanPainter&>(painter());
     const auto vkDevice              = vulkanPainter.vkDevice();
     const auto vmaAllocator          = vulkanPainter.vmaAllocator();
     _vk_format                        = convert(format());

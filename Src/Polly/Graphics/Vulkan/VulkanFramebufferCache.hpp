@@ -25,7 +25,7 @@ class VulkanFramebufferCache final
         defineDefaultEqualityOperations(Key);
     };
 
-    explicit VulkanFramebufferCache(VulkanPainter& parentDevice);
+    explicit VulkanFramebufferCache(VulkanPainter& painter);
 
     deleteCopyAndMove(VulkanFramebufferCache);
 
@@ -38,7 +38,7 @@ class VulkanFramebufferCache final
     void clear();
 
   private:
-    VulkanPainter&         _parentDevice;
+    VulkanPainter&                _painter;
     SortedMap<Key, VkFramebuffer> _cache;
 };
 } // namespace Polly

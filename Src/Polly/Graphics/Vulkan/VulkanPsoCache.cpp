@@ -5,8 +5,8 @@
 
 namespace Polly
 {
-VulkanPsoCache::VulkanPsoCache(VulkanPainter& parentDevice)
-    : _parentDevice(parentDevice)
+VulkanPsoCache::VulkanPsoCache(VulkanPainter& painter)
+    : _painter(painter)
 {
 }
 
@@ -147,7 +147,7 @@ VkPipeline VulkanPsoCache::get(const Key& entry)
         pipelineInfo.renderPass = entry.vkRenderPass;
         pipelineInfo.subpass    = 0;
 
-        const auto vkDevice   = _parentDevice.vkDevice();
+        const auto vkDevice   = _painter.vkDevice();
         auto       vkPipeline = VkPipeline();
 
         checkVkResult(

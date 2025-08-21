@@ -319,7 +319,7 @@ class Painter::Impl : public Object
     List<GraphicsResource*> _resources;
     GamePerformanceStats&   _performanceStats;
     Image                   _whiteImage;
-    PainterCapabilities    _capabilities;
+    PainterCapabilities     _capabilities;
     Rectf                   _viewport;
     Matrix                  _viewportTransformation;
     Matrix                  _combinedTransformation;

@@ -10,19 +10,19 @@
 namespace Polly
 {
 GraphicsResource::GraphicsResource(
-    Painter::Impl& parentDeviceImpl,
+    Painter::Impl& painter,
     GraphicsResourceType  type)
-    : _parentDevice(parentDeviceImpl)
+    : _painter(painter)
     , _resourceType(type)
 {
-    _parentDevice.notifyResourceCreated(*this);
+    _painter.notifyResourceCreated(*this);
 }
 
 GraphicsResource::~GraphicsResource() noexcept
 {
     logVerbose("~GraphicsResourceImpl( {} )", displayString());
 
-    _parentDevice.notifyResourceDestroyed(*this);
+    _painter.notifyResourceDestroyed(*this);
 }
 
 StringView GraphicsResource::debuggingLabel() const
@@ -69,9 +69,9 @@ String GraphicsResource::displayString() const
     return formatString("{} [{}]", label, typeName);
 }
 
-Painter::Impl& GraphicsResource::parentDevice()
+Painter::Impl& GraphicsResource::painter()
 {
-    return _parentDevice;
+    return _painter;
 }
 
 GraphicsResourceType GraphicsResource::type() const

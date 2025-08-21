@@ -147,7 +147,7 @@ static_assert(sizeof(i64) == 8);
   private:                                                                                                   \
     void* m_impl
 
-#define defineEnumFlagOperations(enumName)                                                                           \
+#define defineEnumFlagOperations(enumName)                                                                   \
     static constexpr enumName operator&(enumName lhs, enumName rhs)                                          \
     {                                                                                                        \
         return static_cast<enumName>(static_cast<int>(lhs) & static_cast<int>(rhs));                         \
@@ -193,7 +193,7 @@ static_assert(sizeof(i64) == 8);
 #define pl_delete_with_reason(reason) delete
 // #endif
 
-#define defineDefaultEqualityOperations(type_name)                                                                   \
+#define defineDefaultEqualityOperations(type_name)                                                           \
     bool operator==(const type_name&) const  = default;                                                      \
     bool operator!=(const type_name&) const  = default;                                                      \
     auto operator<=>(const type_name&) const = default

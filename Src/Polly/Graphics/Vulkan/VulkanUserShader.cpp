@@ -9,15 +9,15 @@
 namespace Polly
 {
 VulkanUserShader::VulkanUserShader(
-    Painter::Impl& parentDevice,
+    Painter::Impl& painter,
     ShaderType            shaderType,
     Span<u8>              spirvByteCode,
     ParameterList         parameters,
     UserShaderFlags                   flags,
     u16                   cbufferSize)
-    : Impl(parentDevice, shaderType, std::move(parameters), flags, cbufferSize)
+    : Impl(painter, shaderType, std::move(parameters), flags, cbufferSize)
 {
-    auto&      vulkanDevice = static_cast<VulkanPainter&>(parentDevice);
+    auto&      vulkanDevice = static_cast<VulkanPainter&>(painter);
     const auto vkDevice     = vulkanDevice.vkDevice();
 
     assume((spirvByteCode.size() % 4) == 0);
@@ -41,7 +41,7 @@ void VulkanUserShader::setDebuggingLabel(StringView name)
 {
     GraphicsResource::setDebuggingLabel(name);
 
-    auto&      vulkanDevice = static_cast<VulkanPainter&>(parentDevice());
+    auto&      vulkanDevice = static_cast<VulkanPainter&>(painter());
     const auto str           = String(name);
 
     vulkanDevice.setResourceDebugName(*this, str);

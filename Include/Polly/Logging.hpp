@@ -59,7 +59,7 @@ void logDebug([[maybe_unused]] StringView fmt, [[maybe_unused]] Args&&... args)
 }
 
 /// Logs information to the system's output **in debug mode only**,
-/// and only if the `ENABLE_VERBOSE_LOGGING` preprocessor definition is specified. 
+/// and only if the `ENABLE_VERBOSE_LOGGING` preprocessor definition is specified.
 ///
 /// In release mode, this will result in a no-op.
 template<typename... Args>

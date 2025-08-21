@@ -31,5 +31,5 @@ bool isDesktop();
 /// Gets a value indicating whether the current platform counts as a mobile platform.
 [[nodiscard]]
 bool isMobile();
-} // namespace platform
+} // namespace Platform
 } // namespace Polly

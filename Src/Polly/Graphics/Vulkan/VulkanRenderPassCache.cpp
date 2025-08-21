@@ -5,8 +5,8 @@
 
 namespace Polly
 {
-VulkanRenderPassCache::VulkanRenderPassCache(VulkanPainter& parentDevice)
-    : _parentDevice(parentDevice)
+VulkanRenderPassCache::VulkanRenderPassCache(VulkanPainter& painter)
+    : _painter(painter)
 {
 }
 
@@ -53,7 +53,7 @@ VkRenderPass VulkanRenderPassCache::get(const Key& key)
         auto vkRenderPass = VkRenderPass();
 
         checkVkResult(
-            vkCreateRenderPass(_parentDevice.vkDevice(), &renderPassInfo, nullptr, &vkRenderPass),
+            vkCreateRenderPass(_painter.vkDevice(), &renderPassInfo, nullptr, &vkRenderPass),
             "Failed to create a Vulkan render pass.");
 
         cacheEntry = _cache.add(key, vkRenderPass)->second;
@@ -68,7 +68,7 @@ void VulkanRenderPassCache::clear()
 
     if (not _cache.isEmpty())
     {
-        const auto vkDevice = _parentDevice.vkDevice();
+        const auto vkDevice = _painter.vkDevice();
         assume(vkDevice != VK_NULL_HANDLE);
 
         for (const auto& [_, value] : _cache)

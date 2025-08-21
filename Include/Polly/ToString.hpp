@@ -86,7 +86,7 @@ template<typename T>
 concept has_to_string = requires(T t) {
     { Polly::toString(t) } -> std::convertible_to<String>;
 } or has_to_string_member<T>;
-} // namespace concepts
+} // namespace Concepts
 
 template<typename T>
 static String toString(const T* value)

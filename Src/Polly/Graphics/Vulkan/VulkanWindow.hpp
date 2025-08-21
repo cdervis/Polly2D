@@ -22,11 +22,11 @@ class VulkanWindow : public Window::Impl
     ~VulkanWindow() noexcept override;
 
     void createInitialSwapChain(
-        Painter::Impl* parentDevice,
-        VkDevice              vkDevice,
-        VkPhysicalDevice      vkPhysicalDevice,
-        u32                   graphicsFamilyQueueIndex,
-        u32                   presentFamilyQueueIndex);
+        Painter::Impl*   painter,
+        VkDevice         vkDevice,
+        VkPhysicalDevice vkPhysicalDevice,
+        u32              graphicsFamilyQueueIndex,
+        u32              presentFamilyQueueIndex);
 
     VkSurfaceKHR surfaceKhr() const;
 
@@ -69,17 +69,17 @@ class VulkanWindow : public Window::Impl
 
     void destroySwapChainImageViews();
 
-    Painter::Impl* _parentDevice     = nullptr;
-    VkInstance            _vkInstance       = VK_NULL_HANDLE;
-    VkDevice              _vkDevice         = VK_NULL_HANDLE;
-    VkPhysicalDevice      _vkPhysicalDevice = VK_NULL_HANDLE;
-    VkSurfaceKHR          _surfaceKhr       = VK_NULL_HANDLE;
-    VkSwapchainKHR        _swapChainKhr     = VK_NULL_HANDLE;
-    List<VkImage, 3>      _swapChainImages;
-    VkFormat              _swapChainImageFormat = VK_FORMAT_UNDEFINED;
-    VkExtent2D            _swapChainExtent      = {};
-    List<VkImageView, 3>  _swapChainImageViews;
-    u32                   _currentSwapChainImageIndex     = 0;
-    bool                  _isSwapChainRecreationRequested = false;
+    Painter::Impl*       _painter          = nullptr;
+    VkInstance           _vkInstance       = VK_NULL_HANDLE;
+    VkDevice             _vkDevice         = VK_NULL_HANDLE;
+    VkPhysicalDevice     _vkPhysicalDevice = VK_NULL_HANDLE;
+    VkSurfaceKHR         _surfaceKhr       = VK_NULL_HANDLE;
+    VkSwapchainKHR       _swapChainKhr     = VK_NULL_HANDLE;
+    List<VkImage, 3>     _swapChainImages;
+    VkFormat             _swapChainImageFormat = VK_FORMAT_UNDEFINED;
+    VkExtent2D           _swapChainExtent      = {};
+    List<VkImageView, 3> _swapChainImageViews;
+    u32                  _currentSwapChainImageIndex     = 0;
+    bool                 _isSwapChainRecreationRequested = false;
 };
 } // namespace Polly

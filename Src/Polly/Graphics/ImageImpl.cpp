@@ -7,12 +7,12 @@
 namespace Polly
 {
 Image::Impl::Impl(
-    Painter::Impl& parentDevice,
+    Painter::Impl& painterImpl,
     bool                  isCanvas,
     u32                   width,
     u32                   height,
     ImageFormat           format)
-    : GraphicsResource(parentDevice, GraphicsResourceType::Image)
+    : GraphicsResource(painterImpl, GraphicsResourceType::Image)
     , _isCanvas(isCanvas)
     , _width(width)
     , _height(height)

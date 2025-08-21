@@ -5,8 +5,8 @@
 
 namespace Polly
 {
-VulkanSamplerCache::VulkanSamplerCache(VulkanPainter& parentDevice)
-    : _parentDevice(parentDevice)
+VulkanSamplerCache::VulkanSamplerCache(VulkanPainter& painter)
+    : _painter(painter)
 {
 }
 
@@ -54,7 +54,7 @@ VkSampler VulkanSamplerCache::get(const Sampler& key)
         auto vkSampler = VkSampler();
 
         checkVkResult(
-            vkCreateSampler(_parentDevice.vkDevice(), &info, nullptr, &vkSampler),
+            vkCreateSampler(_painter.vkDevice(), &info, nullptr, &vkSampler),
             "Failed to create an internal sampler.");
 
         it = _cache.add(key, vkSampler)->second;
@@ -69,7 +69,7 @@ void VulkanSamplerCache::clear()
 
     if (not _cache.isEmpty())
     {
-        const auto vkDevice = _parentDevice.vkDevice();
+        const auto vkDevice = _painter.vkDevice();
         assume(vkDevice != VK_NULL_HANDLE);
 
         for (const auto& [_, value] : _cache)

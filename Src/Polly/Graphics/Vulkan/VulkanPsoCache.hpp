@@ -31,7 +31,7 @@ class VulkanPsoCache final
         defineDefaultEqualityOperations(Key);
     };
 
-    explicit VulkanPsoCache(VulkanPainter& parentDevice);
+    explicit VulkanPsoCache(VulkanPainter& painter);
 
     deleteCopyAndMove(VulkanPsoCache);
 
@@ -65,7 +65,7 @@ class VulkanPsoCache final
         VkPipeline _vkPipeline = VK_NULL_HANDLE;
     };
 
-    VulkanPainter&         _parentDevice;
+    VulkanPainter&                _painter;
     SortedMap<Key, PipelineValue> _cache;
 };
 } // namespace Polly

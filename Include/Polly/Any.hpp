@@ -58,7 +58,7 @@ concept SupportedByAny = std::is_same_v<T, char>
 
 template<typename T>
 concept AssignableToAny = SupportedByAny<std::remove_cvref_t<T>>;
-} // namespace concepts
+} // namespace Concepts
 
 class Any final
 {

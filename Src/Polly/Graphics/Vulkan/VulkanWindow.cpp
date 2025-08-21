@@ -25,18 +25,18 @@ VulkanWindow::VulkanWindow(
 }
 
 void VulkanWindow::createInitialSwapChain(
-    Painter::Impl* parentDevice,
+    Painter::Impl* painter,
     VkDevice              vkDevice,
     VkPhysicalDevice      vkPhysicalDevice,
     uint32_t              graphicsFamilyQueueIndex,
     uint32_t              presentFamilyQueueIndex)
 {
-    assume(parentDevice != nullptr);
+    assume(painter != nullptr);
     assume(vkDevice != VK_NULL_HANDLE);
     assume(vkPhysicalDevice != VK_NULL_HANDLE);
     assume(_swapChainKhr == VK_NULL_HANDLE);
 
-    _parentDevice      = parentDevice;
+    _painter      = painter;
     _vkDevice          = vkDevice;
     _vkPhysicalDevice = vkPhysicalDevice;
 
@@ -138,7 +138,7 @@ void VulkanWindow::onResized([[maybe_unused]] uint32_t width, [[maybe_unused]] u
 {
     const auto [widthPx, heightPx] = sizePxUInt();
 
-    const auto& vulkanPainter = static_cast<const VulkanPainter&>(*_parentDevice);
+    const auto& vulkanPainter = static_cast<const VulkanPainter&>(*_painter);
 
     vkDeviceWaitIdle(_vkDevice);
 
@@ -386,7 +386,7 @@ void VulkanWindow::destroySwapChain(bool detachFromDevice)
 
     if (detachFromDevice)
     {
-        _parentDevice      = nullptr;
+        _painter      = nullptr;
         _vkDevice          = VK_NULL_HANDLE;
         _vkPhysicalDevice = VK_NULL_HANDLE;
     }
@@ -408,7 +408,7 @@ bool VulkanWindow::isSwapChainRecreationRequested() const
 
 void VulkanWindow::recreateSwapChainWithCurrentParams()
 {
-    const auto& vulkanPainter = static_cast<const VulkanPainter&>(*_parentDevice);
+    const auto& vulkanPainter = static_cast<const VulkanPainter&>(*_painter);
 
     destroySwapChain(false);
 

@@ -5,8 +5,8 @@
 
 namespace Polly
 {
-VulkanFramebufferCache::VulkanFramebufferCache(VulkanPainter& parentDevice)
-    : _parentDevice(parentDevice)
+VulkanFramebufferCache::VulkanFramebufferCache(VulkanPainter& painter)
+    : _painter(painter)
 {
 }
 
@@ -43,7 +43,7 @@ VkFramebuffer VulkanFramebufferCache::get(const Key& entry)
         auto vkFramebuffer = VkFramebuffer();
 
         checkVkResult(
-            vkCreateFramebuffer(_parentDevice.vkDevice(), &framebufferInfo, nullptr, &vkFramebuffer),
+            vkCreateFramebuffer(_painter.vkDevice(), &framebufferInfo, nullptr, &vkFramebuffer),
             "Failed to create a framebuffer.");
 
         logVerbose("-- Created VkFramebuffer 0x{}", reinterpret_cast<uintptr_t>(vkFramebuffer));
@@ -57,7 +57,7 @@ VkFramebuffer VulkanFramebufferCache::get(const Key& entry)
 void VulkanFramebufferCache::notifyVkImageOrVkImageViewAboutToBeDestroyed(
     const VulkanImageAndViewPair& imageAndViewPair)
 {
-    const auto vkDevice = _parentDevice.vkDevice();
+    const auto vkDevice = _painter.vkDevice();
 
     _cache.removeWhere(
         [&](const auto& pair)
@@ -82,7 +82,7 @@ void VulkanFramebufferCache::clear()
     {
         logVerbose("-- FBO cache has {} FBO(s)", _cache.size());
 
-        const auto vkDevice = _parentDevice.vkDevice();
+        const auto vkDevice = _painter.vkDevice();
 
         for (const auto& [key, value] : _cache)
         {

@@ -13,12 +13,12 @@ class VulkanUserShader final : public Shader::Impl
 {
   public:
     explicit VulkanUserShader(
-        Painter::Impl& parentDevice,
-        ShaderType            shaderType,
-        Span<u8>              spirvByteCode,
-        ParameterList         parameters,
-        UserShaderFlags       flags,
-        u16                   cbufferSize);
+        Painter::Impl&  painter,
+        ShaderType      shaderType,
+        Span<u8>        spirvByteCode,
+        ParameterList   parameters,
+        UserShaderFlags flags,
+        u16             cbufferSize);
 
     VkShaderModule vkShaderModule() const;
 

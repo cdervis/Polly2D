@@ -19,7 +19,7 @@ class VulkanSamplerDescriptorCache final
 
     ~VulkanSamplerDescriptorCache() noexcept = default;
 
-    void init(VulkanPainter* parentDevice, VkDescriptorSetLayout descriptorSetLayout);
+    void init(VulkanPainter* painter, VkDescriptorSetLayout descriptorSetLayout);
 
     VkDescriptorSet get(VkSampler key);
 
@@ -30,7 +30,7 @@ class VulkanSamplerDescriptorCache final
   private:
     void createDescriptorPool();
 
-    VulkanPainter*                 _parentDevice             = nullptr;
+    VulkanPainter*                        _painter                  = nullptr;
     VkDescriptorPool                      _vk_descriptor_pool       = VK_NULL_HANDLE;
     VkDescriptorSetLayout                 _vk_descriptor_set_layout = VK_NULL_HANDLE;
     SortedMap<VkSampler, VkDescriptorSet> _cache;

@@ -191,7 +191,7 @@ class Game::Impl final : public Object
     AudioDevice               _audioDevice;
     Window                    _window;
     ImGui                     _imgui;
-    Painter            _painter;
+    Painter                   _painter;
     UniquePtr<ContentManager> _contentManager;
 
     Vec2          _previousMousePos;

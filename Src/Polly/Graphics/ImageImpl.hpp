@@ -14,12 +14,7 @@ enum class ImageFormat;
 class Image::Impl : public GraphicsResource
 {
   public:
-    explicit Impl(
-        Painter::Impl& parentDevice,
-        bool                  isCanvas,
-        u32                   width,
-        u32                   height,
-        ImageFormat           format);
+    explicit Impl(Painter::Impl& painterImpl, bool isCanvas, u32 width, u32 height, ImageFormat format);
 
     bool isCanvas() const;
 

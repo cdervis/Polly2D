@@ -24,7 +24,7 @@ class VulkanRenderPassCache final
         defineDefaultEqualityOperations(Key);
     };
 
-    explicit VulkanRenderPassCache(VulkanPainter& parentDevice);
+    explicit VulkanRenderPassCache(VulkanPainter& painter);
 
     deleteCopyAndMove(VulkanRenderPassCache);
 
@@ -43,7 +43,7 @@ class VulkanRenderPassCache final
         }
     };
 
-    VulkanPainter&        _parentDevice;
+    VulkanPainter&               _painter;
     SortedMap<Key, VkRenderPass> _cache;
 };
 } // namespace Polly

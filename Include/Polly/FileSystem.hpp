@@ -56,4 +56,4 @@ String pathReplaceExtension(StringView path, StringView newExtension);
 
 [[nodiscard]]
 Maybe<String> randomWritablePath(StringView companyName, StringView appName);
-} // namespace Polly::filesystem
+} // namespace Polly::FileSystem

@@ -98,5 +98,5 @@ concept SpanCompatible = not std::is_const_v<T>;
 
 template<typename T>
 concept MutableSpanCompatible = not std::is_const_v<T>;
-} // namespace concepts
+} // namespace Concepts
 } // namespace Polly

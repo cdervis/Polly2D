@@ -9,13 +9,13 @@ namespace Polly
 static constexpr auto defaultDescriptorSetSize = 1024;
 
 void VulkanImageDescriptorCache::init(
-    VulkanPainter* parentDevice,
+    VulkanPainter* painter,
     VkDescriptorSetLayout descriptorSetLayout)
 {
-    assume(parentDevice);
+    assume(painter);
     assume(descriptorSetLayout != VK_NULL_HANDLE);
 
-    _parentDevice = parentDevice;
+    _painter = painter;
 
     createDescriptorPool();
     _vkDescriptorSetLayout = descriptorSetLayout;
@@ -41,7 +41,7 @@ VkDescriptorSet VulkanImageDescriptorCache::get(const Key& key)
         auto vkDescriptorSet = VkDescriptorSet();
 
         checkVkResult(
-            vkAllocateDescriptorSets(_parentDevice->vkDevice(), &allocInfo, &vkDescriptorSet),
+            vkAllocateDescriptorSets(_painter->vkDevice(), &allocInfo, &vkDescriptorSet),
             "Failed to create a sampler descriptor set.");
 
         // Bind the image to the descriptor.
@@ -53,7 +53,7 @@ VkDescriptorSet VulkanImageDescriptorCache::get(const Key& key)
             if (imageInfo0.imageView == VK_NULL_HANDLE)
             {
                 auto& whiteImageImpl =
-                    static_cast<const VulkanImage&>(*_parentDevice->whiteImage().impl());
+                    static_cast<const VulkanImage&>(*_painter->whiteImage().impl());
                 imageInfo0.imageView = whiteImageImpl.vkImageView();
             }
 
@@ -73,7 +73,7 @@ VkDescriptorSet VulkanImageDescriptorCache::get(const Key& key)
             };
 
             vkUpdateDescriptorSets(
-                _parentDevice->vkDevice(),
+                _painter->vkDevice(),
                 static_cast<uint32_t>(setWrites.size()),
                 setWrites.data(),
                 0,
@@ -90,13 +90,13 @@ void VulkanImageDescriptorCache::destroy()
 {
     logVerbose("Destroying VulkanImageDescriptorCache");
 
-    if (_parentDevice != nullptr)
+    if (_painter != nullptr)
     {
         clear();
 
         if (_vkDescriptorPool != VK_NULL_HANDLE)
         {
-            vkDestroyDescriptorPool(_parentDevice->vkDevice(), _vkDescriptorPool, nullptr);
+            vkDestroyDescriptorPool(_painter->vkDevice(), _vkDescriptorPool, nullptr);
             _vkDescriptorPool = VK_NULL_HANDLE;
         }
     }
@@ -117,7 +117,7 @@ void VulkanImageDescriptorCache::clear()
         }
 
         vkFreeDescriptorSets(
-            _parentDevice->vkDevice(),
+            _painter->vkDevice(),
             _vkDescriptorPool,
             static_cast<uint32_t>(sets.size()),
             sets.data());
@@ -127,7 +127,7 @@ void VulkanImageDescriptorCache::clear()
 void VulkanImageDescriptorCache::notifyVkImageOrVkImageViewAboutToBeDestroyed(
     const VulkanImageAndViewPair& imageAndViewPair)
 {
-    const auto vkDevice = _parentDevice->vkDevice();
+    const auto vkDevice = _painter->vkDevice();
 
     _cache.removeWhere(
         [&](const auto& pair)
@@ -164,7 +164,7 @@ void VulkanImageDescriptorCache::createDescriptorPool()
     info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
     checkVkResult(
-        vkCreateDescriptorPool(_parentDevice->vkDevice(), &info, nullptr, &_vkDescriptorPool),
+        vkCreateDescriptorPool(_painter->vkDevice(), &info, nullptr, &_vkDescriptorPool),
         "Failed to create a descriptor pool.");
 }
 } // namespace pl

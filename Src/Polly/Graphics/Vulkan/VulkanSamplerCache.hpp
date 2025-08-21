@@ -12,7 +12,7 @@ class VulkanPainter;
 class VulkanSamplerCache final
 {
   public:
-    explicit VulkanSamplerCache(VulkanPainter& parentDevice);
+    explicit VulkanSamplerCache(VulkanPainter& painter);
 
     deleteCopyAndMove(VulkanSamplerCache);
 
@@ -23,7 +23,7 @@ class VulkanSamplerCache final
     void clear();
 
   private:
-    VulkanPainter&         _parentDevice;
+    VulkanPainter&                _painter;
     SortedMap<Sampler, VkSampler> _cache;
 };
 } // namespace Polly

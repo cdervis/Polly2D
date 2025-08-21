@@ -31,6 +31,6 @@ polly_define_comparer(Less, <);
 polly_define_comparer(LessEqual, <=);
 polly_define_comparer(Greater, >);
 polly_define_comparer(GreaterEqual, >=);
-} // namespace Polly::comparers
+} // namespace Polly::Comparers
 
 #undef polly_define_comparer

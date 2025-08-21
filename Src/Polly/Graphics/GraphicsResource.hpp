@@ -21,14 +21,14 @@ class GraphicsResource : public Object,
                          public Asset
 {
   protected:
-    explicit GraphicsResource(Painter::Impl& parentDevice, GraphicsResourceType type);
+    explicit GraphicsResource(Painter::Impl& painter, GraphicsResourceType type);
 
   public:
     deleteCopyAndMove(GraphicsResource);
 
     ~GraphicsResource() noexcept override;
 
-    Painter::Impl& parentDevice();
+    Painter::Impl& painter();
 
     GraphicsResourceType type() const;
 
@@ -40,8 +40,8 @@ class GraphicsResource : public Object,
     String displayString() const;
 
   private:
-    Painter::Impl& _parentDevice;
-    GraphicsResourceType  _resourceType;
-    String                _label;
+    Painter::Impl&       _painter;
+    GraphicsResourceType _resourceType;
+    String               _label;
 };
 } // namespace Polly

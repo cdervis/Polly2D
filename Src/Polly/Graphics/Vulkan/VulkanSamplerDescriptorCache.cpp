@@ -8,13 +8,13 @@ namespace Polly
 static constexpr auto defaultDescriptorSetSize = 128;
 
 void VulkanSamplerDescriptorCache::init(
-    VulkanPainter* parentDevice,
+    VulkanPainter* painter,
     VkDescriptorSetLayout descriptorSetLayout)
 {
-    assume(parentDevice);
+    assume(painter);
     assume(descriptorSetLayout != VK_NULL_HANDLE);
 
-    _parentDevice = parentDevice;
+    _painter = painter;
     createDescriptorPool();
 
     _vk_descriptor_set_layout = descriptorSetLayout;
@@ -41,7 +41,7 @@ VkDescriptorSet VulkanSamplerDescriptorCache::get(VkSampler key)
         auto vkDescriptorSet = VkDescriptorSet();
 
         checkVkResult(
-            vkAllocateDescriptorSets(_parentDevice->vkDevice(), &allocInfo, &vkDescriptorSet),
+            vkAllocateDescriptorSets(_painter->vkDevice(), &allocInfo, &vkDescriptorSet),
             "Failed to create a sampler descriptor set.");
 
         // Bind the sampler to the descriptor.
@@ -57,7 +57,7 @@ VkDescriptorSet VulkanSamplerDescriptorCache::get(VkSampler key)
             setWrite.descriptorType  = VK_DESCRIPTOR_TYPE_SAMPLER;
             setWrite.pImageInfo      = &imageInfo;
 
-            vkUpdateDescriptorSets(_parentDevice->vkDevice(), 1, &setWrite, 0, nullptr);
+            vkUpdateDescriptorSets(_painter->vkDevice(), 1, &setWrite, 0, nullptr);
         }
 
         it = _cache.add(key, vkDescriptorSet)->second;
@@ -74,7 +74,7 @@ void VulkanSamplerDescriptorCache::destroy()
 
     if (_vk_descriptor_pool != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorPool(_parentDevice->vkDevice(), _vk_descriptor_pool, nullptr);
+        vkDestroyDescriptorPool(_painter->vkDevice(), _vk_descriptor_pool, nullptr);
         _vk_descriptor_pool = VK_NULL_HANDLE;
     }
 }
@@ -83,12 +83,12 @@ void VulkanSamplerDescriptorCache::clear()
 {
     logVerbose("Clearing VulkanSamplerDescriptorCache");
 
-    if (_parentDevice != nullptr)
+    if (_painter != nullptr)
     {
         _cache.clear();
 
         checkVkResult(
-            vkResetDescriptorPool(_parentDevice->vkDevice(), _vk_descriptor_pool, 0),
+            vkResetDescriptorPool(_painter->vkDevice(), _vk_descriptor_pool, 0),
             "Failed to reset a descriptor pool.");
     }
 }
@@ -109,7 +109,7 @@ void VulkanSamplerDescriptorCache::createDescriptorPool()
     info.pPoolSizes    = sizes.data();
 
     checkVkResult(
-        vkCreateDescriptorPool(_parentDevice->vkDevice(), &info, nullptr, &_vk_descriptor_pool),
+        vkCreateDescriptorPool(_painter->vkDevice(), &info, nullptr, &_vk_descriptor_pool),
         "Failed to create a descriptor pool.");
 }
 } // namespace pl

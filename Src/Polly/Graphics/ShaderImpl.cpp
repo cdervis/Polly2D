@@ -37,12 +37,12 @@ String Shader::Impl::shaderParameterTypeString(ShaderParameterType type)
 }
 
 Shader::Impl::Impl(
-    Painter::Impl& parentDevice,
+    Painter::Impl& painterImpl,
     ShaderType            shaderType,
     ParameterList         parameters,
     UserShaderFlags                   flags,
     u16                   cbufferSize)
-    : GraphicsResource(parentDevice, GraphicsResourceType::Shader)
+    : GraphicsResource(painterImpl, GraphicsResourceType::Shader)
     , _shaderType(shaderType)
     , _parameters(std::move(parameters))
     , _flags(flags)
@@ -63,7 +63,7 @@ Shader::Impl::Impl(
 Shader::Impl::~Impl() noexcept
 {
     logVerbose("~Shader::Impl({})", debuggingLabel());
-    parentDevice().notifyUserShaderDestroyed(*this);
+    painter().notifyUserShaderDestroyed(*this);
 }
 
 Polly::ShaderType Shader::Impl::shaderType() const
@@ -180,15 +180,15 @@ void Shader::Impl::setDefaultParameterValues()
     }
 }
 
-void Shader::Impl::notifyParentDeviceBeforeParamChanged()
+void Shader::Impl::notifyPainterBeforeParamChanged()
 {
     if (_isInUse)
-        parentDevice().notifyShaderParamAboutToChangeWhileBound(*this);
+        painter().notifyShaderParamAboutToChangeWhileBound(*this);
 }
 
-void Shader::Impl::notifyParentDeviceAfterParamChanged()
+void Shader::Impl::notifyPainterAfterParamChanged()
 {
     if (_isInUse)
-        parentDevice().notifyShaderParamHasChangedWhileBound(*this);
+        painter().notifyShaderParamHasChangedWhileBound(*this);
 }
 } // namespace pl
