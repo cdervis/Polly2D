@@ -279,4 +279,14 @@ function(polly_add_game)
     target_sources(${target_name} PRIVATE ${asset_decryption_key_cpp})
 
     target_include_directories(${target_name} PRIVATE ${game_src_files_dir})
+
+    if (NOT POLLY_ADD_GAME_NO_PCH)
+        target_precompile_headers(${target_name} PRIVATE
+            "$<$<COMPILE_LANGUAGE:CXX>:<Polly.hpp$<ANGLE-R>>"
+            "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Algorithm.hpp$<ANGLE-R>>"
+            "$<$<COMPILE_LANGUAGE:CXX>:<Polly/ToString.hpp$<ANGLE-R>>"
+            "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Maybe.hpp$<ANGLE-R>>"
+            "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Details/magic_enum.hpp$<ANGLE-R>>"
+        )
+    endif()
 endfunction()
