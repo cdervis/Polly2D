@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ macos-14 ]
-        config: [ Debug ]
+        os: [ macos-14, macos-15 ]
+        config: [ Debug, Release ]
 
     runs-on: ${{matrix.os}}
     env:
