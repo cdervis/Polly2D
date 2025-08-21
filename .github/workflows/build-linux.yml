@@ -1,0 +1,50 @@
+name: Build Linux
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-latest ]
+        config: [ Debug ]
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-sources
+        with:
+          path: ${{github.workspace}}/Build/Download/**
+          key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{ env.cache-name }}-
+
+      - name: Cache CMake dependencies build objects
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-builds
+          build-dir: ${{github.workspace}}/Build/${{matrix.os}}-${{matrix.config}}
+        with:
+          path: |
+            ${{env.build-dir}}/_deps/*-build
+            ${{env.build-dir}}/_deps/*-subbuild
+          key: ${{env.cache-name}}-linux-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{env.cache-name}}-linux-
+
+      - name: Configure CMake
+        run: cmake -B ${{env.build-dir}} -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+
+      - name: Build CMake
+        run: cmake --build ${{env.build-dir}} --parallel
