@@ -24,11 +24,9 @@ function(polly_add_game)
 
     file(SHA256 ${game_props_file} asset_encryption_key)
 
-    # TODO: For now, don't check the xcassets. We have to generate it automatically during CMake time (here)
-    # using a simple Python script. The user should only have to store a logo.png etc in the Misc folder.
-    #if (NOT EXISTS ${xcassets_file})
-    #    polly_fatal_error("Assets.xcassets not found! Expected at: ${xcassets_file}")
-    #endif ()
+    if (NOT EXISTS ${xcassets_file})
+        polly_fatal_error("Assets.xcassets not found! Expected at: ${xcassets_file}")
+    endif ()
 
     if (enable_verbose_logging)
         polly_log("Adding game target '${target_name}'")
@@ -130,7 +128,7 @@ function(polly_add_game)
         configure_file("${script_dir}/Info.plist.in" ${info_plist_dst_filename})
 
         # TODO:
-        #target_sources(${target_name} PRIVATE ${info_plist_dst_filename} ${misc_dir}/Assets.xcassets)
+        target_sources(${target_name} PRIVATE ${info_plist_dst_filename} ${misc_dir}/Assets.xcassets)
 
         set_target_properties(${target_name} PROPERTIES
             MACOSX_BUNDLE_GUI_IDENTIFIER ${bundle_display_name}
