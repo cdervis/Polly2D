@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-latest ]
-        config: [ Debug ]
+        os: [ ubuntu-22.04, ubuntu-latest ]
+        config: [ Debug, Release ]
 
     runs-on: ${{matrix.os}}
     env:
@@ -23,6 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
+        name: Install APT packages
         with:
           packages: >
             build-essential git make
