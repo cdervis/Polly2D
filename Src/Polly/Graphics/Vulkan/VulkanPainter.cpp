@@ -779,11 +779,7 @@ UniquePtr<Image::Impl> VulkanPainter::createCanvas(u32 width, u32 height, ImageF
     return makeUnique<VulkanImage>(*this, width, height, format);
 }
 
-UniquePtr<Image::Impl> VulkanPainter::createImage(
-    u32         width,
-    u32         height,
-    ImageFormat format,
-    const void* data)
+UniquePtr<Image::Impl> VulkanPainter::createImage(u32 width, u32 height, ImageFormat format, const void* data)
 {
     return makeUnique<VulkanImage>(*this, width, height, format, data);
 }
@@ -2273,14 +2269,12 @@ VkShaderModule VulkanPainter::compileBuiltinVkShader(
     return mod;
 }
 
-void VulkanPainter::notifyShaderParamAboutToChangeWhileBound(
-    [[maybe_unused]] const Shader::Impl& shaderImpl)
+void VulkanPainter::notifyShaderParamAboutToChangeWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
 {
     flushAll();
 }
 
-void VulkanPainter::notifyShaderParamHasChangedWhileBound(
-    [[maybe_unused]] const Shader::Impl& shaderImpl)
+void VulkanPainter::notifyShaderParamHasChangedWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
 {
     auto& frameData = _frameData[_currentFrameIndex];
     frameData.dirtyFlags |= DF_UserShaderParams;
@@ -2302,9 +2296,7 @@ void VulkanPainter::onBeforeShaderChanged([[maybe_unused]] BatchMode mode)
     flushAll();
 }
 
-void VulkanPainter::onAfterShaderChanged(
-    [[maybe_unused]] BatchMode mode,
-    [[maybe_unused]] Shader&   shader)
+void VulkanPainter::onAfterShaderChanged([[maybe_unused]] BatchMode mode, [[maybe_unused]] Shader& shader)
 {
     auto& frameData = _frameData[_currentFrameIndex];
     frameData.dirtyFlags |= DF_PipelineState;
@@ -2333,9 +2325,7 @@ void VulkanPainter::onAfterBlendStateChanged([[maybe_unused]] const BlendState& 
     frameData.dirtyFlags |= DF_PipelineState;
 }
 
-void VulkanPainter::drawSprite(
-    const Sprite&                     sprite,
-    [[maybe_unused]] SpriteShaderKind spriteShaderKind)
+void VulkanPainter::drawSprite(const Sprite& sprite, [[maybe_unused]] SpriteShaderKind spriteShaderKind)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -2524,10 +2514,7 @@ void VulkanPainter::drawRoundedRectangle(
     ++performanceStats().polygonCount;
 }
 
-void VulkanPainter::fillRoundedRectangle(
-    const Rectf& rectangle,
-    float        cornerRadius,
-    const Color& color)
+void VulkanPainter::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
