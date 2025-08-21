@@ -8,3 +8,6 @@ CPMAddPackage(
 
 target_link_libraries(Polly PRIVATE Spine)
 
+# TODO: this should be part of the Spine project, but we'll do it here for now.
+target_compile_features(Spine PRIVATE cxx_std_20)
+

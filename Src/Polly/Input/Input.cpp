@@ -15,7 +15,7 @@ bool Polly::isKeyDown(Scancode scancode)
 
 bool Polly::isKeyDown(std::initializer_list<Scancode> scancodes)
 {
-    return isKeyDown(SmallList(scancodes));
+    return isKeyDown(SmallList<Scancode>(scancodes));
 }
 
 bool Polly::isKeyDown(Span<Scancode> scancodes)
