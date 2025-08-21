@@ -49,6 +49,14 @@ class ByteBlob final
 
     ~ByteBlob() noexcept;
 
+    template<std::integral T>
+    static ByteBlob createByCopying(Span<T> data)
+    {
+        auto blob = ByteBlob(data.sizeInBytes());
+        std::memcpy(blob._data, data.data(), data.sizeInBytes());
+        return blob;
+    }
+
     template<typename T, u32 InlineCapacity>
     requires std::is_trivially_destructible_v<T>
     [[nodiscard]]

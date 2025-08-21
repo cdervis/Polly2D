@@ -58,10 +58,12 @@ CPMAddPackage(
     "ALLOW_EXTERNAL_SPIRV_TOOLS OFF"
     "ENABLE_SPVREMAPPER OFF"
     "ENABLE_GLSLANG_JS OFF"
-    GIT_SHALLOW
 )
 
-target_link_libraries(Polly PRIVATE glslang::glslang)
+target_link_libraries(Polly PRIVATE
+    glslang::glslang
+    glslang::glslang-default-resource-limits
+)
 
 # We're using Vulkan 1.0.
 target_compile_definitions(Polly PRIVATE
