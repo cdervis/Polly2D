@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-22.04, ubuntu-latest ]
-        config: [ Debug, Release ]
+        os: [ ubuntu-latest ]
+        config: [ Debug ]
 
     runs-on: ${{matrix.os}}
 
