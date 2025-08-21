@@ -174,7 +174,7 @@ void ParticleVelocityColorMod::modify([[maybe_unused]] float elapsedTime, Mutabl
     for (auto& particle : particles)
     {
         const auto velocityLengthSquared = lengthSquared(particle.velocity);
-        const auto deltaColor             = velocityColor - stationaryColor;
+        const auto deltaColor            = velocityColor - stationaryColor;
 
         if (velocityLengthSquared >= velocityThreshold2)
         {
@@ -182,7 +182,7 @@ void ParticleVelocityColorMod::modify([[maybe_unused]] float elapsedTime, Mutabl
         }
         else
         {
-            const auto t = Polly::sqrt(velocityLengthSquared) / velocityThreshold2;
+            const auto t = sqrt(velocityLengthSquared) / velocityThreshold2;
 
             particle.color.r = (deltaColor.r * t) + stationaryColor.r;
             particle.color.g = (deltaColor.g * t) + stationaryColor.g;
@@ -204,13 +204,13 @@ void ParticleVortexMod::modify(float elapsedTime, MutableSpan<Particle> particle
     for (auto& particle : particles)
     {
         auto       dist      = position - particle.position;
-        const auto distance2 = Polly::lengthSquared(dist);
-        const auto distance  = Polly::sqrt(distance2);
+        const auto distance2 = lengthSquared(dist);
+        const auto distance  = sqrt(distance2);
 
         auto m = (10'000.0f * mass * particle.mass) / distance2;
-        m      = Polly::max(Polly::min(m, maxSpeed), -maxSpeed) * elapsedTime;
+        m      = max(min(m, maxSpeed), -maxSpeed) * elapsedTime;
 
         particle.velocity += (dist / distance) * m;
     }
 }
-} // namespace pl
+} // namespace Polly

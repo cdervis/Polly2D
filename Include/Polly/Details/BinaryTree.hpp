@@ -50,7 +50,7 @@ class BinaryTree
         {
             assumeWithMsg(_node, "Attempting to advance an empty BinaryTree iterator.");
 
-            if (_nextIsLeft && _node->left)
+            if (_nextIsLeft and _node->left)
             {
                 _node = _node->left;
             }
@@ -58,23 +58,29 @@ class BinaryTree
             {
                 _node = _node->right;
 
-                while (_node && _node->left)
+                while (_node and _node->left)
+                {
                     _node = _node->left;
+                }
 
                 _nextIsLeft = true;
             }
             else if (_node->parent)
             {
                 // Have to track back to the parent and continue with the successor node.
-                while (_node && _node->parent && _node == _node->parent->right)
+                while (_node and _node->parent and _node == _node->parent->right)
                 {
                     _node = _node->parent;
                 }
 
-                if (_node && _node->parent)
+                if (_node and _node->parent)
+                {
                     _node = _node->parent;
+                }
                 else
+                {
                     _node = nullptr;
+                }
 
                 _nextIsLeft = false;
             }
@@ -260,25 +266,25 @@ class BinaryTree
     template<typename Container>
     u32 removeRange(const Container& container)
     {
-        auto removed_count = 0u;
+        auto removedCount = 0u;
 
         for (const auto& value : container)
         {
             if (remove(value))
             {
-                ++removed_count;
+                ++removedCount;
             }
         }
 
-        return removed_count;
+        return removedCount;
     }
 
     template<typename Predicate>
     u32 removeWhere(Predicate&& predicate)
     {
-        auto it            = begin();
-        auto en            = end();
-        auto removed_count = 0u;
+        auto it           = begin();
+        auto en           = end();
+        auto removedCount = 0u;
 
         while (it != en)
         {
@@ -286,7 +292,7 @@ class BinaryTree
             {
                 destroyNode(it._node);
                 it = begin();
-                ++removed_count;
+                ++removedCount;
             }
             else
             {
@@ -294,7 +300,7 @@ class BinaryTree
             }
         }
 
-        return removed_count;
+        return removedCount;
     }
 
     u32 size() const
@@ -445,7 +451,7 @@ class BinaryTree
             }
             else
             {
-                reparent_node<false>(successor, nullptr);
+                reparentNode<false>(successor, nullptr);
             }
 
             successor->parent = node->parent;
@@ -468,25 +474,25 @@ class BinaryTree
             }
             else if (node->parent == rootNode)
             {
-                reparent_node<false>(node, successor);
+                reparentNode<false>(node, successor);
             }
         }
         else if (not node->left and not node->right)
         {
             // Case 1
-            reparent_node<true>(node, nullptr);
+            reparentNode<true>(node, nullptr);
         }
         else
         {
             // Case 2
-            auto* child_node = node->left ? node->left : node->right;
-            reparent_node<true>(node, child_node);
-            child_node->parent = node->parent;
+            auto* childNode = node->left ? node->left : node->right;
+            reparentNode<true>(node, childNode);
+            childNode->parent = node->parent;
         }
     }
 
     template<bool CheckParentNull>
-    void reparent_node(Node* child, Node* new_node)
+    void reparentNode(Node* child, Node* newNode)
     {
         auto* parent = child->parent;
 
@@ -500,11 +506,11 @@ class BinaryTree
 
         if (child == parent->left)
         {
-            parent->left = new_node;
+            parent->left = newNode;
         }
         else
         {
-            parent->right = new_node;
+            parent->right = newNode;
         }
     }
 
