@@ -2,8 +2,10 @@
 
 #include "glslang/Public/ResourceLimits.h"
 #include "glslang/Public/ShaderLang.h"
+#include "Polly/FileSystem.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Logging.hpp"
+#include "Polly/Narrow.hpp"
 #include "SPIRV/GlslangToSpv.h"
 #include "VulkanPrerequisites.hpp"
 
@@ -13,7 +15,7 @@ namespace Polly
 {
 ByteBlob GLSLToSpirVCompiler::compile(StringView glslCode, VulkanShaderType type)
 {
-    const auto langType = [type]
+    const auto shaderStage = [type]
     {
         switch (type)
         {
@@ -24,15 +26,26 @@ ByteBlob GLSLToSpirVCompiler::compile(StringView glslCode, VulkanShaderType type
         notImplemented();
     }();
 
-    auto shader = glslang::TShader(langType);
-    shader.setDebugInfo(true);
+    auto shader = glslang::TShader(shaderStage);
 
-    const char* str = glslCode.cstring();
-    shader.setStrings(&str, 1);
+#ifndef NDEBUG
+    shader.setDebugInfo(true);
+    shader.setEnhancedMsgs();
+#else
+    shader.setDebugInfo(false);
+#endif
+
+    const char* str    = glslCode.data();
+    const auto  strLen = narrow<int>(glslCode.size());
+    shader.setStringsWithLengths(&str, &strLen, 1);
+
+    shader.setAutoMapLocations(false);
+    shader.setInvertY(false);
+    shader.setNanMinMaxClamp(false);
 
     shader.setEnvInput(
         glslang::EShSource::EShSourceGlsl,
-        langType,
+        shaderStage,
         glslang::EShClient::EShClientOpenGL,
         glslang::EShTargetClientVersion::EShTargetOpenGL_450);
 
@@ -44,20 +57,40 @@ ByteBlob GLSLToSpirVCompiler::compile(StringView glslCode, VulkanShaderType type
         glslang::EShTargetLanguage::EShTargetSpv,
         glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
 
-    auto includer = glslang::TShader::ForbidIncluder();
     if (not shader.parse(
             GetDefaultResources(),
-            glslang::EShTargetClientVersion::EShTargetOpenGL_450,
+            110,
+            ENoProfile,
             false,
-            EShMsgDefault,
-            includer))
+            false,
+            static_cast<EShMessages>(EShMsgSpvRules bitor EShMsgVulkanRules bitor EShMsgRelaxedErrors)))
     {
         throw Error(formatString("Failed to compile GLSL shader to SPIR-V: {}", shader.getInfoLog()));
     }
 
-    auto spirv = std::vector<u32>();
-    glslang::GlslangToSpv(*shader.getIntermediate(), spirv);
+    auto program = glslang::TProgram();
+    program.addShader(&shader);
 
-    return ByteBlob::createByCopying(Span(spirv.data(), spirv.size()));
+    if (not program.link(EShMsgDefault) or not program.mapIO())
+    {
+        throw Error(formatString("Failed to link SPIR-V program: {}", program.getInfoLog()));
+    }
+
+    auto opts = glslang::SpvOptions();
+
+#ifdef NDEBUG
+    opts.stripDebugInfo   = true;
+    opts.disableOptimizer = false;
+    opts.optimizeSize     = true;
+#else
+    opts.stripDebugInfo   = false;
+    opts.disableOptimizer = true;
+    opts.optimizeSize     = false;
+#endif
+
+    auto spirv = std::vector<u32>();
+    glslang::GlslangToSpv(*program.getIntermediate(shaderStage), spirv, &opts);
+
+    return ByteBlob::createByCopying(Span(spirv.data(), narrow<u32>(spirv.size())));
 }
 } // namespace Polly
