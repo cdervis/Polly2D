@@ -9,7 +9,7 @@ const Polly::u8 %C_NAME%_data[] = {
 %OUTPUT_CPP%
 };
 
-const int %C_NAME%_size = sizeof(%C_NAME%_data);
+const int %C_NAME%_size = sizeof(%C_NAME%_data) - 1;
 """
 
 TEMPLATE_HPP = """
@@ -52,7 +52,7 @@ class EmbedCommand:
 
             content = ""
             for chunk in EmbedCommand.__byte_chunk(contents_as_hex, 24):
-                content += ", ".join(chunk)
+                content += ",".join(chunk)
                 content += ",\n"
             content += '0,'
 
