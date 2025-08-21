@@ -100,6 +100,7 @@ foreach (file ${polly_sources})
         AND NOT ext STREQUAL ".h"
         AND NOT ext STREQUAL ".c"
         AND NOT ext STREQUAL ".m"
+        AND NOT ext STREQUAL ".inl"
         AND NOT ext STREQUAL ".mm")
         # Embed the resource as-is.
         polly_embed_file(Polly ${file})
