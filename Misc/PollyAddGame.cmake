@@ -1,6 +1,6 @@
 function(polly_add_game)
     set(options VERBOSE NO_PCH)
-    set(one_value_args NAME COMPANY VERSION STRICT_WARNINGS DEPLOY VERBOSE_LOGGING)
+    set(one_value_args NAME COMPANY VERSION STRICT_WARNINGS VERBOSE_LOGGING)
     set(multi_value_args)
 
     cmake_parse_arguments(POLLY_ADD_GAME "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
