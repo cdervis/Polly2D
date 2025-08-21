@@ -16,6 +16,8 @@ jobs:
         config: [ Debug ]
 
     runs-on: ${{matrix.os}}
+    env:
+      build-dir: ${{github.workspace}}/Build/${{matrix.os}}-${{matrix.config}}
 
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +36,6 @@ jobs:
         uses: actions/cache@v4.2.4
         env:
           cache-name: cache-cmake-dependency-builds
-          build-dir: ${{github.workspace}}/Build/${{matrix.os}}-${{matrix.config}}
         with:
           path: |
             ${{env.build-dir}}/_deps/*-build
