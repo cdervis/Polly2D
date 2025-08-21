@@ -13,6 +13,9 @@ def formatSourcesIn(dir: str):
 
         print('-', root)
         for filename in files:
+            if 'magic_enum' in filename:
+                continue
+            
             if filename.endswith('.hpp') or filename.endswith('.inl'):
                 print('  -', filename)
                 os.system(f'clang-format -i {os.path.join(root, filename)}')
