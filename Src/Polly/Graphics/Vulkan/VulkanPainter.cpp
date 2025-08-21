@@ -457,7 +457,7 @@ void VulkanPainter::startFrame()
     frameData.meshVertexCounter = 0;
     frameData.meshIndexCounter  = 0;
 
-    setCanvas({}, none, true);
+    setCanvas({}, black, true);
 
     frameData.dirtyFlags = DF_All;
     frameData.dirtyFlags &= ~DF_UserShaderParams;
@@ -1587,8 +1587,6 @@ void VulkanPainter::prepareDrawCall()
 
     if ((df bitand DF_SystemValueCBufferParams) == DF_SystemValueCBufferParams)
     {
-        assume(currentVulkanUserShader);
-
         // Only set when there are any pushConstants specified in the user-shader?
         // i.e., only when the user used >0 system values
         const auto viewport = currentViewport();
