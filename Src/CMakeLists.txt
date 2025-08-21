@@ -60,10 +60,6 @@ endforeach ()
 
 set_target_properties(Polly PROPERTIES FOLDER "Polly")
 
-if (POLLY_MSGBOX_ON_ERROR)
-    target_compile_definitions(Polly PRIVATE -DPOLLY_MSGBOX_ON_ERROR)
-endif ()
-
 if (BUILD_TESTING)
     target_compile_definitions(Polly PUBLIC -DPOLLY_ENABLE_TESTS)
 endif ()

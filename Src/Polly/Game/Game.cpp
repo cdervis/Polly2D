@@ -26,10 +26,10 @@ Game::Game(GameInitArgs args)
 Game::Game(StringView title)
     : Game(
           GameInitArgs{
-              .title                     = String(title),
-              .companyName              = String(),
-              .initialWindowSize       = none,
-              .enableAudio              = true,
+              .title                  = String(title),
+              .companyName            = String(),
+              .initialWindowSize      = none,
+              .enableAudio            = true,
               .fullScreenDisplayIndex = none,
           })
 {
@@ -148,10 +148,10 @@ void Game::requestFrameCapture()
 Game::Game(StringView title, StringView companyName)
     : Game(
           GameInitArgs{
-              .title                     = String(title),
-              .companyName              = String(companyName),
-              .initialWindowSize       = none,
-              .enableAudio              = true,
+              .title                  = String(title),
+              .companyName            = String(companyName),
+              .initialWindowSize      = none,
+              .enableAudio            = true,
               .fullScreenDisplayIndex = none,
           })
 {
@@ -314,20 +314,6 @@ void Game::onDisplayContentScaleChanged(const DisplayEvent& event)
 
 void Game::runGameInternal(UniquePtr<Game> game)
 {
-    try
-    {
-        game->_impl->run(game.get());
-    }
-    catch (const std::exception& error)
-    {
-#ifdef POLLY_MSGBOX_ON_ERROR
-        const auto msg = formatString("An unhandled error has occurred: {}", error.what());
-        logWarning(msg.cstring());
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game Error", msg.cstring(), nullptr);
-#else
-        logError("Unhandled exception has occurred during game execution: {}", error.what());
-#endif
-        throw;
-    }
+    game->_impl->run(game.get());
 }
-} // namespace pl
+} // namespace Polly

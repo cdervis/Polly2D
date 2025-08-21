@@ -5,7 +5,6 @@ endif ()
 option(POLLY_ENABLE_ADDRESS_SANITIZER "Enable clang address sanitizer" OFF)
 option(POLLY_ENABLE_VERBOSE_LOGGING "Enable verbose logging during debug mode" OFF)
 option(POLLY_BUILD_APPS "Build the Polly testbed and sample games" ${is_master_project})
-option(POLLY_MSGBOX_ON_ERROR "Show a message box when an unhandled exception occurs?" OFF)
 
 if (ANDROID)
     if (POLLY_BUILD_TESTBED)
