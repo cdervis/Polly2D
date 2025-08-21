@@ -24,6 +24,10 @@ Instead, it lets you define your game architecture however you desire it, and gi
 
 In short, it provides every audiovisual aspect necessary to comfortably make a 2D game using a pure C++, code-only approach. 
 
+> [!NOTE]  
+> Polly is currently in early development. Some things might be broken, not documented and many things change frequently.
+> Feedback is very much appreciated.
+
 ```cpp
 #include <Polly.hpp>
 
