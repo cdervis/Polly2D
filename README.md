@@ -86,13 +86,4 @@ int main()
 
 - **Spine Integration**: [Spine](https://esotericsoftware.com/) integration for powerful physics-based skeletal 2D animations.
 
----
-
-### Modernized C++ Library
-
-Polly comes with direct replacements for many of the standard library's types and containers, such as `std::vector`, `std::string` and `std::optional`.
-
-These types have been designed from the ground up to guarantee safe and simple usage by minimizing implicit conversions and performing access checks.
-
-Additionally, Polly resources like images, shaders and fonts are automatically reference-counted and respect C++ RAII rules.
 
