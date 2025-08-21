@@ -13,8 +13,8 @@ jobs:
       fail-fast: true
       matrix:
         os: [ windows-latest ]
-        config: [ Debug ]
-        arch: [ x64 ]
+        config: [ Debug, Release ]
+        arch: [ x64, ARM64 ]
 
     runs-on: ${{matrix.os}}
 
