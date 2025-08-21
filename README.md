@@ -7,8 +7,10 @@
 Minimal 2D Game Framework for C++
 
 [![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org)
-[![License](https://img.shields.io/github/license/cdervis/Polly)](https://github.com/cdervis/Polly/blob/main/LICENSE.md)
 [![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](https://polly2d.org/getting-started)
+[![License](https://img.shields.io/github/license/cdervis/Polly)](https://github.com/cdervis/Polly/blob/main/LICENSE.md)
+
+[![Build Linux](https://github.com/cdervis/Polly/actions/workflows/build-linux.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-linux.yml)
 
 </div>
 
@@ -49,7 +51,8 @@ struct MyGame : Game
     // ...
 };
 
-int main() {
+int main()
+{
     runGame<MyGame>();
     return 0;
 }
