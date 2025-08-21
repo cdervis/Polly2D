@@ -51,7 +51,7 @@ void Font::Impl::createBuiltInFonts()
 {
     logVerbose("Creating built-in font objects");
 
-    sBuiltInFontRegular = makeUnique<Impl>(Noto_ttf_span(), false);
+    sBuiltInFontRegular = makeUnique<Impl>(Noto_ttfSpan(), false);
     sBuiltInFontRegular->setAssetName("BuiltInFontRegular");
     sBuiltInFontRegular->addRef();
 }

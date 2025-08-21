@@ -2077,23 +2077,22 @@ void VulkanPainter::createPipelineLayouts()
 
 void VulkanPainter::createShaderModules()
 {
-    _spriteVs =
-        compileBuiltinVkShader("sprite_vs", SpriteBatchVs_vert_string_view(), VulkanShaderType::Vertex);
+    _spriteVs = compileBuiltinVkShader("sprite_vs", SpriteBatchVs_vertStringView(), VulkanShaderType::Vertex);
 
     _defaultSpritePs = compileBuiltinVkShader(
         "sprite_ps_default",
-        SpriteBatchPsDefault_frag_string_view(),
+        SpriteBatchPsDefault_fragStringView(),
         VulkanShaderType::Fragment);
 
     _monochromaticSpritePs = compileBuiltinVkShader(
         "sprite_monochromatic_ps",
-        SpriteBatchPsMonochromatic_frag_string_view(),
+        SpriteBatchPsMonochromatic_fragStringView(),
         VulkanShaderType::Fragment);
 
-    _polyVs = compileBuiltinVkShader("poly_vs", PolyVs_vert_string_view(), VulkanShaderType::Vertex);
-    _polyPs = compileBuiltinVkShader("poly_ps", PolyPs_frag_string_view(), VulkanShaderType::Fragment);
-    _meshVs = compileBuiltinVkShader("mesh_vs", MeshVs_vert_string_view(), VulkanShaderType::Vertex);
-    _meshPs = compileBuiltinVkShader("mesh_ps", MeshPs_frag_string_view(), VulkanShaderType::Fragment);
+    _polyVs = compileBuiltinVkShader("poly_vs", PolyVs_vertStringView(), VulkanShaderType::Vertex);
+    _polyPs = compileBuiltinVkShader("poly_ps", PolyPs_fragStringView(), VulkanShaderType::Fragment);
+    _meshVs = compileBuiltinVkShader("mesh_vs", MeshVs_vertStringView(), VulkanShaderType::Vertex);
+    _meshPs = compileBuiltinVkShader("mesh_ps", MeshPs_fragStringView(), VulkanShaderType::Fragment);
 }
 
 void VulkanPainter::createSpriteRenderingResources()

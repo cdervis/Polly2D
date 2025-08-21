@@ -24,12 +24,12 @@ TEMPLATE_HPP = """
 extern const Polly::u8 %C_NAME%_data[];
 extern const int %C_NAME%_size;
 
-static inline auto %C_NAME%_span() -> Polly::Span<Polly::u8> {
+static inline auto %C_NAME%Span() -> Polly::Span<Polly::u8> {
     return Polly::Span( reinterpret_cast<const Polly::u8*>( %C_NAME%_data ), %C_NAME%_size );
 }
 
-static inline auto %C_NAME%_string_view() -> Polly::StringView {
-    return Polly::StringView( reinterpret_cast<const char*>( %C_NAME%_data ), %C_NAME%_size );
+static inline auto %C_NAME%StringView() -> Polly::StringView {
+    return Polly::StringView( reinterpret_cast<const char*>( %C_NAME%_data ), %C_NAME%_size, true );
 }
 // clang-format on
 """
@@ -51,9 +51,10 @@ class EmbedCommand:
             contents_as_hex = [('0x%02x' % b) for b in content]
 
             content = ""
-            for chunk in EmbedCommand.__byte_chunk(contents_as_hex, 16):
+            for chunk in EmbedCommand.__byte_chunk(contents_as_hex, 24):
                 content += ", ".join(chunk)
                 content += ",\n"
+            content += '0,'
 
             output = TEMPLATE_CPP
             output = output.replace(
