@@ -16,8 +16,6 @@ jobs:
         config: [ Debug, Release ]
 
     runs-on: ${{matrix.os}}
-    env:
-      build-dir: ${{github.workspace}}/Build/${{matrix.os}}-${{matrix.config}}
 
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +37,7 @@ jobs:
         env:
           cache-name: cache-cmake-dependency-sources
         with:
-          path: ${{github.workspace}}/Build/Download/**
+          path: ${{github.workspace}}/build/_deps/*-src
           key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
           restore-keys: |
             ${{ env.cache-name }}-
@@ -50,14 +48,18 @@ jobs:
           cache-name: cache-cmake-dependency-builds
         with:
           path: |
-            ${{env.build-dir}}/_deps/*-build
-            ${{env.build-dir}}/_deps/*-subbuild
-          key: ${{env.cache-name}}-linux-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+            ${{github.workspace}}/build/_deps/*-build
+            ${{github.workspace}}/build/_deps/*-subbuild
+          key: ${{env.cache-name}}-${{matrix.os}}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
           restore-keys: |
-            ${{env.cache-name}}-linux-
+            ${{env.cache-name}}-${{matrix.os}}-
 
       - name: Configure CMake
-        run: cmake -B ${{env.build-dir}} -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+        shell: bash
+        working-directory: ${{github.workspace}}/build
+        run: cmake $GITHUB_WORKSPACE -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }}
 
       - name: Build CMake
-        run: cmake --build ${{env.build-dir}} --parallel
+        working-directory: ${{github.workspace}}/build
+        shell: bash
+        run: cmake --build . --parallel --config ${{matrix.config}}
