@@ -12,6 +12,7 @@ Minimal 2D Game Framework for C++
 
 [![Build Windows](https://github.com/cdervis/Polly/actions/workflows/build-windows.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-windows.yml)
 [![Build Linux](https://github.com/cdervis/Polly/actions/workflows/build-linux.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-linux.yml)
+[![Build macOS](https://github.com/cdervis/Polly/actions/workflows/build-macos.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-macos.yml)
 
 </div>
 
