@@ -794,18 +794,18 @@ class ListBase
         // The rest runs only if allocated.
 
         auto newCapacity = static_cast<u32>(0);
-        T*   newDataPtr = nullptr;
+        T*   newDataPtr  = nullptr;
 
         if (size() > InlineCapacity)
         {
             newCapacity = size();
-            newDataPtr = UncheckedAllocate(newCapacity, allocationEndPtr());
+            newDataPtr  = UncheckedAllocate(newCapacity, allocationEndPtr());
         }
         else
         {
             // We move to inline storage.
             newCapacity = InlineCapacity;
-            newDataPtr = storagePtr();
+            newDataPtr  = storagePtr();
         }
 
         uninitializedMove(beginPtr(), endPtr(), newDataPtr);
@@ -837,7 +837,7 @@ class ListBase
 
             // The check is handled by the if-guard.
             const auto newCapacity = calculateNewCapacity(newSize);
-            auto*      newDataPtr = allocateBuffer(newCapacity);
+            auto*      newDataPtr  = allocateBuffer(newCapacity);
             auto*      newLast     = newDataPtr + originalSize;
 
             uninitializedFill(newLast, newDataPtr + newSize, val...);
