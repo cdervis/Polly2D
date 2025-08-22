@@ -15,16 +15,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
         set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ltoSupported})
     endif ()
 
-    if (MSVC)
-        add_compile_options(/GL) # Whole Program Optimization
-    else ()
+    if (NOT MSVC)
         add_compile_options(-O3)
-        add_compile_options(-flto)
     endif ()
 
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-    endif()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif ()
 
 # Address sanitizer
