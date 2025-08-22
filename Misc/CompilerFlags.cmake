@@ -80,6 +80,10 @@ function(enable_default_cpp_flags target_name)
             target_compile_options(${target_name} PRIVATE -Wnrvo)
         endif ()
 
+        if (MINGW OR GCC)
+            target_compile_options(${target_name} PRIVATE -Wno-maybe-uninitialized)
+        endif ()
+        
         if (APPLE)
             target_compile_options(${target_name} PRIVATE
                 -Wno-dtor-name
