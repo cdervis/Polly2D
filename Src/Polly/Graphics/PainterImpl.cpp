@@ -10,13 +10,16 @@
 #include "Polly/Defer.hpp"
 #include "Polly/Font.hpp"
 #include "Polly/Game/WindowImpl.hpp"
+#include "Polly/GamePerformanceStats.hpp"
 #include "Polly/Graphics/FontImpl.hpp"
 #include "Polly/Graphics/GraphicsResource.hpp"
 #include "Polly/Graphics/ImageImpl.hpp"
 #include "Polly/Graphics/ParticleSystemImpl.hpp"
 #include "Polly/Graphics/ShaderImpl.hpp"
+#include "Polly/Graphics/Tessellation2D.hpp"
 #include "Polly/Graphics/TextImpl.hpp"
 #include "Polly/Image.hpp"
+#include "Polly/ImGui.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/ParticleSystem.hpp"
 #include "Polly/ShaderCompiler/Ast.hpp"
@@ -217,11 +220,42 @@ UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, S
     return shader;
 }
 
+void Painter::Impl::notifyShaderParamAboutToChangeWhileBound(const Shader::Impl& shaderImpl)
+{
+    flush();
+}
+
+void Painter::Impl::notifyShaderParamHasChangedWhileBound(const Shader::Impl& shaderImpl)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+    frameData.dirtyFlags |= DF_UserShaderParams;
+}
+
 void Painter::Impl::notifyResourceCreated(GraphicsResource& resource)
 {
     assume(not containsWhere(_resources, [&resource](const auto& e) { return e == &resource; }));
 
     _resources.add(&resource);
+}
+
+void Painter::Impl::prepareForBatchMode(FrameData& frameData, BatchMode mode)
+{
+    if (const auto currentBatchMode = frameData.batchMode)
+    {
+        if (currentBatchMode != mode)
+        {
+            flush();
+            frameData.dirtyFlags |= DF_PipelineState;
+            frameData.dirtyFlags |= DF_VertexBuffers;
+            frameData.dirtyFlags |= DF_IndexBuffer;
+        }
+        else if (mustIndirectlyFlush(frameData))
+        {
+            flush();
+        }
+    }
+
+    frameData.batchMode = mode;
 }
 
 void Painter::Impl::notifyResourceDestroyed(GraphicsResource& resource)
@@ -243,6 +277,35 @@ Painter::Impl::~Impl() noexcept
     ShaderCompiler::Type::destroyPrimitiveTypes();
 }
 
+void Painter::Impl::startFrame()
+{
+    assume(_maxFramesInFlight > 0);
+
+    auto& frameData                 = _frameData[_currentFrameIndex];
+    frameData.batchMode             = none;
+    frameData.spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
+    frameData.spriteBatchImage      = nullptr;
+    frameData.spriteQueue.clear();
+    frameData.meshBatchImage = nullptr;
+
+    setCanvas(none, black, true);
+
+    frameData.dirtyFlags = DF_All;
+    frameData.dirtyFlags &= ~DF_UserShaderParams;
+
+    assume(frameData.spriteQueue.isEmpty());
+    assume(frameData.polyQueue.isEmpty());
+    assume(frameData.meshQueue.isEmpty());
+}
+
+void Painter::Impl::endFrame(ImGui imGui, const Function<void(ImGui)>& imGuiDrawFunc)
+{
+    flush();
+    onFrameEnded(imGui, imGuiDrawFunc);
+    resetCurrentStates();
+    _currentFrameIndex = (_currentFrameIndex + 1) % _maxFramesInFlight;
+}
+
 const List<GraphicsResource*>& Painter::Impl::allResources() const
 {
     return _resources;
@@ -257,6 +320,7 @@ void Painter::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool force)
 {
     if (_currentCanvas != canvas or force)
     {
+        flush();
         onBeforeCanvasChanged(_currentCanvas, _viewport);
 
         _currentCanvas = canvas;
@@ -298,10 +362,10 @@ void Painter::Impl::setTransformation(const Matrix& transformation)
 {
     if (_currentTransformation != transformation)
     {
-        onBeforeTransformationChanged();
+        flush();
         _currentTransformation = transformation;
         computeCombinedTransformation();
-        onAfterTransformationChanged(_combinedTransformation);
+        _frameData[_currentFrameIndex].dirtyFlags |= DF_GlobalCBufferParams;
     }
 }
 
@@ -317,26 +381,28 @@ const Shader& Painter::Impl::currentShader(BatchMode mode) const
 
 void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
 {
-    auto& shaderField = currentShader(mode);
+    auto& shaderFieldRef = currentShader(mode);
 
-    if (shaderField != shader)
+    if (shaderFieldRef == shader)
     {
-        onBeforeShaderChanged(mode);
-
-        if (auto* shaderImpl = shaderField.impl())
-        {
-            shaderImpl->_isInUse = false;
-        }
-
-        shaderField = shader;
-
-        if (auto* shaderImpl = shaderField.impl())
-        {
-            shaderImpl->_isInUse = true;
-        }
-
-        onAfterShaderChanged(mode, shaderField);
+        return;
     }
+
+    flush();
+
+    if (auto* shaderImpl = shaderFieldRef.impl())
+    {
+        shaderImpl->_isInUse = false;
+    }
+
+    shaderFieldRef = shader;
+
+    if (auto* shaderImpl = shaderFieldRef.impl())
+    {
+        shaderImpl->_isInUse = true;
+    }
+
+    _frameData[_currentFrameIndex].dirtyFlags |= DF_PipelineState | DF_UserShaderParams;
 }
 
 const Sampler& Painter::Impl::currentSampler() const
@@ -348,9 +414,9 @@ void Painter::Impl::setSampler(const Sampler& sampler)
 {
     if (_currentSampler != sampler)
     {
-        onBeforeSamplerChanged();
+        flush();
         _currentSampler = sampler;
-        onAfterSamplerChanged(sampler);
+        _frameData[_currentFrameIndex].dirtyFlags |= DF_Sampler;
     }
 }
 
@@ -363,10 +429,55 @@ void Painter::Impl::setBlendState(const BlendState& blendState)
 {
     if (_currentBlendState != blendState)
     {
-        onBeforeBlendStateChanged();
+        flush();
         _currentBlendState = blendState;
-        onAfterBlendStateChanged(blendState);
+        _frameData[_currentFrameIndex].dirtyFlags |= DF_PipelineState;
     }
+}
+
+void Painter::Impl::drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    if (frameData.spriteQueue.size() == _maxSpriteBatchSize)
+    {
+        spriteQueueLimitReached();
+    }
+
+    auto* imageImpl = sprite.image.impl();
+    assume(imageImpl);
+
+    prepareForBatchMode(frameData, BatchMode::Sprites);
+
+    if (frameData.spriteBatchShaderKind != spriteShaderKind or frameData.spriteBatchImage != imageImpl)
+    {
+        flush();
+    }
+
+    frameData.spriteQueue.add(
+        InternalSprite{
+            .dst      = sprite.dstRect,
+            .src      = sprite.srcRect.valueOr(Rectf(0, 0, sprite.image.size())),
+            .color    = sprite.color,
+            .origin   = sprite.origin,
+            .rotation = sprite.rotation,
+            .flip     = sprite.flip,
+        });
+
+    if (frameData.spriteBatchShaderKind != spriteShaderKind)
+    {
+        frameData.dirtyFlags |= DF_PipelineState;
+    }
+
+    if (frameData.spriteBatchImage != imageImpl)
+    {
+        frameData.dirtyFlags |= DF_SpriteImage;
+    }
+
+    frameData.spriteBatchShaderKind = spriteShaderKind;
+    frameData.spriteBatchImage      = imageImpl;
+
+    ++_performanceStats.spriteCount;
 }
 
 void Painter::Impl::pushStringToQueue(
@@ -450,6 +561,70 @@ void Painter::Impl::fillRectangleUsingSprite(
         SpriteShaderKind::Default);
 }
 
+void Painter::Impl::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::DrawLineCmd{
+            .start       = start,
+            .end         = end,
+            .color       = color,
+            .strokeWidth = strokeWidth,
+        });
+
+    ++_performanceStats.polygonCount;
+}
+
+void Painter::Impl::drawLinePath(Span<Line> lines, const Color& color, float strokeWidth)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::DrawLinePathCmd{
+            .lines       = decltype(Tessellation2D::DrawLinePathCmd::lines)(lines),
+            .color       = color,
+            .strokeWidth = strokeWidth,
+        });
+
+    ++performanceStats().polygonCount;
+}
+
+void Painter::Impl::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::DrawRectangleCmd{
+            .rectangle   = rectangle,
+            .color       = color,
+            .strokeWidth = strokeWidth,
+        });
+
+    ++performanceStats().polygonCount;
+}
+
+void Painter::Impl::fillRectangle(const Rectf& rectangle, const Color& color)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::FillRectangleCmd{
+            .rectangle = rectangle,
+            .color     = color,
+        });
+
+    ++performanceStats().polygonCount;
+}
+
 void Painter::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
 {
     const auto firstPoint    = vertices[0];
@@ -464,6 +639,47 @@ void Painter::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, float s
 
     // Last to first
     drawLine(previousPoint, firstPoint, color, strokeWidth);
+}
+
+void Painter::Impl::fillPolygon(Span<Vec2> vertices, const Color& color)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::FillPolygonCmd{
+            .vertices = List<Vec2, 8>(vertices),
+            .color    = color,
+        });
+
+    ++performanceStats().polygonCount;
+}
+
+void Painter::Impl::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Mesh);
+
+    if (image != frameData.meshBatchImage)
+    {
+        flush();
+    }
+
+    frameData.meshQueue.add(
+        MeshEntry{
+            .vertices = decltype(MeshEntry::vertices)(vertices),
+            .indices  = decltype(MeshEntry::indices)(indices),
+        });
+
+    if (frameData.meshBatchImage != image)
+    {
+        frameData.dirtyFlags |= DF_MeshImage;
+    }
+
+    frameData.meshBatchImage = image;
+    ++_performanceStats.meshCount;
 }
 
 void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
@@ -501,6 +717,75 @@ void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
 
     setBlendState(prevBlendState);
 }
+void Painter::Impl::drawRoundedRectangle(
+    const Rectf& rectangle,
+    float        cornerRadius,
+    const Color& color,
+    float        strokeWidth)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::DrawRoundedRectangleCmd{
+            .rectangle    = rectangle,
+            .cornerRadius = cornerRadius,
+            .color        = color,
+            .strokeWidth  = strokeWidth,
+        });
+
+    ++performanceStats().polygonCount;
+}
+
+void Painter::Impl::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::FillRoundedRectangleCmd{
+            .rectangle    = rectangle,
+            .cornerRadius = cornerRadius,
+            .color        = color,
+        });
+
+    ++performanceStats().polygonCount;
+}
+
+void Painter::Impl::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::DrawEllipseCmd{
+            .center      = center,
+            .radius      = radius,
+            .color       = color,
+            .strokeWidth = strokeWidth,
+        });
+
+    ++performanceStats().polygonCount;
+}
+
+void Painter::Impl::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Polygons);
+
+    frameData.polyQueue.add(
+        Tessellation2D::FillEllipseCmd{
+            .center = center,
+            .radius = radius,
+            .color  = color,
+        });
+
+    ++performanceStats().polygonCount;
+}
 
 void Painter::Impl::resetCurrentStates()
 {
@@ -526,22 +811,166 @@ const Matrix& Painter::Impl::combinedTransformation() const
     return _combinedTransformation;
 }
 
+u32 Painter::Impl::frameIndex() const
+{
+    return _currentFrameIndex;
+}
+
+int Painter::Impl::dirtyFlags() const
+{
+    return _frameData[_currentFrameIndex].dirtyFlags;
+}
+
+void Painter::Impl::setDirtyFlags(int value)
+{
+    _frameData[_currentFrameIndex].dirtyFlags = value;
+}
+
+Maybe<BatchMode> Painter::Impl::batchMode() const
+{
+    return _frameData[_currentFrameIndex].batchMode;
+}
+
+Span<InternalSprite> Painter::Impl::currentFrameSpriteQueue() const
+{
+    return _frameData[_currentFrameIndex].spriteQueue;
+}
+
+SpriteShaderKind Painter::Impl::spriteShaderKind() const
+{
+    return _frameData[_currentFrameIndex].spriteBatchShaderKind;
+}
+
+const Image::Impl* Painter::Impl::spriteBatchImage() const
+{
+    return _frameData[_currentFrameIndex].spriteBatchImage;
+}
+
+Span<Tessellation2D::Command> Painter::Impl::currentFramePolyQueue() const
+{
+    return _frameData[_currentFrameIndex].polyQueue;
+}
+
+Span<MeshEntry> Painter::Impl::currentFrameMeshQueue() const
+{
+    return _frameData[_currentFrameIndex].meshQueue;
+}
+
+const Image::Impl* Painter::Impl::meshBatchImage() const
+{
+    return _frameData[_currentFrameIndex].meshBatchImage;
+}
+
+void Painter::Impl::flush()
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    if (not frameData.batchMode)
+    {
+        return;
+    }
+
+    auto prepareDraw = [this, &frameData]
+    {
+        if (prepareDrawCall() != DF_None)
+        {
+            throw Error("Graphics backend failed to perform a draw call.");
+        }
+
+        frameData.dirtyFlags = DF_None;
+    };
+
+    switch (*frameData.batchMode)
+    {
+        case BatchMode::Sprites: {
+            if (frameData.spriteQueue.isEmpty())
+            {
+                return;
+            }
+
+            prepareDraw();
+
+            const auto& imageImpl = static_cast<const Image::Impl&>(*frameData.spriteBatchImage);
+
+            const auto imageWidthf  = static_cast<float>(imageImpl.width());
+            const auto imageHeightf = static_cast<float>(imageImpl.height());
+
+            flushSprites(
+                frameData.spriteQueue,
+                _performanceStats,
+                Rectf(imageWidthf, imageHeightf, 1.0f / imageWidthf, 1.0f / imageHeightf));
+
+            frameData.spriteQueue.clear();
+
+            break;
+        }
+        case BatchMode::Polygons: {
+            if (frameData.polyQueue.isEmpty())
+            {
+                return;
+            }
+
+            prepareDraw();
+
+            const auto numberOfVerticesToDraw = Tessellation2D::calculatePolyQueueVertexCounts(
+                frameData.polyQueue,
+                frameData.polyCmdVertexCounts);
+
+            if (numberOfVerticesToDraw > _maxPolyVertices)
+            {
+                throw Error(formatString(
+                    "Attempting to draw too many polygons at once. The maximum number of {} polygon "
+                    "vertices would be "
+                    "exceeded.",
+                    _maxPolyVertices));
+            }
+
+            flushPolys(
+                frameData.polyQueue,
+                frameData.polyCmdVertexCounts,
+                numberOfVerticesToDraw,
+                _performanceStats);
+
+            frameData.polyQueue.clear();
+
+            break;
+        }
+        case BatchMode::Mesh: {
+            if (frameData.meshQueue.isEmpty())
+            {
+                return;
+            }
+
+            prepareDraw();
+
+            flushMeshes(frameData.meshQueue, _performanceStats);
+
+            frameData.meshQueue.clear();
+
+            break;
+        }
+        default: {
+            notImplemented();
+        }
+    }
+}
+bool Painter::Impl::mustIndirectlyFlush(const FrameData& frameData) const
+{
+    return (frameData.dirtyFlags bitand DF_UserShaderParams) == DF_UserShaderParams;
+}
+
 Matrix Painter::Impl::computeViewportTransformation(const Rectf& viewport)
 {
     const auto xScale = viewport.width > 0 ? 2.0f / viewport.width : 0.0f;
     const auto yScale = viewport.height > 0 ? 2.0f / viewport.height : 0.0f;
 
-    const auto mat = Matrix{
-        Vec4(xScale, 0, 0, 0),
-        Vec4(0, -yScale, 0, 0),
-        Vec4(0, 0, 1, 0),
-        Vec4(-1, 1, 0, 1),
-    };
+    const auto mat =
+        Matrix(Vec4(xScale, 0, 0, 0), Vec4(0, -yScale, 0, 0), Vec4(0, 0, 1, 0), Vec4(-1, 1, 0, 1));
 
 #ifdef __APPLE__
     return mat;
 #else
-    return mat * Polly::scale({1, -1});
+    return mat * scale(Vec2(1, -1));
 #endif
 }
 
@@ -607,9 +1036,20 @@ Window::Impl& Painter::Impl::window() const
     return _windowImpl;
 }
 
-void Painter::Impl::postInit(const PainterCapabilities& capabilities)
+void Painter::Impl::postInit(
+    const PainterCapabilities& capabilities,
+    u32                        maxFramesInFlight,
+    u32                        maxSpriteBatchSize,
+    u32                        maxPolyVertices,
+    u32                        maxMeshVertices)
 {
-    _capabilities = capabilities;
+    assume(maxFramesInFlight > 0);
+    _frameData.resize(maxFramesInFlight);
+    _capabilities       = capabilities;
+    _maxFramesInFlight  = maxFramesInFlight;
+    _maxSpriteBatchSize = maxSpriteBatchSize;
+    _maxPolyVertices    = maxPolyVertices;
+    _maxMeshVertices    = maxMeshVertices;
 
     Font::Impl::createBuiltInFonts();
 

@@ -31,57 +31,15 @@ class VulkanPainter final : public Painter::Impl
 
     ~VulkanPainter() noexcept override;
 
-    void startFrame() override;
+    void onFrameStarted() override;
 
-    void endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawFunc) override;
+    void onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc) override;
 
     void onBeforeCanvasChanged(Image oldCanvas, Rectf oldViewport) override;
 
     void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport) override;
 
     void setScissorRects(Span<Rectf> scissorRects) override;
-
-    void onBeforeTransformationChanged() override;
-
-    void onAfterTransformationChanged(const Matrix& transformation) override;
-
-    void onBeforeShaderChanged(BatchMode mode) override;
-
-    void onAfterShaderChanged(BatchMode mode, Shader& shader) override;
-
-    void onBeforeSamplerChanged() override;
-
-    void onAfterSamplerChanged(const Sampler& sampler) override;
-
-    void onBeforeBlendStateChanged() override;
-
-    void onAfterBlendStateChanged(const BlendState& blendState) override;
-
-    void drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind) override;
-
-    void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth) override;
-
-    void drawLinePath(Span<Line> lines, const Color& color, float strokeWidth) override;
-
-    void drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth) override;
-
-    void fillRectangle(const Rectf& rectangle, const Color& color) override;
-
-    void fillPolygon(Span<Vec2> vertices, const Color& color) override;
-
-    void drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image) override;
-
-    void drawRoundedRectangle(
-        const Rectf& rectangle,
-        float        cornerRadius,
-        const Color& color,
-        float        strokeWidth) override;
-
-    void fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color) override;
-
-    void drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth) override;
-
-    void fillEllipse(Vec2 center, Vec2 radius, const Color& color) override;
 
     void requestFrameCapture() override;
 
@@ -100,10 +58,6 @@ class VulkanPainter final : public Painter::Impl
         UserShaderFlags                     flags,
         u16                                 cbufferSize) override;
 
-    void notifyShaderParamAboutToChangeWhileBound(const Shader::Impl& shaderImpl) override;
-
-    void notifyShaderParamHasChangedWhileBound(const Shader::Impl& shaderImpl) override;
-
     VkPhysicalDevice vkPhysicalDevice() const;
 
     const VkPhysicalDeviceProperties& vkPhysicalDeviceProps() const;
@@ -111,8 +65,6 @@ class VulkanPainter final : public Painter::Impl
     VkDevice vkDevice() const;
 
     u32 graphicsQueueFamilyIndex() const;
-
-    u32 currentFrameIndex() const;
 
     u32 presentQueueFamilyIndex() const;
 
@@ -160,29 +112,6 @@ class VulkanPainter final : public Painter::Impl
     // [2] = UBOs
     static constexpr auto descriptorSetCount = 3u;
 
-    enum DirtyFlags
-    {
-        DF_None                     = 0,
-        DF_PipelineState            = 1 << 0,
-        DF_Sampler                  = 1 << 1,
-        DF_GlobalCBufferParams      = 1 << 2,
-        DF_SpriteImage              = 1 << 3,
-        DF_MeshImage                = 1 << 4,
-        DF_UserShaderParams         = 1 << 5,
-        DF_SystemValueCBufferParams = 1 << 6,
-        DF_VertexBuffers            = 1 << 7,
-        DF_IndexBuffer              = 1 << 8,
-        DF_All                      = DF_PipelineState
-                 bitor DF_Sampler
-                 bitor DF_GlobalCBufferParams
-                 bitor DF_SpriteImage
-                 bitor DF_MeshImage
-                 bitor DF_UserShaderParams
-                 bitor DF_SystemValueCBufferParams
-                 bitor DF_VertexBuffers
-                 bitor DF_IndexBuffer,
-    };
-
     List<String> determineVkPhysicalDevice(
         VkInstance        vkInstance,
         VkSurfaceKHR      surface,
@@ -206,17 +135,20 @@ class VulkanPainter final : public Painter::Impl
 
     void notifyResourceDestroyed(GraphicsResource& resource) override;
 
-    void prepareDrawCall();
+    int prepareDrawCall() override;
 
-    void flushSprites();
+    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectf imageSizeAndInverse)
+        override;
 
-    void flushPolys();
+    void flushPolys(
+        Span<Tessellation2D::Command> polys,
+        Span<u32>                     polyCmdVertexCounts,
+        u32                           numberOfVerticesToDraw,
+        GamePerformanceStats&         stats) override;
 
-    void flushMeshes();
+    void flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats) override;
 
-    void flushAll();
-
-    void prepareForBatchMode(BatchMode mode);
+    void spriteQueueLimitReached() override;
 
     void createPipelineLayouts();
 
@@ -230,17 +162,15 @@ class VulkanPainter final : public Painter::Impl
 
     VulkanBuffer createSingleSpriteVertexBuffer(u32 index);
 
-    bool mustUpdateShaderParams() const;
-
     void destroyQueuedVulkanObjects();
 
-    VkShaderModule compileBuiltinVkShader(StringView name, StringView glslCode, VulkanShaderType type);
+    VkShaderModule compileBuiltinVulkanShader(StringView name, StringView glslCode, VulkanShaderType type);
 
     // The instance is currently only used in debug mode (debug markers etc).
 #ifndef NDEBUG
-    VkInstance                 _vkInstance               = VK_NULL_HANDLE;
+    VkInstance _vkInstance = VK_NULL_HANDLE;
 #endif
-    
+
     VkPhysicalDevice           _vkPhysicalDevice         = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties _vkPhysicalDeviceProps    = {};
     u32                        _graphicsQueueFamilyIndex = 0;
@@ -280,9 +210,6 @@ class VulkanPainter final : public Painter::Impl
         VkSemaphore     renderFinishedSemaphore = VK_NULL_HANDLE;
         VkFence         inFlightFence           = VK_NULL_HANDLE;
 
-        int              dirtyFlags = DF_None;
-        Maybe<BatchMode> currentBatchMode;
-
         VkRenderPass currentVkRenderPass = VK_NULL_HANDLE;
 
         // Extra props for debugging:
@@ -300,20 +227,13 @@ class VulkanPainter final : public Painter::Impl
         VulkanBuffer meshVertexBuffer;
         VulkanBuffer meshIndexBuffer;
 
-        SpriteShaderKind     spriteBatchShaderKind = SpriteShaderKind(-1);
-        const Image::Impl*   spriteBatchImage      = nullptr;
-        List<InternalSprite> spriteQueue;
-        u32                  spriteVertexCounter = 0;
-        u32                  spriteIndexCounter  = 0;
+        u32 spriteVertexCounter = 0;
+        u32 spriteIndexCounter  = 0;
 
-        List<Tessellation2D::Command> polyQueue;
-        u32                           polyVertexCounter = 0;
-        List<u32>                     polyCmdVertexCounts;
+        u32 polyVertexCounter = 0;
 
-        List<MeshEntry> meshQueue;
-        Image::Impl*    meshBatchImage    = nullptr;
-        u32             meshVertexCounter = 0;
-        u32             meshIndexCounter  = 0;
+        u32 meshVertexCounter = 0;
+        u32 meshIndexCounter  = 0;
 
         UniquePtr<VulkanUBOAllocator> uboAllocator;
 
@@ -324,7 +244,6 @@ class VulkanPainter final : public Painter::Impl
     };
 
     Array<FrameData, maxFramesInFlight> _frameData;
-    u32                                 _currentFrameIndex = 0;
 
     VulkanBuffer _spriteIndexBuffer;
 

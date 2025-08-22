@@ -10,6 +10,7 @@
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/Core/Object.hpp"
 #include "Polly/Function.hpp"
+#include "Polly/Graphics/PolyDrawCommands.hpp"
 #include "Polly/Graphics/ShaderImpl.hpp"
 #include "Polly/Graphics/TextImpl.hpp"
 #include "Polly/Image.hpp"
@@ -73,6 +74,50 @@ struct MeshEntry
 class Painter::Impl : public Object
 {
   protected:
+    enum DirtyFlags
+    {
+        DF_None                     = 0,
+        DF_PipelineState            = 1 << 0,
+        DF_Sampler                  = 1 << 1,
+        DF_GlobalCBufferParams      = 1 << 2,
+        DF_SpriteImage              = 1 << 3,
+        DF_MeshImage                = 1 << 4,
+        DF_UserShaderParams         = 1 << 5,
+        DF_SystemValueCBufferParams = 1 << 6,
+        DF_VertexBuffers            = 1 << 7,
+        DF_IndexBuffer              = 1 << 8,
+        DF_All                      = DF_PipelineState
+                 bitor DF_Sampler
+                 bitor DF_GlobalCBufferParams
+                 bitor DF_SpriteImage
+                 bitor DF_MeshImage
+                 bitor DF_UserShaderParams
+                 bitor DF_SystemValueCBufferParams
+                 bitor DF_VertexBuffers
+                 bitor DF_IndexBuffer,
+    };
+
+    enum class PipelinePart
+    {
+        BatchShader,
+        Sampler,
+        BlendState,
+        GlobalCBufferParams,
+    };
+
+    struct FrameData
+    {
+        int                           dirtyFlags = DF_None;
+        Maybe<BatchMode>              batchMode;
+        List<InternalSprite>          spriteQueue;
+        const Image::Impl*            spriteBatchImage      = nullptr;
+        SpriteShaderKind              spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
+        List<Tessellation2D::Command> polyQueue;
+        List<u32>                     polyCmdVertexCounts;
+        List<MeshEntry>               meshQueue;
+        Image::Impl*                  meshBatchImage = nullptr;
+    };
+
     explicit Impl(Window::Impl& windowImpl, GamePerformanceStats& performanceStats);
 
   public:
@@ -83,9 +128,13 @@ class Painter::Impl : public Object
 
     ~Impl() noexcept override;
 
-    virtual void startFrame() = 0;
+    void startFrame();
 
-    virtual void endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawFunc) = 0;
+    void endFrame(ImGui imGui, const Function<void(ImGui)>& imGuiDrawFunc);
+
+    virtual void onFrameStarted() = 0;
+
+    virtual void onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc) = 0;
 
     virtual UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) = 0;
 
@@ -105,11 +154,13 @@ class Painter::Impl : public Object
         UserShaderFlags                     flags,
         u16                                 cbufferSize) = 0;
 
-    virtual void notifyShaderParamAboutToChangeWhileBound(const Shader::Impl& shaderImpl) = 0;
+    void notifyShaderParamAboutToChangeWhileBound(const Shader::Impl& shaderImpl);
 
-    virtual void notifyShaderParamHasChangedWhileBound(const Shader::Impl& shaderImpl) = 0;
+    void notifyShaderParamHasChangedWhileBound(const Shader::Impl& shaderImpl);
 
     void notifyResourceCreated(GraphicsResource& resource);
+
+    void prepareForBatchMode(FrameData& frameData, BatchMode mode);
 
     virtual void notifyResourceDestroyed(GraphicsResource& resource);
 
@@ -129,26 +180,18 @@ class Painter::Impl : public Object
 
     const Matrix& transformation() const;
     void          setTransformation(const Matrix& transformation);
-    virtual void  onBeforeTransformationChanged()                            = 0;
-    virtual void  onAfterTransformationChanged(const Matrix& transformation) = 0;
 
     Shader&       currentShader(BatchMode mode);
     const Shader& currentShader(BatchMode mode) const;
     void          setShader(BatchMode mode, const Shader& shader);
-    virtual void  onBeforeShaderChanged(BatchMode mode)                = 0;
-    virtual void  onAfterShaderChanged(BatchMode mode, Shader& shader) = 0;
 
     const Sampler& currentSampler() const;
     void           setSampler(const Sampler& sampler);
-    virtual void   onBeforeSamplerChanged()                      = 0;
-    virtual void   onAfterSamplerChanged(const Sampler& sampler) = 0;
 
     const BlendState& currentBlendState() const;
     void              setBlendState(const BlendState& blendState);
-    virtual void      onBeforeBlendStateChanged()                            = 0;
-    virtual void      onAfterBlendStateChanged(const BlendState& blendState) = 0;
 
-    virtual void drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind) = 0;
+    void drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind);
 
     void fillRectangleUsingSprite(
         const Rectf& rectangle,
@@ -156,33 +199,33 @@ class Painter::Impl : public Object
         Radians      rotation,
         const Vec2&  origin);
 
-    virtual void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth) = 0;
+    void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth);
 
-    virtual void drawLinePath(Span<Line> lines, const Color& color, float strokeWidth) = 0;
+    void drawLinePath(Span<Line> lines, const Color& color, float strokeWidth);
 
-    virtual void drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth) = 0;
+    void drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth);
 
-    virtual void fillRectangle(const Rectf& rectangle, const Color& color) = 0;
+    void fillRectangle(const Rectf& rectangle, const Color& color);
 
     void drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth);
 
-    virtual void fillPolygon(Span<Vec2> vertices, const Color& color) = 0;
+    void fillPolygon(Span<Vec2> vertices, const Color& color);
 
-    virtual void drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image) = 0;
+    void drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image);
 
     void drawSpineSkeleton(SpineSkeleton& skeleton);
 
-    virtual void drawRoundedRectangle(
+    void drawRoundedRectangle(
         const Rectf& rectangle,
         float        cornerRadius,
         const Color& color,
-        float        strokeWidth) = 0;
+        float        strokeWidth);
 
-    virtual void fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color) = 0;
+    void fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color);
 
-    virtual void drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth) = 0;
+    void drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth);
 
-    virtual void fillEllipse(Vec2 center, Vec2 radius, const Color& color) = 0;
+    void fillEllipse(Vec2 center, Vec2 radius, const Color& color);
 
     void pushStringToQueue(
         StringView            text,
@@ -260,10 +303,21 @@ class Painter::Impl : public Object
         return _pixelRatio;
     }
 
+    void doInternalPushTextToQueue(
+        Span<PreshapedGlyph>     glyphs,
+        Span<TextDecorationRect> decorationRects,
+        const Vec2&              offset,
+        const Color&             color);
+
   protected:
     Window::Impl& window() const;
 
-    void postInit(const PainterCapabilities& capabilities);
+    void postInit(
+        const PainterCapabilities& capabilities,
+        u32                        maxFramesInFlight,
+        u32                        maxSpriteBatchSize,
+        u32                        maxPolyVertices,
+        u32                        maxMeshVertices);
 
     void preBackendDtor();
 
@@ -275,27 +329,75 @@ class Painter::Impl : public Object
         bool                 flipImageUpDown,
         const Action&        action) const;
 
+    struct MeshFillResult
+    {
+        u32 totalVertexCount;
+        u32 totalIndexCount;
+    };
+
+    template<typename TVertex, typename TIndex>
+    [[nodiscard]]
+    MeshFillResult fillMeshVertices(
+        Span<MeshEntry> meshes,
+        TVertex*        dstVertices,
+        TIndex*         dstIndices,
+        u32             baseVertex) const;
+
     void resetCurrentStates();
 
     const Rectf& currentViewport() const;
 
     const Matrix& combinedTransformation() const;
 
+    u32 frameIndex() const;
+
+    int dirtyFlags() const;
+
+    void setDirtyFlags(int value);
+
+    Maybe<BatchMode> batchMode() const;
+
+    Span<InternalSprite> currentFrameSpriteQueue() const;
+
+    SpriteShaderKind spriteShaderKind() const;
+
+    const Image::Impl* spriteBatchImage() const;
+
+    Span<Tessellation2D::Command> currentFramePolyQueue() const;
+
+    Span<MeshEntry> currentFrameMeshQueue() const;
+
+    const Image::Impl* meshBatchImage() const;
+
+    void flush();
+
+    [[nodiscard]]
+    virtual int prepareDrawCall() = 0;
+
+    virtual void flushSprites(
+        Span<InternalSprite>  sprites,
+        GamePerformanceStats& stats,
+        Rectf                 imageSizeAndInverse) = 0;
+
+    virtual void flushPolys(
+        Span<Tessellation2D::Command> polys,
+        Span<u32>                     polyCmdVertexCounts,
+        u32                           numberOfVerticesToDraw,
+        GamePerformanceStats&         stats) = 0;
+
+    virtual void flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats) = 0;
+
+    virtual void spriteQueueLimitReached() = 0;
+
   private:
+    virtual bool mustIndirectlyFlush(const FrameData& frameData) const;
+
     static Matrix computeViewportTransformation(const Rectf& viewport);
 
     void computeCombinedTransformation();
 
     void doResourceLeakCheck();
 
-  public:
-    void doInternalPushTextToQueue(
-        Span<PreshapedGlyph>     glyphs,
-        Span<TextDecorationRect> decorationRects,
-        const Vec2&              offset,
-        const Color&             color);
-
-  private:
     template<typename T, typename Action>
     static void renderSprite(
         const InternalSprite& sprite,
@@ -317,9 +419,15 @@ class Painter::Impl : public Object
 
     Window::Impl&           _windowImpl;
     List<GraphicsResource*> _resources;
+    u32                     _currentFrameIndex = 0;
     GamePerformanceStats&   _performanceStats;
     Image                   _whiteImage;
+    List<FrameData, 3>      _frameData;
     PainterCapabilities     _capabilities;
+    u32                     _maxFramesInFlight = 0;
+    u32                     _maxSpriteBatchSize = 0;
+    u32                     _maxPolyVertices    = 0;
+    u32                     _maxMeshVertices    = 0;
     Rectf                   _viewport;
     Matrix                  _viewportTransformation;
     Matrix                  _combinedTransformation;
@@ -357,6 +465,52 @@ void Painter::Impl::fillSpriteVertices(
         renderSprite(sprite, dst, imageSizeAndInverse, flipImageUpDown, action);
         dst += verticesPerSprite;
     }
+}
+
+template<typename TVertex, typename TIndex>
+Painter::Impl::MeshFillResult Painter::Impl::fillMeshVertices(
+    Span<MeshEntry> meshes,
+    TVertex*        dstVertices,
+    TIndex*         dstIndices,
+    u32             baseVertex) const
+{
+    auto totalVertexCount = static_cast<u32>(0);
+    auto totalIndexCount  = static_cast<u32>(0);
+
+    for (const auto& entry : meshes)
+    {
+        const auto vertexCount    = entry.vertices.size();
+        const auto indexCount     = entry.indices.size();
+        const auto newVertexCount = totalVertexCount + vertexCount;
+
+        if (newVertexCount > _maxMeshVertices)
+        {
+            throw Error(formatString(
+                "Attempting to draw too many meshes at once. The maximum number of {} mesh "
+                "vertices would be "
+                "exceeded.",
+                _maxMeshVertices));
+        }
+
+        std::memcpy(dstVertices, entry.vertices.data(), sizeof(MeshVertex) * vertexCount);
+        dstVertices += vertexCount;
+
+        for (auto i = 0u; i < indexCount; ++i)
+        {
+            *dstIndices = entry.indices[i] + static_cast<uint16_t>(baseVertex);
+            ++dstIndices;
+        }
+
+        totalVertexCount = newVertexCount;
+        totalIndexCount += indexCount;
+
+        baseVertex += vertexCount;
+    }
+
+    return MeshFillResult{
+        .totalVertexCount = totalVertexCount,
+        .totalIndexCount  = totalIndexCount,
+    };
 }
 
 template<typename T, typename Action>
