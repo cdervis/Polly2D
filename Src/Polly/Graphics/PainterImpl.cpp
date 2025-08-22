@@ -582,7 +582,10 @@ void Painter::Impl::drawLine(Vec2 start, Vec2 end, const Color& color, float str
     ++_performanceStats.polygonCount;
 }
 
-void Painter::Impl::drawLinePath([[maybe_unused]] Span<Line> lines, [[maybe_unused]] const Color& color, [[maybe_unused]] float strokeWidth)
+void Painter::Impl::drawLinePath(
+    [[maybe_unused]] Span<Line>   lines,
+    [[maybe_unused]] const Color& color,
+    [[maybe_unused]] float        strokeWidth)
 {
 // TODO: implement
 #if 0
