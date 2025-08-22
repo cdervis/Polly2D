@@ -16,6 +16,7 @@ DemoBrowser::DemoBrowser()
 void DemoBrowser::onStartedRunning()
 {
     go_to_demo_at(0);
+    window().centerOnDisplay();
 }
 
 void DemoBrowser::update(GameTime time)
