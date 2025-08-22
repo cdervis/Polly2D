@@ -105,12 +105,12 @@ class ForLoopVariableDecl final : public Decl
 
     Maybe<const ForStmt&> parentForStmt() const
     {
-        return _parent_for_stmt;
+        return _parentForStmt;
     }
 
     void setParentForStmt(const ForStmt& value)
     {
-        _parent_for_stmt = value;
+        _parentForStmt = value;
     }
 
   private:
@@ -119,7 +119,7 @@ class ForLoopVariableDecl final : public Decl
         setType(type);
     }
 
-    Maybe<const ForStmt&> _parent_for_stmt;
+    Maybe<const ForStmt&> _parentForStmt;
 };
 
 class FunctionDecl final : public Decl

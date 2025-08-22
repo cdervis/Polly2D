@@ -210,7 +210,7 @@ void TextBasedShaderGenerator::generateStmt(Writer& w, const Statement* stmt, co
     }
     else
     {
-        w << "<< NotImplemented(" << typeid(*stmt).name() << ") >>";
+        w << "<< TODO(" << typeid(*stmt).name() << ") >>";
     }
 }
 
@@ -254,14 +254,11 @@ void TextBasedShaderGenerator::generateIfStmt(Writer& w, const IfStmt* ifStmt, c
     }
 }
 
-void TextBasedShaderGenerator::generateForStmt(
-    Writer&            w,
-    const ForStmt*     forStmt,
-    const SemaContext& context)
+void TextBasedShaderGenerator::generateForStmt(Writer& w, const ForStmt* forStmt, const SemaContext& context)
 {
     const auto  varName = forStmt->loopVariable()->name();
-    const auto& range    = forStmt->range();
-    const auto& type     = range.type();
+    const auto& range   = forStmt->range();
+    const auto& type    = range.type();
 
     prepareExpr(w, range.start(), context);
     prepareExpr(w, range.end(), context);
@@ -306,27 +303,27 @@ void TextBasedShaderGenerator::generateBinOpExpr(
     const BinOpExpr*   binOp,
     const SemaContext& context)
 {
-    const auto* lhs_expr = binOp->lhs();
-    const auto* rhs_expr = binOp->rhs();
+    const auto* lhsExpr = binOp->lhs();
+    const auto* rhsExpr = binOp->rhs();
 
     if (_isSwappingMatrixVectorMults)
     {
-        const auto& lhs_type = lhs_expr->type();
-        const auto& rhs_type = rhs_expr->type();
+        const auto& lhs_type = lhsExpr->type();
+        const auto& rhs_type = rhsExpr->type();
 
         if ((lhs_type->isMatrixType() and rhs_type->isMatrixType())
             or (lhs_type->isMatrixType() and rhs_type->isVectorType())
             or (lhs_type->isVectorType() and rhs_type->isMatrixType()))
         {
-            std::swap(lhs_expr, rhs_expr);
+            std::swap(lhsExpr, rhsExpr);
         }
     }
 
-    generateExpr(w, lhs_expr, context);
+    generateExpr(w, lhsExpr, context);
 
-    const auto need_space_between_operands = binOp->binOpKind() != BinOpKind::MemberAccess;
+    const auto needSpaceBetweenOperands = binOp->binOpKind() != BinOpKind::MemberAccess;
 
-    if (need_space_between_operands)
+    if (needSpaceBetweenOperands)
     {
         w << ' ';
     }
@@ -354,12 +351,12 @@ void TextBasedShaderGenerator::generateBinOpExpr(
         default: throw ShaderCompileError(binOp->location(), "Unhandled binary operation kind.");
     }
 
-    if (need_space_between_operands)
+    if (needSpaceBetweenOperands)
     {
         w << ' ';
     }
 
-    generateExpr(w, rhs_expr, context);
+    generateExpr(w, rhsExpr, context);
 }
 
 void TextBasedShaderGenerator::generateSubscriptExpr(
@@ -479,4 +476,4 @@ String TextBasedShaderGenerator::translateArrayType(const ArrayType* type, Strin
         type->size());
 }
 
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

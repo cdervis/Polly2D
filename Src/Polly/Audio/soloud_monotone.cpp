@@ -25,11 +25,11 @@ freely, subject to the following restrictions:
 #include "soloud_monotone.hpp"
 #include "soloud_file.hpp"
 #include <cstdlib>
+#include <cstring>
 #include <math.h>
 #include <memory>
 #include <stdlib.h>
 #include <string.h>
-#include <cstring>
 
 namespace SoLoud
 {

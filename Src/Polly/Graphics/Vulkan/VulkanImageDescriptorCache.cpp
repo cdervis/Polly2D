@@ -8,9 +8,7 @@ namespace Polly
 {
 static constexpr auto defaultDescriptorSetSize = 1024;
 
-void VulkanImageDescriptorCache::init(
-    VulkanPainter* painter,
-    VkDescriptorSetLayout descriptorSetLayout)
+void VulkanImageDescriptorCache::init(VulkanPainter* painter, VkDescriptorSetLayout descriptorSetLayout)
 {
     assume(painter);
     assume(descriptorSetLayout != VK_NULL_HANDLE);
@@ -52,8 +50,7 @@ VkDescriptorSet VulkanImageDescriptorCache::get(const Key& key)
 
             if (imageInfo0.imageView == VK_NULL_HANDLE)
             {
-                auto& whiteImageImpl =
-                    static_cast<const VulkanImage&>(*_painter->whiteImage().impl());
+                auto& whiteImageImpl = static_cast<const VulkanImage&>(*_painter->whiteImage().impl());
                 imageInfo0.imageView = whiteImageImpl.vkImageView();
             }
 
@@ -167,4 +164,4 @@ void VulkanImageDescriptorCache::createDescriptorPool()
         vkCreateDescriptorPool(_painter->vkDevice(), &info, nullptr, &_vkDescriptorPool),
         "Failed to create a descriptor pool.");
 }
-} // namespace pl
+} // namespace Polly

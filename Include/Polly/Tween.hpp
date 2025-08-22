@@ -70,7 +70,7 @@ class Tweener
     /// @note If the tweener is not running or has reached its target,
     ///       this has no effect. In that case, call start()
     ///       or restart() to resume playback.
-    void update(float elapsed_time);
+    void update(float elapsedTime);
 
     /// Stops the tweener's playback.
     ///
@@ -148,7 +148,7 @@ class Tweener
     float             _from;
     float             _change;
     float             _duration;
-    TweenLoopMode     _loop_mode;
+    TweenLoopMode     _loopMode;
     float             _elapsed;
     bool              _isRunning;
     float             _to;

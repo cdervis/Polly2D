@@ -19,4 +19,4 @@ SourceLocation SourceLocation::fromTo(const SourceLocation& start, const SourceL
         start.column,
         narrow<uint16_t>(start.startIndex + end.startIndex));
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

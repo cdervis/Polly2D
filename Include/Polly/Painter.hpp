@@ -32,13 +32,13 @@ enum class Direction;
 enum class ImageFileFormat
 {
     /// A PNG file
-    png = 1,
+    PNG = 1,
 
     /// A JPEG file
-    jpeg = 2,
+    JPEG = 2,
 
     /// A BMP file
-    bmp = 3,
+    BMP = 3,
 };
 
 /// Represents the capabilities of a graphics device.
@@ -114,7 +114,7 @@ class Painter final
 
     /// Sets the active custom shader for polygons.
     ///
-    /// Declaring a polygon shader is done by using the `#type` notation inside the shader code.
+    /// Declaring a polygon shader is done by using the #type notation inside the shader code.
     ///
     /// Example:
     ///
@@ -130,13 +130,13 @@ class Painter final
     /// The following functions produce polygons and are therefore
     /// affected by this shader:
     ///
-    /// - `drawRectangle()`
-    /// - `fillRectangle()`
-    /// - `drawLine()`
-    /// - `drawRoundedRectangle()`
-    /// - `fillRoundedRectangle()`
-    /// - `drawEllipse()`
-    /// - `fillEllipse()`
+    /// - drawRectangle()
+    /// - fillRectangle()
+    /// - drawLine()
+    /// - drawRoundedRectangle()
+    /// - fillRoundedRectangle()
+    /// - drawEllipse()
+    /// - fillEllipse()
     ///
     /// @param shader The polygon shader to use for subsequent drawing.
     ///
@@ -157,14 +157,14 @@ class Painter final
 
     /// Sets the blend state to use for sprite rendering.
     ///
-    /// The default blend state is `nonPremultiplied`.
+    /// The default blend state is nonPremultiplied.
     ///
     /// @param blendState The blend state to use for subsequent drawing.
     void setBlendState(const BlendState& blendState);
 
     /// Draws a 2D sprite.
     ///
-    /// @note This is a shortcut for `drawSprite(const Sprite&)`.
+    /// @note This is a shortcut for drawSprite(const Sprite&).
     ///
     /// @param image The image of the sprite.
     /// @param position The position of the sprite.
@@ -450,7 +450,7 @@ class Painter final
     void saveCanvasToFile(
         const Image&    canvas,
         StringView      filename,
-        ImageFileFormat format = ImageFileFormat::png);
+        ImageFileFormat format = ImageFileFormat::PNG);
 
     /// Saves the pixel data of a canvas to a buffer in memory.
     ///
@@ -459,7 +459,7 @@ class Painter final
     ///
     /// @return The converted pixel data of the canvas.
     [[nodiscard]]
-    Maybe<List<u8>> saveCanvasToMemory(const Image& canvas, ImageFileFormat format = ImageFileFormat::png);
+    Maybe<List<u8>> saveCanvasToMemory(const Image& canvas, ImageFileFormat format = ImageFileFormat::PNG);
 
     /// Gets the device's capabilities.
     PainterCapabilities capabilities() const;

@@ -28,15 +28,15 @@ class BinaryReader
 
     u8 readUInt8();
 
-    int16_t readInt16();
+    i16 readInt16();
 
-    uint16_t readUInt16();
+    u16 readUInt16();
 
     i32 readInt32();
 
     u32 readUInt32();
 
-    int64_t readInt64();
+    i64 readInt64();
 
     u64 readUInt64();
 

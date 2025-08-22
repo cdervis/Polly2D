@@ -24,13 +24,10 @@ pl_implement_object(Image);
 Image::Image(u32 width, u32 height, ImageFormat format, const void* data)
     : Image()
 {
-    if ( not data)
+    if (not data)
     {
-        throw Error(formatString(
-            "No image data specified (width={}; height={}; format={}).",
-            width,
-            height,
-            format));
+        throw Error(
+            formatString("No image data specified (width={}; height={}; format={}).", width, height, format));
     }
 
     auto& deviceImpl = *Game::Impl::instance().painter().impl();
@@ -89,7 +86,7 @@ Image::Image(u32 width, u32 height, ImageFormat format)
 
     auto imageImpl = deviceImpl.createCanvas(width, height, format);
 
-    if ( not imageImpl)
+    if (not imageImpl)
     {
         return;
     }
@@ -188,4 +185,4 @@ u32 imageSlicePitch(u32 width, u32 height, ImageFormat format)
 {
     return width * height * imageFormatBitsPerPixel(format) / 8;
 }
-} // namespace pl
+} // namespace Polly

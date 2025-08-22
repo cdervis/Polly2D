@@ -57,5 +57,5 @@ void createDirectories(StringView path);
 String pathReplaceExtension(StringView path, StringView newExtension);
 
 [[nodiscard]]
-Maybe<String> randomWritablePath(StringView companyName, StringView appName);
+Maybe<String> randomWritablePath(StringView companyName, StringView gameName);
 } // namespace Polly::FileSystem

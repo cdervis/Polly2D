@@ -62,4 +62,4 @@ StringView tokenTypeToString(TokenType type)
     }
     return "<unknown>";
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

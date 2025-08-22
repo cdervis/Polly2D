@@ -83,4 +83,4 @@ void VulkanSamplerCache::clear()
         _cache.clear();
     }
 }
-} // namespace pl
+} // namespace Polly

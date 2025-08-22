@@ -61,7 +61,7 @@ constexpr bool areEqualWithin(const Vec2& lhs, const Vec2& rhs, float threshold)
 /// @param threshold The threshold within which both vectors count as equal to one
 /// another. The comparison is performed one a per-component basis.
 ///
-/// @return True if `lhs` and `rhs` are equal within `threshold`; false otherwise.
+/// @return True if lhs and rhs are equal within threshold; false otherwise.
 constexpr bool areEqualWithin(const Vec3& lhs, const Vec3& rhs, float threshold);
 
 /// Gets a value indicating whether two 4D vectors are equal within a specific
@@ -72,7 +72,7 @@ constexpr bool areEqualWithin(const Vec3& lhs, const Vec3& rhs, float threshold)
 /// @param threshold The threshold within which both vectors count as equal to one
 /// another. The comparison is performed one a per-component basis.
 ///
-/// @return True if `lhs` and `rhs` are equal within `threshold`; false otherwise.
+/// @return True if lhs and rhs are equal within threshold; false otherwise.
 constexpr bool areEqualWithin(const Vec4& lhs, const Vec4& rhs, float threshold);
 
 /// Gets a value indicating whether two matrices are equal within a specific threshold.
@@ -82,7 +82,7 @@ constexpr bool areEqualWithin(const Vec4& lhs, const Vec4& rhs, float threshold)
 /// @param threshold The threshold within which both vectors count as equal to one
 /// another. The comparison is performed one a per-component basis.
 ///
-/// @return True if `lhs` and `rhs` are equal within `threshold`; false otherwise.
+/// @return True if lhs and rhs are equal within threshold; false otherwise.
 constexpr bool areEqualWithin(const Matrix& lhs, const Matrix& rhs, float threshold);
 
 /// Rounds a 2D vector's elements down to their nearest integers.

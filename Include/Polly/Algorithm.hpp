@@ -145,9 +145,9 @@ constexpr u32 count(const Container& container, const U& value)
 {
     auto count = 0u;
 
-    for (const auto& value_in_container : container)
+    for (const auto& valueInContainer : container)
     {
-        if (value_in_container == value)
+        if (valueInContainer == value)
         {
             ++count;
         }
@@ -190,42 +190,42 @@ template<Concepts::ForwardContainer Container1, Concepts::ForwardContainer Conta
 [[nodiscard]]
 constexpr bool areContainersEqual(const Container1& container1, const Container2& container2)
 {
-    const auto lhs_size = container1.size();
-    const auto rhs_size = container2.size();
+    const auto lhsSize = container1.size();
+    const auto rhsSize = container2.size();
 
-    if (lhs_size != rhs_size)
+    if (lhsSize != rhsSize)
     {
         return false;
     }
 
-    auto lhs_it = container1.begin();
-    auto rhs_it = container2.begin();
+    auto lhsIt = container1.begin();
+    auto rhsIt = container2.begin();
 
-    for (u32 i = 0; i < lhs_size; ++i)
+    for (u32 i = 0; i < lhsSize; ++i)
     {
-        if (*lhs_it != *rhs_it)
+        if (*lhsIt != *rhsIt)
         {
             return false;
         }
 
-        ++lhs_it;
-        ++rhs_it;
+        ++lhsIt;
+        ++rhsIt;
     }
 
     return true;
 }
 
 template<typename SrcContainer, Concepts::ContiguousContainer DstContainer>
-constexpr void copyRange(const SrcContainer& from, const DstContainer& to, u32 dst_start_index = 0)
+constexpr void copyRange(const SrcContainer& from, const DstContainer& to, u32 dstStartIndex = 0)
 {
     assumeWithMsg(
-        dst_start_index + from.size() <= to.size(),
+        dstStartIndex + from.size() <= to.size(),
         "specified source container + dstStartIndex would exceed the destination container's "
         "bounds");
 
     for (const auto& element : from)
     {
-        to[dst_start_index++] = element;
+        to[dstStartIndex++] = element;
     }
 }
 
@@ -290,9 +290,9 @@ constexpr decltype(auto) binaryFind(const Container& container, const U& value)
 
 template<Concepts::ForwardContainer Container, typename U>
 requires(std::convertible_to<U, typename Container::value_type>)
-constexpr void fill(Container& container, u32 start_index, u32 count, const U& value)
+constexpr void fill(Container& container, u32 startIndex, u32 count, const U& value)
 {
-    auto it = container.begin() + start_index;
+    auto it = container.begin() + startIndex;
 
     for (u32 i = 0; i < count; ++i, ++it)
     {
@@ -302,12 +302,12 @@ constexpr void fill(Container& container, u32 start_index, u32 count, const U& v
 
 template<Concepts::ForwardContainer Container, typename U>
 requires(std::convertible_to<U, typename Container::value_type>)
-constexpr void fillByIncrementing(Container& container, U initial_value)
+constexpr void fillByIncrementing(Container& container, U initialValue)
 {
     for (auto& item : container)
     {
-        item = initial_value;
-        ++initial_value;
+        item = initialValue;
+        ++initialValue;
     }
 }
 
@@ -370,22 +370,22 @@ constexpr Maybe<const value_type&> maxItem(const Container& container)
         return none;
     }
 
-    auto       it        = container.begin();
-    const auto end       = container.end();
-    auto       max_value = it;
+    auto       it       = container.begin();
+    const auto end      = container.end();
+    auto       maxValue = it;
     ++it;
 
     while (it != end)
     {
-        if (*max_value < *it)
+        if (*maxValue < *it)
         {
-            max_value = it;
+            maxValue = it;
         }
 
         ++it;
     }
 
-    return max_value;
+    return maxValue;
 }
 
 template<Concepts::ForwardContainer Container, typename Predicate>
@@ -393,28 +393,28 @@ constexpr auto maxItemBy(Container&& container, Predicate&& predicate)
 {
     using ItemType = std::invoke_result_t<Predicate, decltype(*container.begin())>;
 
-    auto max_value = Maybe<ItemType>();
+    auto maxValue = Maybe<ItemType>();
 
     if (not container.isEmpty())
     {
         auto       it  = container.begin();
         const auto end = container.end();
-        max_value      = std::invoke(predicate, *it);
+        maxValue       = std::invoke(predicate, *it);
         ++it;
 
         while (it != end)
         {
             auto value = std::invoke(predicate, *it);
-            if (max_value < value)
+            if (maxValue < value)
             {
-                max_value = std::move(value);
+                maxValue = std::move(value);
             }
 
             ++it;
         }
     }
 
-    return max_value;
+    return maxValue;
 }
 
 template<Concepts::ForwardContainer Container, typename ValueType = typename Container::value_type>
@@ -486,44 +486,44 @@ constexpr Maybe<u32> mismatch(const Container1& container1, const Container2& co
     auto it1 = container1.begin();
     auto it2 = container2.begin();
 
-    const auto do_mismatch = [](auto primary_it, auto secondary_it, auto end) -> Maybe<u32>
+    const auto doMismatch = [](auto primaryIt, auto secondaryIt, auto end) -> Maybe<u32>
     { // NOLINT(*-trailing-return)
         auto idx = static_cast<u32>(0);
 
-        while (primary_it != end && *primary_it == *secondary_it)
+        while (primaryIt != end && *primaryIt == *secondaryIt)
         {
-            ++primary_it, ++secondary_it, ++idx;
+            ++primaryIt, ++secondaryIt, ++idx;
         }
 
-        return primary_it != end ? idx : none;
+        return primaryIt != end ? idx : none;
     };
 
-    return container1.size() < container2.size() ? do_mismatch(it1, it2, container1.end())
-                                                 : do_mismatch(it2, it1, container2.end());
+    return container1.size() < container2.size() ? doMismatch(it1, it2, container1.end())
+                                                 : doMismatch(it2, it1, container2.end());
 }
 
 template<typename InputPtr, typename OutputPtr>
 requires(std::is_pointer_v<InputPtr> and std::is_pointer_v<OutputPtr>)
-OutputPtr move(InputPtr first, InputPtr last, OutputPtr d_first)
+OutputPtr move(InputPtr first, InputPtr last, OutputPtr dstFirst)
 {
-    for (; first != last; ++d_first, ++first)
+    for (; first != last; ++dstFirst, ++first)
     {
-        *d_first = std::move(*first);
+        *dstFirst = std::move(*first);
     }
 
-    return d_first;
+    return dstFirst;
 }
 
 template<typename Ptr1, typename Ptr2>
 requires(std::is_pointer_v<Ptr1> and std::is_pointer_v<Ptr2>)
-Ptr2 moveBackward(Ptr1 first, Ptr1 last, Ptr2 d_last)
+Ptr2 moveBackward(Ptr1 first, Ptr1 last, Ptr2 dstLast)
 {
     while (first != last)
     {
-        *--d_last = std::move(*--last);
+        *--dstLast = std::move(*--last);
     }
 
-    return d_last;
+    return dstLast;
 }
 
 template<Concepts::ListLike DstContainer, Concepts::ForwardContainer SrcContainer, typename Func>
@@ -599,7 +599,7 @@ String joinToStringBy(const Container& container, StringView delimiter, Predicat
         str += delimiter;
     }
 
-    if (!str.isEmpty())
+    if (not str.isEmpty())
     {
         str.removeLast(delimiter.size());
     }

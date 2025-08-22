@@ -22,10 +22,10 @@ int Polly::levensteinDistance(StringView s1, StringView s2)
 
         for (auto j = 0u; j < s2Len; ++j)
         {
-            distances[j + 1] = min(
-                std::exchange(previousDistance, distances[j + 1]) + (s1[i] == s2[j] ? 0 : 1),
-                distances[j] + 1,
-                distances[j + 1] + 1);
+            distances[j + 1] =
+                min(std::exchange(previousDistance, distances[j + 1]) + (s1[i] == s2[j] ? 0 : 1),
+                    distances[j] + 1,
+                    distances[j + 1] + 1);
         }
     }
 

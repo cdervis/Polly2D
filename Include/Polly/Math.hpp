@@ -148,29 +148,14 @@ constexpr T inverseLerp(T start, T end, T value);
 
 /// Calculates an interpolated value using a smoothstep interpolation function.
 ///
-/// The function is defined as follows:
-///
-/// $$
-/// f(t) = \begin{cases}
-/// 0 &\text{, } t < 0
-/// \\
-/// Lerp( s, e, t^2 (3 - 3t) ) &\text{, } 0 \le t \le 1
-/// \\
-/// 1 &\text{, } t > 1
-/// \end{cases}
-/// $$
-///
-/// Where $s$ is `start` and $e$ is `end`.
-///
 /// @tip For details, see https://en.wikipedia.org/wiki/Smoothstep.
 ///
 /// @param start The starting value.
 /// @param end The target value.
-/// @param t The interpolation factor between `start` and `end`, expected to be in the range `[0.0
-/// .. 1.0]`. This factor will automatically be clamped by the function.
+/// @param t The interpolation factor between `start` and `end`, expected to be in the range [0.0 .. 1.0].
+///          This factor will automatically be clamped by the function.
 ///
 /// @return The interpolated value.
-
 template<std::floating_point T>
 constexpr T smoothstep(T start, T end, T t);
 
@@ -187,7 +172,7 @@ constexpr T squared(const T& value);
 ///
 /// @code
 /// // Map value 50 from range [0.0 .. 100.0] to range [500.0 .. 1000.0].
-/// auto value = Remap(
+/// auto value = remap(
 ///     /*inputMin: */  0.0f,
 ///     /*inputMax: */  100.0f,
 ///
@@ -197,8 +182,8 @@ constexpr T squared(const T& value);
 ///     /*value: */     50.0f );
 /// @endcode
 ///
-/// In the above example, the value `50` is halfway between 0 and 100 (50%).
-/// Therefore, the result would be the halfway value between 500 and 1000, which is `750`.
+/// In the above example, the value 50 is halfway between 0 and 100 (50%).
+/// Therefore, the result would be the halfway value between 500 and 1000, which is 750.
 ///
 /// @tparam T The type of value to remap.
 /// @param inputMin The start of the input range.
@@ -220,7 +205,7 @@ constexpr bool isWithinEpsilon(T number);
 
 /// Gets a value indicating whether two numbers are almost equal (threshold being epsilon).
 ///
-/// @return True if `lhs` and `rhs` are equal within epsilon; false otherwise.
+/// @return True if lhs and rhs are equal within epsilon; false otherwise.
 template<std::floating_point T>
 constexpr bool areEqualWithinEpsilon(T lhs, T rhs);
 
@@ -230,7 +215,7 @@ constexpr bool areEqualWithinEpsilon(T lhs, T rhs);
 /// @param rhs The second number
 /// @param threshold The threshold within which both numbers count as being equal
 ///
-/// @return True if `lhs` and `rhs` are equal within `threshold`; false otherwise.
+/// @return True if lhs and rhs are equal within `threshold`; false otherwise.
 template<std::floating_point T>
 constexpr bool areEqualWithin(T lhs, T rhs, T threshold);
 

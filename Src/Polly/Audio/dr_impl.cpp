@@ -1,5 +1,5 @@
 #ifdef _MSC_VER
-#pragma warning(disable:4245)
+#pragma warning(disable : 4245)
 #endif
 
 #define DR_MP3_IMPLEMENTATION
@@ -15,5 +15,3 @@
 #define DR_FLAC_NO_STDIO
 #define DR_FLAC_NO_CRC
 #include "dr_flac.h"
-
-

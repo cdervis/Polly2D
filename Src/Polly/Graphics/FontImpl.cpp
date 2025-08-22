@@ -85,7 +85,7 @@ Vec2 Font::Impl::measure(StringView text, float fontSize) const
             return true;
         });
 
-    return {right - left, bottom - top};
+    return Vec2(right - left, bottom - top);
 }
 
 const Font::Impl::FontPage& Font::Impl::page(u32 index) const
@@ -104,7 +104,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
             std::ignore = rasterizeGlyph(
                 RasterizedGlyphKey{
                     .codepoint = c,
-                    .fontSize = fontSize,
+                    .fontSize  = fontSize,
                 },
                 false);
         }
@@ -121,7 +121,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
 
     const RasterizedGlyphKey key{
         .codepoint = codepoint,
-        .fontSize = fontSize,
+        .fontSize  = fontSize,
     };
 
     if (const auto glyph = _rasterizedGlyphs.find(key))
@@ -288,13 +288,13 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
         logVerbose("  Writing directly to page image");
 
 #ifdef polly_have_gfx_metal
-        const auto& metal_image = static_cast<const Polly::MetalImage&>(*page.atlas.impl());
-        auto*       mtl_texture = metal_image.mtlTexture();
+        const auto& metalImage = static_cast<const Polly::MetalImage&>(*page.atlas.impl());
+        auto*       mtlTexture = metalImage.mtlTexture();
 
-        const auto row_pitch = imageRowPitch(metal_image.width(), metal_image.format());
+        const auto rowPitch = imageRowPitch(metalImage.width(), metalImage.format());
 
-        mtl_texture
-            ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), row_pitch);
+        mtlTexture
+            ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), rowPitch);
 #elif polly_have_gfx_vulkan
         auto& deviceImpl   = *Game::Impl::instance().painter().impl();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);
@@ -392,7 +392,6 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
                 imageBarrierToReadable.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
                 imageBarrierToReadable.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-                // barrier the image into the shader readable layout
                 vkCmdPipelineBarrier(
                     cmd,
                     VK_PIPELINE_STAGE_TRANSFER_BIT,

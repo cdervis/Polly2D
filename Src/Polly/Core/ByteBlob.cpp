@@ -93,7 +93,7 @@ ByteBlob ByteBlob::createByTransferringOwnership(String&& str)
 
     result._is_owner = true;
 
-    str._data = str._small_buffer;
+    str._data = str._smallBuffer;
     str       = String();
 
     return result;
@@ -124,4 +124,4 @@ StringView ByteBlob::asStringView() const
 
     return StringView(reinterpret_cast<const char*>(_data), stringSize);
 }
-} // namespace pl
+} // namespace Polly

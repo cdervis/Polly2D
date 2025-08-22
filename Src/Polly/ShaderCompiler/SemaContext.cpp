@@ -4,11 +4,11 @@
 
 #include "SemaContext.hpp"
 
-#include "../Core/Casting.hpp"
 #include "CompileError.hpp"
 #include "Decl.hpp"
 #include "Expr.hpp"
 #include "Naming.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
 #include "SourceLocation.hpp"
 #include "Type.hpp"
@@ -21,10 +21,10 @@ SemaContext::SemaContext(
     const BinaryOperationTable& binaryOperationTable,
     TypeCache&                  typeCache)
     : _ast(ast)
-    , _builtin_symbols(builtInSymbols)
-    , _bin_op_table(binaryOperationTable)
+    , _builtinSymbols(builtInSymbols)
+    , _binaryOperationTable(binaryOperationTable)
     , _typeCache(typeCache)
-    , _allow_forbidden_identifier_prefix(false)
+    , _allowForbiddenIdentifierPrefix(false)
 {
 }
 
@@ -35,12 +35,12 @@ const Ast& SemaContext::ast() const
 
 const BuiltinSymbols& SemaContext::builtInSymbols() const
 {
-    return _builtin_symbols;
+    return _builtinSymbols;
 }
 
 const BinaryOperationTable& SemaContext::binaryOperationTable() const
 {
-    return _bin_op_table;
+    return _binaryOperationTable;
 }
 
 TypeCache& SemaContext::typeCache()
@@ -105,10 +105,7 @@ bool SemaContext::canAssign(const Type* targetType, const Expr* rhs, bool isImpl
     return true;
 }
 
-void SemaContext::verifyTypeAssignment(
-    const Type* targetType,
-    const Expr* rhs,
-    bool        isImplicitCastAllowed)
+void SemaContext::verifyTypeAssignment(const Type* targetType, const Expr* rhs, bool isImplicitCastAllowed)
 {
     if (not canAssign(targetType, rhs, isImplicitCastAllowed))
     {
@@ -143,7 +140,7 @@ void SemaContext::verifySymbolAssignment(const Expr* lhs)
 
 void SemaContext::verifySymbolName(const SourceLocation& location, StringView name) const
 {
-    if (not _allow_forbidden_identifier_prefix and Naming::isIdentifierForbidden(name))
+    if (not _allowForbiddenIdentifierPrefix and Naming::isIdentifierForbidden(name))
     {
         throw ShaderCompileError(
             location,
@@ -155,6 +152,6 @@ void SemaContext::verifySymbolName(const SourceLocation& location, StringView na
 
 void SemaContext::setAllowForbiddenIdentifierPrefix(bool value)
 {
-    _allow_forbidden_identifier_prefix = value;
+    _allowForbiddenIdentifierPrefix = value;
 }
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

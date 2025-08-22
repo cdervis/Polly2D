@@ -74,9 +74,7 @@ u32 Tessellation2D::vertexCountForDrawLinePath([[maybe_unused]] const DrawLinePa
     return 0;
 }
 
-void Tessellation2D::process(
-    [[maybe_unused]] PolyVertex*                            dst,
-    [[maybe_unused]] const DrawLinePathCmd& cmd)
+void Tessellation2D::process([[maybe_unused]] PolyVertex* dst, [[maybe_unused]] const DrawLinePathCmd& cmd)
 {
 }
 
@@ -448,11 +446,11 @@ static constexpr void drawEllipseImpl(
 
         const auto xOffsetInnerR = angleCos * (radius.x - strokeWidth * 0.5F);
         const auto yOffsetInnerR = angleSin * (radius.y - strokeWidth * 0.5F);
-        innerPts[i]                = center + Vec2(xOffsetInnerR, yOffsetInnerR);
+        innerPts[i]              = center + Vec2(xOffsetInnerR, yOffsetInnerR);
 
         const auto xOffsetOuterR = angleCos * (radius.x + strokeWidth * 0.5F);
         const auto yOffsetOuterR = angleSin * (radius.y + strokeWidth * 0.5F);
-        outerPts[i]                = center + Vec2(xOffsetOuterR, yOffsetOuterR);
+        outerPts[i]              = center + Vec2(xOffsetOuterR, yOffsetOuterR);
 
         angle += step;
     }
@@ -511,7 +509,7 @@ static void fillEllipseImpl(const Vec2& center, const Vec2& radius, const Action
     {
         const auto xOffsetR = cos(angle) * radius.x;
         const auto yOffsetR = sin(angle) * radius.y;
-        pts[i]                = center + Vec2(xOffsetR, yOffsetR);
+        pts[i]              = center + Vec2(xOffsetR, yOffsetR);
         angle -= step;
     }
 
@@ -616,10 +614,7 @@ u32 Tessellation2D::calculatePolyQueueVertexCounts(Span<Command> commands, List<
     return totalVertexCount;
 }
 
-void Tessellation2D::processPolyQueue(
-    Span<Command> commands,
-    PolyVertex*                   dstVertices,
-    Span<u32>                     vertexCounts)
+void Tessellation2D::processPolyQueue(Span<Command> commands, PolyVertex* dstVertices, Span<u32> vertexCounts)
 {
     for (int idx = 0; const auto& cmd : commands)
     {
@@ -639,13 +634,11 @@ void Tessellation2D::processPolyQueue(
         {
             process(dstVertices, *fillRectangle);
         }
-        else if (
-            const auto* drawRoundedRectangle = std::get_if<DrawRoundedRectangleCmd>(&cmd))
+        else if (const auto* drawRoundedRectangle = std::get_if<DrawRoundedRectangleCmd>(&cmd))
         {
             process(dstVertices, *drawRoundedRectangle);
         }
-        else if (
-            const auto* fillRoundedRectangle = std::get_if<FillRoundedRectangleCmd>(&cmd))
+        else if (const auto* fillRoundedRectangle = std::get_if<FillRoundedRectangleCmd>(&cmd))
         {
             process(dstVertices, *fillRoundedRectangle);
         }

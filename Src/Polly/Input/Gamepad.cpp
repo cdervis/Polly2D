@@ -140,4 +140,4 @@ void Gamepad::setSensorEnabled(GamepadSensorType sensor, bool enabled)
     declareThisImpl;
     impl->setSensorEnabled(sensor, enabled);
 }
-} // namespace pl
+} // namespace Polly

@@ -33,7 +33,7 @@ static_assert(sizeof(i64) == 8);
 /// Polly objects have automatic memory management via shared reference counting with
 /// support for C++ move semantics. They can therefore be passed around very efficiently.
 /// This behavior is similar to that of classic shared pointer types, such as
-/// `SharedPtr`.
+/// SharedPtr.
 ///
 /// Every object stores at most a single pointer, which points to an instance of its
 /// implementation in the free store (heap).
@@ -187,6 +187,7 @@ static_assert(sizeof(i64) == 8);
 #endif
 #endif
 
+// TODO: re-enable this
 // #if __cpp_deleted_function >= 202403L
 // #define pl_delete_with_reason(reason) delete (reason)
 // #else

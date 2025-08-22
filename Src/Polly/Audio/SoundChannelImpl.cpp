@@ -141,4 +141,4 @@ SoundTime SoundChannel::Impl::streamPosition() const
 {
     return SoundTime(_audioDeviceImpl.soloudDevice().getStreamPosition(_soloudHandle));
 }
-} // namespace pl
+} // namespace Polly

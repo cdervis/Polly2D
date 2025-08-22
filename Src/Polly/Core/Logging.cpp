@@ -80,4 +80,4 @@ void Details::logInternal(String message, LogMessageType type)
             });
     }
 }
-} // namespace pl
+} // namespace Polly

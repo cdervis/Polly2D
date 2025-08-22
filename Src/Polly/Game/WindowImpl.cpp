@@ -14,7 +14,7 @@
 
 namespace Polly
 {
-static constexpr auto s_default_window_size = Vec2(1280, 720);
+static constexpr auto sDefaultWindowSize = Vec2(1280, 720);
 
 static int sdl_window_flags()
 {
@@ -77,7 +77,7 @@ void Window::Impl::createSDLWindow(
 
     logVerbose("Creating SDL window");
 
-    auto windowSize = initialWindowSize.valueOr(Vec2(s_default_window_size));
+    auto windowSize = initialWindowSize.valueOr(Vec2(sDefaultWindowSize));
 
     // If a fullscreen display index is specified, it overrides
     // the specified window size.
@@ -96,19 +96,18 @@ void Window::Impl::createSDLWindow(
         if (const auto& disp = displays[idx]; disp.currentMode)
         {
             const auto& mode = *disp.currentMode;
-            windowSize      = Vec2(static_cast<float>(mode.width), static_cast<float>(mode.height));
+            windowSize       = Vec2(static_cast<float>(mode.width), static_cast<float>(mode.height));
             transitionToFullScreen();
         }
         else if (const auto* sdlDesktopMode = SDL_GetDesktopDisplayMode(idx))
         {
-            windowSize =
-                Vec2(static_cast<float>(sdlDesktopMode->w), static_cast<float>(sdlDesktopMode->h));
+            windowSize = Vec2(static_cast<float>(sdlDesktopMode->w), static_cast<float>(sdlDesktopMode->h));
             transitionToFullScreen();
         }
-        else if ( not disp.modes.isEmpty())
+        else if (not disp.modes.isEmpty())
         {
             const auto& mode = disp.modes.first();
-            windowSize      = Vec2(static_cast<float>(mode.width), static_cast<float>(mode.height));
+            windowSize       = Vec2(static_cast<float>(mode.width), static_cast<float>(mode.height));
             transitionToFullScreen();
         }
     }
@@ -255,13 +254,12 @@ void Window::Impl::setSize(const Vec2& size, bool recenter)
 void Window::Impl::centerOnDisplay()
 {
     const auto display = SDL_GetDisplayForWindow(_sdlWindow);
-    const auto mySize = size();
+    const auto mySize  = size();
 
     auto displayRect = SDL_Rect();
     SDL_GetDisplayBounds(display, &displayRect);
 
-    const auto displayTopLeft =
-        Vec2(static_cast<float>(displayRect.x), static_cast<float>(displayRect.y));
+    const auto displayTopLeft = Vec2(static_cast<float>(displayRect.x), static_cast<float>(displayRect.y));
 
     const auto displaySize = Vec2(static_cast<float>(displayRect.w), static_cast<float>(displayRect.h));
 
@@ -297,4 +295,4 @@ void Window::Impl::setIsDisplaySyncEnabled(bool value)
 {
     _displaySyncEnabled = value;
 }
-} // namespace pl
+} // namespace Polly

@@ -9,12 +9,12 @@
 namespace Polly
 {
 VulkanUserShader::VulkanUserShader(
-    Painter::Impl& painter,
-    ShaderType            shaderType,
-    Span<u8>              spirvByteCode,
-    ParameterList         parameters,
-    UserShaderFlags                   flags,
-    u16                   cbufferSize)
+    Painter::Impl&  painter,
+    ShaderType      shaderType,
+    Span<u8>        spirvByteCode,
+    ParameterList   parameters,
+    UserShaderFlags flags,
+    u16             cbufferSize)
     : Impl(painter, shaderType, std::move(parameters), flags, cbufferSize)
 {
     auto&      vulkanDevice = static_cast<VulkanPainter&>(painter);
@@ -42,8 +42,8 @@ void VulkanUserShader::setDebuggingLabel(StringView name)
     GraphicsResource::setDebuggingLabel(name);
 
     auto&      vulkanDevice = static_cast<VulkanPainter&>(painter());
-    const auto str           = String(name);
+    const auto str          = String(name);
 
     vulkanDevice.setResourceDebugName(*this, str);
 }
-} // namespace pl
+} // namespace Polly

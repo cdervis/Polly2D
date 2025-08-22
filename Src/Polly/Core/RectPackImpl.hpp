@@ -55,7 +55,7 @@ class RectPack::Impl final : public Object
 
     float       _binWidth                  = 0.0f;
     float       _binHeight                 = 0.0f;
-    bool        _allow_rotations           = true;
+    bool        _allowRotations            = true;
     uint32_t    _newFreeRectanglesLastSize = 0;
     List<Rectf> _newFreeRectangles;
     List<Rectf> _usedRectangles;

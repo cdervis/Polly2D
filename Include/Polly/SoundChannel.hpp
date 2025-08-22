@@ -28,8 +28,7 @@ class SoundChannel
 
     /// Sets a value indicating whether the channel is paused.
     ///
-    /// @param value If true, the channel resumes playback. If false, the channel is
-    /// paused.
+    /// @param value If true, the channel resumes playback. If false, the channel is paused.
     void setIsPaused(bool value);
 
     /// Gets the playback speed of the channel.

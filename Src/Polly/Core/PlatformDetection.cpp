@@ -46,4 +46,4 @@ bool Platform::isMobile()
 {
     return current() == TargetPlatform::Android;
 }
-} // namespace pl
+} // namespace Polly

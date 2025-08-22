@@ -100,11 +100,11 @@ struct Rectf
     /// @code
     /// const auto r1    = Rectangle( 0, 0, 100, 100 );
     /// const auto r2    = Rectangle( 50, 50, 100, 100 );
-    /// const auto depth = Rectangle::GetIntersectionDepth( r1, r2 );
+    /// const auto depth = Rectangle::intersectionDepth( r1, r2 );
     ///
     /// if ( depth )
     /// {
-    ///     LogDebug( "We have an intersection: {}", *depth );
+    ///     logDebug( "We have an intersection: {}", *depth );
     /// }
     /// @endcode
     ///
@@ -123,10 +123,10 @@ struct Rectf
     [[nodiscard]]
     static Rectf unite(const Rectf& lhs, const Rectf& rhs);
 
-    /// Gets the top-left corner of the rectangle as a List.
+    /// Gets the top-left corner of the rectangle as a vector.
     Vec2 position() const;
 
-    /// Gets the size of the rectangle as a List.
+    /// Gets the size of the rectangle as a vector.
     Vec2 size() const;
 
     defineDefaultEqualityOperations(Rectf);

@@ -17,14 +17,14 @@ namespace Polly::ShaderCompiler
 static String buildMessage(SourceLocation location, StringView message)
 {
     auto fullMsg = location.line == 0 ? formatString("{}: error: {}", location.filename, message)
-                    : location.column == 0
-                        ? formatString("{}({}): error: {}", location.filename, location.line, message)
-                        : formatString(
-                              "{}({}, {}): error: {}",
-                              location.filename,
-                              location.line,
-                              location.column,
-                              message);
+                   : location.column == 0
+                       ? formatString("{}({}): error: {}", location.filename, location.line, message)
+                       : formatString(
+                             "{}({}, {}): error: {}",
+                             location.filename,
+                             location.line,
+                             location.column,
+                             message);
 
 #if not defined(NDEBUG) and defined(WIN32)
     OutputDebugString(message.cstring());
@@ -45,4 +45,4 @@ ShaderCompileError ShaderCompileError::internal(StringView message, Maybe<Source
         location.valueOr(stdSourceLocation),
         formatString("Internal compiler error: {}", message));
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

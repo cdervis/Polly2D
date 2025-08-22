@@ -55,7 +55,7 @@ void String::assign(const char* str, u32 size)
     auto* dstPtr = data();
     std::memcpy(dstPtr, str, size * sizeof(char));
     dstPtr[size] = '\0';
-    _size         = size;
+    _size        = size;
 }
 
 void String::clear()
@@ -102,7 +102,7 @@ void String::ensureSize(u32 newSize)
     reserve(newSize);
 
     const auto previousSize = _size;
-    _size                    = newSize;
+    _size                   = newSize;
 
     std::fill(_data + previousSize, _data + _size, '\0');
 }
@@ -242,7 +242,7 @@ void String::remove(u32 index, Maybe<u32> size)
     {
         // Optimized version where we just trim the string at 'index'.
         const auto removedChars = _size - index;
-        _data[index]             = '\0';
+        _data[index]            = '\0';
         _size -= removedChars;
     }
 }
@@ -349,17 +349,17 @@ void String::moveFrom(String&& other) // NOLINT(*-rvalue-reference-param-not-mov
     {
         // The other string was not large, which means we're not large either
         // after this move operation. Therefore point our data to our small buffer.
-        _data = &_small_buffer[0];
+        _data = &_smallBuffer[0];
     }
 
     if (_data != other._data)
     {
-        std::memcpy(_data, other._small_buffer, sizeof(_small_buffer));
+        std::memcpy(_data, other._smallBuffer, sizeof(_smallBuffer));
     }
 
     other._size     = 0;
     other._capacity = smallBufferSize - 1;
-    other._data     = &other._small_buffer[0];
+    other._data     = &other._smallBuffer[0];
     other._data[0]  = '\0';
 }
 
@@ -432,4 +432,4 @@ String toString(bool value)
 {
     return value ? "true" : "false";
 }
-} // namespace pl
+} // namespace Polly

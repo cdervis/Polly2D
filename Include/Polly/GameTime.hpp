@@ -8,7 +8,7 @@ namespace Polly
 {
 /// Represents timing information about a running game.
 ///
-/// A `GameTime` is not created by the user directly.
+/// A GameTime is not created by the user directly.
 /// It's instead obtained as a parameter by the callback function that's attached to
 /// Game::update().
 class GameTime

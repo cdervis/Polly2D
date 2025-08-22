@@ -47,4 +47,4 @@ double RectPack::occupancy() const
     declareThisImpl;
     return impl->occupancy();
 }
-} // namespace pl
+} // namespace Polly

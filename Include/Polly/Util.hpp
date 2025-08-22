@@ -13,7 +13,7 @@ namespace Polly
 {
 /// Gets a user-friendly display string for a byte size.
 ///
-/// For example, the size `1'000'000` would result in `"1 MB"`.
+/// For example, the size "1000000" would result in "1 MB".
 ///
 /// @param size The size to display, in bytes
 String bytesDisplayString(u64 size);

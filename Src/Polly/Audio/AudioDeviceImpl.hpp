@@ -28,7 +28,7 @@ class AudioDevice::Impl : public Object
 
     ~Impl() noexcept override;
 
-    SoundChannel playSound(Sound sound, float volume, float pan, bool start_paused, Maybe<SoundTime> delay);
+    SoundChannel playSound(Sound sound, float volume, float pan, bool startPaused, Maybe<SoundTime> delay);
 
     void playSoundOnce(Sound sound, float volume, float pan, Maybe<SoundTime> delay);
 

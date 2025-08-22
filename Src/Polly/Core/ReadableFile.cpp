@@ -172,4 +172,4 @@ u32 ReadableFile::remainingSize() const
     declareThisImpl;
     return impl->reader().remainingSize();
 }
-} // namespace pl
+} // namespace Polly

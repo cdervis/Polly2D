@@ -217,7 +217,7 @@ void BinOpExpr::onVerify(SemaContext& context, Scope& scope)
 
     const auto& lhsType = _lhs->type();
     const auto& rhsType = _rhs->type();
-    const auto* symbol   = _rhs->symbol();
+    const auto* symbol  = _rhs->symbol();
 
     if (is(BinOpKind::MemberAccess))
     {
@@ -438,7 +438,7 @@ void SubscriptExpr::onVerify(SemaContext& context, Scope& scope)
     const auto* indexSymbol = _indexExpr->symbol();
 
     const auto indexExprConstantValue = _indexExpr->evaluateConstantValue(context, scope);
-    auto       constantIndex            = Maybe<int>();
+    auto       constantIndex          = Maybe<int>();
 
     if (indexExprConstantValue and indexExprConstantValue.type() == AnyType::Int)
     {
@@ -470,7 +470,7 @@ void SubscriptExpr::onVerify(SemaContext& context, Scope& scope)
     {
         if (const auto* forLoopVar = as<ForLoopVariableDecl>(indexSymbol))
         {
-            const auto& range     = forLoopVar->parentForStmt()->range();
+            const auto& range    = forLoopVar->parentForStmt()->range();
             const auto  minValue = range.start()->evaluateConstantValue(context, scope);
             const auto  maxValue = range.end()->evaluateConstantValue(context, scope);
 
@@ -550,7 +550,7 @@ static const Type* determineVectorSwizzlingType(StringView name)
 
 void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
 {
-    const auto& builtins             = context.builtInSymbols();
+    const auto& builtins           = context.builtInSymbols();
     const Type* overrideSymbolType = nullptr;
 
     if (_ancestorExpr)
@@ -573,7 +573,7 @@ void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
         }
         else if (memberSymbol == builtins.arraySizeMember.get())
         {
-            overrideSymbolType  = IntType::instance();
+            overrideSymbolType = IntType::instance();
             _isArraySizeAccess = true;
         }
 
@@ -591,9 +591,9 @@ void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
         // We're looking up a symbol that represents a function call.
         // Because we support overloading, we have to look for the correct function
         // depending on the currently passed argument types.
-        const auto& args                  = scope.functionCallArguments();
+        const auto& args              = scope.functionCallArguments();
         auto        wasFuncFoundAtAll = false;
-        auto        allFuncsThatMatch  = List<const FunctionDecl*>{};
+        auto        allFuncsThatMatch = List<const FunctionDecl*>{};
 
         for (const auto& symbol : scope.findSymbols(_identifier, true))
         {
@@ -615,10 +615,10 @@ void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
                 continue;
             }
 
-            const auto doParamTypesMatch = all(
-                args,
-                [&](const auto& arg, u32 idx)
-                { return SemaContext::canAssign(params[idx]->type(), arg, acceptsImplicitlyCastArgs); });
+            const auto doParamTypesMatch =
+                all(args,
+                    [&](const auto& arg, u32 idx)
+                    { return SemaContext::canAssign(params[idx]->type(), arg, acceptsImplicitlyCastArgs); });
 
             if (doParamTypesMatch)
             {
@@ -704,7 +704,7 @@ Any SymAccessExpr::evaluateConstantValue(SemaContext& context, Scope& scope) con
         return variable->expr()->evaluateConstantValue(context, scope);
     }
 
-    return {};
+    return none;
 }
 
 bool SymAccessExpr::accessesSymbol(const Decl* symbol, bool /*transitive*/) const
@@ -789,8 +789,7 @@ bool FunctionCallExpr::accessesSymbol(const Decl* symbol, bool transitive) const
 
     if (transitive)
     {
-        if (const auto* symAccess = as<SymAccessExpr>(_callee.get());
-            symAccess and symAccess->isVerified())
+        if (const auto* symAccess = as<SymAccessExpr>(_callee.get()); symAccess and symAccess->isVerified())
         {
             if (const auto* func = as<FunctionDecl>(symAccess->symbol()))
             {
@@ -900,12 +899,12 @@ Any FunctionCallExpr::evaluateConstantValue(SemaContext& context, Scope& scope) 
             const auto x = expectAndGetFloat(values[0]);
             const auto y = expectAndGetFloat(values[1]);
 
-            return Vec2{x, y};
+            return Vec2(x, y);
         }
 
         if (symbol == builtins.vec2Ctor_xy.get())
         {
-            return Vec2{expectAndGetFloat(values.first())};
+            return Vec2(expectAndGetFloat(values.first()));
         }
 
         throw ShaderCompileError::internal("unknown Vector constructor call");
@@ -917,7 +916,7 @@ Any FunctionCallExpr::evaluateConstantValue(SemaContext& context, Scope& scope) 
 
         if (values.isEmpty())
         {
-            return {};
+            return none;
         }
 
         if (symbol == builtins.vec4Ctor_x_y_z_w.get())
@@ -958,7 +957,7 @@ Any FunctionCallExpr::evaluateConstantValue(SemaContext& context, Scope& scope) 
         throw ShaderCompileError::internal("Unknown Vec3 ctor call");
     }
 
-    return {};
+    return none;
 }
 
 const Expr* FunctionCallExpr::callee() const
@@ -992,9 +991,7 @@ StringView ScientificIntLiteralExpr::value() const
     return _value;
 }
 
-void HexadecimalIntLiteralExpr::onVerify(
-    [[maybe_unused]] SemaContext& context,
-    [[maybe_unused]] Scope&       scope)
+void HexadecimalIntLiteralExpr::onVerify([[maybe_unused]] SemaContext& context, [[maybe_unused]] Scope& scope)
 {
     setType(IntType::instance());
 }
@@ -1080,7 +1077,7 @@ Any UnaryOpExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
 
     if (not value)
     {
-        return {};
+        return none;
     }
 
     if (value.type() == AnyType::Int)
@@ -1105,7 +1102,7 @@ Any UnaryOpExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
         }
     }
 
-    return {};
+    return none;
 }
 
 bool UnaryOpExpr::accessesSymbol(const Decl* symbol, bool transitive) const
@@ -1195,21 +1192,21 @@ Any TernaryExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
 
     if (not conditionValue)
     {
-        return {};
+        return none;
     }
 
     auto trueValue = _trueExpr->evaluateConstantValue(context, scope);
 
     if (not trueValue)
     {
-        return {};
+        return none;
     }
 
     auto falseValue = _falseExpr->evaluateConstantValue(context, scope);
 
     if (not falseValue)
     {
-        return {};
+        return none;
     }
 
     if (conditionValue.type() == AnyType::Bool)
@@ -1218,7 +1215,7 @@ Any TernaryExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
         return conditionValue.get<bool>() ? trueValue : falseValue;
     }
 
-    return {};
+    return none;
 }
 
 bool TernaryExpr::accessesSymbol(const Decl* symbol, bool transitive) const
@@ -1267,4 +1264,4 @@ const Expr* ArrayExpr::sizeExpr() const
 {
     return _sizeExpr.get();
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

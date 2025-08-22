@@ -25,19 +25,19 @@ VulkanWindow::VulkanWindow(
 }
 
 void VulkanWindow::createInitialSwapChain(
-    Painter::Impl* painter,
-    VkDevice              vkDevice,
-    VkPhysicalDevice      vkPhysicalDevice,
-    uint32_t              graphicsFamilyQueueIndex,
-    uint32_t              presentFamilyQueueIndex)
+    Painter::Impl*   painter,
+    VkDevice         vkDevice,
+    VkPhysicalDevice vkPhysicalDevice,
+    uint32_t         graphicsFamilyQueueIndex,
+    uint32_t         presentFamilyQueueIndex)
 {
     assume(painter != nullptr);
     assume(vkDevice != VK_NULL_HANDLE);
     assume(vkPhysicalDevice != VK_NULL_HANDLE);
     assume(_swapChainKhr == VK_NULL_HANDLE);
 
-    _painter      = painter;
-    _vkDevice          = vkDevice;
+    _painter          = painter;
+    _vkDevice         = vkDevice;
     _vkPhysicalDevice = vkPhysicalDevice;
 
     logVerbose("Creating initial Vulkan window swap chain");
@@ -266,7 +266,7 @@ void VulkanWindow::createSwapChain(
 
     if (graphicsFamilyQueueIndex != presentFamilyQueueIndex)
     {
-        const auto indices = Array{graphicsFamilyQueueIndex, presentFamilyQueueIndex};
+        const auto indices                        = Array{graphicsFamilyQueueIndex, presentFamilyQueueIndex};
         swapChainCreateInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
         swapChainCreateInfo.queueFamilyIndexCount = uint32_t(indices.size());
         swapChainCreateInfo.pQueueFamilyIndices   = indices.data();
@@ -280,9 +280,8 @@ void VulkanWindow::createSwapChain(
 
     swapChainCreateInfo.preTransform   = capabilities.currentTransform;
     swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    swapChainCreateInfo.presentMode =
-        enableVSync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
-    swapChainCreateInfo.clipped = VK_TRUE;
+    swapChainCreateInfo.presentMode = enableVSync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
+    swapChainCreateInfo.clipped     = VK_TRUE;
 
     swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
@@ -299,7 +298,7 @@ void VulkanWindow::createSwapChain(
     vkGetSwapchainImagesKHR(vkDevice, _swapChainKhr, &swapChainImageCount, _swapChainImages.data());
 
     _swapChainImageFormat = format.format;
-    _swapChainExtent       = swapChainCreateInfo.imageExtent;
+    _swapChainExtent      = swapChainCreateInfo.imageExtent;
 
     _swapChainImageViews.resize(_swapChainImages.size());
 
@@ -386,8 +385,8 @@ void VulkanWindow::destroySwapChain(bool detachFromDevice)
 
     if (detachFromDevice)
     {
-        _painter      = nullptr;
-        _vkDevice          = VK_NULL_HANDLE;
+        _painter          = nullptr;
+        _vkDevice         = VK_NULL_HANDLE;
         _vkPhysicalDevice = VK_NULL_HANDLE;
     }
 }
@@ -423,4 +422,4 @@ void VulkanWindow::recreateSwapChainWithCurrentParams()
 
     _isSwapChainRecreationRequested = false;
 }
-} // namespace pl
+} // namespace Polly

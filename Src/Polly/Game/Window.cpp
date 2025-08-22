@@ -231,4 +231,4 @@ void Window::setLogPosition(WindowLoggingPosition value)
     declareThisImpl;
     setWindowLoggingPosition(value);
 }
-} // namespace pl
+} // namespace Polly

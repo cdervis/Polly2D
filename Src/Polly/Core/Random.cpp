@@ -14,7 +14,7 @@ thread_local auto sRng32 = XoshiroCpp::Xoshiro128PlusPlus(sSeed);
 thread_local auto sRng64 = XoshiroCpp::Xoshiro256PlusPlus(sSeed);
 
 thread_local int32_t sFastrandSeed = 1;
-} // namespace pl::rnd
+} // namespace Polly::Random
 
 void Polly::Random::seed(u64 value)
 {
@@ -40,8 +40,8 @@ unsigned int Polly::Random::nextUInt(Maybe<UIntInterval> range)
 
 float Polly::Random::nextFloat(Maybe<FloatInterval> range)
 {
-    const auto [min, max] = range.valueOr(
-        FloatInterval(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max()));
+    const auto [min, max] =
+        range.valueOr(FloatInterval(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::max()));
 
     return std::uniform_real_distribution(min, max)(sRng32);
 }

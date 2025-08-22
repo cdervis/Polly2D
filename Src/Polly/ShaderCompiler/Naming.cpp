@@ -12,4 +12,4 @@ bool Naming::isIdentifierForbidden(StringView identifier)
 {
     return identifier.startsWith(forbiddenIdentifierPrefix);
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

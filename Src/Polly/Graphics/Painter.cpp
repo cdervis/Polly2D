@@ -470,13 +470,7 @@ float Painter::pixelRatio() const
     return impl->pixelRatio();
 }
 
-void Painter::readCanvasDataInto(
-    const Image& canvas,
-    u32          x,
-    u32          y,
-    u32          width,
-    u32          height,
-    void*        destination)
+void Painter::readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination)
 {
     if (not canvas)
     {
@@ -572,7 +566,7 @@ void Painter::saveCanvasToFile(const Image& canvas, StringView filename, ImageFi
     {
         switch (format)
         {
-            case ImageFileFormat::png:
+            case ImageFileFormat::PNG:
                 return stbi_write_png(
                     filenameStr.cstring(),
                     static_cast<int>(canvasWidth),
@@ -580,7 +574,7 @@ void Painter::saveCanvasToFile(const Image& canvas, StringView filename, ImageFi
                     4,
                     pixelData.data(),
                     static_cast<int>(rowPitch));
-            case ImageFileFormat::jpeg:
+            case ImageFileFormat::JPEG:
                 return stbi_write_jpg(
                     filenameStr.cstring(),
                     static_cast<int>(canvasWidth),
@@ -588,7 +582,7 @@ void Painter::saveCanvasToFile(const Image& canvas, StringView filename, ImageFi
                     4,
                     pixelData.data(),
                     90);
-            case ImageFileFormat::bmp:
+            case ImageFileFormat::BMP:
                 return stbi_write_bmp(
                     filenameStr.cstring(),
                     static_cast<int>(canvasWidth),
@@ -642,7 +636,7 @@ Maybe<List<u8>> Painter::saveCanvasToMemory(const Image& canvas, ImageFileFormat
     {
         switch (format)
         {
-            case ImageFileFormat::png:
+            case ImageFileFormat::PNG:
                 return stbi_write_png_to_func(
                     writeFunc,
                     &myContext,
@@ -651,7 +645,7 @@ Maybe<List<u8>> Painter::saveCanvasToMemory(const Image& canvas, ImageFileFormat
                     4,
                     pixelData.data(),
                     static_cast<int>(rowPitch));
-            case ImageFileFormat::jpeg:
+            case ImageFileFormat::JPEG:
                 return stbi_write_jpg_to_func(
                     writeFunc,
                     &myContext,
@@ -660,7 +654,7 @@ Maybe<List<u8>> Painter::saveCanvasToMemory(const Image& canvas, ImageFileFormat
                     4,
                     pixelData.data(),
                     90);
-            case ImageFileFormat::bmp:
+            case ImageFileFormat::BMP:
                 return stbi_write_bmp_to_func(
                     writeFunc,
                     &myContext,

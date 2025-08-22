@@ -9,20 +9,16 @@ namespace Polly
 {
 VulkanImage::VulkanImage(
     Painter::Impl& painter,
-    u32                   width,
-    uint32_t              height,
-    ImageFormat           format,
-    const void*           data)
+    u32            width,
+    uint32_t       height,
+    ImageFormat    format,
+    const void*    data)
     : Impl(painter, false, width, height, format)
 {
     createVkImage(data);
 }
 
-VulkanImage::VulkanImage(
-    Painter::Impl& painter,
-    uint32_t              width,
-    uint32_t              height,
-    ImageFormat           format)
+VulkanImage::VulkanImage(Painter::Impl& painter, uint32_t width, uint32_t height, ImageFormat format)
     : Impl(painter, true, width, height, format)
 {
     createVkImage(nullptr);
@@ -53,7 +49,7 @@ void VulkanImage::setDebuggingLabel(StringView value)
     GraphicsResource::setDebuggingLabel(value);
 
     auto&      vulkanDevice = static_cast<VulkanPainter&>(painter());
-    const auto str           = String(value);
+    const auto str          = String(value);
 
     vulkanDevice.setResourceDebugName(*this, str);
 
@@ -65,15 +61,15 @@ void VulkanImage::setDebuggingLabel(StringView value)
 void VulkanImage::createVkImage(const void* data)
 {
     auto&      vulkanPainter = static_cast<VulkanPainter&>(painter());
-    const auto vkDevice              = vulkanPainter.vkDevice();
-    const auto vmaAllocator          = vulkanPainter.vmaAllocator();
-    _vk_format                        = convert(format());
+    const auto vkDevice      = vulkanPainter.vkDevice();
+    const auto vmaAllocator  = vulkanPainter.vmaAllocator();
+    _vk_format               = convert(format());
 
     // Create the VkImage first.
     {
         const auto dataSizeInBytes = imageSlicePitch(width(), height(), format());
 
-        auto vkTransferBuffer            = VkBuffer();
+        auto vkTransferBuffer           = VkBuffer();
         auto vkTransferBufferAllocation = VmaAllocation();
 
         defer
@@ -252,4 +248,4 @@ void VulkanImage::createVkImage(const void* data)
             "Failed to create an internal image view.");
     }
 }
-} // namespace pl
+} // namespace Polly

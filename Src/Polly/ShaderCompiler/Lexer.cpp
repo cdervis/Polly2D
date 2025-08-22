@@ -585,4 +585,4 @@ void removeUnnecessaryTokens(List<Token>& tokens)
         }
     }
 }
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

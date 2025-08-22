@@ -49,4 +49,4 @@ void Transformer::transform(StringView sourceCode, StringView filenameHint, cons
 
     callback(ast, context);
 }
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

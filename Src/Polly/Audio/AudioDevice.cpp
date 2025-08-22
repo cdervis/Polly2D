@@ -16,11 +16,11 @@ SoundChannel AudioDevice::playSound(
     const Sound&            sound,
     float                   volume,
     float                   pan,
-    bool                    start_paused,
+    bool                    startPaused,
     const Maybe<SoundTime>& delay)
 {
     declareThisImpl;
-    return impl->playSound(sound, volume, pan, start_paused, delay);
+    return impl->playSound(sound, volume, pan, startPaused, delay);
 }
 
 void AudioDevice::playOnce(const Sound& sound, float volume, float pan, Maybe<SoundTime> delay)
@@ -29,10 +29,10 @@ void AudioDevice::playOnce(const Sound& sound, float volume, float pan, Maybe<So
     impl->playSoundOnce(sound, volume, pan, delay);
 }
 
-SoundChannel AudioDevice::playInBackground(const Sound& sound, float volume, bool start_paused)
+SoundChannel AudioDevice::playInBackground(const Sound& sound, float volume, bool startPaused)
 {
     declareThisImpl;
-    return impl->playSoundInBackground(sound, volume, start_paused);
+    return impl->playSoundInBackground(sound, volume, startPaused);
 }
 
 void AudioDevice::stopAllSounds()
@@ -65,10 +65,10 @@ void AudioDevice::setGlobalVolume(float value)
     impl->soloudDevice().setGlobalVolume(value);
 }
 
-void AudioDevice::fadeGlobalVolume(float to_volume, SoundTime fade_duration)
+void AudioDevice::fadeGlobalVolume(float to_volume, SoundTime fadeDuration)
 {
     declareThisImpl;
-    impl->soloudDevice().fadeGlobalVolume(to_volume, fade_duration.value);
+    impl->soloudDevice().fadeGlobalVolume(to_volume, fadeDuration.value);
 }
 
 bool AudioDevice::isNullDevice() const
@@ -76,4 +76,4 @@ bool AudioDevice::isNullDevice() const
     declareThisImpl;
     return impl->isNullDevice();
 }
-} // namespace pl
+} // namespace Polly

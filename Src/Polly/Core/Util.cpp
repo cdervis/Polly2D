@@ -12,13 +12,19 @@ namespace Polly
 String bytesDisplayString(u64 size)
 {
     if (size > 1'000'000'000)
+    {
         return formatString("{} GB", size / 1'000'000'000);
+    }
 
     if (size > 1'000'000)
+    {
         return formatString("{} MB", size / 1'000'000);
+    }
 
     if (size > 1'000)
+    {
         return formatString("{} KB", size / 1'000);
+    }
 
     return formatString("{} bytes", size);
 }

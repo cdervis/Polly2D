@@ -17,8 +17,8 @@
 #include "Type.hpp"
 #include "TypeCache.hpp"
 
-#define parser_push_tk auto tk_pusher = TokenPusher(_tokenStack, _token)
-#define parser_pop_tk  tk_pusher.pop()
+#define parser_push_tk auto tokenPusher = TokenPusher(_tokenStack, _token)
+#define parser_pop_tk  tokenPusher.pop()
 
 namespace Polly::ShaderCompiler
 {
@@ -124,10 +124,12 @@ static constexpr auto sBinOpPrecedenceTable = Array{
 
 static Maybe<int> getBinOpPrecedence(TokenType type)
 {
-    const auto it =
-        std::ranges::find_if(sBinOpPrecedenceTable, [type](const auto& op) { return op.ttype == type; });
+    if (const auto op = findWhere(sBinOpPrecedenceTable, [type](const auto& op) { return op.ttype == type; }))
+    {
+        return op->precedence;
+    }
 
-    return it != sBinOpPrecedenceTable.end() ? Maybe(it->precedence) : none;
+    return none;
 }
 
 static Maybe<BinOpKind> getTokenTypeToBinOpKind(TokenType type)
@@ -499,7 +501,7 @@ UniquePtr<FunctionParamDecl> Parser::parseFunctionParameter()
     const auto& type = parseType();
     const auto  name = consumeIdentifier();
 
-    return makeUnique<FunctionParamDecl>(tk_pusher.initialToken()->location, name, type);
+    return makeUnique<FunctionParamDecl>(tokenPusher.initialToken()->location, name, type);
 }
 
 UniquePtr<CompoundAssignment> Parser::parseCompoundAssignment(UniquePtr<Expr>* parsedLhs)
@@ -562,7 +564,7 @@ UniquePtr<CompoundAssignment> Parser::parseCompoundAssignment(UniquePtr<Expr>* p
     parsedLhs->reset();
 
     return makeUnique<CompoundAssignment>(
-        tk_pusher.initialToken()->location,
+        tokenPusher.initialToken()->location,
         *kind,
         std::move(lhs),
         std::move(rhs));
@@ -589,7 +591,7 @@ UniquePtr<Assignment> Parser::parseAssignment(UniquePtr<Expr> lhs)
         return nullptr;
     }
 
-    auto rhs = parseExpr({}, 0, {});
+    auto rhs = parseExpr(none, 0, none);
 
     if (not rhs)
     {
@@ -600,7 +602,7 @@ UniquePtr<Assignment> Parser::parseAssignment(UniquePtr<Expr> lhs)
 
     consume(TokenType::Semicolon, true);
 
-    return makeUnique<Assignment>(tk_pusher.initialToken()->location, std::move(lhs), std::move(rhs));
+    return makeUnique<Assignment>(tokenPusher.initialToken()->location, std::move(lhs), std::move(rhs));
 }
 
 UniquePtr<ReturnStmt> Parser::parseReturnStatement()
@@ -609,7 +611,7 @@ UniquePtr<ReturnStmt> Parser::parseReturnStatement()
 
     parser_push_tk;
 
-    auto expr = parseExpr({}, 0, {});
+    auto expr = parseExpr(none, 0, none);
 
     if (not expr)
     {
@@ -618,7 +620,7 @@ UniquePtr<ReturnStmt> Parser::parseReturnStatement()
 
     consume(TokenType::Semicolon, true);
 
-    return makeUnique<ReturnStmt>(tk_pusher.initialToken()->location, std::move(expr));
+    return makeUnique<ReturnStmt>(tokenPusher.initialToken()->location, std::move(expr));
 }
 
 UniquePtr<ForStmt> Parser::parseForStatement()
@@ -648,7 +650,7 @@ UniquePtr<ForStmt> Parser::parseForStatement()
     auto body = parseCodeBlock();
 
     return makeUnique<ForStmt>(
-        tk_pusher.initialToken()->location,
+        tokenPusher.initialToken()->location,
         std::move(loopVar),
         std::move(range),
         std::move(body));
@@ -690,7 +692,7 @@ UniquePtr<IfStmt> Parser::parseIfStatement(bool isIf)
     }
 
     return makeUnique<IfStmt>(
-        tk_pusher.initialToken()->location,
+        tokenPusher.initialToken()->location,
         std::move(condition),
         std::move(body),
         std::move(next));
@@ -728,9 +730,9 @@ UniquePtr<ArrayExpr> Parser::parseArrayExpression()
 
     const auto& elementType = parseType();
     consume(TokenType::Comma, true);
-    auto sizeExpr = parseExpr({}, 0, {});
+    auto sizeExpr = parseExpr(none, 0, none);
     consume(TokenType::RightBracket, true);
-    const auto location = SourceLocation::fromTo(tk_pusher.initialToken()->location, _token->location);
+    const auto location = SourceLocation::fromTo(tokenPusher.initialToken()->location, _token->location);
 
     return makeUnique<ArrayExpr>(location, elementType, std::move(sizeExpr));
 }
@@ -739,16 +741,16 @@ UniquePtr<RangeExpr> Parser::parseRangeExpression()
 {
     parser_push_tk;
 
-    auto start = parseExpr({}, 0, {});
+    auto start = parseExpr(none, 0, none);
 
     if (not start)
     {
-        return {};
+        return none;
     }
 
     consume(TokenType::DotDot, true);
 
-    auto end = parseExpr({}, 0, {});
+    auto end = parseExpr(none, 0, none);
 
     if (not end)
     {
@@ -758,7 +760,7 @@ UniquePtr<RangeExpr> Parser::parseRangeExpression()
             "following form: 'min .. max'.");
     }
 
-    return makeUnique<RangeExpr>(tk_pusher.initialToken()->location, std::move(start), std::move(end));
+    return makeUnique<RangeExpr>(tokenPusher.initialToken()->location, std::move(start), std::move(end));
 }
 
 UniquePtr<IntLiteralExpr> Parser::parseIntLiteral()
@@ -834,7 +836,7 @@ UniquePtr<UnaryOpExpr> Parser::parseUnaryOperation()
         throw ShaderCompileError(_token->location, "Expected an expression for the unary operation.");
     }
 
-    return makeUnique<UnaryOpExpr>(tk_pusher.initialToken()->location, *opKind, std::move(expr));
+    return makeUnique<UnaryOpExpr>(tokenPusher.initialToken()->location, *opKind, std::move(expr));
 }
 
 UniquePtr<SymAccessExpr> Parser::parseSymbolAccess()
@@ -881,7 +883,7 @@ UniquePtr<FunctionCallExpr> Parser::parseFunctionCall(UniquePtr<Expr> callee)
     consume(TokenType::RightParen, true, "Expected a function call argument or ')'.");
 
     return makeUnique<FunctionCallExpr>(
-        tk_pusher.initialToken()->location,
+        tokenPusher.initialToken()->location,
         std::move(callee),
         std::move(args));
 }
@@ -934,7 +936,7 @@ UniquePtr<ParenExpr> Parser::parseParenthesizedExpression()
 
     consume(TokenType::RightParen, true);
 
-    return makeUnique<ParenExpr>(tk_pusher.initialToken()->location, std::move(expr));
+    return makeUnique<ParenExpr>(tokenPusher.initialToken()->location, std::move(expr));
 }
 
 UniquePtr<TernaryExpr> Parser::parseTernaryExpression(UniquePtr<Expr> conditionExpr)
@@ -995,7 +997,7 @@ UniquePtr<CodeBlock> Parser::parseCodeBlock()
 
 const Type* Parser::parseType()
 {
-    const auto location       = _token->location;
+    const auto location     = _token->location;
     const auto baseTypeName = consumeIdentifier();
 
     if (consume(TokenType::LeftBracket, false))
@@ -1135,4 +1137,4 @@ void Parser::TokenPusher::pop()
     _stack.removeLast();
     _isActive = false;
 }
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

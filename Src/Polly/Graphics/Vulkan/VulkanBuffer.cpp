@@ -63,7 +63,7 @@ VulkanBuffer& VulkanBuffer::operator=(VulkanBuffer&& moveFrom) noexcept
         _vmaAllocator  = std::exchange(moveFrom._vmaAllocator, nullptr);
         _vkBuffer      = std::exchange(moveFrom._vkBuffer, VK_NULL_HANDLE);
         _vmaAllocation = std::exchange(moveFrom._vmaAllocation, nullptr);
-        _sizeInBytes  = moveFrom._sizeInBytes;
+        _sizeInBytes   = moveFrom._sizeInBytes;
     }
 
     return *this;
@@ -98,4 +98,4 @@ void VulkanBuffer::destroy()
         _vmaAllocation = VK_NULL_HANDLE;
     }
 }
-} // namespace pl
+} // namespace Polly

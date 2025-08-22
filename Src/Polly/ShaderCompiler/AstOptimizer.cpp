@@ -113,4 +113,4 @@ bool AstOptimizer::removeUnusedVariables(CodeBlock* block)
 
     return hasRemovedAny;
 }
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

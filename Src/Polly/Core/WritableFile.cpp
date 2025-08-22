@@ -171,4 +171,4 @@ bool WritableFile::remove(StringView filename)
 
     return SDL_RemovePath(fullPath.cstring());
 }
-} // namespace pl
+} // namespace Polly

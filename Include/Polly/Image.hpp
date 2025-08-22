@@ -17,10 +17,10 @@ struct Vec2;
 /// Defines the pixel format of an image.
 enum class ImageFormat
 {
-    /// Unsigned 8-bit red channel, normalized to `[0.0 .. 1.0]`
+    /// Unsigned 8-bit red channel, normalized to [0.0 .. 1.0]
     R8Unorm = 1,
 
-    /// Unsigned 32-bit RGBA, 8 bits per channel, normalized to `[0.0 .. 1.0]`
+    /// Unsigned 32-bit RGBA, 8 bits per channel, normalized to [0.0 .. 1.0]
     R8G8B8A8UNorm = 2,
 
     /// 32-bit RGBA in sRGB space, 8 bits per channel
@@ -37,7 +37,7 @@ class Image
 
   public:
     /// Creates a 2D image from raw data, expected to be laid out in a specific pixel format
-    /// (parameter `format`).
+    /// (parameter format).
     ///
     /// @param width The width of the image, in pixels.
     /// @param height The height of the image, in pixels.

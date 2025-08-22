@@ -52,10 +52,10 @@ TempVarNameGen::TempVarNameGen(const CodeBlock* block)
 String TempVarNameGen::next(StringView hint)
 {
     auto str = hint.isEmpty() ? formatString("{}{}", _prefix, _counter)
-                               : formatString("{}{}_{}", _prefix, _counter, hint);
+                              : formatString("{}{}_{}", _prefix, _counter, hint);
 
     ++_counter;
 
     return str;
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

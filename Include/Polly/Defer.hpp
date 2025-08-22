@@ -2,7 +2,7 @@
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-// This file contains the `defer()` macro which can be used to perform
+// This file contains the `defer` macro which can be used to perform
 // guaranteed, arbitrary scope-based cleanup.
 //
 // Example usage:
@@ -11,7 +11,7 @@
 // {
 //     defer
 //     {
-//       logDebug("End of scope reached!");
+//         logDebug("End of scope reached!");
 //     };
 //
 //     logDebug("Beginning some_function");

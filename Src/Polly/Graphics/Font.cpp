@@ -56,4 +56,4 @@ StringView Font::assetName() const
     declareThisImpl;
     return impl->assetName();
 }
-} // namespace pl
+} // namespace Polly

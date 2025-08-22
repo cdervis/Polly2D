@@ -9,9 +9,7 @@
 
 namespace Polly
 {
-GraphicsResource::GraphicsResource(
-    Painter::Impl& painter,
-    GraphicsResourceType  type)
+GraphicsResource::GraphicsResource(Painter::Impl& painter, GraphicsResourceType type)
     : _painter(painter)
     , _resourceType(type)
 {
@@ -78,4 +76,4 @@ GraphicsResourceType GraphicsResource::type() const
 {
     return _resourceType;
 }
-} // namespace pl
+} // namespace Polly

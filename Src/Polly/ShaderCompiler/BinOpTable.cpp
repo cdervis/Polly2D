@@ -92,7 +92,8 @@ BinaryOperationTable::BinaryOperationTable()
     };
 }
 
-Maybe<const Type*> BinaryOperationTable::binOpResultType(BinOpKind opKind, const Type* lhs, const Type* rhs) const
+Maybe<const Type*> BinaryOperationTable::binOpResultType(BinOpKind opKind, const Type* lhs, const Type* rhs)
+    const
 {
     const auto it = findWhere(
         _entries,
@@ -108,4 +109,4 @@ BinaryOperationTable::Entry::Entry(BinOpKind opKind, const Type* lhs, const Type
     , result(result)
 {
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

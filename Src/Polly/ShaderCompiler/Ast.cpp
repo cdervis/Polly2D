@@ -29,9 +29,7 @@ Ast::Ast(StringView filename, DeclList decls)
         {
             if (_shaderType != static_cast<ShaderType>(-1))
             {
-                throw ShaderCompileError(
-                    shaderTypeDecl->location(),
-                    "Shader type specified more than once.");
+                throw ShaderCompileError(shaderTypeDecl->location(), "Shader type specified more than once.");
             }
 
             _shaderType = [&decl, id = shaderTypeDecl->id()]
@@ -40,12 +38,12 @@ Ast::Ast(StringView filename, DeclList decls)
                 {
                     return ShaderType::Sprite;
                 }
-                
+
                 if (id == Naming::shaderTypePolygon)
                 {
                     return ShaderType::Polygon;
                 }
-                
+
                 throw ShaderCompileError(decl->location(), formatString("Invalid shader type specified."));
             }();
         }
@@ -193,4 +191,4 @@ AccessedParams Ast::paramsAccessedByFunction(const FunctionDecl* function) const
 
     return params;
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

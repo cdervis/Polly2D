@@ -155,12 +155,12 @@ constexpr bool operator!=(const Array<K, KN>& lhs, const Array<K, KN>& rhs)
 template<typename T, u32 KN1, u32 KN2>
 constexpr Array<T, KN1 + KN2> operator+(const Array<T, KN1>& lhs, const Array<T, KN2>& rhs)
 {
-    auto        arr       = Array<T, KN1 + KN2>();
-    const auto* lhs_items = lhs.items;
+    auto        arr      = Array<T, KN1 + KN2>();
+    const auto* lhsItems = lhs.items;
 
     for (u32 i = 0; i < KN1; ++i)
     {
-        arr[i] = lhs_items[i];
+        arr[i] = lhsItems[i];
     }
 
     const auto* rhs_items = rhs.items;

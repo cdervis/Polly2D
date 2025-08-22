@@ -99,4 +99,4 @@ const CodeBlock::StmtsType& CodeBlock::stmts() const
 {
     return _stmts;
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

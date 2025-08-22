@@ -11,27 +11,27 @@
 
 namespace Polly
 {
-static SDL_Cursor* s_null_sdl_cursor = nullptr;
+static SDL_Cursor* sNullSDLCursor = nullptr;
 
-static auto s_sdl_system_cursors = Array{
-    Pair(MouseCursorType::Default, s_null_sdl_cursor),
-    Pair(MouseCursorType::Pointer, s_null_sdl_cursor),
-    Pair(MouseCursorType::Text, s_null_sdl_cursor),
-    Pair(MouseCursorType::NotAllowed, s_null_sdl_cursor),
-    Pair(MouseCursorType::Move, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeNESW, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeNS, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeNWSE, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeEW, s_null_sdl_cursor),
-    Pair(MouseCursorType::Progress, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeS, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeSW, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeSE, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeW, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeE, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeN, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeNW, s_null_sdl_cursor),
-    Pair(MouseCursorType::ResizeNE, s_null_sdl_cursor),
+static auto sSDLSystemCursors = Array{
+    Pair(MouseCursorType::Default, sNullSDLCursor),
+    Pair(MouseCursorType::Pointer, sNullSDLCursor),
+    Pair(MouseCursorType::Text, sNullSDLCursor),
+    Pair(MouseCursorType::NotAllowed, sNullSDLCursor),
+    Pair(MouseCursorType::Move, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeNESW, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeNS, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeNWSE, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeEW, sNullSDLCursor),
+    Pair(MouseCursorType::Progress, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeS, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeSW, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeSE, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeW, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeE, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeN, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeNW, sNullSDLCursor),
+    Pair(MouseCursorType::ResizeNE, sNullSDLCursor),
 };
 
 static SDL_SystemCursor convert_cursor_type(MouseCursorType type)
@@ -70,10 +70,11 @@ MouseCursor::Impl::Impl(MouseCursorType type)
 MouseCursor::Impl::Impl(
     [[maybe_unused]] u32         width,
     [[maybe_unused]] u32         height,
-    [[maybe_unused]] u32         hotspot_x,
-    [[maybe_unused]] u32         hotspot_y,
+    [[maybe_unused]] u32         hotspotX,
+    [[maybe_unused]] u32         hotspotY,
     [[maybe_unused]] Span<Color> data)
 {
+    // TODO: issue #42
     notImplemented();
 }
 
@@ -81,7 +82,7 @@ MouseCursor::Impl::~Impl() noexcept
 {
     if (_type)
     {
-        auto& [_, sdlCursor] = s_sdl_system_cursors[int(*_type)];
+        auto& [_, sdlCursor] = sSDLSystemCursors[int(*_type)];
         sdlCursor            = nullptr;
     }
 
@@ -93,10 +94,12 @@ MouseCursor::Impl::~Impl() noexcept
 
 SDL_Cursor* MouseCursor::Impl::demandCreateSdlCursorForType(MouseCursorType type)
 {
-    auto& [_, sdlCursor] = s_sdl_system_cursors[static_cast<int>(type)];
+    auto& [_, sdlCursor] = sSDLSystemCursors[static_cast<int>(type)];
 
-    if (sdlCursor == nullptr)
+    if (not sdlCursor)
+    {
         sdlCursor = SDL_CreateSystemCursor(convert_cursor_type(type));
+    }
 
     return sdlCursor;
 }
@@ -105,12 +108,14 @@ void MouseCursor::Impl::destroySystemCursors()
 {
     logVerbose("Destroying system cursors");
 
-    for (auto& [_, sdlCursor] : s_sdl_system_cursors)
+    for (auto& [_, sdlCursor] : sSDLSystemCursors)
+    {
         SDL_DestroyCursor(sdlCursor);
+    }
 }
 
 SDL_Cursor* MouseCursor::Impl::sdlCursor() const
 {
     return _sdlCursor;
 }
-} // namespace pl
+} // namespace Polly

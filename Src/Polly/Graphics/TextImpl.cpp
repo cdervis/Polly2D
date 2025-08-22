@@ -39,8 +39,8 @@ void shapeText(
                 dstGlyphs.add({
                     .codepoint = codepoint,
                     .image     = page.atlas,
-                    .dstRect  = rect,
-                    .srcRect  = glyph.uvRect,
+                    .dstRect   = rect,
+                    .srcRect   = glyph.uvRect,
                 });
 
                 return true;
@@ -61,8 +61,8 @@ void shapeText(
                 dstGlyphs.add({
                     .codepoint = codepoint,
                     .image     = page.atlas,
-                    .dstRect  = rect,
-                    .srcRect  = glyph.uvRect,
+                    .dstRect   = rect,
+                    .srcRect   = glyph.uvRect,
                 });
 
                 if (extras.isLastOnLine)
@@ -132,4 +132,4 @@ Vec2 Text::Impl::size() const
 {
     return _size;
 }
-} // namespace pl
+} // namespace Polly

@@ -167,7 +167,8 @@ UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, S
                 throw Error("The entry point must be a function.");
             }
 
-            const auto paramDecls = ShaderCompiler::ShaderGenerator::extractShaderParameters(ast, entryPointFunc);
+            const auto paramDecls =
+                ShaderCompiler::ShaderGenerator::extractShaderParameters(ast, entryPointFunc);
 
             auto params = Shader::Impl::ParameterList();
             params.reserve(paramDecls.size());
@@ -265,15 +266,15 @@ void Painter::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool force)
         if (canvas)
         {
             const auto [width, height] = canvas.size();
-            newViewport.width         = width;
-            newViewport.height        = height;
+            newViewport.width          = width;
+            newViewport.height         = height;
             _pixelRatio                = 1.0f;
         }
         else
         {
             const auto [windowWidth, windowHeight] = _windowImpl.sizePx();
-            newViewport.width                     = windowWidth;
-            newViewport.height                    = windowHeight;
+            newViewport.width                      = windowWidth;
+            newViewport.height                     = windowHeight;
             _pixelRatio                            = _windowImpl.pixelRatio();
         }
 
@@ -392,9 +393,9 @@ void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
 {
     const auto  previousBlendState = _currentBlendState;
     const auto& particleSystemImpl = *particleSystem.impl();
-    const auto  emitters             = particleSystemImpl.emitters();
-    const auto  emitterData         = particleSystemImpl.emitterDataSpan();
-    const auto  emitterCount        = emitters.size();
+    const auto  emitters           = particleSystemImpl.emitters();
+    const auto  emitterData        = particleSystemImpl.emitterDataSpan();
+    const auto  emitterCount       = emitters.size();
 
     defer
     {
@@ -408,9 +409,9 @@ void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
 
         setBlendState(emitter.blendState);
 
-        const auto& data           = emitterData[i];
+        const auto& data          = emitterData[i];
         const auto  imageSize     = image.size();
-        const auto  origin         = imageSize * 0.5f;
+        const auto  origin        = imageSize * 0.5f;
         const auto  particlesSpan = Span(data.particles.data(), data.activeParticleCount);
 
         auto sprite = Sprite{
@@ -467,9 +468,9 @@ void Painter::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, float s
 
 void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
 {
-    auto       vertices         = List<MeshVertex>();
-    auto&      skeletonImpl    = *skeleton.impl();
-    auto       command          = _spineSkeletonRenderer.render(*skeletonImpl.skeleton);
+    auto       vertices       = List<MeshVertex>();
+    auto&      skeletonImpl   = *skeleton.impl();
+    auto       command        = _spineSkeletonRenderer.render(*skeletonImpl.skeleton);
     const auto prevBlendState = _currentBlendState;
 
     while (command != nullptr)
@@ -614,7 +615,7 @@ void Painter::Impl::postInit(const PainterCapabilities& capabilities)
 
     // White image
     {
-        constexpr auto size        = static_cast<size_t>(1);
+        constexpr auto size       = static_cast<size_t>(1);
         constexpr auto pixelCount = static_cast<size_t>(4) * size * size;
 
         auto data = Array<u8, pixelCount>();

@@ -573,14 +573,14 @@ MouseButton InputImpl::fromSDLMouseButton(int sdl_button)
     }
 }
 
-static KeyModifier from_sdl_keymods(Uint16 mods)
+static KeyModifier fromSDLKeymods(Uint16 mods)
 {
     return static_cast<KeyModifier>(mods);
 }
 
 Pair<Key, KeyModifier> InputImpl::fromSDLKeysym(SDL_Keycode sdl_key, SDL_Keymod sdl_mod)
 {
-    return Pair(fromSDLKey(sdl_key), from_sdl_keymods(sdl_mod));
+    return Pair(fromSDLKey(sdl_key), fromSDLKeymods(sdl_mod));
 }
 
 InputImpl::InputImpl()
@@ -686,7 +686,7 @@ void InputImpl::update()
         {
             const auto idx = static_cast<int>(button) - 1;
             assume(idx >= 0);
-            const auto is_down        = (bits bitand SDL_BUTTON_MASK(sdl_button)) != 0u;
+            const auto is_down      = (bits bitand SDL_BUTTON_MASK(sdl_button)) != 0u;
             _mouseButtonStates[idx] = is_down ? 1 : 0;
         };
 
@@ -717,4 +717,4 @@ void InputImpl::setMouseWheelDelta(Vec2 value)
 {
     _mouseWheelDelta = value;
 }
-} // namespace pl
+} // namespace Polly

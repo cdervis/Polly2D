@@ -12,9 +12,7 @@
 
 namespace Polly::ShaderCompiler
 {
-ShaderParameterList ShaderGenerator::extractShaderParameters(
-    const Ast&          ast,
-    const FunctionDecl* entryPoint)
+ShaderParameterList ShaderGenerator::extractShaderParameters(const Ast& ast, const FunctionDecl* entryPoint)
 {
     const auto accessedParams = ast.paramsAccessedByFunction(entryPoint);
 
@@ -57,7 +55,7 @@ List<const Decl*> ShaderGenerator::gatherASTDeclarationsToGenerate(
 
     // Remove non-top-level symbols
     accessedSymbols.removeAllWhere([&](const auto& symbol)
-                                      { return not ast.isTopLevelSymbol(context, symbol); });
+                                   { return not ast.isTopLevelSymbol(context, symbol); });
 
     auto declsToGenerate = List<const Decl*>();
     declsToGenerate.reserve(accessedSymbols.size() + 1);
@@ -74,4 +72,4 @@ List<const Decl*> ShaderGenerator::gatherASTDeclarationsToGenerate(
 
     return declsToGenerate;
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

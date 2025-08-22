@@ -249,7 +249,7 @@ void MetalPainter::startFrame()
     const auto& metalWindow = static_cast<const MetalWindow&>(window());
     metalWindow.updateCaMetalLayerDrawableSizeToWindowPxSize();
 
-    auto* caMetalLayer                = metalWindow.caMetalLayer();
+    auto* caMetalLayer              = metalWindow.caMetalLayer();
     frameData.currentWindowDrawable = NS::RetainPtr(caMetalLayer->nextDrawable());
 
     if (not frameData.currentWindowDrawable)
@@ -259,10 +259,10 @@ void MetalPainter::startFrame()
 
     frameData.currentBatchMode = none;
 
-    frameData.spriteBatchShaderKind           = static_cast<SpriteShaderKind>(-1);
-    frameData.spriteBatchImage                 = nullptr;
-    frameData.spriteVertexCounter              = 0;
-    frameData.spriteIndexCounter               = 0;
+    frameData.spriteBatchShaderKind          = static_cast<SpriteShaderKind>(-1);
+    frameData.spriteBatchImage               = nullptr;
+    frameData.spriteVertexCounter            = 0;
+    frameData.spriteIndexCounter             = 0;
     frameData.currentSpriteVertexBufferIndex = 0;
     frameData.spriteQueue.clear();
 
@@ -279,8 +279,8 @@ void MetalPainter::startFrame()
 
     frameData.cbufferAllocator->reset();
 
-    frameData.lastBoundUserShaderParamsCBuffer = nullptr;
-    frameData.lastBoundViewport                    = {};
+    frameData.lastBoundUserShaderParamsCBuffer  = nullptr;
+    frameData.lastBoundViewport                 = {};
     frameData.lastAppliedViewportToSystemValues = {};
 
     assume(frameData.spriteQueue.isEmpty());
@@ -564,7 +564,7 @@ void MetalPainter::drawSprite(const Sprite& sprite, SpriteShaderKind spriteShade
     }
 
     frameData.spriteBatchShaderKind = spriteShaderKind;
-    frameData.spriteBatchImage       = imageImpl;
+    frameData.spriteBatchImage      = imageImpl;
 
     ++performanceStats().spriteCount;
 }
@@ -780,8 +780,7 @@ void MetalPainter::readCanvasDataInto(
         arp->release();
     };
 
-    auto* buffer =
-        _mtlDevice->newBuffer(static_cast<NS::UInteger>(dataSize), MTL::ResourceStorageModeShared);
+    auto* buffer = _mtlDevice->newBuffer(static_cast<NS::UInteger>(dataSize), MTL::ResourceStorageModeShared);
 
     auto* cmdBuffer = _mtlCommandQueue->commandBuffer();
     auto* encoder   = cmdBuffer->blitCommandEncoder();
@@ -957,10 +956,10 @@ void MetalPainter::prepareDrawCall()
         }
 
         const auto* mtlPso = _pipelineStateCache[MetalPsoCache::Key{
-            .blendState              = currentBlendState(),
+            .blendState            = currentBlendState(),
             .colorAttachmentFormat = renderTargetFormat,
-            .vertexShader           = vertexShader,
-            .pixelShader            = fragmentShader,
+            .vertexShader          = vertexShader,
+            .pixelShader           = fragmentShader,
         }];
 
         frameData.renderEncoder->setRenderPipelineState(mtlPso);
@@ -1139,8 +1138,7 @@ void MetalPainter::flushSprites()
     auto* vertexBuffer = frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get();
 
     // Draw sprites
-    auto* dstVertices =
-        static_cast<SpriteVertex*>(vertexBuffer->contents()) + frameData.spriteVertexCounter;
+    auto* dstVertices = static_cast<SpriteVertex*>(vertexBuffer->contents()) + frameData.spriteVertexCounter;
 
     fillSpriteVertices(
         dstVertices,
@@ -1189,9 +1187,8 @@ void MetalPainter::flushPolys()
 
     prepareDrawCall();
 
-    const auto numberOfVerticesToDraw = Tessellation2D::calculatePolyQueueVertexCounts(
-        frameData.polyQueue,
-        frameData.polyCmdVertexCounts);
+    const auto numberOfVerticesToDraw =
+        Tessellation2D::calculatePolyQueueVertexCounts(frameData.polyQueue, frameData.polyCmdVertexCounts);
 
     if (numberOfVerticesToDraw > maxPolyVertices)
     {
@@ -1329,8 +1326,8 @@ void MetalPainter::createSpriteRenderingResources(MTL::Library* shaderLib)
 {
     // Shaders
     {
-        _spriteVS         = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_sprites"));
-        _defaultSpritePS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "ps_sprites_default"));
+        _spriteVS              = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_sprites"));
+        _defaultSpritePS       = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "ps_sprites_default"));
         _monochromaticSpritePS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "ps_monochromatic"));
 
         if (not _spriteVS or not _defaultSpritePS or not _monochromaticSpritePS)
@@ -1436,7 +1433,7 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
 
 NS::SharedPtr<MTL::Buffer> MetalPainter::createSingleSpriteVertexBuffer()
 {
-    constexpr auto vertexCount     = maxSpriteBatchSize * verticesPerSprite;
+    constexpr auto vertexCount   = maxSpriteBatchSize * verticesPerSprite;
     constexpr auto vbSizeInBytes = sizeof(SpriteVertex) * vertexCount;
 
     auto buffer = NS::TransferPtr(

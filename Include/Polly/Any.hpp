@@ -248,14 +248,14 @@ struct AnyTypeMapper<void*>
 
 struct AnyTypeInfo
 {
-    AnyTypeInfo(bool is_trivial, size_t size, StringView name)
-        : is_trivial(is_trivial)
+    AnyTypeInfo(bool isTrivial, size_t size, StringView name)
+        : isTrivial(isTrivial)
         , size(size)
         , name(name)
     {
     }
 
-    bool       is_trivial;
+    bool       isTrivial;
     size_t     size;
     StringView name;
 };
@@ -361,7 +361,7 @@ template<Concepts::SupportedByAny T>
 T& Any::get() &
 {
     [[maybe_unused]]
-    constexpr auto result_type = Details::AnyTypeMapper<T>::type;
+    constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
 #ifndef polly_no_hardening
     if (_type == AnyType::None)
@@ -369,9 +369,9 @@ T& Any::get() &
         Details::raiseEmptyAnyError();
     }
 
-    if (_type != result_type)
+    if (_type != resultType)
     {
-        Details::raiseInvalidAnyConversionError(_type, result_type);
+        Details::raiseInvalidAnyConversionError(_type, resultType);
     }
 #endif
 
@@ -382,7 +382,7 @@ template<Concepts::SupportedByAny T>
 const T& Any::get() const&
 {
     [[maybe_unused]]
-    constexpr auto result_type = Details::AnyTypeMapper<T>::type;
+    constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
 #ifndef polly_no_hardening
     if (_type == AnyType::None)
@@ -390,9 +390,9 @@ const T& Any::get() const&
         Details::raiseEmptyAnyError();
     }
 
-    if (_type != result_type)
+    if (_type != resultType)
     {
-        Details::raiseInvalidAnyConversionError(_type, result_type);
+        Details::raiseInvalidAnyConversionError(_type, resultType);
     }
 #endif
 
@@ -403,7 +403,7 @@ template<Concepts::SupportedByAny T>
 T&& Any::get() &&
 {
     [[maybe_unused]]
-    constexpr auto result_type = Details::AnyTypeMapper<T>::type;
+    constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
 #ifndef polly_no_hardening
     if (_type == AnyType::None)
@@ -411,9 +411,9 @@ T&& Any::get() &&
         Details::raiseEmptyAnyError();
     }
 
-    if (_type != result_type)
+    if (_type != resultType)
     {
-        Details::raiseInvalidAnyConversionError(_type, result_type);
+        Details::raiseInvalidAnyConversionError(_type, resultType);
     }
 #endif
 
@@ -430,9 +430,9 @@ Maybe<T&> Any::tryGet()
     }
 #endif
 
-    constexpr auto result_type = Details::AnyTypeMapper<T>::type;
+    constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
-    return _type == result_type ? *reinterpret_cast<T*>(_buffer) : Maybe<T&>();
+    return _type == resultType ? *reinterpret_cast<T*>(_buffer) : Maybe<T&>();
 }
 
 template<Concepts::SupportedByAny T>
@@ -445,28 +445,28 @@ Maybe<const T&> Any::tryGet() const
     }
 #endif
 
-    constexpr auto result_type = Details::AnyTypeMapper<T>::type;
+    constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
-    return _type == result_type ? *reinterpret_cast<const T*>(_buffer) : Maybe<const T&>();
+    return _type == resultType ? *reinterpret_cast<const T*>(_buffer) : Maybe<const T&>();
 }
 
 template<Concepts::SupportedByAny T>
-T Any::getOr(const T& fallback_value) const
+T Any::getOr(const T& fallbackValue) const
 {
     if (_type == AnyType::None)
     {
-        return fallback_value;
+        return fallbackValue;
     }
 
-    constexpr auto result_type = Details::AnyTypeMapper<T>::type;
+    constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
-    return _type == result_type ? *reinterpret_cast<const T*>(_buffer) : fallback_value;
+    return _type == resultType ? *reinterpret_cast<const T*>(_buffer) : fallbackValue;
 }
 
 template<typename Ptr>
 void Any::constructFromBuffer(Ptr ptr)
 {
-    const auto construct_non_trivial_type = [this, ptr]<typename T>()
+    const auto constructNonTrivialType = [this, ptr]<typename T>()
     {
         auto* dst = reinterpret_cast<T*>(_buffer);
         if constexpr (std::is_const_v<std::remove_pointer_t<Ptr>>)
@@ -479,7 +479,7 @@ void Any::constructFromBuffer(Ptr ptr)
         }
     };
 
-    if (const auto info = *Details::any_type_info(_type); info.is_trivial)
+    if (const auto info = *Details::any_type_info(_type); info.isTrivial)
     {
         // Can copy bitwise.
         std::memcpy(_buffer, ptr, info.size);
@@ -487,17 +487,17 @@ void Any::constructFromBuffer(Ptr ptr)
     // Must construct type based on tag:
     else if (_type == AnyType::String)
     {
-        construct_non_trivial_type.template operator()<String>();
+        constructNonTrivialType.template operator()<String>();
     }
     else if (_type == AnyType::StringView)
     {
-        construct_non_trivial_type.template operator()<StringView>();
+        constructNonTrivialType.template operator()<StringView>();
     }
 }
 
 inline void Any::destroy()
 {
-    const auto destroy_non_trivial_type = [this]<typename T, bool Clear = true>()
+    const auto destroyNonTrivialType = [this]<typename T, bool Clear = true>()
     {
         std::destroy_at(reinterpret_cast<T*>(_buffer));
 
@@ -509,11 +509,11 @@ inline void Any::destroy()
 
     if (_type == AnyType::String)
     {
-        destroy_non_trivial_type.operator()<String>();
+        destroyNonTrivialType.operator()<String>();
     }
     else if (_type == AnyType::StringView)
     {
-        destroy_non_trivial_type.operator()<StringView>();
+        destroyNonTrivialType.operator()<StringView>();
     }
 }
 } // namespace Polly

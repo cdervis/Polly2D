@@ -17,7 +17,7 @@ Asset::~Asset() noexcept
 {
     if (_contentManager)
     {
-        assume( not _assetName.isEmpty());
+        assume(not _assetName.isEmpty());
         _contentManager->notifyAssetDestroyed(this);
     }
 }
@@ -47,4 +47,4 @@ void Asset::detachFromContentManager()
 {
     _contentManager = nullptr;
 }
-} // namespace pl
+} // namespace Polly

@@ -96,4 +96,4 @@ void Sound::Impl::initSoloudWavAudioSource()
 
     _soloudAudioSource = std::move(wav);
 }
-} // namespace pl
+} // namespace Polly

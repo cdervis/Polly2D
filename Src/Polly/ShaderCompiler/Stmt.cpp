@@ -46,10 +46,10 @@ void Statement::setIsOnlyStatementInBlock(bool value)
 }
 
 CompoundAssignment::CompoundAssignment(
-    const SourceLocation& location,
-    CompoundAssignmentKind      kind,
-    UniquePtr<Expr>       lhs,
-    UniquePtr<Expr>       rhs)
+    const SourceLocation&  location,
+    CompoundAssignmentKind kind,
+    UniquePtr<Expr>        lhs,
+    UniquePtr<Expr>        rhs)
     : Statement(location)
     , _kind(kind)
     , _lhs(std::move(lhs))
@@ -245,8 +245,7 @@ void ContinueStmt::onVerify([[maybe_unused]] SemaContext& context, Scope& scope)
     }
 }
 
-bool ContinueStmt::accessesSymbol([[maybe_unused]] const Decl* symbol, [[maybe_unused]] bool transitive)
-    const
+bool ContinueStmt::accessesSymbol([[maybe_unused]] const Decl* symbol, [[maybe_unused]] bool transitive) const
 {
     return false;
 }
@@ -355,4 +354,4 @@ bool VarStmt::accessesSymbol(const Decl* symbol, [[maybe_unused]] bool transitiv
 {
     return _variable->expr()->accessesSymbol(symbol, true);
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

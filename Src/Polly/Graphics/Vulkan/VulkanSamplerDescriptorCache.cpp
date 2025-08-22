@@ -7,9 +7,7 @@ namespace Polly
 {
 static constexpr auto defaultDescriptorSetSize = 128;
 
-void VulkanSamplerDescriptorCache::init(
-    VulkanPainter* painter,
-    VkDescriptorSetLayout descriptorSetLayout)
+void VulkanSamplerDescriptorCache::init(VulkanPainter* painter, VkDescriptorSetLayout descriptorSetLayout)
 {
     assume(painter);
     assume(descriptorSetLayout != VK_NULL_HANDLE);
@@ -97,9 +95,7 @@ void VulkanSamplerDescriptorCache::createDescriptorPool()
 {
     // For now, the sprite batch uses only 1 image in the descriptor set.
     auto sizes = Array{
-        VkDescriptorPoolSize{
-            .type            = VK_DESCRIPTOR_TYPE_SAMPLER,
-            .descriptorCount = defaultDescriptorSetSize},
+        VkDescriptorPoolSize{.type = VK_DESCRIPTOR_TYPE_SAMPLER, .descriptorCount = defaultDescriptorSetSize},
     };
 
     auto info          = VkDescriptorPoolCreateInfo();
@@ -112,4 +108,4 @@ void VulkanSamplerDescriptorCache::createDescriptorPool()
         vkCreateDescriptorPool(_painter->vkDevice(), &info, nullptr, &_vk_descriptor_pool),
         "Failed to create a descriptor pool.");
 }
-} // namespace pl
+} // namespace Polly

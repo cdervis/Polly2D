@@ -41,7 +41,7 @@ void SplashScreenState::update(GameTime time)
 void SplashScreenState::draw(Painter painter)
 {
     const auto isBackgroundFading = _logoTweenChain.currentTweenerIndex() == 2;
-    auto       backgroundColor     = white;
+    auto       backgroundColor    = white;
 
     if (isBackgroundFading)
     {

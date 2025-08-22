@@ -54,9 +54,9 @@ class SemaContext final
 
   private:
     const Ast&                  _ast;
-    const BuiltinSymbols&       _builtin_symbols;
-    const BinaryOperationTable& _bin_op_table;
+    const BuiltinSymbols&       _builtinSymbols;
+    const BinaryOperationTable& _binaryOperationTable;
     TypeCache&                  _typeCache;
-    bool                        _allow_forbidden_identifier_prefix;
+    bool                        _allowForbiddenIdentifierPrefix;
 };
 } // namespace Polly::ShaderCompiler

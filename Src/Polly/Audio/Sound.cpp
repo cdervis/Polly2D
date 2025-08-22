@@ -44,8 +44,8 @@ u32 Sound::voiceCount() const
 {
     declareThisImpl;
     auto&       audioDeviceImpl = *Game::Impl::instance().audioDevice().impl();
-    const auto& audioSource      = impl->soloudAudioSource();
+    const auto& audioSource     = impl->soloudAudioSource();
 
     return audioDeviceImpl.soloudDevice().countAudioSource(audioSource);
 }
-} // namespace pl
+} // namespace Polly

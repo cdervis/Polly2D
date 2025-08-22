@@ -149,22 +149,21 @@ void Archive::readEntries(BinaryReader& reader)
         const auto assetVersionMinor    = static_cast<int>(reader.readUInt8());
         const auto assetVersionRevision = static_cast<int>(reader.readUInt8());
 
-        if (not isAssetVersionCompatible(
-                Array{assetVersionMajor, assetVersionMinor, assetVersionRevision}))
+        if (not isAssetVersionCompatible(Array{assetVersionMajor, assetVersionMinor, assetVersionRevision}))
         {
             throw Error("Invalid asset in archive.");
         }
 
-        auto       name      = reader.readEncryptedString();
+        auto       name     = reader.readEncryptedString();
         const auto dataSize = reader.readUInt32();
-        const auto position  = reader.position();
+        const auto position = reader.position();
 
         reader.seekFromCurrent(narrow<int>(dataSize));
 
         _entries.add(
             AssetEntry{
-                .name                 = std::move(name),
-                .position             = position,
+                .name               = std::move(name),
+                .position           = position,
                 .compressedDataSize = dataSize,
             });
     }
@@ -180,4 +179,4 @@ void Archive::readEntries(BinaryReader& reader)
         logDebug("Loaded {} asset entries", assetCount);
     }
 }
-} // namespace pl
+} // namespace Polly

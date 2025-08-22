@@ -307,8 +307,8 @@ void GLSLShaderGenerator::generateSymAccessExpr(
     const SemaContext&   context)
 {
     const auto& builtIns = context.builtInSymbols();
-    const auto* symbol    = expr->symbol();
-    const auto  name      = expr->name();
+    const auto* symbol   = expr->symbol();
+    const auto  name     = expr->name();
 
     if (const auto* param = as<ShaderParamDecl>(symbol); param and param->type()->canBeInCbuffer())
     {
@@ -402,4 +402,4 @@ void GLSLShaderGenerator::emitUniformBufferForUserParams(
         w << " " << param->name() << ";" << wnewline;
     }
 }
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

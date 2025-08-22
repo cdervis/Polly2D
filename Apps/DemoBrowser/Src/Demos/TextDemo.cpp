@@ -19,7 +19,8 @@ void TextDemo::draw(Painter painter)
     painter.setSampler(pointClamp);
 
     // Use DrawString for simple fire-and-forget text drawing.
-    painter.drawString("Enter some text in the sidebar! >>>", font, static_cast<int>(48 * pixelRatio), {50, 50});
+    painter
+        .drawString("Enter some text in the sidebar! >>>", font, static_cast<int>(48 * pixelRatio), {50, 50});
 
     auto decoration = Maybe<TextDecoration>();
     switch (m_decoration)

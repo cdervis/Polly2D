@@ -86,13 +86,13 @@ enum class Comparison
 /// Represents an image sampler.
 struct Sampler
 {
-    defineDefaultEqualityOperations(Sampler);
-
     ImageFilter        filter            = ImageFilter::Linear;
     ImageAddressMode   addressU          = ImageAddressMode::ClampToEdgeTexels;
     ImageAddressMode   addressV          = ImageAddressMode::ClampToEdgeTexels;
     Comparison         textureComparison = Comparison::Never;
     SamplerBorderColor borderColor       = SamplerBorderColor::OpaqueBlack;
+
+    defineDefaultEqualityOperations(Sampler);
 };
 
 static constexpr auto pointRepeat = Sampler{

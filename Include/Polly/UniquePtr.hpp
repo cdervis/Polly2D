@@ -31,6 +31,12 @@ class UniquePtr
     {
     }
 
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    UniquePtr(details::NoObjectTag)
+        : UniquePtr()
+    {
+    }
+
     template<typename U>
     requires(std::convertible_to<U*, T*>)
     explicit UniquePtr(U* value)

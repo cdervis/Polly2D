@@ -84,4 +84,4 @@ StringView Error::message() const
 {
     return _impl->message;
 }
-} // namespace pl
+} // namespace Polly

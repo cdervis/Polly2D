@@ -39,7 +39,7 @@ void SpritesDemo::draw(Painter painter)
 
     painter.setSampler(
         Sampler{
-            .filter    = m_enableInterpolation ? ImageFilter::Linear : ImageFilter::Point,
+            .filter   = m_enableInterpolation ? ImageFilter::Linear : ImageFilter::Point,
             .addressU = addressMode,
             .addressV = addressMode,
         });
@@ -48,8 +48,8 @@ void SpritesDemo::draw(Painter painter)
     painter.drawSprite(
         Sprite{
             .image    = m_logoTiny,
-            .dstRect = {600, 600, 128.0f * m_imageScale},
-            .srcRect = Rectf(0, 0, m_logoTiny.size() * m_uvScale),
+            .dstRect  = {600, 600, 128.0f * m_imageScale},
+            .srcRect  = Rectf(0, 0, m_logoTiny.size() * m_uvScale),
             .color    = m_imageColor,
             .rotation = Radians(m_imageRotation),
             .origin   = m_imageOrigin,

@@ -21,7 +21,7 @@ BinaryReader::BinaryReader(Span<u8> data, StringView decryptionKey)
 {
 }
 
-int8_t BinaryReader::readInt8()
+i8 BinaryReader::readInt8()
 {
     auto result = int8_t();
     readBytesInto(MutableSpan(reinterpret_cast<u8*>(&result), sizeof(result)));
@@ -35,14 +35,14 @@ u8 BinaryReader::readUInt8()
     return result;
 }
 
-int16_t BinaryReader::readInt16()
+i16 BinaryReader::readInt16()
 {
     auto result = int16_t();
     readBytesInto(MutableSpan(reinterpret_cast<u8*>(&result), sizeof(result)));
     return result;
 }
 
-uint16_t BinaryReader::readUInt16()
+u16 BinaryReader::readUInt16()
 {
     auto result = uint16_t();
     readBytesInto(MutableSpan(reinterpret_cast<u8*>(&result), sizeof(result)));
@@ -211,4 +211,4 @@ u32 BinaryReader::remainingSize() const
 {
     return _data.size() - _position;
 }
-} // namespace pl
+} // namespace Polly

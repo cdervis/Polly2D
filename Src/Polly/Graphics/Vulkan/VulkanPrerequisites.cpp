@@ -50,10 +50,8 @@ void Polly::checkVkResult(VkResult result, StringView errorMessage)
     {
         if (errorMessage.isEmpty())
         {
-            throw Error(formatString(
-                "Vulkan error: {} (error code {})",
-                errorMessage,
-                vkResultToString(result)));
+            throw Error(
+                formatString("Vulkan error: {} (error code {})", errorMessage, vkResultToString(result)));
         }
 
         throw Error(formatString("{} (error code {})", errorMessage, vkResultToString(result)));

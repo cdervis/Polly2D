@@ -166,8 +166,8 @@ void Game::Impl::run(NotNull<Game*> backLink)
         const auto timeFrequency = SDL_GetPerformanceFrequency();
 
         const auto elapsedTime = _isFirstTick ? 0.0
-                                                 : static_cast<double>(currentTime - _previousTime)
-                                                       / static_cast<double>(timeFrequency);
+                                              : static_cast<double>(currentTime - _previousTime)
+                                                    / static_cast<double>(timeFrequency);
 
         _previousTime = currentTime;
         _gameTime     = GameTime(elapsedTime, _gameTime.total() + elapsedTime);
@@ -184,8 +184,8 @@ void Game::Impl::run(NotNull<Game*> backLink)
 
         // Reset frame stats
         {
-            _previousPerformanceStats          = _performanceStats;
-            _performanceStats                   = {};
+            _previousPerformanceStats         = _performanceStats;
+            _performanceStats                 = {};
             _performanceStats.framesPerSecond = _previousPerformanceStats.framesPerSecond;
         }
 
@@ -218,8 +218,8 @@ void Game::Impl::run(NotNull<Game*> backLink)
         if (_timeSinceLastFPSMeasurement >= 1.0)
         {
             _performanceStats.framesPerSecond = _fpsCounter;
-            _timeSinceLastFPSMeasurement     = 0.0;
-            _fpsCounter                         = 0;
+            _timeSinceLastFPSMeasurement      = 0.0;
+            _fpsCounter                       = 0;
         }
 
         if (_targetFramerate)
@@ -294,9 +294,9 @@ static DisplayMode fromSDLDisplayMode(const SDL_DisplayMode& sdlMode)
     const auto format = fromSDLDisplayModeFormat(sdlMode.format);
 
     return DisplayMode{
-        .format        = format,
-        .width         = static_cast<u32>(sdlMode.w),
-        .height        = static_cast<u32>(sdlMode.h),
+        .format       = format,
+        .width        = static_cast<u32>(sdlMode.w),
+        .height       = static_cast<u32>(sdlMode.h),
         .refreshRate  = static_cast<float>(sdlMode.refresh_rate),
         .pixelDensity = sdlMode.pixel_density,
     };
@@ -312,7 +312,8 @@ Painter& Game::Impl::painter()
     if (not _painter)
     {
         throw Error(
-            "Attempting to load graphics resources or draw something using a Painter while no Game instance is alive.");
+            "Attempting to load graphics resources or draw something using a Painter while no Game instance "
+            "is alive.");
     }
 
     return _painter;
@@ -360,8 +361,7 @@ void Game::Impl::createWindow(
     Maybe<u32>  fullScreenDisplayIndex)
 {
 #if defined(polly_have_gfx_metal)
-    auto impl =
-        makeUnique<MetalWindow>(title, initialWindowSize, fullScreenDisplayIndex, _connectedDisplays);
+    auto impl = makeUnique<MetalWindow>(title, initialWindowSize, fullScreenDisplayIndex, _connectedDisplays);
 #elif defined(polly_have_gfx_vulkan)
     auto impl = makeUnique<VulkanWindow>(
         title,
@@ -380,7 +380,7 @@ void Game::Impl::openInitialGamepads()
 {
     assume(_connectedGamepads.isEmpty());
 
-    auto       count            = 0;
+    auto       count          = 0;
     const auto sdlJoystickIds = SDL_GetGamepads(&count);
 
     defer
@@ -523,7 +523,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
 
             _backLink->onWindowResized(
                 WindowResizedEvent{
-                    .timestamp  = event.window.timestamp,
+                    .timestamp = event.window.timestamp,
                     .newWidth  = newWidth,
                     .newHeight = newHeight,
                 });
@@ -604,7 +604,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
                     .key       = key,
                     .modifiers = modifiers,
                     .scancode  = static_cast<Scancode>(event.key.scancode),
-                    .isRepeat = event.key.repeat,
+                    .isRepeat  = event.key.repeat,
                 });
 
             break;
@@ -621,7 +621,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
                     .key       = key,
                     .modifiers = modifiers,
                     .scancode  = static_cast<Scancode>(event.key.scancode),
-                    .isRepeat = event.key.repeat,
+                    .isRepeat  = event.key.repeat,
                 });
 
             break;
@@ -657,10 +657,10 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
             {
                 _backLink->onMouseButtonPressed(
                     MouseButtonEvent{
-                        .timestamp   = timestamp,
-                        .id          = id,
-                        .button      = button,
-                        .position    = position,
+                        .timestamp  = timestamp,
+                        .id         = id,
+                        .button     = button,
+                        .position   = position,
                         .clickCount = event.button.clicks,
                     });
             }
@@ -704,7 +704,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
             break;
         }
         case SDL_EVENT_GAMEPAD_ADDED: {
-            const auto sdlJoystickId  = event.gdevice.which;
+            const auto sdlJoystickId   = event.gdevice.which;
             const auto existingGamepad = findGamepadBySDLJoystickId(sdlJoystickId);
 
             if (not existingGamepad)
@@ -762,15 +762,15 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
             if (type != static_cast<TouchFingerEventType>(-1))
             {
                 const auto windowSize = _window.sizePx();
-                const auto position    = Vec2(event.tfinger.x, event.tfinger.y) * windowSize;
-                const auto delta       = Vec2(event.tfinger.dx, event.tfinger.dy) * windowSize;
+                const auto position   = Vec2(event.tfinger.x, event.tfinger.y) * windowSize;
+                const auto delta      = Vec2(event.tfinger.dx, event.tfinger.dy) * windowSize;
 
                 _backLink->onTouch(
                     TouchFingerEvent{
                         .type      = type,
                         .timestamp = event.tfinger.timestamp,
-                        .touchId  = event.tfinger.touchID,
-                        .fingerId = event.tfinger.fingerID,
+                        .touchId   = event.tfinger.touchID,
+                        .fingerId  = event.tfinger.fingerID,
                         .position  = position,
                         .delta     = delta,
                         .pressure  = event.tfinger.pressure,
@@ -805,7 +805,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
 
             _backLink->onDisplayOrientationChanged(
                 DisplayOrientationChangedEvent{
-                    .timestamp       = event.display.timestamp,
+                    .timestamp      = event.display.timestamp,
                     .displayIndex   = event.display.displayID,
                     .newOrientation = newOrientation,
                 });
@@ -818,7 +818,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
 
             _backLink->onDisplayAdded(
                 DisplayEvent{
-                    .timestamp     = event.display.timestamp,
+                    .timestamp    = event.display.timestamp,
                     .displayIndex = event.display.displayID,
                 });
 
@@ -831,12 +831,11 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
             logDebug("Display {} removed", static_cast<int>(displayId));
 
             // Remove from our connected displays list.
-            _connectedDisplays.removeAllWhere([displayId](const auto& disp)
-                                                 { return disp.id == displayId; });
+            _connectedDisplays.removeAllWhere([displayId](const auto& disp) { return disp.id == displayId; });
 
             _backLink->onDisplayRemoved(
                 DisplayEvent{
-                    .timestamp     = event.display.timestamp,
+                    .timestamp    = event.display.timestamp,
                     .displayIndex = event.display.displayID,
                 });
 
@@ -846,7 +845,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
         case SDL_EVENT_DISPLAY_MOVED: {
             _backLink->onDisplayMoved(
                 DisplayEvent{
-                    .timestamp     = event.display.timestamp,
+                    .timestamp    = event.display.timestamp,
                     .displayIndex = event.display.displayID,
                 });
             break;
@@ -857,7 +856,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
 
             _backLink->onDisplayDesktopModeChanged(
                 DisplayEvent{
-                    .timestamp     = event.display.timestamp,
+                    .timestamp    = event.display.timestamp,
                     .displayIndex = event.display.displayID,
                 });
 
@@ -869,7 +868,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
 
             _backLink->onDisplayCurrentModeChanged(
                 DisplayEvent{
-                    .timestamp     = event.display.timestamp,
+                    .timestamp    = event.display.timestamp,
                     .displayIndex = event.display.displayID,
                 });
 
@@ -881,7 +880,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
 
             _backLink->onDisplayContentScaleChanged(
                 DisplayEvent{
-                    .timestamp     = event.display.timestamp,
+                    .timestamp    = event.display.timestamp,
                     .displayIndex = event.display.displayID,
                 });
 
@@ -909,7 +908,7 @@ void Game::Impl::drawOnScreenLogMessages(Painter::Impl& painterImpl)
         painterImpl.setBlendState(non_premultiplied);
 
         // TODO: consider window logging position (anchor)
-        auto       pos         = Vec2(50, 50);
+        auto       pos        = Vec2(50, 50);
         const auto pixelRatio = _window.pixelRatio();
         const auto fontSize   = windowLoggingFontSize() * pixelRatio;
 
@@ -943,7 +942,7 @@ void Game::Impl::enumerateConnectedDisplays()
 {
     logVerbose("Enumerating connected displays");
 
-    auto  count       = 0;
+    auto  count      = 0;
     auto* displayIds = SDL_GetDisplays(&count);
 
     defer
@@ -999,14 +998,14 @@ Display Game::Impl::createDisplayInfoObjectFromSDL(SDL_DisplayID displayId)
         currentMode = fromSDLDisplayMode(*currentModeSdl);
     }
 
-    const auto orientation   = convertSdlDisplayOrientation(SDL_GetCurrentDisplayOrientation(displayId));
+    const auto orientation  = convertSdlDisplayOrientation(SDL_GetCurrentDisplayOrientation(displayId));
     const auto contentScale = SDL_GetDisplayContentScale(displayId);
 
     return Display{
-        .id            = displayId,
+        .id           = displayId,
         .currentMode  = currentMode,
-        .modes         = std::move(modeList),
-        .orientation   = orientation,
+        .modes        = std::move(modeList),
+        .orientation  = orientation,
         .contentScale = contentScale,
     };
 }
@@ -1049,14 +1048,14 @@ void Game::Impl::createVkInstance(StringView gameName, Version gameVersion)
 
     const auto gameNameStr = String(gameName);
 
-    auto appInfo             = VkApplicationInfo();
-    appInfo.sType            = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = gameNameStr.cstring();
-    appInfo.applicationVersion =
-        VK_MAKE_VERSION(gameVersion.major, gameVersion.minor, gameVersion.revision);
-    appInfo.pEngineName   = "Polly";
-    appInfo.engineVersion = VK_MAKE_VERSION(Polly::version.major, Polly::version.minor, Polly::version.revision);
-    appInfo.apiVersion    = _vkApiVersion;
+    auto appInfo               = VkApplicationInfo();
+    appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName   = gameNameStr.cstring();
+    appInfo.applicationVersion = VK_MAKE_VERSION(gameVersion.major, gameVersion.minor, gameVersion.revision);
+    appInfo.pEngineName        = "Polly";
+    appInfo.engineVersion =
+        VK_MAKE_VERSION(Polly::version.major, Polly::version.minor, Polly::version.revision);
+    appInfo.apiVersion = _vkApiVersion;
 
     auto instanceInfo             = VkInstanceCreateInfo();
     instanceInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -1065,7 +1064,7 @@ void Game::Impl::createVkInstance(StringView gameName, Version gameVersion)
     auto extensionNames = List<const char*, 12>();
     {
         auto  instanceExtensionCount = Uint32();
-        auto* instanceExtensions      = SDL_Vulkan_GetInstanceExtensions(&instanceExtensionCount);
+        auto* instanceExtensions     = SDL_Vulkan_GetInstanceExtensions(&instanceExtensionCount);
 
         if (not instanceExtensions)
         {
@@ -1209,4 +1208,4 @@ int runGame(int a, char* b[], Details::MainFunction c, void* d)
 {
     return SDL_RunApp(a, b, c, d);
 }
-} // namespace pl
+} // namespace Polly

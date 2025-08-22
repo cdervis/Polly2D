@@ -100,4 +100,4 @@ void VulkanFramebufferCache::clear()
         logVerbose("-- FBO cache is empty");
     }
 }
-} // namespace pl
+} // namespace Polly

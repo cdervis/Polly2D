@@ -14,7 +14,7 @@ static constexpr auto maxCBufferSize = static_cast<size_t>(std::numeric_limits<u
 static constexpr auto requiredCBufferOffsetAlignment = 16u;
 
 VulkanUBOAllocator::VulkanUBOAllocator(
-    VulkanPainter& device,
+    VulkanPainter&        device,
     VkDescriptorPool      vkDescriptorPool,
     VkDescriptorSetLayout vkDescriptorSetLayout)
     : _device(device)
@@ -86,7 +86,7 @@ VulkanUBOAllocator::Allocation VulkanUBOAllocator::allocate(u32 size)
 
         _entries.add(std::move(entry));
 
-        _currentBuffer     = _entries.size() - 1;
+        _currentBuffer    = _entries.size() - 1;
         _positionInBuffer = 0;
     }
 
@@ -100,16 +100,16 @@ VulkanUBOAllocator::Allocation VulkanUBOAllocator::allocate(u32 size)
     auto& entry = _entries[*_currentBuffer];
 
     return Allocation{
-        .offsetToMapAt  = nextBindingPoint,
-        .buffer            = &entry.buffer,
+        .offsetToMapAt   = nextBindingPoint,
+        .buffer          = &entry.buffer,
         .vkDescriptorSet = entry.set,
-        .size              = size,
+        .size            = size,
     };
 }
 
 void VulkanUBOAllocator::reset()
 {
-    _currentBuffer     = _entries.isEmpty() ? Maybe<int>() : 0;
+    _currentBuffer    = _entries.isEmpty() ? Maybe<int>() : 0;
     _positionInBuffer = 0;
 }
-} // namespace pl
+} // namespace Polly

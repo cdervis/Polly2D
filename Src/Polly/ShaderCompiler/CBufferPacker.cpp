@@ -23,8 +23,8 @@ CBufferPacker::Result CBufferPacker::pack(
     for (const auto* type : fieldTypes)
     {
         const auto paramSizeInBytes = *type->occupiedSizeInCbuffer();
-        const auto baseAlignment      = *type->baseAlignmentInCbuffer();
-        const auto offset              = nextAlignedNumber(currentOffset, baseAlignment);
+        const auto baseAlignment    = *type->baseAlignmentInCbuffer();
+        const auto offset           = nextAlignedNumber(currentOffset, baseAlignment);
 
         result.offsets.add(offset);
 
@@ -42,4 +42,4 @@ CBufferPacker::Result CBufferPacker::pack(
 
     return result;
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

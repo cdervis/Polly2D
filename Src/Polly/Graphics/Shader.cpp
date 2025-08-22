@@ -161,4 +161,4 @@ bool Shader::hasParameter(StringView name) const
     declareThisImpl;
     return impl->findParameter(name) != nullptr;
 }
-} // namespace pl
+} // namespace Polly

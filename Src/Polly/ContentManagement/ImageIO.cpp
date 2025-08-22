@@ -64,9 +64,9 @@ UniquePtr<Image::Impl> ImageIO::tryLoadMisc(Painter::Impl& device, Span<u8> memo
     const auto dataSize = static_cast<int>(memory.size());
     const auto isHDR    = stbi_is_hdr_from_memory(memory.data(), dataSize) != 0;
 
-    auto  width      = 0;
-    auto  height     = 0;
-    auto  comp       = 0;
+    auto  width     = 0;
+    auto  height    = 0;
+    auto  comp      = 0;
     void* imageData = nullptr;
 
     if (isHDR)

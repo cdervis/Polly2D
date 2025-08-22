@@ -23,7 +23,7 @@ inline void throw_string_out_of_range_exception()
 } // namespace Details
 
 constexpr String::String()
-    : _data(&_small_buffer[0])
+    : _data(&_smallBuffer[0])
 {
 }
 
@@ -245,7 +245,7 @@ inline uint32_t String::capacity() const
 
 inline bool String::isSmall() const
 {
-    return _data == &_small_buffer[0];
+    return _data == &_smallBuffer[0];
 }
 
 inline size_t String::hashCode() const
@@ -307,7 +307,7 @@ inline void String::destroy()
     if (not isSmall())
     {
         delete[] _data;
-        _data = &_small_buffer[0];
+        _data = &_smallBuffer[0];
     }
 }
 

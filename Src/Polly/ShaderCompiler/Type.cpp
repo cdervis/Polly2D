@@ -656,4 +656,4 @@ Maybe<u16> UnresolvedType::baseAlignmentInCbuffer() const
 {
     return none;
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

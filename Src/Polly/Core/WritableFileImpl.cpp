@@ -61,4 +61,4 @@ WritableFile::Impl::~Impl() noexcept
 {
     SDL_CloseIO(_stream);
 }
-} // namespace pl
+} // namespace Polly

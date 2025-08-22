@@ -14,40 +14,40 @@
 // NOLINTBEGIN
 
 #define ADD_FUNC_FOR_FLOAT_TO_VECTOR4(name)                                                                  \
-    addFunc(name##_float, #name, {{"value", float_t}}, float_t);                                            \
-    addFunc(name##_vec2, #name, {{"value", vec2_t}}, vec2_t);                                               \
-    addFunc(name##_vec3, #name, {{"value", vec3_t}}, vec3_t);                                               \
-    addFunc(name##_vec4, #name, {{"value", vec4_t}}, vec4_t)
+    addFunc(name##_float, #name, {{"value", floatType}}, floatType);                                         \
+    addFunc(name##_vec2, #name, {{"value", vec2Type}}, vec2Type);                                            \
+    addFunc(name##_vec3, #name, {{"value", vec3Type}}, vec3Type);                                            \
+    addFunc(name##_vec4, #name, {{"value", vec4Type}}, vec4Type)
 
 #define ADD_FUNC_FOR_FLOAT_TO_VECTOR4_TWO_ARGS(name, argname1, argname2)                                     \
-    addFunc(name##_float, #name, {{argname1, float_t}, {argname2, float_t}}, float_t);                      \
-    addFunc(name##_vec2, #name, {{argname1, vec2_t}, {argname2, vec2_t}}, vec2_t);                          \
-    addFunc(name##_vec3, #name, {{argname1, vec3_t}, {argname2, vec3_t}}, vec3_t);                          \
-    addFunc(name##_vec4, #name, {{argname1, vec4_t}, {argname2, vec4_t}}, vec4_t)
+    addFunc(name##_float, #name, {{argname1, floatType}, {argname2, floatType}}, floatType);                 \
+    addFunc(name##_vec2, #name, {{argname1, vec2Type}, {argname2, vec2Type}}, vec2Type);                     \
+    addFunc(name##_vec3, #name, {{argname1, vec3Type}, {argname2, vec3Type}}, vec3Type);                     \
+    addFunc(name##_vec4, #name, {{argname1, vec4Type}, {argname2, vec4Type}}, vec4Type)
 
 #define ADD_FUNC_FOR_ALL_VECTORS(name)                                                                       \
-    addFunc(name##_vec2, #name, {{"value", vec2_t}}, vec2_t);                                               \
-    addFunc(name##_vec3, #name, {{"value", vec3_t}}, vec3_t);                                               \
-    addFunc(name##_vec4, #name, {{"value", vec4_t}}, vec4_t)
+    addFunc(name##_vec2, #name, {{"value", vec2Type}}, vec2Type);                                            \
+    addFunc(name##_vec3, #name, {{"value", vec3Type}}, vec3Type);                                            \
+    addFunc(name##_vec4, #name, {{"value", vec4Type}}, vec4Type)
 
 #define ADD_FUNC_FOR_ALL_VECTORS_TWO_ARGS(name, argname1, argname2)                                          \
-    addFunc(name##_vec2, #name, {{argname1, vec2_t}, {argname2, vec2_t}}, vec2_t);                          \
-    addFunc(name##_vec3, #name, {{argname1, vec3_t}, {argname2, vec3_t}}, vec3_t);                          \
-    addFunc(name##_vec4, #name, {{argname1, vec4_t}, {argname2, vec4_t}}, vec4_t)
+    addFunc(name##_vec2, #name, {{argname1, vec2Type}, {argname2, vec2Type}}, vec2Type);                     \
+    addFunc(name##_vec3, #name, {{argname1, vec3Type}, {argname2, vec3Type}}, vec3Type);                     \
+    addFunc(name##_vec4, #name, {{argname1, vec4Type}, {argname2, vec4Type}}, vec4Type)
 
 #define ADD_FUNC_FOR_FLOAT_TO_MATRIX(name)                                                                   \
-    addFunc(name##_float, #name, {{"value", float_t}}, float_t);                                            \
-    addFunc(name##_vec2, #name, {{"value", vec2_t}}, vec2_t);                                               \
-    addFunc(name##_vec3, #name, {{"value", vec3_t}}, vec3_t);                                               \
-    addFunc(name##_vec4, #name, {{"value", vec4_t}}, vec4_t);                                               \
-    addFunc(name##_matrix, #name, {{"value", matrix_t}}, matrix_t)
+    addFunc(name##_float, #name, {{"value", floatType}}, floatType);                                         \
+    addFunc(name##_vec2, #name, {{"value", vec2Type}}, vec2Type);                                            \
+    addFunc(name##_vec3, #name, {{"value", vec3Type}}, vec3Type);                                            \
+    addFunc(name##_vec4, #name, {{"value", vec4Type}}, vec4Type);                                            \
+    addFunc(name##_matrix, #name, {{"value", matrixType}}, matrixType)
 
 #define ADD_FUNC_FOR_FLOAT_TO_MATRIX_BOOL(name)                                                              \
-    addFunc(name##_float, #name, {{"value", float_t}}, bool_t);                                             \
-    addFunc(name##_vec2, #name, {{"value", vec2_t}}, bool_t);                                               \
-    addFunc(name##_vec3, #name, {{"value", vec3_t}}, bool_t);                                               \
-    addFunc(name##_vec4, #name, {{"value", vec4_t}}, bool_t);                                               \
-    addFunc(name##_matrix, #name, {{"value", matrix_t}}, bool_t)
+    addFunc(name##_float, #name, {{"value", floatType}}, boolType);                                          \
+    addFunc(name##_vec2, #name, {{"value", vec2Type}}, boolType);                                            \
+    addFunc(name##_vec3, #name, {{"value", vec3Type}}, boolType);                                            \
+    addFunc(name##_vec4, #name, {{"value", vec4Type}}, boolType);                                            \
+    addFunc(name##_matrix, #name, {{"value", matrixType}}, boolType)
 
 // NOLINTEND
 
@@ -57,117 +57,117 @@ BuiltinSymbols::BuiltinSymbols()
 {
     _all.reserve(128);
 
-    const auto* intType = IntType::instance();
-    const auto* float_t  = FloatType::instance();
-    const auto* vec2_t   = Vec2Type::instance();
-    const auto* vec3_t   = Vec3Type::instance();
-    const auto* vec4_t   = Vec4Type::instance();
-    const auto* matrix_t = MatrixType::instance();
-    const auto* imageT  = ImageType::instance();
-    const auto* bool_t   = BoolType::instance();
+    const auto* intType    = IntType::instance();
+    const auto* floatType  = FloatType::instance();
+    const auto* vec2Type   = Vec2Type::instance();
+    const auto* vec3Type   = Vec3Type::instance();
+    const auto* vec4Type   = Vec4Type::instance();
+    const auto* matrixType = MatrixType::instance();
+    const auto* imageT     = ImageType::instance();
+    const auto* boolType   = BoolType::instance();
 
-    addFunc(floatCtorInt, float_t->typeName(), {{"value", intType}}, float_t);
-    addFunc(intCtorFloat, intType->typeName(), {{"value", float_t}}, intType);
+    addFunc(floatCtorInt, floatType->typeName(), {{"value", intType}}, floatType);
+    addFunc(intCtorFloat, intType->typeName(), {{"value", floatType}}, intType);
 
     // Vec2 ctors
-    addFunc(vec2Ctor, vec2_t->typeName(), {}, vec2_t);
+    addFunc(vec2Ctor, vec2Type->typeName(), {}, vec2Type);
 
     addFunc(
         vec2Ctor_xy,
-        vec2_t->typeName(),
+        vec2Type->typeName(),
         {
-            {"xy", float_t},
+            {"xy", floatType},
         },
-        vec2_t);
+        vec2Type);
 
     addFunc(
         vec2Ctor_x_y,
-        vec2_t->typeName(),
+        vec2Type->typeName(),
         {
-            {"x", float_t},
-            {"y", float_t},
+            {"x", floatType},
+            {"y", floatType},
         },
-        vec2_t);
+        vec2Type);
 
     // Vec3 ctors
-    addFunc(vec3Ctor, vec3_t->typeName(), {}, vec3_t);
+    addFunc(vec3Ctor, vec3Type->typeName(), {}, vec3Type);
 
     addFunc(
         vec3Ctor_x_y_z,
-        vec3_t->typeName(),
+        vec3Type->typeName(),
         {
-            {"x", float_t},
-            {"y", float_t},
-            {"z", float_t},
+            {"x", floatType},
+            {"y", floatType},
+            {"z", floatType},
         },
-        vec3_t);
+        vec3Type);
 
     addFunc(
         vec3Ctor_xy_z,
-        vec3_t->typeName(),
+        vec3Type->typeName(),
         {
-            {"xy", vec2_t},
-            {"z", float_t},
+            {"xy", vec2Type},
+            {"z", floatType},
         },
-        vec3_t);
+        vec3Type);
 
     addFunc(
         vec3_ctor_xyz,
-        vec3_t->typeName(),
+        vec3Type->typeName(),
         {
-            {"xyz", float_t},
+            {"xyz", floatType},
         },
-        vec3_t);
+        vec3Type);
 
     // Vec4 ctors
-    addFunc(vec4Ctor, vec4_t->typeName(), {}, vec4_t);
+    addFunc(vec4Ctor, vec4Type->typeName(), {}, vec4Type);
 
     addFunc(
         vec4Ctor_x_y_z_w,
-        vec4_t->typeName(),
+        vec4Type->typeName(),
         {
-            {"x", float_t},
-            {"y", float_t},
-            {"z", float_t},
-            {"w", float_t},
+            {"x", floatType},
+            {"y", floatType},
+            {"z", floatType},
+            {"w", floatType},
         },
-        vec4_t);
+        vec4Type);
 
     addFunc(
         vec4Ctor_xy_zw,
-        vec4_t->typeName(),
+        vec4Type->typeName(),
         {
-            {"xy", vec2_t},
-            {"zw", vec2_t},
+            {"xy", vec2Type},
+            {"zw", vec2Type},
         },
-        vec4_t);
+        vec4Type);
 
     addFunc(
         vec4Ctor_xy_z_w,
-        vec4_t->typeName(),
+        vec4Type->typeName(),
         {
-            {"xy", vec2_t},
-            {"z", float_t},
-            {"w", float_t},
+            {"xy", vec2Type},
+            {"z", floatType},
+            {"w", floatType},
         },
-        vec4_t);
+        vec4Type);
 
     addFunc(
         vec4Ctor_xyz_w,
-        vec4_t->typeName(),
+        vec4Type->typeName(),
         {
-            {"xyz", vec3_t},
-            {"w", float_t},
+            {"xyz", vec3Type},
+            {"w", floatType},
         },
-        vec4_t);
+        vec4Type);
 
     addFunc(
         vec4Ctor_xyzw,
-        vec4_t->typeName(),
+        vec4Type->typeName(),
         {
-            {"xyzw", float_t},
+            {"xyzw", floatType},
         },
-        vec4_t);
+        vec4Type);
 
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(abs);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(acos);
@@ -179,37 +179,41 @@ BuiltinSymbols::BuiltinSymbols()
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(atan);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4_TWO_ARGS(atan2, "y", "x");
 
-    addFunc(clamp_float, "clamp", {{"value", float_t}, {"start", float_t}, {"end", float_t}}, float_t);
-    addFunc(clamp_vec2, "clamp", {{"value", vec2_t}, {"start", vec2_t}, {"end", vec2_t}}, vec2_t);
-    addFunc(clamp_vec3, "clamp", {{"value", vec3_t}, {"start", vec3_t}, {"end", vec3_t}}, vec3_t);
-    addFunc(clamp_vec4, "clamp", {{"value", vec4_t}, {"start", vec4_t}, {"end", vec4_t}}, vec4_t);
+    addFunc(
+        clamp_float,
+        "clamp",
+        {{"value", floatType}, {"start", floatType}, {"end", floatType}},
+        floatType);
+    addFunc(clamp_vec2, "clamp", {{"value", vec2Type}, {"start", vec2Type}, {"end", vec2Type}}, vec2Type);
+    addFunc(clamp_vec3, "clamp", {{"value", vec3Type}, {"start", vec3Type}, {"end", vec3Type}}, vec3Type);
+    addFunc(clamp_vec4, "clamp", {{"value", vec4Type}, {"start", vec4Type}, {"end", vec4Type}}, vec4Type);
 
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(cos);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(degrees);
 
-    addFunc(matrixDeterminant, "determinant", {{"value", matrix_t}}, float_t);
+    addFunc(matrixDeterminant, "determinant", {{"value", matrixType}}, floatType);
 
-    addFunc(distance_vec2, "distance", {{"lhs", vec2_t}, {"rhs", vec2_t}}, float_t);
-    addFunc(distance_vec3, "distance", {{"lhs", vec3_t}, {"rhs", vec3_t}}, float_t);
-    addFunc(distance_vec4, "distance", {{"lhs", vec4_t}, {"rhs", vec4_t}}, float_t);
+    addFunc(distance_vec2, "distance", {{"lhs", vec2Type}, {"rhs", vec2Type}}, floatType);
+    addFunc(distance_vec3, "distance", {{"lhs", vec3Type}, {"rhs", vec3Type}}, floatType);
+    addFunc(distance_vec4, "distance", {{"lhs", vec4Type}, {"rhs", vec4Type}}, floatType);
 
-    addFunc(dot_vec2, "dot", {{"lhs", vec2_t}, {"rhs", vec2_t}}, float_t);
-    addFunc(dot_vec3, "dot", {{"lhs", vec3_t}, {"rhs", vec3_t}}, float_t);
-    addFunc(dot_vec4, "dot", {{"lhs", vec4_t}, {"rhs", vec4_t}}, float_t);
+    addFunc(dot_vec2, "dot", {{"lhs", vec2Type}, {"rhs", vec2Type}}, floatType);
+    addFunc(dot_vec3, "dot", {{"lhs", vec3Type}, {"rhs", vec3Type}}, floatType);
+    addFunc(dot_vec4, "dot", {{"lhs", vec4Type}, {"rhs", vec4Type}}, floatType);
 
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(exp);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(exp2);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(floor);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4_TWO_ARGS(fmod, "x", "y");
 
-    addFunc(length_vec2, "length", {{"value", vec2_t}}, float_t);
-    addFunc(length_vec3, "length", {{"value", vec3_t}}, float_t);
-    addFunc(length_vec4, "length", {{"value", vec4_t}}, float_t);
+    addFunc(length_vec2, "length", {{"value", vec2Type}}, floatType);
+    addFunc(length_vec3, "length", {{"value", vec3Type}}, floatType);
+    addFunc(length_vec4, "length", {{"value", vec4Type}}, floatType);
 
-    addFunc(lerp_float, "lerp", {{"start", float_t}, {"stop", float_t}, {"t", float_t}}, float_t);
-    addFunc(lerp_vec2, "lerp", {{"start", vec2_t}, {"stop", vec2_t}, {"t", float_t}}, vec2_t);
-    addFunc(lerp_vec3, "lerp", {{"start", vec3_t}, {"stop", vec3_t}, {"t", float_t}}, vec3_t);
-    addFunc(lerp_vec4, "lerp", {{"start", vec4_t}, {"stop", vec4_t}, {"t", float_t}}, vec4_t);
+    addFunc(lerp_float, "lerp", {{"start", floatType}, {"stop", floatType}, {"t", floatType}}, floatType);
+    addFunc(lerp_vec2, "lerp", {{"start", vec2Type}, {"stop", vec2Type}, {"t", floatType}}, vec2Type);
+    addFunc(lerp_vec3, "lerp", {{"start", vec3Type}, {"stop", vec3Type}, {"t", floatType}}, vec3Type);
+    addFunc(lerp_vec4, "lerp", {{"start", vec4Type}, {"stop", vec4Type}, {"t", floatType}}, vec4Type);
 
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(log);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(log2);
@@ -223,7 +227,7 @@ BuiltinSymbols::BuiltinSymbols()
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(radians);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(round);
 
-    addFunc(sampleImage, "sample", {{"image", imageT}, {"coords", vec2_t}}, vec4_t);
+    addFunc(sampleImage, "sample", {{"image", imageT}, {"coords", vec2Type}}, vec4Type);
 
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(saturate);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(sign);
@@ -232,28 +236,40 @@ BuiltinSymbols::BuiltinSymbols()
     addFunc(
         smoothstep_float,
         "smoothstep",
-        {{"min", float_t}, {"max", float_t}, {"value", float_t}},
-        float_t);
+        {{"min", floatType}, {"max", floatType}, {"value", floatType}},
+        floatType);
 
-    addFunc(smoothstep_vec2, "smoothstep", {{"min", vec2_t}, {"max", vec2_t}, {"value", vec2_t}}, vec2_t);
-    addFunc(smoothstep_vec3, "smoothstep", {{"min", vec3_t}, {"max", vec3_t}, {"value", vec3_t}}, vec3_t);
-    addFunc(smoothstep_vec4, "smoothstep", {{"min", vec4_t}, {"max", vec4_t}, {"value", vec4_t}}, vec4_t);
+    addFunc(
+        smoothstep_vec2,
+        "smoothstep",
+        {{"min", vec2Type}, {"max", vec2Type}, {"value", vec2Type}},
+        vec2Type);
+    addFunc(
+        smoothstep_vec3,
+        "smoothstep",
+        {{"min", vec3Type}, {"max", vec3Type}, {"value", vec3Type}},
+        vec3Type);
+    addFunc(
+        smoothstep_vec4,
+        "smoothstep",
+        {{"min", vec4Type}, {"max", vec4Type}, {"value", vec4Type}},
+        vec4Type);
 
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(sqrt);
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(tan);
 
-    addFunc(matrixTranspose, "transpose", {{"matrix", matrix_t}}, matrix_t);
+    addFunc(matrixTranspose, "transpose", {{"matrix", matrixType}}, matrixType);
 
     ADD_FUNC_FOR_FLOAT_TO_VECTOR4(trunc);
 
-    addSystemValue(svPixelPos, Naming::svPixelPos, vec2_t);
-    addSystemValue(svPixelPosNormalized, Naming::svPixelPosNormalized, vec2_t);
-    addSystemValue(svViewportSize, Naming::svViewportSize, vec2_t);
-    addSystemValue(svViewportSizeInv, Naming::svViewportSizeInv, vec2_t);
+    addSystemValue(svPixelPos, Naming::svPixelPos, vec2Type);
+    addSystemValue(svPixelPosNormalized, Naming::svPixelPosNormalized, vec2Type);
+    addSystemValue(svViewportSize, Naming::svViewportSize, vec2Type);
+    addSystemValue(svViewportSizeInv, Naming::svViewportSizeInv, vec2Type);
     addSystemValue(svSpriteImage, Naming::spriteBatchImageParam, imageT);
-    addSystemValue(svSpriteColor, Naming::spriteBatchColorAttrib, vec4_t);
-    addSystemValue(svSpriteUV, Naming::spriteBatchUVAttrib, vec2_t);
-    addSystemValue(svPolygonColor, Naming::polyBatchColorAttrib, vec4_t);
+    addSystemValue(svSpriteColor, Naming::spriteBatchColorAttrib, vec4Type);
+    addSystemValue(svSpriteUV, Naming::spriteBatchUVAttrib, vec2Type);
+    addSystemValue(svPolygonColor, Naming::polyBatchColorAttrib, vec4Type);
 
     arraySizeMember    = makeUnique<ArraySizeDecl>();
     vectorSwizzlingSym = makeUnique<VectorSwizzlingDecl>();
@@ -339,10 +355,10 @@ bool BuiltinSymbols::isArraySizeMember(const Decl* symbol) const
 }
 
 void BuiltinSymbols::addFunc(
-    UniquePtr<FunctionDecl>&            var,
-    StringView                          funcName,
+    UniquePtr<FunctionDecl>&                 var,
+    StringView                               funcName,
     SmallList<Pair<StringView, const Type*>> paramDescs,
-    const Type*                         returnType)
+    const Type*                              returnType)
 {
     // The variable must not be initialized yet.
     assume(not var);
@@ -364,4 +380,4 @@ void BuiltinSymbols::addSystemValue(UniquePtr<Decl>& var, StringView name, const
     var = makeUnique<VarDecl>(name, type);
     _all.emplace(var.get());
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

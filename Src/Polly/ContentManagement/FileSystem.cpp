@@ -41,7 +41,7 @@ void set_android_asset_manager([[maybe_unused]] void* asset_manager)
     s_PollyAndroidAssetManager = static_cast<AAssetManager*>(assetManager);
 #endif
 }
-} // namespace pl::details
+} // namespace Polly::Details
 
 namespace Polly
 {
@@ -254,7 +254,7 @@ Maybe<String> FileSystem::loadTextFileFromDisk(StringView filename)
     };
 
     const auto fileSize = SDL_GetIOSize(ifs);
-    auto str = String();
+    auto       str      = String();
     str.ensureSize(narrow<u32>(fileSize));
 
     SDL_ReadIO(ifs, str.data(), fileSize);
@@ -403,7 +403,7 @@ String FileSystem::pathFilename(StringView path, bool withExtension)
 
     auto str = String(slashIdx ? path.substring(*slashIdx + 1) : path);
 
-    if ( not withExtension)
+    if (not withExtension)
     {
         str = pathReplaceExtension(str, {});
     }
@@ -479,17 +479,17 @@ String FileSystem::pathReplaceExtension(StringView path, StringView newExtension
     return result;
 }
 
-Maybe<String> FileSystem::randomWritablePath(StringView companyName, StringView app_name)
+Maybe<String> FileSystem::randomWritablePath(StringView companyName, StringView gameName)
 {
     char* prefPath = nullptr;
 
-    if (companyName.isNullTerminated() and app_name.isNullTerminated())
+    if (companyName.isNullTerminated() and gameName.isNullTerminated())
     {
-        prefPath = SDL_GetPrefPath(companyName.cstring(), app_name.cstring());
+        prefPath = SDL_GetPrefPath(companyName.cstring(), gameName.cstring());
     }
     else
     {
-        prefPath = SDL_GetPrefPath(String(companyName).cstring(), String(app_name).cstring());
+        prefPath = SDL_GetPrefPath(String(companyName).cstring(), String(gameName).cstring());
     }
 
     if (not prefPath)
@@ -504,4 +504,4 @@ Maybe<String> FileSystem::randomWritablePath(StringView companyName, StringView 
 
     return String(prefPath);
 }
-} // namespace pl
+} // namespace Polly

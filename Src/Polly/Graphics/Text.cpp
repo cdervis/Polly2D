@@ -37,4 +37,4 @@ Span<PreshapedGlyph> Text::glyphs() const
     declareThisImpl;
     return impl->glyphs();
 }
-} // namespace pl
+} // namespace Polly

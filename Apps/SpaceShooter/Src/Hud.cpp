@@ -18,7 +18,7 @@ void Hud::draw(Painter painter)
 {
     painter.drawSprite(
         Sprite{
-            .image    = _spritesheet,
+            .image   = _spritesheet,
             .dstRect = Rectf(Vec2(), hudSrcRect.size()),
             .srcRect = hudSrcRect,
         });
@@ -27,14 +27,14 @@ void Hud::draw(Painter painter)
 
     // Draw hearts based on the player's health.
     {
-        auto           x              = 7.0f;
+        auto           x            = 7.0f;
         constexpr auto heartSrcRect = Rectf(32, 57, 8, 7);
 
         for (auto i = 0u; i < _healthRef; ++i)
         {
             painter.drawSprite(
                 Sprite{
-                    .image    = _spritesheet,
+                    .image   = _spritesheet,
                     .dstRect = Rectf(x, 8.0f, heartSrcRect.size()),
                     .srcRect = heartSrcRect,
                 });

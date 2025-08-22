@@ -26,7 +26,7 @@ ParticleSystem::Impl::Impl(Span<ParticleEmitter> emitters)
         _emitterData.add(
             EmitterData{
                 .emitterPtr = &emitter,
-                .particles   = {},
+                .particles  = {},
             });
     }
 }
@@ -90,10 +90,10 @@ void ParticleSystem::Impl::setIsActive(bool value)
 void ParticleSystem::Impl::reclaimExpiredParticles(EmitterData& data)
 {
     auto        expiredParticleCount = 0;
-    const auto& emitter                = *data.emitterPtr;
-    const auto  time                   = data.timer;
-    const auto  count                  = data.activeParticleCount;
-    const auto  duration               = emitter.duration;
+    const auto& emitter              = *data.emitterPtr;
+    const auto  time                 = data.timer;
+    const auto  count                = data.activeParticleCount;
+    const auto  duration             = emitter.duration;
 
     for (auto i = 0u; i < count; ++i)
     {
@@ -216,4 +216,4 @@ void ParticleSystem::Impl::triggerEmitterFromTo(EmitterData& data, Vec2 from, Ve
         emit(data, from + offset, 1);
     }
 }
-} // namespace pl
+} // namespace Polly

@@ -159,4 +159,4 @@ Writer& Writer::operator<<(write_newline_lazy_tag)
 
     return *this;
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

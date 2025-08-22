@@ -216,7 +216,7 @@ static Maybe<GamepadType> from_sdl_gamepad_type(SDL_GamepadType type)
         default: break;
     }
 
-    return {};
+    return none;
 }
 
 Maybe<GamepadType> Gamepad::Impl::type() const
@@ -240,17 +240,17 @@ bool Gamepad::Impl::setLedColor(const Color& color)
     return SDL_SetGamepadLED(_sdlGamepad, r, g, b);
 }
 
-bool Gamepad::Impl::startRumble(float left_motor_intensity, float right_motor_intensity, float duration)
+bool Gamepad::Impl::startRumble(float leftMotorIntensity, float rightMotorIntensity, float duration)
 {
     const auto normalized_left_motor_intensity =
-        isZero(left_motor_intensity)
+        isZero(leftMotorIntensity)
             ? static_cast<Uint16>(0)
-            : static_cast<Uint16>(clamp(left_motor_intensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
+            : static_cast<Uint16>(clamp(leftMotorIntensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
 
     const auto normalized_right_motor_intensity =
-        isZero(right_motor_intensity)
+        isZero(rightMotorIntensity)
             ? static_cast<Uint16>(0)
-            : static_cast<Uint16>(clamp(right_motor_intensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
+            : static_cast<Uint16>(clamp(rightMotorIntensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
 
     if (_sdlGamepad)
     {
@@ -293,4 +293,4 @@ void Gamepad::Impl::setSensorEnabled(GamepadSensorType sensor, bool enabled)
         SDL_SetGamepadSensorEnabled(_sdlGamepad, *sdl, enabled);
     }
 }
-} // namespace pl
+} // namespace Polly

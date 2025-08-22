@@ -88,4 +88,4 @@ const BinaryReader& ReadableFile::Impl::reader() const
 {
     return _reader;
 }
-} // namespace pl
+} // namespace Polly

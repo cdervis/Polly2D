@@ -16,7 +16,7 @@ InputDemo::~InputDemo() noexcept
 
 void InputDemo::tick([[maybe_unused]] GameTime time)
 {
-    _mousePos        = currentMousePosition();
+    _mousePos       = currentMousePosition();
     _mouseMoveDelta = currentMousePositionDelta();
 
     // Check the state of a key directly:
@@ -32,10 +32,10 @@ void InputDemo::draw(Painter painter)
     {
         // Draw an ellipse where the mouse currently is.
         // The mouse movement influences the ellipse's radius and color.
-        const auto pixelRatio    = browser().window().pixelRatio()  ;
+        const auto pixelRatio    = browser().window().pixelRatio();
         const auto mouseMovement = length(_mouseMoveDelta);
-        const auto radius         = clamp(mouseMovement * 2.0f, 15.0f, 50.0f);
-        const auto color          = lerp(lime, red, clamp(mouseMovement * 0.02f, 0.0f, 1.0f));
+        const auto radius        = clamp(mouseMovement * 2.0f, 15.0f, 50.0f);
+        const auto color         = lerp(lime, red, clamp(mouseMovement * 0.02f, 0.0f, 1.0f));
 
         painter.drawEllipse(_mousePos * pixelRatio, Vec2(radius), color, 5.0f);
     }
@@ -46,7 +46,7 @@ void InputDemo::draw(Painter painter)
         const auto& gamepad = gamepads.first();
 
         constexpr auto axisCircleRadius   = Vec2(100.0f, 100.0f);
-        constexpr auto stickRadius         = Vec2(50, 50);
+        constexpr auto stickRadius        = Vec2(50, 50);
         constexpr auto actionButtonRadius = Vec2(30, 30);
         constexpr auto triggerRectHeight  = 200.0f;
 
@@ -154,7 +154,7 @@ void InputDemo::draw(Painter painter)
             constexpr auto upPos    = Vec2(800, 900);
             constexpr auto rightPos = Vec2(900, 1000);
             constexpr auto downPos  = Vec2(800, 1100);
-            constexpr auto radius    = 30.0f;
+            constexpr auto radius   = 30.0f;
 
             painter.drawDirectedTriangle(leftPos, radius, Direction::Left, gray, 3.0f);
             painter.drawDirectedTriangle(upPos, radius, Direction::Up, gray, 3.0f);

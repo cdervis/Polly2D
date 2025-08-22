@@ -4,9 +4,9 @@
 #include "SplashScreenState.hpp"
 
 static const auto init_args = GameInitArgs{
-    .title               = "Space Shooter Demo",
+    .title             = "Space Shooter Demo",
     .initialWindowSize = sViewSize * sWindowSizeMultiplier,
-    .enableAudio        = true,
+    .enableAudio       = true,
 };
 
 SpaceShooterGame::SpaceShooterGame()
@@ -56,8 +56,8 @@ void SpaceShooterGame::draw(Painter painter)
         painter.drawSprite(
             Sprite{
                 .image    = _mainCanvas,
-                .dstRect = {_cameraShakeOffset.valueOr(Vec2()), window().sizePx()},
-                .srcRect = none,
+                .dstRect  = {_cameraShakeOffset.valueOr(Vec2()), window().sizePx()},
+                .srcRect  = none,
                 .color    = white,
                 .rotation = 0.0_rad,
                 .origin   = {},
@@ -74,6 +74,6 @@ void SpaceShooterGame::draw(Painter painter)
 
 void SpaceShooterGame::triggerCameraShake()
 {
-    _cameraShakeOffset      = Vec2(4, 4);
+    _cameraShakeOffset     = Vec2(4, 4);
     _drawnCameraShakeCount = 0;
 }

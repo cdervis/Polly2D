@@ -20,7 +20,7 @@ class MouseCursor::Impl final : public Object
   public:
     explicit Impl(MouseCursorType type);
 
-    explicit Impl(u32 width, u32 height, u32 hotspot_x, u32 hotspot_y, Span<Color> data);
+    explicit Impl(u32 width, u32 height, u32 hotspotX, u32 hotspotY, Span<Color> data);
 
     ~Impl() noexcept override;
 

@@ -130,10 +130,7 @@ String MetalShaderGenerator::doGeneration(
     return std::move(w).buffer();
 }
 
-void MetalShaderGenerator::generateGlobalVarDecl(
-    Writer&            w,
-    const VarDecl*     decl,
-    const SemaContext& context)
+void MetalShaderGenerator::generateGlobalVarDecl(Writer& w, const VarDecl* decl, const SemaContext& context)
 {
     prepareExpr(w, decl->expr(), context);
     w << "constant " << translateType(decl->type(), TypeNameContext::Normal) << ' ' << decl->name() << " = ";
@@ -175,15 +172,14 @@ void MetalShaderGenerator::generateFunctionDecl(
         return;
     }
 
-    const auto& builtins        = context.builtInSymbols();
+    const auto& builtins       = context.builtInSymbols();
     const auto  accessedParams = _ast->paramsAccessedByFunction(function);
 
-    const auto usesPixelPosNormalized =
-        _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get());
+    const auto usesPixelPosNormalized = _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get());
 
     const auto usesPixelPos = usesPixelPosNormalized
-                                or _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get())
-                                or _ast->isSymbolAccessedAnywhere(builtins.svPixelPos.get());
+                              or _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get())
+                              or _ast->isSymbolAccessedAnywhere(builtins.svPixelPos.get());
 
     const auto usesViewportSize = _ast->isSymbolAccessedAnywhere(builtins.svViewportSize.get());
     const auto usesViewportSizeInv =
@@ -431,8 +427,8 @@ void MetalShaderGenerator::generateSymAccessExpr(
     const SemaContext&   context)
 {
     const auto& builtIns = context.builtInSymbols();
-    const auto& symbol    = expr->symbol();
-    const auto  name      = expr->name();
+    const auto& symbol   = expr->symbol();
+    const auto  name     = expr->name();
 
     if (const auto* param = as<ShaderParamDecl>(symbol))
     {
@@ -464,9 +460,9 @@ void MetalShaderGenerator::generateFunctionCallExpr(
     const FunctionCallExpr* functionCall,
     const SemaContext&      context)
 {
-    const auto& builtins        = context.builtInSymbols();
-    const auto& callee          = functionCall->callee();
-    const auto  args            = functionCall->args();
+    const auto& builtins       = context.builtInSymbols();
+    const auto& callee         = functionCall->callee();
+    const auto  args           = functionCall->args();
     const auto& calleeSymbol   = callee->symbol();
     const auto& calledFunction = as<FunctionDecl>(calleeSymbol);
 
@@ -476,8 +472,8 @@ void MetalShaderGenerator::generateFunctionCallExpr(
         const auto& textureArg = args[0];
         const auto& uvArg      = args[1];
 
-        //        const auto* textureSymbol = textureArg->symbol();
-        //        assume(textureSymbol != nullptr);
+        // const auto* textureSymbol = textureArg->symbol();
+        // assume(textureSymbol != nullptr);
 
         prepareExpr(w, functionCall, context);
 
@@ -583,6 +579,6 @@ void MetalShaderGenerator::emitUniformBuffer(Writer& w, const AccessedParams& pa
 
 String MetalShaderGenerator::shaderInputOutputTypeName(const Type* type)
 {
-    return formatString("{}{}", Naming::forbiddenIdentifierPrefix, type->typeName());
+    return Naming::forbiddenIdentifierPrefix + type->typeName();
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

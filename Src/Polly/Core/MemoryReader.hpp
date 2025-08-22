@@ -22,14 +22,14 @@ class MemoryReader final
     u16       readUInt16();
     u32       readUInt32();
     float     readFloat();
-    size_t    read(unsigned char* dst, size_t bytes);
+    u32       read(unsigned char* dst, u32 bytes);
     void      seek(int offset);
-    size_t    pos() const;
+    u32       pos() const;
     const u8* data() const;
-    size_t    size() const;
+    u32       size() const;
 
   private:
     Span<u8> _data;
-    size_t   _offset = 0;
+    u32      _offset = 0;
 };
 } // namespace Polly

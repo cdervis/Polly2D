@@ -20,9 +20,9 @@ void throw_sorted_set_empty_exception();
 
 /// Represents a set of unique objects that remain in order.
 ///
-/// Comparison is done via `operator<` between two objects of type `T`.
+/// Comparison is done via operator< between two objects of type T.
 ///
-/// @tparam T The type of elements stored in the set. Must support `operator<`.
+/// @tparam T The type of elements stored in the set. Must support operator<.
 template<typename T, typename Comparer = Comparers::Less<T>>
 class SortedSet
 {

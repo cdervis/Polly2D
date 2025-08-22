@@ -213,10 +213,10 @@ class String
 
     void checkAccessAt(u32 idx) const;
 
-    char  _small_buffer[smallBufferSize] = {};
-    u32   _size                          = 0;
-    u32   _capacity                      = smallBufferSize - 1;
-    char* _data                          = nullptr;
+    char  _smallBuffer[smallBufferSize] = {};
+    u32   _size                         = 0;
+    u32   _capacity                     = smallBufferSize - 1;
+    char* _data                         = nullptr;
 };
 
 bool operator<(const String& lhs, const String& rhs);

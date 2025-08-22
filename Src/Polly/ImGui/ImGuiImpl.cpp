@@ -19,4 +19,4 @@ ImGui::Impl::~Impl() noexcept
         ::ImGui::DestroyContext(imGuiContext);
     }
 }
-} // namespace pl
+} // namespace Polly

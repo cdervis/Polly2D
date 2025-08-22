@@ -22,7 +22,7 @@ namespace Polly
 /// of a particle that has already been emitted.
 ///
 /// For modifiers that modify already emitted particles, see
-/// the ParticleModifier type and the `modifiers` field of ParticleEmitter.
+/// the ParticleModifier type and the modifiers field of ParticleEmitter.
 struct ParticleEmissionParams
 {
     /// The number of particles to spawn with each emission.
@@ -50,7 +50,7 @@ struct ParticleEmissionParams
 /// Represents the description of a particle emitter.
 ///
 /// Particle emitters don't emit particles themselves.
-/// Instead, they are part of a `ParticleSystem` that is responsible
+/// Instead, they are part of a ParticleSystem that is responsible
 /// for managing them.
 struct ParticleEmitter
 {

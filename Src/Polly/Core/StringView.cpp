@@ -148,7 +148,7 @@ Maybe<u32> StringView::reverseFind(char ch, Maybe<u32> offset) const
 bool StringView::startsWith(StringView str) const
 {
     const auto idx = find(str);
-    return idx and * idx == 0;
+    return idx and *idx == 0;
 }
 
 bool StringView::endsWith(StringView str) const

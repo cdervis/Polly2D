@@ -22,4 +22,4 @@ MouseCursor::MouseCursor(u32 width, u32 height, u32 hotspotX, u32 hotspotY, Span
 {
     setImpl(*this, makeUnique<Impl>(width, height, hotspotX, hotspotY, data).release());
 }
-} // namespace pl
+} // namespace Polly

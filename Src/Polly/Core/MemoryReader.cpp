@@ -78,7 +78,7 @@ float MemoryReader::readFloat()
     return d;
 }
 
-size_t MemoryReader::read(unsigned char* dst, size_t bytes)
+u32 MemoryReader::read(unsigned char* dst, u32 bytes)
 {
     if (_offset + bytes >= _data.size())
     {
@@ -97,7 +97,7 @@ void MemoryReader::seek(int offset)
     _offset = min(static_cast<u32>(_offset), _data.size() - 1);
 }
 
-size_t MemoryReader::pos() const
+u32 MemoryReader::pos() const
 {
     return _offset;
 }
@@ -107,7 +107,7 @@ const u8* MemoryReader::data() const
     return _data.data();
 }
 
-size_t MemoryReader::size() const
+u32 MemoryReader::size() const
 {
     return _data.size();
 }
@@ -116,4 +116,4 @@ MemoryReader::MemoryReader(Span<u8> data)
     : _data(data)
 {
 }
-} // namespace pl
+} // namespace Polly

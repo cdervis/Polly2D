@@ -22,10 +22,7 @@ ArrayType* TypeCache::createArrayType(
     StringView            elementTypeName,
     UniquePtr<Expr>       sizeExpr)
 {
-    return createArrayType(
-        location,
-        createUnresolvedType(location, elementTypeName),
-        std::move(sizeExpr));
+    return createArrayType(location, createUnresolvedType(location, elementTypeName), std::move(sizeExpr));
 }
 
 ArrayType* TypeCache::createArrayType(
@@ -47,4 +44,4 @@ void TypeCache::clear()
     _arrayTypes.clear();
     _unresolvedTypes.clear();
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

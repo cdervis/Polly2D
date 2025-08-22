@@ -28,9 +28,9 @@ RectPack::Impl::Impl(Vec2 area, bool shouldAllowRotation)
 
 void RectPack::Impl::reset(Vec2 area, bool shouldAllowRotation)
 {
-    _allow_rotations = shouldAllowRotation;
-    _binWidth        = area.x;
-    _binHeight       = area.y;
+    _allowRotations = shouldAllowRotation;
+    _binWidth       = area.x;
+    _binHeight      = area.y;
     _usedRectangles.clear();
     _freeRectangles.clear();
     _freeRectangles.emplace(0.0f, 0.0f, area.x, area.y);
@@ -241,7 +241,7 @@ Rectf RectPack::Impl::findPositionForNewNodeBottomLeft(Vec2 rectSize, float& bes
             }
         }
 
-        if (_allow_rotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
         {
             const auto topSideY = freeRectangle.y + width;
             if (topSideY < bestY or (topSideY == bestY and freeRectangle.x < bestX))
@@ -293,7 +293,7 @@ Rectf RectPack::Impl::findPositionForNewNodeBestShortSideFit(
             }
         }
 
-        if (_allow_rotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
         {
             const auto flippedLeftoverHoriz = abs(freeRectangle.width - height);
             const auto flippedLeftoverVert  = abs(freeRectangle.height - width);
@@ -335,35 +335,35 @@ Rectf RectPack::Impl::findPositionForNewNodeBestLongSideFit(
         {
             const auto leftoverHoriz = abs(freeRectangle.width - width);
             const auto leftoverVert  = abs(freeRectangle.height - height);
-            const auto shortSideFit = min(leftoverHoriz, leftoverVert);
-            const auto longSideFit  = max(leftoverHoriz, leftoverVert);
+            const auto shortSideFit  = min(leftoverHoriz, leftoverVert);
+            const auto longSideFit   = max(leftoverHoriz, leftoverVert);
 
             if (longSideFit < bestLongSideFit
                 or (longSideFit == bestLongSideFit and shortSideFit < bestShortSideFit))
             {
-                bestNode.x         = freeRectangle.x;
-                bestNode.y         = freeRectangle.y;
-                bestNode.width     = width;
-                bestNode.height    = height;
+                bestNode.x       = freeRectangle.x;
+                bestNode.y       = freeRectangle.y;
+                bestNode.width   = width;
+                bestNode.height  = height;
                 bestShortSideFit = shortSideFit;
                 bestLongSideFit  = longSideFit;
             }
         }
 
-        if (_allow_rotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
         {
             const auto leftoverHoriz = abs(freeRectangle.width - height);
             const auto leftoverVert  = abs(freeRectangle.height - width);
-            const auto shortSideFit = min(leftoverHoriz, leftoverVert);
-            const auto longSideFit  = max(leftoverHoriz, leftoverVert);
+            const auto shortSideFit  = min(leftoverHoriz, leftoverVert);
+            const auto longSideFit   = max(leftoverHoriz, leftoverVert);
 
             if (longSideFit < bestLongSideFit
                 or (longSideFit == bestLongSideFit and shortSideFit < bestShortSideFit))
             {
-                bestNode.x         = freeRectangle.x;
-                bestNode.y         = freeRectangle.y;
-                bestNode.width     = height;
-                bestNode.height    = width;
+                bestNode.x       = freeRectangle.x;
+                bestNode.y       = freeRectangle.y;
+                bestNode.width   = height;
+                bestNode.height  = width;
                 bestShortSideFit = shortSideFit;
                 bestLongSideFit  = longSideFit;
             }
@@ -379,7 +379,7 @@ Rectf RectPack::Impl::findPositionForNewNodeBestAreaFit(
 {
     auto bestNode = Rectf();
 
-    bestAreaFit       = std::numeric_limits<float>::max();
+    bestAreaFit      = std::numeric_limits<float>::max();
     bestShortSideFit = std::numeric_limits<float>::max();
 
     const auto width  = rectSize.x;
@@ -394,35 +394,33 @@ Rectf RectPack::Impl::findPositionForNewNodeBestAreaFit(
         {
             const auto leftoverHoriz = abs(freeRectangle.width - width);
             const auto leftoverVert  = abs(freeRectangle.height - height);
-            const auto shortSideFit = min(leftoverHoriz, leftoverVert);
+            const auto shortSideFit  = min(leftoverHoriz, leftoverVert);
 
-            if (areaFit < bestAreaFit
-                or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
+            if (areaFit < bestAreaFit or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
             {
-                bestNode.x         = freeRectangle.x;
-                bestNode.y         = freeRectangle.y;
-                bestNode.width     = width;
-                bestNode.height    = height;
+                bestNode.x       = freeRectangle.x;
+                bestNode.y       = freeRectangle.y;
+                bestNode.width   = width;
+                bestNode.height  = height;
                 bestShortSideFit = shortSideFit;
-                bestAreaFit       = areaFit;
+                bestAreaFit      = areaFit;
             }
         }
 
-        if (_allow_rotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
         {
             const auto leftoverHoriz = abs(freeRectangle.width - height);
             const auto leftoverVert  = abs(freeRectangle.height - width);
-            const auto shortSideFit = min(leftoverHoriz, leftoverVert);
+            const auto shortSideFit  = min(leftoverHoriz, leftoverVert);
 
-            if (areaFit < bestAreaFit
-                or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
+            if (areaFit < bestAreaFit or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
             {
-                bestNode.x         = freeRectangle.x;
-                bestNode.y         = freeRectangle.y;
-                bestNode.width     = height;
-                bestNode.height    = width;
+                bestNode.x       = freeRectangle.x;
+                bestNode.y       = freeRectangle.y;
+                bestNode.width   = height;
+                bestNode.height  = width;
                 bestShortSideFit = shortSideFit;
-                bestAreaFit       = areaFit;
+                bestAreaFit      = areaFit;
             }
         }
     }
@@ -453,7 +451,7 @@ Rectf RectPack::Impl::findPositionForNewNodeContactPoint(Vec2 rectSize, float& c
                 contactScore    = score;
             }
         }
-        if (_allow_rotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
         {
             const auto score = contactPointScoreNode(freeRectangle.x, freeRectangle.y, height, width);
             if (score > contactScore)

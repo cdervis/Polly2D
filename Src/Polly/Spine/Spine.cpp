@@ -29,15 +29,15 @@ static String convert(const spine::String& str)
     return String(str.buffer(), static_cast<u32>(str.length()));
 }
 
-static StringView convert_view(const spine::String& str)
+static StringView convertView(const spine::String& str)
 {
     return StringView(str.buffer(), static_cast<u32>(str.length()));
 }
 
-static String get_animation_not_found_message(StringView searched_for, Span<SpineAnimation> animations)
+static String getAnimationNotFoundMessage(StringView searched_for, Span<SpineAnimation> animations)
 {
-    auto min_distance_name = StringView();
-    auto min_distance      = std::numeric_limits<double>::max();
+    auto minDistanceName = StringView();
+    auto minDistance     = std::numeric_limits<double>::max();
 
     for (const auto& anim : animations)
     {
@@ -46,19 +46,19 @@ static String get_animation_not_found_message(StringView searched_for, Span<Spin
         const auto normalized =
             static_cast<double>(levensteinDistance(searched_for, anim_name)) / static_cast<double>(len);
 
-        if (normalized < min_distance)
+        if (normalized < minDistance)
         {
-            min_distance      = normalized;
-            min_distance_name = anim_name;
+            minDistance     = normalized;
+            minDistanceName = anim_name;
         }
     }
 
-    if (not min_distance_name.isEmpty())
+    if (not minDistanceName.isEmpty())
     {
         return formatString(
             "No animation named '{}' in the skeleton; did you mean '{}'?",
             searched_for,
-            min_distance_name);
+            minDistanceName);
     }
 
     return formatString("No animation named '{}' in the skeleton.", searched_for);
@@ -83,7 +83,7 @@ StringView SpineAtlas::assetName() const
 StringView SpineAnimation::name() const
 {
     declare_this_impl_as(spine::Animation);
-    return convert_view(impl->getName());
+    return convertView(impl->getName());
 }
 
 Seconds SpineAnimation::duration() const
@@ -407,7 +407,7 @@ SpinePhysicsConstraintData SpineSkeletonData::findPhysicsConstraint(StringView n
 StringView SpineSkeletonData::name() const
 {
     declareThisImpl;
-    return convert_view(const_cast<Impl*>(impl)->skeleton_data->getName());
+    return convertView(const_cast<Impl*>(impl)->skeleton_data->getName());
 }
 
 void SpineSkeletonData::setName(StringView value)
@@ -575,7 +575,7 @@ Span<StringView> SpineSkeletonData::animationNames() const
 StringView SpineAttachment::name() const
 {
     declare_this_impl_as(spine::Attachment);
-    return convert_view(impl->getName());
+    return convertView(impl->getName());
 }
 
 pl_implement_object(SpineSkeleton);
@@ -1150,16 +1150,13 @@ SpineTrack SpineAnimationState::setAnimation(u32 trackIndex, StringView animatio
 
     if (not anim_ptr)
     {
-        throw Error(get_animation_not_found_message(animationName, skeleton_data_impl.animations));
+        throw Error(getAnimationNotFoundMessage(animationName, skeleton_data_impl.animations));
     }
 
     return SpineTrack(impl->state->setAnimation(trackIndex, anim_ptr, shouldLoop));
 }
 
-SpineTrack SpineAnimationState::setAnimation(
-    u32                   trackIndex,
-    const SpineAnimation& animation,
-    bool                  shouldLoop)
+SpineTrack SpineAnimationState::setAnimation(u32 trackIndex, const SpineAnimation& animation, bool shouldLoop)
 {
     if (not animation)
     {
@@ -1168,10 +1165,8 @@ SpineTrack SpineAnimationState::setAnimation(
 
     declareThisImpl;
 
-    return SpineTrack(impl->state->setAnimation(
-        trackIndex,
-        static_cast<spine::Animation*>(animation.impl()),
-        shouldLoop));
+    return SpineTrack(
+        impl->state->setAnimation(trackIndex, static_cast<spine::Animation*>(animation.impl()), shouldLoop));
 }
 
 SpineTrack SpineAnimationState::addAnimation(
@@ -1197,11 +1192,9 @@ SpineTrack SpineAnimationState::addAnimation(
 
     declareThisImpl;
 
-    return SpineTrack(impl->state->addAnimation(
-        trackIndex,
-        static_cast<spine::Animation*>(animation.impl()),
-        shouldLoop,
-        delay));
+    return SpineTrack(
+        impl->state
+            ->addAnimation(trackIndex, static_cast<spine::Animation*>(animation.impl()), shouldLoop, delay));
 }
 
 SpineTrack SpineAnimationState::setEmptyAnimation(u32 trackIndex, Seconds mixDuration)
@@ -1306,12 +1299,12 @@ void SpineAnimationStateData::setMix(StringView fromName, StringView toName, flo
 
     if (not anim1_ptr)
     {
-        throw Error(get_animation_not_found_message(fromName, skeleton_data_impl.animations));
+        throw Error(getAnimationNotFoundMessage(fromName, skeleton_data_impl.animations));
     }
 
     if (not anim2_ptr)
     {
-        throw Error(get_animation_not_found_message(toName, skeleton_data_impl.animations));
+        throw Error(getAnimationNotFoundMessage(toName, skeleton_data_impl.animations));
     }
 
     impl->data->setMix(anim1_ptr, anim2_ptr, duration);
@@ -1332,4 +1325,4 @@ void SpineAnimationStateData::clear()
     declareThisImpl;
     impl->data->clear();
 }
-} // namespace pl
+} // namespace Polly

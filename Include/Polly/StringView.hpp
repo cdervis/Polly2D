@@ -140,6 +140,8 @@ class StringView
     bool        _isNullTerminated;
 };
 
+String operator+(const StringView& lhs, const StringView& rhs);
+
 bool operator<(const StringView& lhs, const StringView& rhs);
 
 bool operator<=(const StringView& lhs, const StringView& rhs);

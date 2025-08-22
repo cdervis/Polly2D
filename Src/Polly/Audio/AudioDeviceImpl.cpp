@@ -11,13 +11,13 @@
 
 namespace Polly
 {
-AudioDevice::Impl::Impl(bool use_null_device)
+AudioDevice::Impl::Impl(bool useNullDevice)
 {
     auto result = _soloudDevice.init(
         SoLoud::Soloud::CLIP_ROUNDOFF,
-        use_null_device ? SoLoud::Soloud::NULLDRIVER : SoLoud::Soloud::AUTO);
+        useNullDevice ? SoLoud::Soloud::NULLDRIVER : SoLoud::Soloud::AUTO);
 
-    if (result != 0 and not use_null_device)
+    if (result != 0 and not useNullDevice)
     {
         logWarning("Failed to initialize the audio device; falling back to null-audio device.");
         result = _soloudDevice.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
@@ -41,7 +41,7 @@ SoundChannel AudioDevice::Impl::playSound(
     Sound            sound,
     const float      volume,
     const float      pan,
-    const bool       start_paused,
+    const bool       startPaused,
     Maybe<SoundTime> delay)
 {
     if (not sound)
@@ -58,7 +58,7 @@ SoundChannel AudioDevice::Impl::playSound(
 
     const auto channel_handle =
         delay ? _soloudDevice.playClocked(delay->value, sound_impl->soloudAudioSource(), volume, pan)
-              : _soloudDevice.play(sound_impl->soloudAudioSource(), volume, pan, start_paused);
+              : _soloudDevice.play(sound_impl->soloudAudioSource(), volume, pan, startPaused);
 
     // TODO: Use pool allocation for SoundChannelImpl objects
     auto channel_impl = makeUnique<SoundChannel::Impl>(*this, channel_handle);
@@ -89,17 +89,14 @@ void AudioDevice::Impl::playSoundOnce(Sound sound, float volume, float pan, Mayb
     _playingSounds.add(sound);
 }
 
-SoundChannel AudioDevice::Impl::playSoundInBackground(
-    Sound       sound,
-    const float volume,
-    const bool  start_paused)
+SoundChannel AudioDevice::Impl::playSoundInBackground(Sound sound, const float volume, const bool startPaused)
 {
     if (not sound)
     {
         return none;
     }
 
-    auto channel = playSound(sound, volume, 0.0f, start_paused, {});
+    auto channel = playSound(sound, volume, 0.0f, startPaused, {});
 
     _soloudDevice.setPanAbsolute(channel.id(), 1.0f, 1.0f);
 
@@ -141,4 +138,4 @@ bool AudioDevice::Impl::isNullDevice() const
 {
     return _isNullDevice;
 }
-} // namespace pl
+} // namespace Polly

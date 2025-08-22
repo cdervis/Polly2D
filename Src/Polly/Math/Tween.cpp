@@ -18,21 +18,21 @@ void Tweener::resume()
     _isRunning = true;
 }
 
-void Tweener::update(float elapsed_time)
+void Tweener::update(float elapsedTime)
 {
     if (not _isRunning or _elapsed == _duration)
     {
         return;
     }
 
-    _elapsed += elapsed_time;
+    _elapsed += elapsedTime;
 
     if (_elapsed >= _duration)
     {
         _elapsed  = _duration;
         _position = _from + _change;
 
-        switch (_loop_mode)
+        switch (_loopMode)
         {
             case TweenLoopMode::None: break;
             case TweenLoopMode::FrontToBack: reset(); break;
@@ -195,10 +195,14 @@ float Tweener::elasticEaseIn(float t, float b, float c, float d)
 float Tweener::elasticEaseOut(float t, float b, float c, float d)
 {
     if (t == 0)
+    {
         return b;
+    }
 
     if ((t /= d) == 1)
+    {
         return b + c;
+    }
 
     const auto p = d * .3f;
     const auto s = p / 4;
@@ -219,9 +223,15 @@ float Tweener::elasticEaseInOut(float t, float b, float c, float d)
     const auto s = p / 4;
 
     if (t < 1)
-        return -0.5f * (a * Polly::pow(2.0f, 10.0f * (t -= 1)) * Polly::sin((t * d - s) * (2 * Polly::pi) / p)) + b;
+    {
+        return -0.5f
+                   * (a * Polly::pow(2.0f, 10.0f * (t -= 1)) * Polly::sin((t * d - s) * (2 * Polly::pi) / p))
+               + b;
+    }
 
-    return a * Polly::pow(2.0f, -10.0f * (t -= 1)) * Polly::sin((t * d - s) * (2 * Polly::pi) / p) * 0.5f + c + b;
+    return a * Polly::pow(2.0f, -10.0f * (t -= 1)) * Polly::sin((t * d - s) * (2 * Polly::pi) / p) * 0.5f
+           + c
+           + b;
 }
 
 float Tweener::exponentialEaseIn(float t, float b, float c, float d)
@@ -237,13 +247,19 @@ float Tweener::exponentialEaseOut(float t, float b, float c, float d)
 float Tweener::exponentialEaseInOut(float t, float b, float c, float d)
 {
     if (t == 0)
+    {
         return b;
+    }
 
     if (t == d)
+    {
         return b + c;
+    }
 
     if ((t /= d / 2) < 1)
+    {
         return c / 2 * Polly::pow(2.0f, 10.0f * (t - 1)) + b;
+    }
 
     return c / 2 * (-Polly::pow(2.0f, -10.0f * --t) + 2) + b;
 }
@@ -266,7 +282,9 @@ float Tweener::quadraticEaseOut(float t, float b, float c, float d)
 float Tweener::quadraticEaseInOut(float t, float b, float c, float d)
 {
     if ((t /= d / 2) < 1)
+    {
         return c / 2 * t * t + b;
+    }
 
     return -c / 2 * ((--t) * (t - 2) - 1) + b;
 }
@@ -284,7 +302,9 @@ float Tweener::quarticEaseOut(float t, float b, float c, float d)
 float Tweener::quarticEaseInOut(float t, float b, float c, float d)
 {
     if ((t /= d / 2) < 1)
+    {
         return c / 2 * t * t * t * t + b;
+    }
 
     return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
 }
@@ -302,7 +322,9 @@ float Tweener::quinticEaseOut(float t, float b, float c, float d)
 float Tweener::quinticEaseInOut(float t, float b, float c, float d)
 {
     if ((t /= d / 2) < 1)
+    {
         return c / 2 * t * t * t * t * t + b;
+    }
 
     return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
 }
@@ -348,15 +370,15 @@ void TweenerChain::resume()
 
 void TweenerChain::update(float elapsedTime)
 {
-    const auto idx     = _currentTweenerIndex;
-    auto&      tweener = _tweeners[idx];
+    const auto index   = _currentTweenerIndex;
+    auto&      tweener = _tweeners[index];
     tweener.update(elapsedTime);
 
-    const auto next_idx = idx + 1;
+    const auto nextIndex = index + 1;
 
-    if (tweener.hasEnded() and next_idx < _tweeners.size())
+    if (tweener.hasEnded() and nextIndex < _tweeners.size())
     {
-        _currentTweenerIndex = next_idx;
+        _currentTweenerIndex = nextIndex;
     }
 }
 
@@ -401,4 +423,4 @@ u32 TweenerChain::currentTweenerIndex() const
 {
     return _currentTweenerIndex;
 }
-} // namespace pl
+} // namespace Polly

@@ -191,4 +191,4 @@ SoundTime SoundChannel::streamPosition() const
     declare_this_impl_no_verify;
     return impl ? impl->streamPosition() : SoundTime();
 }
-} // namespace pl
+} // namespace Polly

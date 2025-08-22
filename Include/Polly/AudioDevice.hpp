@@ -30,16 +30,16 @@ class AudioDevice final
     /// @param sound The sound to play
     /// @param volume The initial volume of the sound
     /// @param pan The left/right panning of the sound. -1 is fully left, +1 is fully right.
-    /// @param start_paused If true, the sound will start in a paused state
+    /// @param startPaused If true, the sound will start in a paused state
     /// @param delay The delay after which to start playing the sound
     /// @return The sound's channel. May be used to control further playback of the sound.
     [[nodiscard]]
     SoundChannel playSound(
         const Sound&            sound,
-        float                   volume       = 1.0f,
-        float                   pan          = 0.0f,
-        bool                    start_paused = false,
-        const Maybe<SoundTime>& delay        = {});
+        float                   volume      = 1.0f,
+        float                   pan         = 0.0f,
+        bool                    startPaused = false,
+        const Maybe<SoundTime>& delay       = none);
 
     /// Plays a sound without returning its channel.
     ///
@@ -47,7 +47,7 @@ class AudioDevice final
     /// @param volume The volume of the sound.
     /// @param pan The left/right panning of the sound. -1 is fully left, +1 is fully right.
     /// @param delay The delay after which to start playing the sound.
-    void playOnce(const Sound& sound, float volume = 1.0f, float pan = 0.0f, Maybe<SoundTime> delay = {});
+    void playOnce(const Sound& sound, float volume = 1.0f, float pan = 0.0f, Maybe<SoundTime> delay = none);
 
     /// Plays a sound with its volume set equally to all channels, and without
     /// panning.
@@ -70,9 +70,9 @@ class AudioDevice final
 
     /// Changes the global audio volume over time.
     ///
-    /// @param to_volume The target volume
-    /// @param fade_duration The duration of the fade
-    void fadeGlobalVolume(float to_volume, SoundTime fade_duration);
+    /// @param toVolume The target volume
+    /// @param fadeDuration The duration of the fade
+    void fadeGlobalVolume(float toVolume, SoundTime fadeDuration);
 
     /// Gets a value indicating whether the audio device is a
     /// muted audio device (a "null device").

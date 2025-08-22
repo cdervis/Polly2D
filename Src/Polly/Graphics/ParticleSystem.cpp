@@ -58,4 +58,4 @@ void ParticleSystem::setIsActive(bool value)
     declareThisImpl;
     impl->setIsActive(value);
 }
-} // namespace pl
+} // namespace Polly

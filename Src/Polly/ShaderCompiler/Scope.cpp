@@ -95,7 +95,7 @@ const Decl* Scope::findSymbolWithSimilarName(StringView name, bool fallBackToPar
     constexpr auto threshold = 0.1;
 
     const Decl* symbolWithMinDistance = nullptr;
-    auto        minDistance             = maxDouble;
+    auto        minDistance           = maxDouble;
 
     reverseIterate(
         _symbols,
@@ -112,7 +112,7 @@ const Decl* Scope::findSymbolWithSimilarName(StringView name, bool fallBackToPar
                 if (d <= threshold and d < minDistance)
                 {
                     symbolWithMinDistance = symbol;
-                    minDistance             = d;
+                    minDistance           = d;
                 }
             }
 
@@ -278,4 +278,4 @@ void Scope::setFunctionCallArguments(List<const Expr*> args)
 {
     _functionCallArguments = std::move(args);
 }
-} // namespace pl::shd
+} // namespace Polly::ShaderCompiler

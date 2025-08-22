@@ -37,11 +37,11 @@ String Shader::Impl::shaderParameterTypeString(ShaderParameterType type)
 }
 
 Shader::Impl::Impl(
-    Painter::Impl& painterImpl,
-    ShaderType            shaderType,
-    ParameterList         parameters,
-    UserShaderFlags                   flags,
-    u16                   cbufferSize)
+    Painter::Impl&  painterImpl,
+    ShaderType      shaderType,
+    ParameterList   parameters,
+    UserShaderFlags flags,
+    u16             cbufferSize)
     : GraphicsResource(painterImpl, GraphicsResourceType::Shader)
     , _shaderType(shaderType)
     , _parameters(std::move(parameters))
@@ -191,4 +191,4 @@ void Shader::Impl::notifyPainterAfterParamChanged()
     if (_isInUse)
         painter().notifyShaderParamHasChangedWhileBound(*this);
 }
-} // namespace pl
+} // namespace Polly

@@ -495,4 +495,4 @@ String toString(const void* value)
 
     return formatString("0x{}", buffer);
 }
-} // namespace pl
+} // namespace Polly

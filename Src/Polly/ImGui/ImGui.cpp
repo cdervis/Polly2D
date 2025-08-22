@@ -773,11 +773,7 @@ bool ImGui::inputText(StringView label, String& value, imgui_input_text_opts fla
     return ::ImGui::InputText(label.data(), value.data(), value.size(), convert(flags));
 }
 
-bool ImGui::inputTextMultiline(
-    StringView            label,
-    String&               value,
-    Maybe<Vec2>           size,
-    imgui_input_text_opts flags)
+bool ImGui::inputTextMultiline(StringView label, String& value, Maybe<Vec2> size, imgui_input_text_opts flags)
 {
     verify_have_impl;
     return ::ImGui::InputTextMultiline(
@@ -788,11 +784,7 @@ bool ImGui::inputTextMultiline(
         convert(flags));
 }
 
-bool ImGui::inputTextWithHint(
-    StringView            label,
-    StringView            hint,
-    String&               value,
-    imgui_input_text_opts flags)
+bool ImGui::inputTextWithHint(StringView label, StringView hint, String& value, imgui_input_text_opts flags)
 {
     verify_have_impl;
     return ::ImGui::InputTextWithHint(label.data(), hint.data(), value.data(), value.size(), convert(flags));
@@ -1371,4 +1363,4 @@ Rectf ImGui::itemRect() const
 
     return Rectf(convert(topLeft), convert(size));
 }
-} // namespace pl
+} // namespace Polly

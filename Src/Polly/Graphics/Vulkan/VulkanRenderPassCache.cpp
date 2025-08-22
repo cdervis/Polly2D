@@ -82,4 +82,4 @@ void VulkanRenderPassCache::clear()
         _cache.clear();
     }
 }
-} // namespace pl
+} // namespace Polly

@@ -45,22 +45,22 @@ void BinPack::insert(List<Size>& rects, List<Rect>& dst)
 
     while (not rects.isEmpty())
     {
-        auto bestScore1     = std::numeric_limits<int>::max();
-        auto bestScore2     = std::numeric_limits<int>::max();
+        auto bestScore1    = std::numeric_limits<int>::max();
+        auto bestScore2    = std::numeric_limits<int>::max();
         auto bestRectIndex = Maybe<u32>();
-        auto bestNode       = Maybe<Rect>();
+        auto bestNode      = Maybe<Rect>();
 
         for (u32 i = 0; i < rects.size(); ++i)
         {
-            auto       score1   = 0;
-            auto       score2   = 0;
+            auto       score1  = 0;
+            auto       score2  = 0;
             const auto newNode = scoreRect(rects[i].width, rects[i].height, score1, score2);
 
             if (score1 < bestScore1 or (score1 == bestScore1 and score2 < bestScore2))
             {
-                bestScore1     = score1;
-                bestScore2     = score2;
-                bestNode       = newNode;
+                bestScore1    = score1;
+                bestScore2    = score2;
+                bestNode      = newNode;
                 bestRectIndex = i;
             }
         }
@@ -122,7 +122,7 @@ Maybe<BinPack::Rect> BinPack::findPositionForNewNode(
 {
     auto bestNode = Maybe<Rect>();
 
-    bestAreaFit       = std::numeric_limits<int>::max();
+    bestAreaFit      = std::numeric_limits<int>::max();
     bestShortSideFit = std::numeric_limits<int>::max();
 
     for (const auto& freeRectangle : _freeRectangles)
@@ -132,15 +132,14 @@ Maybe<BinPack::Rect> BinPack::findPositionForNewNode(
         if (freeRectangle.width >= width and freeRectangle.height >= height)
         {
             const int leftoverHorizontal = abs(freeRectangle.width - width);
-            const int leftoverVertical  = abs(freeRectangle.height - height);
-            const int shortSideFit = min(leftoverHorizontal, leftoverVertical);
+            const int leftoverVertical   = abs(freeRectangle.height - height);
+            const int shortSideFit       = min(leftoverHorizontal, leftoverVertical);
 
-            if (areaFit < bestAreaFit
-                or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
+            if (areaFit < bestAreaFit or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
             {
-                bestNode           = Rect(freeRectangle.x, freeRectangle.y, width, height);
+                bestNode         = Rect(freeRectangle.x, freeRectangle.y, width, height);
                 bestShortSideFit = shortSideFit;
-                bestAreaFit       = areaFit;
+                bestAreaFit      = areaFit;
             }
         }
     }
@@ -226,7 +225,7 @@ void BinPack::insertNewFreeRectangle(const Rect& newFreeRect)
             // Remove i'th new free rect, but do so by retaining the order
             // of the older vs newest free rectangles that we may still be placing
             // in calling function SplitFreeNode().
-            _newFreeRectangles[i] = _newFreeRectangles[--_newFreeRectanglesLastSize];
+            _newFreeRectangles[i]                          = _newFreeRectangles[--_newFreeRectanglesLastSize];
             _newFreeRectangles[_newFreeRectanglesLastSize] = _newFreeRectangles.last();
             _newFreeRectangles.removeLast();
         }
@@ -267,4 +266,4 @@ void BinPack::pruneFreeList()
 
     _newFreeRectangles.clear();
 }
-} // namespace pl
+} // namespace Polly

@@ -19,7 +19,6 @@
 #include "SemaContext.hpp"
 #include "Stmt.hpp"
 #include "Type.hpp"
-
 #include <algorithm>
 
 namespace Polly::ShaderCompiler
@@ -495,4 +494,4 @@ ArraySizeDecl::ArraySizeDecl()
 void ArraySizeDecl::onVerify(SemaContext& context, Scope& scope)
 {
 }
-} // namespace Polly::shd
+} // namespace Polly::ShaderCompiler

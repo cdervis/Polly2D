@@ -31,4 +31,4 @@ u64 Object::refCount() const
 {
     return _refCount;
 }
-} // namespace pl
+} // namespace Polly

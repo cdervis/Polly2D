@@ -86,4 +86,4 @@ MTL::SamplerState* MetalSamplerStateCache::operator[](const Sampler& state)
 
     return mtl_sampler_state;
 }
-} // namespace pl
+} // namespace Polly

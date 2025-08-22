@@ -121,4 +121,4 @@ Maybe<MTL::ClearColor> convert_to_mtl_clear_color(const Color& color)
 {
     return MTL::ClearColor(color.r, color.g, color.b, color.a);
 }
-} // namespace pl
+} // namespace Polly
