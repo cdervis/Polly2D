@@ -74,7 +74,7 @@ jobs:
           -DCMAKE_C_COMPILER=${{matrix.c-compiler}}
           -DCMAKE_CXX_COMPILER=${{matrix.cpp-compiler}}
 
-      - name: Configure CMake
+      - name: Configure CMake (with Clang / lld)
         run: >
           cmake -B ${{github.workspace}}/build -G Ninja
           -DCMAKE_BUILD_TYPE=${{matrix.config}}

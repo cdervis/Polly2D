@@ -342,8 +342,6 @@ void Monotone::clear()
 {
     stop();
 
-    std::free(mSong.mTitle);
-    std::free(mSong.mComment);
     std::free(mSong.mPatternData);
 
     mSong.mTitle       = 0;
@@ -355,15 +353,6 @@ Monotone::~Monotone()
 {
     stop();
     clear();
-}
-
-static char* mystrdup(const char* src)
-{
-    int   len = (int)strlen(src);
-    char* res = static_cast<char*>(std::malloc(sizeof(char) * (len + 1)));
-    std::strncpy(res, src, len);
-    res[len] = 0;
-    return res;
 }
 
 result Monotone::setParams(int aHardwareChannels, int aWaveform)
@@ -398,9 +387,9 @@ result Monotone::loadFile(File* aFile)
     if (aFile == NULL)
         return INVALID_PARAMETER;
     clear();
-    int           i;
-    unsigned char temp[200];
-    aFile->read(temp, 9);
+    int  i;
+    char temp[200];
+    aFile->read(reinterpret_cast<unsigned char*>(temp), 9);
     char magic[] = "\bMONOTONE";
     for (i = 0; i < 9; i++)
     {
@@ -409,13 +398,13 @@ result Monotone::loadFile(File* aFile)
             return FILE_LOAD_FAILED;
         }
     }
-    aFile->read(temp, 41);
+    aFile->read(reinterpret_cast<unsigned char*>(temp), 41);
     temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
-    mSong.mTitle      = mystrdup((char*)temp + 1);
-    aFile->read(temp, 41);
+    mSong.mTitle.assign(temp, Polly::none);
+    aFile->read(reinterpret_cast<unsigned char*>(temp), 41);
     temp[temp[0] + 1] = 0; // pascal -> asciiz: pascal strings have length as first byte
-    mSong.mComment    = mystrdup((char*)temp + 1);
-    aFile->read(temp, 4);
+    mSong.mComment.assign(temp, Polly::none);
+    aFile->read(reinterpret_cast<unsigned char*>(temp), 4);
     mSong.mVersion       = temp[0];
     mSong.mTotalPatterns = temp[1];
     mSong.mTotalTracks   = temp[2];
@@ -429,7 +418,7 @@ result Monotone::loadFile(File* aFile)
     mSong.mPatternData = static_cast<unsigned int*>(std::malloc(sizeof(unsigned int) * totalnotes));
     for (i = 0; i < totalnotes; i++)
     {
-        aFile->read(temp, 2);
+        aFile->read(reinterpret_cast<unsigned char*>(temp), 2);
         unsigned int datavalue = temp[0] | (temp[1] << 8);
         mSong.mPatternData[i]  = datavalue;
         // unsigned int note = (datavalue >> 9) & 127;

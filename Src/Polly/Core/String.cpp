@@ -8,6 +8,7 @@
 #include "Polly/Core/to_chars.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/Maybe.hpp"
+#include "Polly/Narrow.hpp"
 
 namespace Polly
 {
@@ -49,13 +50,18 @@ char* String::rawConcat(char* dst, const char* src)
     return std::strcat(dst, src);
 }
 
-void String::assign(const char* str, u32 size)
+void String::assign(const char* str, Maybe<u32> size)
 {
-    reserve(size);
+    if (not size)
+    {
+        size = narrow<u32>(std::strlen(str));
+    }
+
+    reserve(*size);
     auto* dstPtr = data();
-    std::memcpy(dstPtr, str, size * sizeof(char));
-    dstPtr[size] = '\0';
-    _size        = size;
+    std::memcpy(dstPtr, str, *size * sizeof(char));
+    dstPtr[*size] = '\0';
+    _size         = *size;
 }
 
 void String::clear()
