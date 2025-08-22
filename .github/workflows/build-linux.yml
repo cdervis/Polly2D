@@ -14,19 +14,19 @@ jobs:
       matrix:
         os: [ ubuntu-22.04, ubuntu-latest ]
         config: [ Debug, Release ]
-        ccompiler: [ gcc, clang ]
-        cppcompiler: [ g++, clang++ ]
+        c-compiler: [ gcc, clang ]
+        cpp-compiler: [ g++, clang++ ]
         exclude:
-          - ccompiler: gcc
-            cppcompiler: clang++
-          - ccompiler: clang
-            cppcompiler: g++
+          - c-compiler: gcc
+            cpp-compiler: clang++
+          - c-compiler: clang
+            cpp-compiler: g++
         include:
-          - ccompiler: gcc
-            cppcompiler: g++
+          - c-compiler: gcc
+            cpp-compiler: g++
             linker: ld
-          - ccompiler: clang
-            cppcompiler: clang++
+          - c-compiler: clang
+            cpp-compiler: clang++
             linker: lld
 
     runs-on: ${{matrix.os}}
@@ -38,13 +38,13 @@ jobs:
         uses: KyleMayes/install-llvm-action@v2
         with:
           version: "17.0"
-        if: matrix.ccompiler == 'clang'
+        if: matrix.c-compiler == 'clang'
 
       - uses: awalsh128/cache-apt-pkgs-action@latest
         name: Install APT packages
         with:
           packages: >
-            build-essential git make
+            build-essential git make binutils
             pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev
             libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev
             libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev
@@ -78,8 +78,8 @@ jobs:
         run: >
           cmake -B ${{github.workspace}}/build -G Ninja
           -DCMAKE_BUILD_TYPE=${{matrix.config}}
-          -DCMAKE_C_COMPILER=${{matrix.ccompiler}}
-          -DCMAKE_CXX_COMPILER=${{matrix.cppcompiler}}
+          -DCMAKE_C_COMPILER=${{matrix.c-compiler}}
+          -DCMAKE_CXX_COMPILER=${{matrix.cpp-compiler}}
           -DCMAKE_EXE_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
           -DCMAKE_MODULE_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
           -DCMAKE_SHARED_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
