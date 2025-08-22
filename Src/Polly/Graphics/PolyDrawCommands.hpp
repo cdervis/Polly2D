@@ -21,13 +21,6 @@ struct DrawLineCmd
     float strokeWidth = 0.0f;
 };
 
-struct DrawLinePathCmd
-{
-    List<Line, 8> lines;
-    Color         color;
-    float         strokeWidth = 0.0f;
-};
-
 struct DrawRectangleCmd
 {
     Rectf rectangle;
@@ -79,7 +72,6 @@ struct FillEllipseCmd
 
 using Command = std::variant<
     DrawLineCmd,
-    DrawLinePathCmd,
     DrawRectangleCmd,
     FillRectangleCmd,
     DrawRoundedRectangleCmd,
