@@ -17,7 +17,7 @@
 #pragma GCC diagnostic push
 #endif
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) and not defined(__clang__)
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
