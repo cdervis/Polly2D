@@ -65,9 +65,6 @@ class BinPack final
 
     void pruneFreeList();
 
-    u32 _binWidth  = 0;
-    u32 _binHeight = 0;
-
     u32        _newFreeRectanglesLastSize = 0;
     List<Rect> _newFreeRectangles;
 
