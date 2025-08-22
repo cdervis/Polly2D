@@ -21,13 +21,6 @@ jobs:
             cpp-compiler: clang++
           - c-compiler: clang
             cpp-compiler: g++
-        include:
-          - c-compiler: gcc
-            cpp-compiler: g++
-            linker: ld
-          - c-compiler: clang
-            cpp-compiler: clang++
-            linker: lld
 
     runs-on: ${{matrix.os}}
 
@@ -80,9 +73,17 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{matrix.config}}
           -DCMAKE_C_COMPILER=${{matrix.c-compiler}}
           -DCMAKE_CXX_COMPILER=${{matrix.cpp-compiler}}
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{github.workspace}}/build -G Ninja
+          -DCMAKE_BUILD_TYPE=${{matrix.config}}
+          -DCMAKE_C_COMPILER=${{matrix.c-compiler}}
+          -DCMAKE_CXX_COMPILER=${{matrix.cpp-compiler}}
           -DCMAKE_EXE_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
           -DCMAKE_MODULE_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
           -DCMAKE_SHARED_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
+        if: matrix.c-compiler == 'clang'
 
       - name: Build CMake
         run: cmake --build ${{github.workspace}}/build --parallel --config ${{matrix.config}}
