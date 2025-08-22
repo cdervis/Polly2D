@@ -63,7 +63,7 @@ u32 BinaryReader::readUInt32()
     return result;
 }
 
-int64_t BinaryReader::readInt64()
+i64 BinaryReader::readInt64()
 {
     auto result = int64_t();
     readBytesInto(MutableSpan(reinterpret_cast<u8*>(&result), sizeof(result)));

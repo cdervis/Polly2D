@@ -114,7 +114,7 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
     // Create THE Metal shader library that contains all built-in Metal shaders.
     NS::Error* error = nullptr;
 
-    const auto srcCode = String(AllShaders_metal_string_view());
+    const auto srcCode = String(AllShaders_metalStringView());
 
     const auto opts = NS::TransferPtr(MTL::CompileOptions::alloc()->init());
     opts->setLibraryType(MTL::LibraryTypeExecutable);
