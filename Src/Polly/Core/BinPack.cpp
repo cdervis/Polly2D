@@ -18,8 +18,6 @@ static bool isContainedIn(const BinPack::Rect& a, const BinPack::Rect& b)
 BinPack::BinPack() = default;
 
 BinPack::BinPack(u32 width, u32 height)
-    : _binWidth(width)
-    , _binHeight(height)
 {
     _freeRectangles.emplace(0, 0, width, height);
 }
@@ -255,7 +253,7 @@ void BinPack::pruneFreeList()
                 // The old free rectangles can never be contained in any of the
                 // new free rectangles (the new free rectangles keep shrinking
                 // in size)
-                assume(!isContainedIn(rect, _newFreeRectangles[j]));
+                assume(not isContainedIn(rect, _newFreeRectangles[j]));
                 ++j;
             }
         }

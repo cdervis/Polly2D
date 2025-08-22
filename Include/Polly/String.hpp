@@ -67,7 +67,7 @@ class String
 
     static constexpr u32 rawLength(const char* str);
 
-    void assign(const char* str, u32 size);
+    void assign(const char* str, Maybe<u32> size);
 
     void clear();
 

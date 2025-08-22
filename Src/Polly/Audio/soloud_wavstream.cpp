@@ -36,21 +36,7 @@ freely, subject to the following restrictions:
 #include "soloud_wavstream.hpp"
 #include "soloud_file.hpp"
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4244)
-#pragma warning(disable:4245)
-#pragma warning(disable:4456)
-#pragma warning(disable:4457)
-#pragma warning(disable:4701)
-#endif
-
-#include "stb_vorbis.h"
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
+#include "StbVorbis.hpp"
 // clang-format on
 
 namespace SoLoud

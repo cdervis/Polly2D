@@ -15,16 +15,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
         set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ${ltoSupported})
     endif ()
 
-    if (MSVC)
-        add_compile_options(/GL) # Whole Program Optimization
-    else ()
+    if (NOT MSVC)
         add_compile_options(-O3)
-        add_compile_options(-flto)
     endif ()
 
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-    endif()
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif ()
 
 # Address sanitizer
@@ -56,6 +51,10 @@ function(enable_default_cpp_flags target_name)
 
         # Disable some of the warnings
         target_compile_options(${target_name} PRIVATE -Wno-nonnull)
+    endif ()
+
+    if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS)
     endif ()
 
     # Disable common warnings

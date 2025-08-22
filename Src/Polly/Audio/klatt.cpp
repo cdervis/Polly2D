@@ -1,4 +1,4 @@
-#if defined(__GNUC__)
+#if defined(__GNUC__) or defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-value"
 #endif
