@@ -1,8 +1,6 @@
 CPMAddPackage(
     NAME imgui
-    GIT_REPOSITORY https://github.com/cdervis/imgui
-    GIT_TAG master
-    GIT_SHALLOW
+    URL https://github.com/cdervis/imgui/archive/refs/tags/v1.92.2.zip
     DOWNLOAD_ONLY
 )
 

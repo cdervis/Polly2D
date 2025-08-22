@@ -98,8 +98,6 @@ function(polly_add_game)
 
         target_sources(${target_name} PRIVATE ${asset_archive_filename})
 
-        polly_log("Asset archive: ${asset_archive_filename}")
-
         add_custom_command(
             OUTPUT ${asset_archive_filename}
             COMMAND Python3::Interpreter BuildTool pack

@@ -57,14 +57,13 @@ endif()
 
 CPMAddPackage(
     NAME zlib-ng
-    GIT_REPOSITORY https://github.com/zlib-ng/zlib-ng
-    GIT_TAG 2.2.4
+    URL https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.5.zip
     OPTIONS
     "ZLIB_COMPAT OFF"
     "ZLIB_ENABLE_TESTS OFF"
     "ZLIBNG_ENABLE_TESTS OFF"
     "WITH_OPTIM ${zlib_ng_with_optim}"
-    GIT_SHALLOW)
+)
 
 target_link_libraries(Polly PRIVATE zlib)
 list(APPEND targets_in_polly_group zlib)
