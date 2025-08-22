@@ -27,6 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: "17.0"
+
       - uses: awalsh128/cache-apt-pkgs-action@latest
         name: Install APT packages
         with:
@@ -36,7 +41,7 @@ jobs:
             libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev
             libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev
             libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev
-            libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev clang
+            libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
           version: 1.0
 
       - name: Cache CMake dependencies
