@@ -66,6 +66,12 @@ CPMAddPackage(
     "ENABLE_GLSLANG_JS OFF"
 )
 
+if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Clang on Windows!")
+    target_compile_definitions(glslang PRIVATE -D_CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(glslang-default-resource-limits PRIVATE -D_CRT_SECURE_NO_WARNINGS)
+endif ()
+
 target_link_libraries(Polly PRIVATE
     glslang::glslang
     glslang::glslang-default-resource-limits

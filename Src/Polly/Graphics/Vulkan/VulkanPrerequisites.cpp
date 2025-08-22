@@ -20,18 +20,22 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 #ifdef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wnullability-extension"
 #pragma GCC diagnostic ignored "-Wnullability-completeness"
-#endif
+#pragma GCC diagnostic ignored "-Wunused-private-field"
 #endif
 
 #define VMA_IMPLEMENTATION
 // ReSharper disable once CppUnusedIncludeDirective
 #include <vk_mem_alloc.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) or defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 

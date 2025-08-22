@@ -236,7 +236,11 @@ class VulkanPainter final : public Painter::Impl
 
     VkShaderModule compileBuiltinVkShader(StringView name, StringView glslCode, VulkanShaderType type);
 
+    // The instance is currently only used in debug mode (debug markers etc).
+#ifndef NDEBUG
     VkInstance                 _vkInstance               = VK_NULL_HANDLE;
+#endif
+    
     VkPhysicalDevice           _vkPhysicalDevice         = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties _vkPhysicalDeviceProps    = {};
     u32                        _graphicsQueueFamilyIndex = 0;

@@ -58,6 +58,10 @@ function(enable_default_cpp_flags target_name)
         target_compile_options(${target_name} PRIVATE -Wno-nonnull)
     endif ()
 
+    if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS)
+    endif ()
+
     # Disable common warnings
     if (MSVC)
         target_compile_options(

@@ -13,15 +13,16 @@
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
 
 #ifdef __clang__
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnullability-extension"
-#endif
 #endif
 
 #include <vk_mem_alloc.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) or defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 

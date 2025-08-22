@@ -71,13 +71,15 @@ static VKAPI_ATTR VkBool32 vulkanDebugCallback(
 
 
 VulkanPainter::VulkanPainter(
-    Window::Impl&         windowImpl,
-    GamePerformanceStats& performanceStats,
-    VkInstance            vkInstance,
-    u32                   vkApiVersion,
-    [[maybe_unused]] bool haveVkDebugLayer)
+    Window::Impl&               windowImpl,
+    GamePerformanceStats&       performanceStats,
+    [[maybe_unused]] VkInstance vkInstance,
+    u32                         vkApiVersion,
+    [[maybe_unused]] bool       haveVkDebugLayer)
     : Impl(windowImpl, performanceStats)
+#ifndef NDEBUG
     , _vkInstance(vkInstance)
+#endif
     , _psoCache(*this)
     , _framebufferCache(*this)
     , _renderPassCache(*this)
@@ -1393,6 +1395,9 @@ void VulkanPainter::createVkDebugMarker()
     _vkCmdDebugMarkerBegin = reinterpret_cast<PFN_vkCmdDebugMarkerBeginEXT>(
         vkGetDeviceProcAddr(_vkDevice, "vkCmdDebugMarkerBeginEXT"));
 
+    _vkCmdDebugMarkerInsert = reinterpret_cast<PFN_vkCmdDebugMarkerInsertEXT>(
+        vkGetDeviceProcAddr(_vkDevice, "vkCmdDebugMarkerInsertEXT"));
+
     _vkCmdDebugMarkerEnd = reinterpret_cast<PFN_vkCmdDebugMarkerEndEXT>(
         vkGetDeviceProcAddr(_vkDevice, "vkCmdDebugMarkerEndEXT"));
 }
@@ -1593,7 +1598,7 @@ void VulkanPainter::prepareDrawCall()
 
         if (frameData.lastAppliedViewportToSystemValues != viewport)
         {
-            if (shader and currentVulkanUserShader->usesSystemValues())
+            if (currentVulkanUserShader and currentVulkanUserShader->usesSystemValues())
             {
                 const auto params = SystemValueCBufferParams{
                     .viewportSize    = viewport.size(),

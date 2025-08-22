@@ -326,7 +326,7 @@ class Maybe
     requires(std::is_trivially_destructible_v<T>)
     = default;
 
-    ~Maybe() noexcept
+    constexpr ~Maybe() noexcept
     requires(!std::is_trivially_destructible_v<T>)
     {
         destruct<true>();
