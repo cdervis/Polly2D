@@ -31,6 +31,9 @@ class String
     constexpr String();
 
     // ReSharper disable once CppNonExplicitConvertingConstructor
+    constexpr String(Details::NoObjectTag);
+
+    // ReSharper disable once CppNonExplicitConvertingConstructor
     String(const char* str);
 
     // ReSharper disable once CppNonExplicitConvertingConstructor

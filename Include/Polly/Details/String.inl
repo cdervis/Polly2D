@@ -27,6 +27,11 @@ constexpr String::String()
 {
 }
 
+constexpr String::String(Details::NoObjectTag)
+    : String()
+{
+}
+
 inline String::String(const char* str)
     : String()
 {

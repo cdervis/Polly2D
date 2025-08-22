@@ -25,6 +25,9 @@ class StringView
     constexpr StringView();
 
     // ReSharper disable once CppNonExplicitConvertingConstructor
+    constexpr StringView(Details::NoObjectTag);
+
+    // ReSharper disable once CppNonExplicitConvertingConstructor
     constexpr StringView(const char* str);
 
     constexpr StringView(const char* str, u32 size, bool isNullTerminated = false);

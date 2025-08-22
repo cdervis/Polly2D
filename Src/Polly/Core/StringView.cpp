@@ -10,6 +10,7 @@
 #include "Polly/Logging.hpp"
 #include "Polly/Math.hpp"
 #include "Polly/Maybe.hpp"
+#include "Polly/String.hpp"
 #include <SDL3/SDL_stdinc.h>
 
 namespace Polly
@@ -279,4 +280,14 @@ size_t StringView::hashCode() const
 {
     return komihash(_data, _size, 31);
 }
+
+String operator+(const StringView& lhs, const StringView& rhs)
+{
+    auto result = String();
+    result.reserve(lhs.size() + rhs.size());
+    result += lhs;
+    result += rhs;
+    return result;
+}
+
 } // namespace Polly

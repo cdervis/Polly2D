@@ -32,7 +32,7 @@ class UniquePtr
     }
 
     // ReSharper disable once CppNonExplicitConvertingConstructor
-    UniquePtr(details::NoObjectTag)
+    UniquePtr(Details::NoObjectTag)
         : UniquePtr()
     {
     }

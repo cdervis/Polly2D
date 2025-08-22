@@ -57,6 +57,11 @@ constexpr StringView::StringView()
 {
 }
 
+constexpr StringView::StringView(Details::NoObjectTag)
+    : StringView()
+{
+}
+
 constexpr StringView::StringView(const char* str)
     : _data(str)
     , _size(Details::string_literal_length(str))
@@ -259,15 +264,6 @@ constexpr bool StringView::all(Predicate&& predicate) const
     }
 
     return true;
-}
-
-inline String operator+(const StringView& lhs, const StringView& rhs)
-{
-    auto result = String();
-    result.reserve(lhs.size() + rhs.size());
-    result += lhs;
-    result += rhs;
-    return result;
 }
 
 inline bool operator<(const StringView& lhs, const StringView& rhs)
