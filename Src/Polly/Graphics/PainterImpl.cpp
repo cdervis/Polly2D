@@ -281,6 +281,10 @@ void Painter::Impl::startFrame()
 {
     assume(_maxFramesInFlight > 0);
 
+    resetCurrentStates();
+
+    onFrameStarted();
+
     auto& frameData                 = _frameData[_currentFrameIndex];
     frameData.batchMode             = none;
     frameData.spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
@@ -1044,7 +1048,7 @@ void Painter::Impl::postInit(
     u32                        maxMeshVertices)
 {
     assume(maxFramesInFlight > 0);
-    _frameData.resize(maxFramesInFlight);
+    assume(maxFramesInFlight <= _frameData.size());
     _capabilities       = capabilities;
     _maxFramesInFlight  = maxFramesInFlight;
     _maxSpriteBatchSize = maxSpriteBatchSize;

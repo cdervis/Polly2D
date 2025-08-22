@@ -424,8 +424,6 @@ void VulkanPainter::onFrameStarted()
 
     vkWaitForFences(_vkDevice, 1, &frameData.inFlightFence, VK_TRUE, UINT64_MAX);
 
-    resetCurrentStates();
-
     vulkanWindow.nextSwapChainImage(
         _vkDevice,
         _vkPhysicalDevice,
@@ -690,8 +688,8 @@ void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
     frameData.lastBoundViewport = viewport;
 
     const auto vkScissorRect = VkRect2D{
-        .offset = {.x = 0, .y = 0},
-        .extent = {.width = fboCacheKey.width, .height = fboCacheKey.height},
+        .offset = VkOffset2D{.x = 0, .y = 0},
+        .extent = VkExtent2D{.width = fboCacheKey.width, .height = fboCacheKey.height},
     };
 
     vkCmdSetScissor(vkCmdBuffer, 0, 1, &vkScissorRect);

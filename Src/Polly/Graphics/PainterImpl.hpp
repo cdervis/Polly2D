@@ -422,9 +422,9 @@ class Painter::Impl : public Object
     u32                     _currentFrameIndex = 0;
     GamePerformanceStats&   _performanceStats;
     Image                   _whiteImage;
-    List<FrameData, 3>      _frameData;
+    Array<FrameData, 3>     _frameData;
     PainterCapabilities     _capabilities;
-    u32                     _maxFramesInFlight = 0;
+    u32                     _maxFramesInFlight  = 0;
     u32                     _maxSpriteBatchSize = 0;
     u32                     _maxPolyVertices    = 0;
     u32                     _maxMeshVertices    = 0;
