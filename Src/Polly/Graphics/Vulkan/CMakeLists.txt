@@ -46,21 +46,7 @@ set_source_files_properties(${polly_deps_headers_dir}/volk.c
 
 set_source_files_properties(${polly_deps_headers_dir}/volk.c PROPERTIES LANGUAGE CXX)
 
-CPMAddPackage(
-  NAME SPIRV-Headers
-  URL https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/vulkan-sdk-${vulkan_sdk_version}.0.zip
-)
-
-CPMAddPackage(
-  NAME SPIRV-Tools
-  URL https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/vulkan-sdk-${vulkan_sdk_version}.0.zip
-  OPTIONS
-  "SPIRV_SKIP_EXECUTABLES ON"
-  "SPIRV_SKIP_TESTS ON"
-)
-
-# GLSlang for compiling our GLSL shaders to SPIR-V at runtime.
-# We only need the standalone library, no executables.
+# glslang for compiling our GLSL shaders to SPIR-V at runtime.
 CPMAddPackage(
     NAME glslang
     URL https://github.com/cdervis/glslang/archive/refs/tags/${vulkan_sdk_version}.zip
