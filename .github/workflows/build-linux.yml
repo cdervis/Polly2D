@@ -16,6 +16,11 @@ jobs:
         config: [ Debug, Release ]
         ccompiler: [ gcc, clang ]
         cppcompiler: [ g++, clang++ ]
+        exclude:
+          - ccompiler: gcc
+            cppcompiler: clang++
+          - ccompiler: clang
+            cppcompiler: g++
 
     runs-on: ${{matrix.os}}
 
