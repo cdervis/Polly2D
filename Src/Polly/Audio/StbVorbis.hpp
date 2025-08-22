@@ -13,15 +13,22 @@
 #pragma warning(disable:4701)
 #endif
 
-#if defined(__clang__)
+#if defined(__GNUC__) or defined(__clang__)
 #pragma GCC diagnostic push
+#endif
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+
+#if defined(__clang__)
 #pragma GCC diagnostic ignored "-Wlanguage-extension-token"
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #endif
 
 #include "stb_vorbis.h"
 
-#if defined(__clang__)
+#if defined(__GNUC__) or defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
