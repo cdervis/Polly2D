@@ -7,7 +7,7 @@
 Minimal 2D Game Framework for C++
 
 [![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org)
-[![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](https://polly2d.org/getting-started)
+[![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](#getting-started)
 [![License](https://img.shields.io/badge/license-GPLv3-green)](https://github.com/cdervis/Polly/blob/main/LICENSE.md)
 
 [![Build Windows](https://github.com/cdervis/Polly/actions/workflows/build-windows.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-windows.yml)
@@ -90,4 +90,15 @@ struct MyGame final : Game
 
 - **Spine Integration**: [Spine](https://esotericsoftware.com/) integration for powerful physics-based skeletal 2D animations.
 
+---
+
+## Getting started
+
+## Compiler requirements
+
+Polly was tested and can be built with the following toolchains:
+- Visual Studio 2022 (MSVC)
+- GCC 11.4+
+- Clang 17+
+- Xcode 13+
 
