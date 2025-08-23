@@ -8,11 +8,11 @@ Minimal 2D Game Framework for C++
 
 [![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org)
 [![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](#getting-started)
-[![License](https://img.shields.io/badge/license-GPLv3-green)](https://github.com/cdervis/Polly/blob/main/LICENSE.md)
+[![License](https://img.shields.io/badge/license-GPLv3-green)](https://github.com/cdervis/Polly2D/blob/main/LICENSE.md)
 
-[![Build Windows](https://github.com/cdervis/Polly/actions/workflows/build-windows.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-windows.yml)
-[![Build Linux](https://github.com/cdervis/Polly/actions/workflows/build-linux.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-linux.yml)
-[![Build macOS](https://github.com/cdervis/Polly/actions/workflows/build-macos.yml/badge.svg)](https://github.com/cdervis/Polly/actions/workflows/build-macos.yml)
+[![Build Windows](https://github.com/cdervis/Polly2D/actions/workflows/build-windows.yml/badge.svg)](https://github.com/cdervis/Polly2D/actions/workflows/build-windows.yml)
+[![Build Linux](https://github.com/cdervis/Polly2D/actions/workflows/build-linux.yml/badge.svg)](https://github.com/cdervis/Polly2D/actions/workflows/build-linux.yml)
+[![Build macOS](https://github.com/cdervis/Polly2D/actions/workflows/build-macos.yml/badge.svg)](https://github.com/cdervis/Polly2D/actions/workflows/build-macos.yml)
 
 </div>
 
@@ -100,7 +100,7 @@ struct MyGame final : Game
 ### Getting started
 
 Polly is designed to be very easy to start with.
-Simply grab the latest [Game Template](https://github.com/cdervis/Polly/releases) and open it in your C++ IDE or editor of choice.
+Simply grab the latest [Game Template](https://github.com/cdervis/Polly2D/releases) and open it in your C++ IDE or editor of choice.
 
 **Note** that the entire build process is CMake-based, your IDE therefore requires proper CMake support.
 
@@ -183,8 +183,8 @@ To start building and running your game, just open the game template folder in y
 
 Documentation is currently being worked on, alongside an API reference.
 
-In the meantime, you're welcome to explore the code of the [Demo Browser](https://github.com/cdervis/Polly/tree/main/Apps/DemoBrowser)
-and the [Space Shooter Demo](https://github.com/cdervis/Polly/tree/main/Apps/SpaceShooter).
+In the meantime, you're welcome to explore the code of the [Demo Browser](https://github.com/cdervis/Polly2D/tree/main/Apps/DemoBrowser)
+and the [Space Shooter Demo](https://github.com/cdervis/Polly2D/tree/main/Apps/SpaceShooter).
 
 ### Platform support
 

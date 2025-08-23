@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are always welcome, be it in the form of [feedback](mailto:cem@dervis.de), [bug reports](https://github.com/cdervis/Polly/issues) or code changes.
+Contributions are always welcome, be it in the form of [feedback](mailto:cem@dervis.de), [bug reports](https://github.com/cdervis/Polly2D/issues) or code changes.
 
 There are no special rules when it comes to discussions and requests, just be friendly.
 
@@ -9,7 +9,7 @@ To contribute code changes, simply fork the repository and open a pull request, 
 ## Building Polly from source
 
 To build Polly and all of its demo applications from source, you'll need to install everything that's required
-for Polly-based games, see [Getting started](https://github.com/cdervis/Polly?tab=readme-ov-file#getting-started).
+for Polly-based games, see [Getting started](https://github.com/cdervis/Polly2D?tab=readme-ov-file#getting-started).
 
 To build Polly from the command line, use CMake:
 

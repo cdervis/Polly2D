@@ -12,6 +12,6 @@ The CMake script will fetch and build Polly automatically.
 ---
 
 For an introduction, please visit the [Polly website](https://polly2d.org),
-or leave your feedback on the [GitHub project page](https://github.com/cdervis/Polly).
+or leave your feedback on the [GitHub project page](https://github.com/cdervis/Polly2D).
 
 
