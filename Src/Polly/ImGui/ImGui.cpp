@@ -129,13 +129,13 @@ pl_implement_object(ImGui);
 
 void ImGui::beginWindow(StringView name, bool* is_open, ImGuiWindowOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Begin(name.data(), is_open, convert(flags));
 }
 
 void ImGui::endWindow()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::End();
 }
 
@@ -145,7 +145,7 @@ void ImGui::beginChildWindow(
     ImGuiChildOpts  child_flags,
     ImGuiWindowOpts window_flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::BeginChild(
         id.data(),
         convert(size.valueOr(Vec2())),
@@ -155,193 +155,193 @@ void ImGui::beginChildWindow(
 
 void ImGui::endChildWindow()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndChild();
 }
 
 bool ImGui::isWindowAppearing()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsWindowAppearing();
 }
 
 bool ImGui::isWindowCollapsed()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsWindowCollapsed();
 }
 
 bool ImGui::isWindowFocused(ImGuiFocusedOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsWindowFocused(convert(flags));
 }
 
 bool ImGui::isWindowHovered(ImGuiHoveredOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsWindowHovered(convert(flags));
 }
 
 Vec2 ImGui::windowPosition()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return convert(::ImGui::GetWindowPos());
 }
 
 Vec2 ImGui::windowSize()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return convert(::ImGui::GetWindowSize());
 }
 
 float ImGui::windowWidth()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::GetWindowWidth();
 }
 
 float ImGui::windowHeight()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::GetWindowHeight();
 }
 
 void ImGui::setNextWindowPosition(Vec2 position, ImGuiCondition cond)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetNextWindowPos(convert(position), convert(cond));
 }
 
 void ImGui::setNextWindowSize(Vec2 size, ImGuiCondition cond)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetNextWindowSize(convert(size), convert(cond));
 }
 
 void ImGui::setNextWindowCollapsed(bool collapsed, ImGuiCondition cond)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetNextWindowCollapsed(collapsed, convert(cond));
 }
 
 void ImGui::setWindowPosition(StringView name, Vec2 position, ImGuiCondition cond)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetWindowPos(name.data(), convert(position), convert(cond));
 }
 
 void ImGui::setWindowSize(StringView name, Vec2 size, ImGuiCondition cond)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetWindowSize(name.data(), convert(size), convert(cond));
 }
 
 void ImGui::setWindowCollapsed(StringView name, bool collapsed, ImGuiCondition cond)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetWindowCollapsed(name.data(), collapsed, convert(cond));
 }
 
 void ImGui::setWindowFocus(StringView name)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetWindowFocus(name.data());
 }
 
 void ImGui::separator()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Separator();
 }
 
 void ImGui::sameLine(float offset_from_start_x, float spacing)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SameLine(offset_from_start_x, spacing);
 }
 
 void ImGui::newLine()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::NewLine();
 }
 
 void ImGui::spacing()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Spacing();
 }
 
 void ImGui::dummy(Vec2 size)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Dummy(convert(size));
 }
 
 void ImGui::indent(float indent_w)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Indent(indent_w);
 }
 
 void ImGui::unindent(float indent_w)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Unindent(indent_w);
 }
 
 void ImGui::beginGroup()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::BeginGroup();
 }
 
 void ImGui::endGroup()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndGroup();
 }
 
 void ImGui::alignTextToFramePadding()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::AlignTextToFramePadding();
 }
 
 float ImGui::textLineHeight()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::GetTextLineHeight();
 }
 
 float ImGui::textLineHeightWithSpacing()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::GetTextLineHeightWithSpacing();
 }
 
 float ImGui::frameHeight()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::GetFrameHeight();
 }
 
 float ImGui::frameHeightWithSpacing()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::GetFrameHeightWithSpacing();
 }
 
 void ImGui::textUnformatted(StringView text)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TextUnformatted(text.data());
 }
 
 void ImGui::text(StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     va_list args;
     va_start(args, fmt);
     ::ImGui::TextV(fmt.data(), args);
@@ -350,7 +350,7 @@ void ImGui::text(StringView fmt, ...)
 
 void ImGui::textColored(Color color, StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     va_list args;
     va_start(args, fmt);
     ::ImGui::TextColoredV(convert(color), fmt.data(), args);
@@ -359,7 +359,7 @@ void ImGui::textColored(Color color, StringView fmt, ...)
 
 void ImGui::textDisabled(StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     va_list args;
     va_start(args, fmt);
     ::ImGui::TextDisabledV(fmt.data(), args);
@@ -368,7 +368,7 @@ void ImGui::textDisabled(StringView fmt, ...)
 
 void ImGui::textWrapped(StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     va_list args;
     va_start(args, fmt);
     ::ImGui::TextWrappedV(fmt.data(), args);
@@ -377,7 +377,7 @@ void ImGui::textWrapped(StringView fmt, ...)
 
 void ImGui::labelText(StringView label, StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     va_list args;
     va_start(args, fmt);
     ::ImGui::LabelTextV(label.data(), fmt.data(), args);
@@ -386,7 +386,7 @@ void ImGui::labelText(StringView label, StringView fmt, ...)
 
 void ImGui::bulletText(StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     va_list args;
     va_start(args, fmt);
     ::ImGui::BulletTextV(fmt.data(), args);
@@ -395,79 +395,79 @@ void ImGui::bulletText(StringView fmt, ...)
 
 void ImGui::separatorWithText(StringView label)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SeparatorText(label.data());
 }
 
 auto ImGui::button(StringView label, Maybe<Vec2> size) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::Button(label.data(), convert(size.valueOr(Vec2())));
 }
 
 auto ImGui::smallButton(StringView label) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SmallButton(label.data());
 }
 
 auto ImGui::invisibleButton(StringView id, Vec2 size, ImGuiButtonOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InvisibleButton(id.data(), convert(size), convert(flags));
 }
 
 auto ImGui::arrowButton(StringView id, Direction direction) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::ArrowButton(id.data(), convert(direction));
 }
 
 bool ImGui::checkbox(StringView label, bool& is_checked)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::Checkbox(label.data(), &is_checked);
 }
 
 auto ImGui::checkboxFlags(StringView label, int& flags, int flags_value) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::CheckboxFlags(label.data(), &flags, flags_value);
 }
 
 auto ImGui::radioButton(StringView label, bool isActive) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::RadioButton(label.data(), isActive);
 }
 
 bool ImGui::radioButton(StringView label, int& value, int value_button)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::RadioButton(label.data(), &value, value_button);
 }
 
 void ImGui::progressBar(float fraction, Maybe<Vec2> size, StringView overlay)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::ProgressBar(fraction, convert(size.valueOr(Vec2())), overlay.data());
 }
 
 void ImGui::bullet()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Bullet();
 }
 
 auto ImGui::textLink(StringView label) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TextLink(label.data());
 }
 
 void ImGui::textLinkOpenUrl(StringView label, StringView url)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TextLinkOpenURL(label.data(), url.data());
 }
 
@@ -496,13 +496,13 @@ void ImGui::imageButton(
 
 auto ImGui::beginCombo(StringView label, StringView preview_value, ImGuiComboOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginCombo(label.data(), preview_value.data(), convert(flags));
 }
 
 void ImGui::endCombo()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndCombo();
 }
 
@@ -544,7 +544,7 @@ bool ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragFloat(label.data(), &value, speed, min, max, format.data(), convert(flags));
 }
 
@@ -557,7 +557,7 @@ bool ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragFloat2(label.data(), &value.x, speed, min, max, format.data(), convert(flags));
 }
 
@@ -570,7 +570,7 @@ bool ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragFloat3(label.data(), &value.x, speed, min, max, format.data(), convert(flags));
 }
 
@@ -583,7 +583,7 @@ bool ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragFloat4(label.data(), &value.x, speed, min, max, format.data(), convert(flags));
 }
 
@@ -596,7 +596,7 @@ auto ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags) const -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragInt(label.data(), &value, speed, min, max, format.data(), convert(flags));
 }
 
@@ -609,7 +609,7 @@ bool ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragInt2(label.data(), &value.x, speed, min, max, format.data(), convert(flags));
 }
 
@@ -622,7 +622,7 @@ bool ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragInt3(label.data(), &value.x, speed, min, max, format.data(), convert(flags));
 }
 
@@ -635,7 +635,7 @@ bool ImGui::drag(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::DragInt4(label.data(), &value.x, speed, min, max, format.data(), convert(flags));
 }
 
@@ -647,7 +647,7 @@ bool ImGui::slider(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderFloat(label.data(), &value, min, max, format.data(), convert(flags));
 }
 
@@ -659,7 +659,7 @@ bool ImGui::slider(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderFloat2(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
@@ -671,7 +671,7 @@ bool ImGui::slider(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderFloat3(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
@@ -683,7 +683,7 @@ bool ImGui::slider(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderFloat4(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
@@ -695,7 +695,7 @@ auto ImGui::sliderAngle(
     StringView      format,
     ImGuiSliderOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
 
     return ::ImGui::SliderAngle(
         label.data(),
@@ -709,28 +709,28 @@ auto ImGui::sliderAngle(
 auto ImGui::slider(StringView label, int& value, int min, int max, StringView format, ImGuiSliderOpts flags)
     -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderInt(label.data(), &value, min, max, format.data(), convert(flags));
 }
 
 auto ImGui::slider(StringView label, Vec2i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
     -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderInt2(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
 auto ImGui::slider(StringView label, Vec3i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
     -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderInt3(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
 auto ImGui::slider(StringView label, Vec4i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
     -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::SliderInt4(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
@@ -743,7 +743,7 @@ bool ImGui::sliderVertical(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::VSliderFloat(
         label.data(),
         convert(size),
@@ -763,19 +763,19 @@ bool ImGui::sliderVertical(
     StringView      format,
     ImGuiSliderOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::VSliderInt(label.data(), convert(size), &value, min, max, format.data(), convert(flags));
 }
 
 bool ImGui::inputText(StringView label, String& value, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputText(label.data(), value.data(), value.size(), convert(flags));
 }
 
 bool ImGui::inputTextMultiline(StringView label, String& value, Maybe<Vec2> size, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputTextMultiline(
         label.data(),
         value.data(),
@@ -786,7 +786,7 @@ bool ImGui::inputTextMultiline(StringView label, String& value, Maybe<Vec2> size
 
 bool ImGui::inputTextWithHint(StringView label, StringView hint, String& value, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputTextWithHint(label.data(), hint.data(), value.data(), value.size(), convert(flags));
 }
 
@@ -798,91 +798,91 @@ bool ImGui::input(
     StringView            format,
     imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputFloat(label.data(), &value, step, step_fast, format.data(), convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec2& value, StringView format, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputFloat2(label.data(), &value.x, format.data(), convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec3& value, StringView format, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputFloat3(label.data(), &value.x, format.data(), convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec4& value, StringView format, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputFloat4(label.data(), &value.x, format.data(), convert(flags));
 }
 
 bool ImGui::input(StringView label, int& value, int step, int step_fast, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputInt(label.data(), &value, step, step_fast, convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec2i& value, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputInt2(label.data(), &value.x, convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec3i& value, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputInt3(label.data(), &value.x, convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec4i& value, imgui_input_text_opts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::InputInt4(label.data(), &value.x, convert(flags));
 }
 
 bool ImGui::colorEdit(StringView label, Color& value, ImGuiColorEditOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::ColorEdit4(label.data(), &value.r, convert(flags));
 }
 
 bool ImGui::colorEditRgb(StringView label, Color& value, ImGuiColorEditOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::ColorEdit3(label.data(), &value.r, convert(flags));
 }
 
 bool ImGui::colorPicker(StringView label, Color& value, ImGuiColorEditOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::ColorPicker4(label.data(), &value.r, convert(flags));
 }
 
 bool ImGui::colorPickerRgb(StringView label, Color& value, ImGuiColorEditOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::ColorPicker3(label.data(), &value.r, convert(flags));
 }
 
 bool ImGui::colorButton(StringView id, Color color, ImGuiColorEditOpts flags, Maybe<Vec2> size)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::ColorButton(id.data(), convert(color), convert(flags), convert(size.valueOr(Vec2())));
 }
 
 bool ImGui::treeNode(StringView label)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TreeNode(label.data());
 }
 
 bool ImGui::treeNode(StringView id, StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
 
     va_list args;
     va_start(args, fmt);
@@ -894,7 +894,7 @@ bool ImGui::treeNode(StringView id, StringView fmt, ...)
 
 bool ImGui::treeNodeEx(StringView id, ImGuiTreeNodeOpts flags, StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
 
     va_list args;
     va_start(args, fmt);
@@ -906,43 +906,43 @@ bool ImGui::treeNodeEx(StringView id, ImGuiTreeNodeOpts flags, StringView fmt, .
 
 void ImGui::treePush(const void* id)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TreePush(id);
 }
 
 void ImGui::treePop()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TreePop();
 }
 
 float ImGui::treeNodeToLabelSpacing()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::GetTreeNodeToLabelSpacing();
 }
 
 bool ImGui::collapsingHeader(StringView label, ImGuiTreeNodeOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::CollapsingHeader(label.data(), convert(flags));
 }
 
 bool ImGui::collapsingHeader(StringView label, bool& isVisible, ImGuiTreeNodeOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::CollapsingHeader(label.data(), &isVisible, convert(flags));
 }
 
 void ImGui::setNextItemOpen(bool is_open, ImGuiCondition cond)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetNextItemOpen(is_open, convert(cond));
 }
 
 bool ImGui::selectable(StringView label, bool is_selected, ImGuiSelectableOpts flags, Maybe<Vec2> size)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::Selectable(label.data(), is_selected, convert(flags), convert(size.valueOr(Vec2())));
 }
 
@@ -952,19 +952,19 @@ bool ImGui::selectableWithBinding(
     ImGuiSelectableOpts flags,
     Maybe<Vec2>         size)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::Selectable(label.data(), &is_selected, convert(flags), convert(size.valueOr(Vec2())));
 }
 
 bool ImGui::beginListBox(StringView label, Maybe<Vec2> size)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginListBox(label.data(), convert(size.valueOr(Vec2())));
 }
 
 void ImGui::endListBox()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndListBox();
 }
 
@@ -995,91 +995,91 @@ bool ImGui::listBox(StringView label, int& current_item, Span<StringView> items,
 
 void ImGui::value(StringView prefix, bool value)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Value(prefix.data(), value);
 }
 
 void ImGui::value(StringView prefix, int value)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Value(prefix.data(), value);
 }
 
 void ImGui::value(StringView prefix, unsigned int value)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Value(prefix.data(), value);
 }
 
 void ImGui::value(StringView prefix, float value, StringView float_format)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::Value(prefix.data(), value, float_format.data());
 }
 
 bool ImGui::beginMenuBar()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginMenuBar();
 }
 
 void ImGui::endMenuBar()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndMenuBar();
 }
 
 bool ImGui::beginMainMenuBar()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginMainMenuBar();
 }
 
 void ImGui::endMainMenuBar()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndMainMenuBar();
 }
 
 auto ImGui::beginMenu(StringView label, bool enabled) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginMenu(label.data(), enabled);
 }
 
 auto ImGui::endMenu() -> void
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndMenu();
 }
 
 bool ImGui::menuItem(StringView label, StringView shortcut, bool selected, bool enabled)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::MenuItem(label.data(), shortcut.data(), selected, enabled);
 }
 
 bool ImGui::menuItemWithBinding(StringView label, StringView shortcut, bool& is_selected, bool enabled)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::MenuItem(label.data(), shortcut.data(), &is_selected, enabled);
 }
 
 auto ImGui::beginTooltip() -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginTooltip();
 }
 
 void ImGui::endTooltip()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::EndTooltip();
 }
 
 void ImGui::setTooltip(StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
 
     va_list args;
     va_start(args, fmt);
@@ -1089,13 +1089,13 @@ void ImGui::setTooltip(StringView fmt, ...)
 
 auto ImGui::beginItemTooltip() -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginItemTooltip();
 }
 
 void ImGui::setItemTooltip(StringView fmt, ...)
 {
-    verify_have_impl;
+    verifyHaveImpl;
 
     va_list args;
     va_start(args, fmt);
@@ -1105,61 +1105,61 @@ void ImGui::setItemTooltip(StringView fmt, ...)
 
 auto ImGui::beginPopup(StringView id, ImGuiWindowOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginPopup(id.data(), convert(flags));
 }
 
 auto ImGui::beginPopupModal(StringView name, bool& is_open, ImGuiWindowOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginPopupModal(name.data(), &is_open, convert(flags));
 }
 
 void ImGui::endPopup()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndPopup();
 }
 
 void ImGui::openPopup(StringView id, ImGuiPopupOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::OpenPopup(id.data(), convert(flags));
 }
 
 void ImGui::openPopupOnItemClick(StringView id, ImGuiPopupOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::OpenPopupOnItemClick(id.data(), convert(flags));
 }
 
 void ImGui::closeCurrentPopup()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::CloseCurrentPopup();
 }
 
 auto ImGui::beginPopupContextItem(StringView id, ImGuiPopupOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginPopupContextItem(id.data(), convert(flags));
 }
 
 auto ImGui::beginPopupContextWindow(StringView id, ImGuiPopupOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginPopupContextWindow(id.data(), convert(flags));
 }
 
 auto ImGui::beginPopupContextVoid(StringView id, ImGuiPopupOpts flags) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::BeginPopupContextVoid(id.data(), convert(flags));
 }
 
 auto ImGui::isPopupOpen(StringView id, ImGuiPopupOpts flags) const -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsPopupOpen(id.data(), convert(flags));
 }
 
@@ -1170,7 +1170,7 @@ auto ImGui::beginTable(
     Maybe<Vec2>    outer_size,
     Maybe<float>   inner_width) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
 
     return ::ImGui::BeginTable(
         id.data(),
@@ -1182,181 +1182,181 @@ auto ImGui::beginTable(
 
 void ImGui::endTable()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::EndTable();
 }
 
 void ImGui::tableNextRow(ImGuiTableRowOpts flags, Maybe<float> min_row_height)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TableNextRow(convert(flags), min_row_height.valueOr(0.0f));
 }
 
 auto ImGui::tableNextColumn() -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TableNextColumn();
 }
 
 auto ImGui::tableSetColumnIndex(int column) -> bool
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TableSetColumnIndex(column);
 }
 
 void ImGui::tableSetupColumn(StringView label, ImGuiTableColumnOpts flags)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TableSetupColumn(label.data(), convert(flags));
 }
 
 void ImGui::tableSetupScrollFreeze(u32 cols, u32 rows)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TableSetupScrollFreeze(cols, rows);
 }
 
 void ImGui::tableHeader(StringView label)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TableHeader(label.data());
 }
 
 void ImGui::tableHeadersRow()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TableHeadersRow();
 }
 
 void ImGui::tableAngledHeadersRow()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::TableAngledHeadersRow();
 }
 
 auto ImGui::tableColumnCount() const -> int
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TableGetColumnCount();
 }
 
 auto ImGui::tableColumnIndex() const -> int
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TableGetColumnIndex();
 }
 
 auto ImGui::tableRowIndex() const -> int
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TableGetRowIndex();
 }
 
 auto ImGui::tableColumnName(Maybe<int> column) const -> StringView
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::TableGetColumnName(column.valueOr(-1));
 }
 
 void ImGui::setItemDefaultFocus()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetItemDefaultFocus();
 }
 
 void ImGui::setNavCursorVisible(bool value)
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetNavCursorVisible(value);
 }
 
 void ImGui::setNextItemAllowOverlap()
 {
-    verify_have_impl;
+    verifyHaveImpl;
     ::ImGui::SetNextItemAllowOverlap();
 }
 
 bool ImGui::isItemHovered(ImGuiHoveredOpts flags) const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemHovered(convert(flags));
 }
 
 bool ImGui::isItemActive() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemActive();
 }
 
 bool ImGui::isItemFocused() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemFocused();
 }
 
 bool ImGui::isItemClicked(MouseButton button) const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemClicked(convert(button));
 }
 
 bool ImGui::isItemVisible() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemVisible();
 }
 
 bool ImGui::isItemEdited() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemEdited();
 }
 
 bool ImGui::isItemActivated() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemActivated();
 }
 
 bool ImGui::isItemDeactivated() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemDeactivated();
 }
 
 bool ImGui::isItemDeactivatedAfterEdit() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemDeactivatedAfterEdit();
 }
 
 bool ImGui::isItemToggledOpen() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsItemToggledOpen();
 }
 
 bool ImGui::isAnyItemHovered() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsAnyItemHovered();
 }
 
 bool ImGui::isAnyItemActive() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsAnyItemActive();
 }
 
 bool ImGui::isAnyItemFocused() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
     return ::ImGui::IsAnyItemFocused();
 }
 
 Rectf ImGui::itemRect() const
 {
-    verify_have_impl;
+    verifyHaveImpl;
 
     const auto topLeft = ::ImGui::GetItemRectMin();
     const auto size    = ::ImGui::GetItemRectSize();

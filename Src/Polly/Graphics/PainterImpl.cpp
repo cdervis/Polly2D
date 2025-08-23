@@ -292,7 +292,7 @@ void Painter::Impl::startFrame()
     frameData.spriteQueue.clear();
     frameData.meshBatchImage = nullptr;
 
-    setCanvas(none, black, true);
+    setCanvas(none, _windowImpl.clearColor(), true);
 
     frameData.dirtyFlags = DF_All;
     frameData.dirtyFlags &= ~DF_UserShaderParams;

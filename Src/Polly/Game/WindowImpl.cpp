@@ -295,4 +295,14 @@ void Window::Impl::setIsDisplaySyncEnabled(bool value)
 {
     _displaySyncEnabled = value;
 }
+
+Color Window::Impl::clearColor() const
+{
+    return _clearColor;
+}
+
+void Window::Impl::setClearColor(Color color)
+{
+    _clearColor = color;
+}
 } // namespace Polly

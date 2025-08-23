@@ -95,7 +95,7 @@
     {                                                                                                        \
     }
 
-#define verify_impl_access                                                                                   \
+#define verifyImplAccess                                                                                     \
     if (not impl)                                                                                            \
     {                                                                                                        \
         throw Error(formatString("[{}] Attempting to access an empty object.", __FUNCTION__));               \
@@ -103,19 +103,19 @@
 
 #define declareThisImpl                                                                                      \
     const auto impl = this->impl();                                                                          \
-    verify_impl_access
+    verifyImplAccess
 
-#define declare_this_impl_no_verify const auto impl = this->impl();
+#define declareThisImplNoVerify const auto impl = this->impl();
 
-#define verify_have_impl                                                                                     \
+#define verifyHaveImpl                                                                                       \
     if (not impl())                                                                                          \
     {                                                                                                        \
         throw Error(formatString("[{}] Attempting to access and empty object.", __FUNCTION__));              \
     }
 
-#define declare_this_impl_as(type)                                                                           \
+#define declareThisImplAs(type)                                                                              \
     auto* const impl = static_cast<type*>(this->impl());                                                     \
-    verify_impl_access
+    verifyImplAccess
 
 namespace Polly
 {

@@ -78,6 +78,10 @@ class Window::Impl : public Object
 
     virtual void setIsDisplaySyncEnabled(bool value);
 
+    Color clearColor() const;
+
+    void setClearColor(Color color);
+
     void startAcceptingTextInput();
 
     void stopAcceptingTextInput();
@@ -99,5 +103,6 @@ class Window::Impl : public Object
     String      _initialTitle;
     SDL_Window* _sdlWindow          = nullptr;
     bool        _displaySyncEnabled = true;
+    Color       _clearColor         = cornflowerblue;
 };
 } // namespace Polly

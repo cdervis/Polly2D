@@ -151,5 +151,10 @@ class Window final
     void setLogFontSize(float value);
 
     void setLogPosition(WindowLoggingPosition value);
+
+    [[nodiscard]]
+    Color clearColor() const;
+
+    void setClearColor(Color color);
 };
 } // namespace Polly

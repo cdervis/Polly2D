@@ -231,4 +231,16 @@ void Window::setLogPosition(WindowLoggingPosition value)
     declareThisImpl;
     setWindowLoggingPosition(value);
 }
+
+Color Window::clearColor() const
+{
+    declareThisImpl;
+    return impl->clearColor();
+}
+
+void Window::setClearColor(Color color)
+{
+    declareThisImpl;
+    impl->setClearColor(color);
+}
 } // namespace Polly
