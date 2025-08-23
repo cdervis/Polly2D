@@ -661,6 +661,10 @@ int MetalPainter::prepareDrawCall()
         df &= ~DF_VertexBuffers;
     }
 
+    // In Metal, we don't have to bind the index buffer explicitly, it's passed to a draw command instead.
+    // Therefore count the index buffer as handled implicitly.
+    df &= ~DF_IndexBuffer;
+
     if ((df bitand DF_Sampler) == DF_Sampler)
     {
         frameData.renderEncoder->setFragmentSamplerState(
