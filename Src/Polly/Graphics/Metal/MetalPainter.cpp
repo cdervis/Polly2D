@@ -35,18 +35,6 @@
 #include "AllShaders.metal.hpp"
 #include "Ast.hpp"
 
-#ifndef NDEBUG
-#define DEBUG_LOG_METAL_COMMANDS 0
-#else
-#define DEBUG_LOG_METAL_COMMANDS 0
-#endif
-
-#if DEBUG_LOG_METAL_COMMANDS
-#define pl_debug_log_metal_cmd(...) logDebug(__VA_ARGS__)
-#else
-#define pl_debug_log_metal_cmd(...)
-#endif
-
 namespace Polly
 {
 struct alignas(16) GlobalCBufferParams
@@ -135,7 +123,7 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 
     _semaphore = dispatch_semaphore_create(maxFramesInFlight);
 
-    postInit(caps);
+    postInit(caps, maxFramesInFlight, maxSpriteBatchSize, maxPolyVertices, maxMeshVertices);
 
     if (not ImGui_ImplSDL3_InitForMetal(windowImpl.sdlWindow()))
     {
@@ -174,13 +162,11 @@ MetalPainter::~MetalPainter() noexcept
     _mtlDevice.reset();
 }
 
-void MetalPainter::startFrame()
+void MetalPainter::onFrameStarted()
 {
     auto arp = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
     auto& frameData = currentFrameData();
-
-    pl_debug_log_metal_cmd("Starting frame {}", m_frameIndex);
 
 #if !TARGET_OS_IOS
     if (_isFrameCaptureRequested)
@@ -189,7 +175,7 @@ void MetalPainter::startFrame()
 
         if (_mtlCaptureManager->supportsDestination(MTL::CaptureDestinationGPUTraceDocument))
         {
-            logDebug("Starting Metal frame capture (frame = {})", _frameIndex);
+            logDebug("Starting Metal frame capture (frame = {})", frameIndex());
 
             auto captureFilename = String();
 
@@ -209,7 +195,7 @@ void MetalPainter::startFrame()
                 captureFilename += '/';
             }
 
-            captureFilename += formatString("PollyMetalFrameCapture_Frame{}.gputrace", _frameIndex);
+            captureFilename += formatString("PollyMetalFrameCapture_Frame{}.gputrace", frameIndex());
 
             removeFileSystemItem(captureFilename);
 
@@ -234,8 +220,6 @@ void MetalPainter::startFrame()
     }
 #endif
 
-    resetCurrentStates();
-
     dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
     ++_currentlyRenderingFrameCount;
 
@@ -257,45 +241,25 @@ void MetalPainter::startFrame()
         throw Error("Failed to obtain the Metal Drawable object for the frame.");
     }
 
-    frameData.currentBatchMode = none;
-
-    frameData.spriteBatchShaderKind          = static_cast<SpriteShaderKind>(-1);
-    frameData.spriteBatchImage               = nullptr;
     frameData.spriteVertexCounter            = 0;
     frameData.spriteIndexCounter             = 0;
     frameData.currentSpriteVertexBufferIndex = 0;
-    frameData.spriteQueue.clear();
 
     frameData.polyVertexCounter = 0;
 
-    frameData.meshBatchImage    = nullptr;
     frameData.meshVertexCounter = 0;
     frameData.meshIndexCounter  = 0;
-
-    setCanvas(none, black, true);
-
-    frameData.dirtyFlags = DFAll;
-    frameData.dirtyFlags &= ~DFUserShaderParams;
 
     frameData.cbufferAllocator->reset();
 
     frameData.lastBoundUserShaderParamsCBuffer  = nullptr;
     frameData.lastBoundViewport                 = {};
     frameData.lastAppliedViewportToSystemValues = {};
-
-    assume(frameData.spriteQueue.isEmpty());
-    assume(frameData.polyQueue.isEmpty());
-    assume(frameData.meshQueue.isEmpty());
 }
 
-void MetalPainter::endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawFunc)
+void MetalPainter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc)
 {
-    pl_debug_log_metal_cmd("Ending frame {}", m_frame_idx);
-
     auto& frameData = currentFrameData();
-
-    flushAll();
-    // assume( m_dirtyFlags == DF_None );
 
     // ImGui
     if (imGuiDrawFunc)
@@ -327,9 +291,9 @@ void MetalPainter::endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawF
     frameData.cmdBuffer->commit();
 
 #if !TARGET_OS_IOS
-    if (_mtlCaptureManager != nullptr)
+    if (_mtlCaptureManager)
     {
-        logDebug("Stopping Metal frame capture (frame = {})", _frameIndex);
+        logDebug("Stopping Metal frame capture (frame = {})", frameIndex());
 
         _mtlCaptureManager->stopCapture();
         _mtlCaptureManager = nullptr;
@@ -340,24 +304,15 @@ void MetalPainter::endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawF
     frameData.currentWindowDrawable.reset();
 
     resetCurrentStates();
-
-    _frameIndex = (_frameIndex + 1) % maxFramesInFlight;
-
-    pl_debug_log_metal_cmd("---");
 }
 
 void MetalPainter::onBeforeCanvasChanged([[maybe_unused]] Image oldCanvas, [[maybe_unused]] Rectf viewport)
 {
-    pl_debug_log_metal_cmd("OnBeforeCanvasChanged( {} )", viewport);
-
-    flushAll();
     endCurrentRenderEncoder();
 }
 
 void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport)
 {
-    pl_debug_log_metal_cmd("OnCanvasChanged( {} )", viewport);
-
     auto&               frameData           = currentFrameData();
     auto*               desc                = MTL::RenderPassDescriptor::alloc()->init();
     auto*               colorAttachment     = desc->colorAttachments()->object(0);
@@ -393,14 +348,10 @@ void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
 
     frameData.renderEncoder = NS::RetainPtr(frameData.cmdBuffer->renderCommandEncoder(desc));
 
-    pl_debug_log_metal_cmd("Got a new render command encoder");
-
     assume(frameData.renderEncoder);
 
     if (frameData.lastBoundViewport != viewport)
     {
-        pl_debug_log_metal_cmd("Setting viewport: {}", viewport);
-
         frameData.renderEncoder->setViewport(
             MTL::Viewport{
                 .originX = viewport.x,
@@ -414,29 +365,24 @@ void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
         frameData.lastBoundViewport = viewport;
     }
 
-    pl_debug_log_metal_cmd("Binding built-in buffers (sprite, mesh, poly, ...)");
-
     frameData.currentRenderPassDescriptor = desc;
 
-    {
-        auto newDf = frameData.dirtyFlags;
-        newDf |= DFGlobalCBufferParams;
-        newDf |= DFSystemValueCBufferParams;
-        newDf |= DFSpriteImage;
-        newDf |= DFMeshImage;
-        newDf |= DFSampler;
-        newDf |= DFVertexBuffers;
-        newDf |= DFPso;
-
-        frameData.dirtyFlags = newDf;
-    }
+    setDirtyFlags(
+        dirtyFlags()
+        bitor DF_GlobalCBufferParams
+        bitor DF_SystemValueCBufferParams
+        bitor DF_SpriteImage
+        bitor DF_MeshImage
+        bitor DF_Sampler
+        bitor DF_VertexBuffers
+        bitor DF_PipelineState);
 }
 
 void MetalPainter::setScissorRects(Span<Rectf> scissorRects)
 {
     const auto& frameData = currentFrameData();
 
-    flushAll();
+    flush();
 
     auto mtlScissorRects = List<MTL::ScissorRect, 4>();
 
@@ -452,297 +398,6 @@ void MetalPainter::setScissorRects(Span<Rectf> scissorRects)
     }
 
     frameData.renderEncoder->setScissorRects(mtlScissorRects.data(), mtlScissorRects.size());
-}
-
-void MetalPainter::onBeforeTransformationChanged()
-{
-    flushAll();
-}
-
-void MetalPainter::onAfterTransformationChanged([[maybe_unused]] const Matrix& transformation)
-{
-    auto& frameData = currentFrameData();
-    frameData.dirtyFlags |= DFGlobalCBufferParams;
-}
-
-void MetalPainter::onBeforeShaderChanged([[maybe_unused]] BatchMode mode)
-{
-    flushAll();
-}
-
-void MetalPainter::onAfterShaderChanged([[maybe_unused]] BatchMode mode, [[maybe_unused]] Shader& shader)
-{
-    auto& frameData = currentFrameData();
-    frameData.dirtyFlags |= DFPso;
-    frameData.dirtyFlags |= DFUserShaderParams;
-}
-
-void MetalPainter::onBeforeSamplerChanged()
-{
-    flushAll();
-}
-
-void MetalPainter::onAfterSamplerChanged([[maybe_unused]] const Sampler& sampler)
-{
-    auto& frameData = currentFrameData();
-    frameData.dirtyFlags |= DFSampler;
-}
-
-void MetalPainter::onBeforeBlendStateChanged()
-{
-    flushAll();
-}
-
-void MetalPainter::onAfterBlendStateChanged([[maybe_unused]] const BlendState& blendState)
-{
-    auto& frameData = currentFrameData();
-    frameData.dirtyFlags |= DFPso;
-}
-
-void MetalPainter::drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind)
-{
-    auto& frameData = currentFrameData();
-
-    if (frameData.spriteQueue.size() == maxSpriteBatchSize)
-    {
-        if (frameData.currentSpriteVertexBufferIndex + 1 >= frameData.spriteVertexBuffers.size())
-        {
-            // Have to allocate a new sprite vertex buffer.
-            pl_debug_log_metal_cmd("Allocating new sprite vertex buffer");
-            auto buffer = createSingleSpriteVertexBuffer();
-            if (not buffer)
-            {
-                return;
-            }
-
-            frameData.spriteVertexBuffers.add(std::move(buffer));
-        }
-
-        pl_debug_log_metal_cmd("Flushing sprites because of overflow");
-        flushAll();
-
-        pl_debug_log_metal_cmd("Incrementing sprite vertex buffer index");
-        ++frameData.currentSpriteVertexBufferIndex;
-        frameData.spriteVertexCounter = 0;
-        frameData.spriteIndexCounter  = 0;
-
-        // Have to bind the current "new" sprite vertex buffer.
-        frameData.renderEncoder->setVertexBuffer(
-            frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get(),
-            0,
-            MTLBufferSlot_SpriteVertices);
-    }
-
-    auto* imageImpl = sprite.image.impl();
-    assume(imageImpl);
-
-    prepareForBatchMode(BatchMode::Sprites);
-
-    if (frameData.spriteBatchShaderKind != spriteShaderKind or frameData.spriteBatchImage != imageImpl)
-    {
-        flushAll();
-    }
-
-    frameData.spriteQueue.add(
-        InternalSprite{
-            .dst      = sprite.dstRect,
-            .src      = sprite.srcRect.valueOr(Rectf(0, 0, sprite.image.size())),
-            .color    = sprite.color,
-            .origin   = sprite.origin,
-            .rotation = sprite.rotation,
-            .flip     = sprite.flip,
-        });
-
-    if (frameData.spriteBatchShaderKind != spriteShaderKind)
-    {
-        frameData.dirtyFlags |= DFPso;
-    }
-
-    if (frameData.spriteBatchImage != imageImpl)
-    {
-        frameData.dirtyFlags |= DFSpriteImage;
-    }
-
-    frameData.spriteBatchShaderKind = spriteShaderKind;
-    frameData.spriteBatchImage      = imageImpl;
-
-    ++performanceStats().spriteCount;
-}
-
-void MetalPainter::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawLineCmd{
-            .start       = start,
-            .end         = end,
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::drawLinePath(Span<Line> lines, const Color& color, float strokeWidth)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawLinePathCmd{
-            .lines       = List<Line, 8>(lines),
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawRectangleCmd{
-            .rectangle   = rectangle,
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::fillRectangle(const Rectf& rectangle, const Color& color)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillRectangleCmd{
-            .rectangle = rectangle,
-            .color     = color,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::fillPolygon(Span<Vec2> vertices, const Color& color)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillPolygonCmd{
-            .vertices = List<Vec2, 8>(vertices),
-            .color    = color,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Mesh);
-
-    if (image != frameData.meshBatchImage)
-    {
-        flushAll();
-    }
-
-    frameData.meshQueue.add(
-        MeshEntry{
-            .vertices = decltype(MeshEntry::vertices)(vertices),
-            .indices  = decltype(MeshEntry::indices)(indices),
-        });
-
-    if (frameData.meshBatchImage != image)
-    {
-        frameData.dirtyFlags |= DFMeshImage;
-    }
-
-    frameData.meshBatchImage = image;
-
-    ++performanceStats().meshCount;
-}
-
-void MetalPainter::drawRoundedRectangle(
-    const Rectf& rectangle,
-    float        cornerRadius,
-    const Color& color,
-    float        strokeWidth)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawRoundedRectangleCmd{
-            .rectangle    = rectangle,
-            .cornerRadius = cornerRadius,
-            .color        = color,
-            .strokeWidth  = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillRoundedRectangleCmd{
-            .rectangle    = rectangle,
-            .cornerRadius = cornerRadius,
-            .color        = color,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawEllipseCmd{
-            .center      = center,
-            .radius      = radius,
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void MetalPainter::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
-{
-    auto& frameData = currentFrameData();
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillEllipseCmd{
-            .center = center,
-            .radius = radius,
-            .color  = color,
-        });
-
-    ++performanceStats().polygonCount;
 }
 
 UniquePtr<Image::Impl> MetalPainter::createCanvas(u32 width, u32 height, ImageFormat format)
@@ -808,6 +463,35 @@ void MetalPainter::readCanvasDataInto(
     std::memcpy(destination, buffer->contents(), dataSize);
 }
 
+void MetalPainter::spriteQueueLimitReached()
+{
+    auto& frameData = currentFrameData();
+
+    if (frameData.currentSpriteVertexBufferIndex + 1 >= frameData.spriteVertexBuffers.size())
+    {
+        // Have to allocate a new sprite vertex buffer.
+        auto buffer = createSingleSpriteVertexBuffer();
+        if (not buffer)
+        {
+            return;
+        }
+
+        frameData.spriteVertexBuffers.add(std::move(buffer));
+    }
+
+    flush();
+
+    ++frameData.currentSpriteVertexBufferIndex;
+    frameData.spriteVertexCounter = 0;
+    frameData.spriteIndexCounter  = 0;
+
+    // Have to bind the current "new" sprite vertex buffer.
+    frameData.renderEncoder->setVertexBuffer(
+        frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get(),
+        0,
+        MTLBufferSlot_SpriteVertices);
+}
+
 void MetalPainter::requestFrameCapture()
 {
 #if !TARGET_OS_IOS
@@ -857,26 +541,12 @@ UniquePtr<Shader::Impl> MetalPainter::onCreateNativeUserShader(
         cbufferSize);
 }
 
-void MetalPainter::notifyShaderParamAboutToChangeWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
-{
-    flushAll();
-}
-
-void MetalPainter::notifyShaderParamHasChangedWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
-{
-    auto& frameData = currentFrameData();
-
-    frameData.dirtyFlags |= DFUserShaderParams;
-}
-
 void MetalPainter::endCurrentRenderEncoder()
 {
     auto& frameData = currentFrameData();
 
     if (frameData.renderEncoder)
     {
-        pl_debug_log_metal_cmd("Ending current render command encoder");
-
         assume(frameData.cmdBuffer);
         frameData.renderEncoder->endEncoding();
         frameData.renderEncoder.reset();
@@ -889,18 +559,15 @@ void MetalPainter::endCurrentRenderEncoder()
     }
 }
 
-void MetalPainter::prepareDrawCall()
+int MetalPainter::prepareDrawCall()
 {
-    auto& frameData = currentFrameData();
-    auto  df        = frameData.dirtyFlags;
-    auto& perfStats = performanceStats();
+    auto&      frameData        = currentFrameData();
+    auto       df               = dirtyFlags();
+    auto&      perfStats        = performanceStats();
+    const auto currentBatchMode = *batchMode();
 
-    pl_debug_log_metal_cmd("PrepareDrawCall()");
-
-    if ((df bitand DFPso) == DFPso)
+    if ((df bitand DF_PipelineState) == DF_PipelineState)
     {
-        pl_debug_log_metal_cmd("Processing DF_PipelineState");
-
         const auto* currentDrawable = currentMetalDrawable();
 
         assume(currentDrawable);
@@ -910,10 +577,10 @@ void MetalPainter::prepareDrawCall()
 
         MTL::Function* vertexShader      = nullptr;
         MTL::Function* fragmentShader    = nullptr;
-        auto&          currentUserShader = currentShader(*frameData.currentBatchMode);
+        auto&          currentUserShader = currentShader(currentBatchMode);
 
         {
-            switch (*frameData.currentBatchMode)
+            switch (currentBatchMode)
             {
                 case BatchMode::Sprites: {
                     vertexShader = _spriteVS.get();
@@ -925,7 +592,7 @@ void MetalPainter::prepareDrawCall()
                     }
                     else
                     {
-                        fragmentShader = frameData.spriteBatchShaderKind == SpriteShaderKind::Default
+                        fragmentShader = spriteShaderKind() == SpriteShaderKind::Default
                                              ? _defaultSpritePS.get()
                                              : _monochromaticSpritePS.get();
                     }
@@ -964,13 +631,11 @@ void MetalPainter::prepareDrawCall()
 
         frameData.renderEncoder->setRenderPipelineState(mtlPso);
 
-        df &= ~DFPso;
+        df &= ~DF_PipelineState;
     }
 
-    if ((df bitand DFVertexBuffers) == DFVertexBuffers)
+    if ((df bitand DF_VertexBuffers) == DF_VertexBuffers)
     {
-        pl_debug_log_metal_cmd("Processing DF_VertexBuffers");
-
         frameData.renderEncoder->setVertexBuffer(
             frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get(),
             0,
@@ -986,37 +651,35 @@ void MetalPainter::prepareDrawCall()
             0,
             MTLBufferSlot_MeshVertices);
 
-        df &= ~DFVertexBuffers;
+        df &= ~DF_VertexBuffers;
     }
 
-    if ((df bitand DFSampler) == DFSampler)
-    {
-        pl_debug_log_metal_cmd("Processing DF_Sampler");
+    // In Metal, we don't have to bind the index buffer explicitly, it's passed to a draw command instead.
+    // Therefore count the index buffer as handled implicitly.
+    df &= ~DF_IndexBuffer;
 
+    if ((df bitand DF_Sampler) == DF_Sampler)
+    {
         frameData.renderEncoder->setFragmentSamplerState(
             _samplerStateCache[currentSampler()],
             MTLTextureSlot_SpriteImageSampler);
 
-        df &= ~DFSampler;
+        df &= ~DF_Sampler;
     }
 
-    if ((df bitand DFGlobalCBufferParams) == DFGlobalCBufferParams)
+    if ((df bitand DF_GlobalCBufferParams) == DF_GlobalCBufferParams)
     {
-        pl_debug_log_metal_cmd("Processing DF_GlobalCBufferParams");
-
         const auto params = GlobalCBufferParams{
             .transformation = combinedTransformation(),
         };
 
         frameData.renderEncoder->setVertexBytes(&params, sizeof(params), MTLBufferSlot_GlobalCBuffer);
 
-        df &= ~DFGlobalCBufferParams;
+        df &= ~DF_GlobalCBufferParams;
     }
 
-    if ((df bitand DFSystemValueCBufferParams) == DFSystemValueCBufferParams)
+    if ((df bitand DF_SystemValueCBufferParams) == DF_SystemValueCBufferParams)
     {
-        pl_debug_log_metal_cmd("Processing DF_SystemValueCBufferParams");
-
         const auto viewport = currentViewport();
 
         if (frameData.lastAppliedViewportToSystemValues != viewport)
@@ -1034,44 +697,38 @@ void MetalPainter::prepareDrawCall()
             frameData.lastAppliedViewportToSystemValues = viewport;
         }
 
-        df &= ~DFSystemValueCBufferParams;
+        df &= ~DF_SystemValueCBufferParams;
     }
 
-    if ((df bitand DFSpriteImage) == DFSpriteImage)
+    if ((df bitand DF_SpriteImage) == DF_SpriteImage)
     {
-        pl_debug_log_metal_cmd("Processing DF_SpriteImage");
-
-        if (frameData.spriteBatchImage != nullptr)
+        if (const auto* image = spriteBatchImage())
         {
-            const auto& metalImage = static_cast<const MetalImage&>(*frameData.spriteBatchImage);
+            const auto& metalImage = static_cast<const MetalImage&>(*image);
 
             frameData.renderEncoder->setFragmentTexture(metalImage.mtlTexture(), MTLTextureSlot_SpriteImage);
 
             ++perfStats.textureChangeCount;
         }
 
-        df &= ~DFSpriteImage;
+        df &= ~DF_SpriteImage;
     }
 
-    if ((df bitand DFMeshImage) == DFMeshImage)
+    if ((df bitand DF_MeshImage) == DF_MeshImage)
     {
-        pl_debug_log_metal_cmd("Processing DF_MeshImage");
-
-        if (frameData.meshBatchImage != nullptr)
+        if (const auto* image = meshBatchImage())
         {
-            const auto& metalImage = static_cast<const MetalImage&>(*frameData.meshBatchImage);
+            const auto& metalImage = static_cast<const MetalImage&>(*image);
 
             frameData.renderEncoder->setFragmentTexture(metalImage.mtlTexture(), MTLTextureSlot_MeshImage);
         }
 
-        df &= ~DFMeshImage;
+        df &= ~DF_MeshImage;
     }
 
-    if ((df bitand DFUserShaderParams) == DFUserShaderParams)
+    if ((df bitand DF_UserShaderParams) == DF_UserShaderParams)
     {
-        pl_debug_log_metal_cmd("Processing DF_UserShaderParams");
-
-        if (auto& userShader = currentShader(*frameData.currentBatchMode))
+        if (auto& userShader = currentShader(currentBatchMode))
         {
             auto& shaderImpl = *userShader.impl();
 
@@ -1099,41 +756,18 @@ void MetalPainter::prepareDrawCall()
             shaderImpl.clearDirtyScalarParameters();
         }
 
-        df &= ~DFUserShaderParams;
+        df &= ~DF_UserShaderParams;
     }
 
-    assume(df == DFNone);
-
-    frameData.dirtyFlags = df;
-
-    pl_debug_log_metal_cmd("Draw call is now prepared");
+    return df;
 }
 
-void MetalPainter::flushSprites()
+void MetalPainter::flushSprites(
+    Span<InternalSprite>  sprites,
+    GamePerformanceStats& stats,
+    Rectf                 imageSizeAndInverse)
 {
     auto& frameData = currentFrameData();
-
-    if (frameData.spriteQueue.isEmpty())
-    {
-        return;
-    }
-
-    auto& perfStats = performanceStats();
-
-    pl_debug_log_metal_cmd(
-        "Flushing {} sprite(s); image with address {}",
-        frameData.spriteQueue.size(),
-        frameData.spriteBatchImage);
-
-    prepareDrawCall();
-
-    const auto& metalImage = static_cast<const Polly::MetalImage&>(*frameData.spriteBatchImage);
-
-    const auto imageWidthf  = static_cast<float>(metalImage.width());
-    const auto imageHeightf = static_cast<float>(metalImage.height());
-
-    const auto imageSizeAndInverse =
-        Rectf(imageWidthf, imageHeightf, 1.0f / imageWidthf, 1.0f / imageHeightf);
 
     auto* vertexBuffer = frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get();
 
@@ -1142,7 +776,7 @@ void MetalPainter::flushSprites()
 
     fillSpriteVertices(
         dstVertices,
-        frameData.spriteQueue,
+        sprites,
         imageSizeAndInverse,
         false,
         [](const Vec2& position, const Color& color, const Vec2& uv)
@@ -1153,8 +787,8 @@ void MetalPainter::flushSprites()
             };
         });
 
-    const auto vertexCount = frameData.spriteQueue.size() * verticesPerSprite;
-    const auto indexCount  = frameData.spriteQueue.size() * indicesPerSprite;
+    const auto vertexCount = sprites.size() * verticesPerSprite;
+    const auto indexCount  = sprites.size() * indicesPerSprite;
 
     frameData.renderEncoder->drawIndexedPrimitives(
         MTL::PrimitiveTypeTriangle,
@@ -1163,112 +797,48 @@ void MetalPainter::flushSprites()
         _spriteIndexBuffer.get(),
         static_cast<NS::UInteger>(frameData.spriteIndexCounter) * sizeof(uint16_t));
 
-    ++perfStats.drawCallCount;
-    perfStats.vertexCount += vertexCount;
+    ++stats.drawCallCount;
+    stats.vertexCount += vertexCount;
 
     frameData.spriteVertexCounter += vertexCount;
     frameData.spriteIndexCounter += indexCount;
-
-    frameData.spriteQueue.clear();
 }
 
-void MetalPainter::flushPolys()
+void MetalPainter::flushPolys(
+    Span<Tessellation2D::Command> polys,
+    Span<u32>                     polyCmdVertexCounts,
+    u32                           numberOfVerticesToDraw,
+    GamePerformanceStats&         stats)
 {
     auto& frameData = currentFrameData();
-
-    if (frameData.polyQueue.isEmpty())
-    {
-        return;
-    }
-
-    pl_debug_log_metal_cmd("Flushing {} polygon entries", frameData.polyQueue.size());
-
-    auto& perfStats = performanceStats();
-
-    prepareDrawCall();
-
-    const auto numberOfVerticesToDraw =
-        Tessellation2D::calculatePolyQueueVertexCounts(frameData.polyQueue, frameData.polyCmdVertexCounts);
-
-    if (numberOfVerticesToDraw > maxPolyVertices)
-    {
-        throw Error(formatString(
-            "Attempting to draw too many polygons at once. The maximum number of {} polygon "
-            "vertices would be "
-            "exceeded.",
-            maxPolyVertices));
-    }
 
     auto* dstVertices = static_cast<Tessellation2D::PolyVertex*>(frameData.polyVertexBuffer->contents())
                         + frameData.polyVertexCounter;
 
-    Tessellation2D::processPolyQueue(frameData.polyQueue, dstVertices, frameData.polyCmdVertexCounts);
+    Tessellation2D::processPolyQueue(polys, dstVertices, polyCmdVertexCounts);
 
     frameData.renderEncoder->drawPrimitives(
         MTL::PrimitiveTypeTriangleStrip,
         frameData.polyVertexCounter,
         numberOfVerticesToDraw);
 
-    ++perfStats.drawCallCount;
-    perfStats.vertexCount += numberOfVerticesToDraw;
+    ++stats.drawCallCount;
+    stats.vertexCount += numberOfVerticesToDraw;
 
     frameData.polyVertexCounter += numberOfVerticesToDraw;
-    frameData.polyQueue.clear();
 }
 
-void MetalPainter::flushMeshes()
+void MetalPainter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats)
 {
-    auto& frameData = currentFrameData();
-
-    if (frameData.meshQueue.isEmpty())
-    {
-        return;
-    }
-
-    pl_debug_log_metal_cmd("Flushing {} mesh entries", frameData.meshQueue.size());
-
-    prepareDrawCall();
-
-    auto& perfStats = performanceStats();
-
+    auto& frameData   = currentFrameData();
     auto  baseVertex  = frameData.meshVertexCounter;
     auto* dstVertices = static_cast<MeshVertex*>(frameData.meshVertexBuffer->contents()) + baseVertex;
 
     auto* dstIndices =
         static_cast<uint16_t*>(frameData.meshIndexBuffer->contents()) + frameData.meshIndexCounter;
 
-    auto totalVertexCount = 0u;
-    auto totalIndexCount  = 0u;
-
-    for (const auto& entry : frameData.meshQueue)
-    {
-        const auto vertexCount    = entry.vertices.size();
-        const auto indexCount     = entry.indices.size();
-        const auto newVertexCount = totalVertexCount + vertexCount;
-
-        if (newVertexCount > maxMeshVertices)
-        {
-            throw Error(formatString(
-                "Attempting to draw too many meshes at once. The maximum number of {} mesh "
-                "vertices would be "
-                "exceeded.",
-                maxMeshVertices));
-        }
-
-        std::memcpy(dstVertices, entry.vertices.data(), sizeof(MeshVertex) * vertexCount);
-        dstVertices += vertexCount;
-
-        for (auto i = 0u; i < indexCount; ++i)
-        {
-            *dstIndices = entry.indices[i] + baseVertex;
-            ++dstIndices;
-        }
-
-        totalVertexCount = newVertexCount;
-        totalIndexCount += indexCount;
-
-        baseVertex += vertexCount;
-    }
+    const auto [totalVertexCount, totalIndexCount] =
+        fillMeshVertices(meshes, dstVertices, dstIndices, baseVertex);
 
     frameData.renderEncoder->drawIndexedPrimitives(
         MTL::PrimitiveTypeTriangle,
@@ -1280,46 +850,8 @@ void MetalPainter::flushMeshes()
     frameData.meshVertexCounter += totalVertexCount;
     frameData.meshIndexCounter += totalIndexCount;
 
-    ++perfStats.drawCallCount;
-    perfStats.vertexCount += totalVertexCount;
-
-    frameData.meshQueue.clear();
-}
-
-void MetalPainter::flushAll()
-{
-    auto& frameData = currentFrameData();
-
-    if (not frameData.currentBatchMode)
-    {
-        return;
-    }
-
-    pl_debug_log_metal_cmd("flushAll()");
-
-    switch (*frameData.currentBatchMode)
-    {
-        case BatchMode::Sprites: flushSprites(); break;
-        case BatchMode::Polygons: flushPolys(); break;
-        case BatchMode::Mesh: flushMeshes(); break;
-    }
-}
-
-void MetalPainter::prepareForBatchMode(BatchMode mode)
-{
-    auto& frameData = currentFrameData();
-
-    if (frameData.currentBatchMode and frameData.currentBatchMode != mode)
-    {
-        flushAll();
-        frameData.dirtyFlags |= DFPso;
-    }
-    else if (frameData.currentBatchMode and mustUpdateShaderParams())
-    {
-        flushAll();
-    }
-
-    frameData.currentBatchMode = mode;
+    ++stats.drawCallCount;
+    stats.vertexCount += totalVertexCount;
 }
 
 void MetalPainter::createSpriteRenderingResources(MTL::Library* shaderLib)
@@ -1445,12 +977,5 @@ NS::SharedPtr<MTL::Buffer> MetalPainter::createSingleSpriteVertexBuffer()
     }
 
     return buffer;
-}
-
-bool MetalPainter::mustUpdateShaderParams() const
-{
-    const auto& frameData = currentFrameData();
-
-    return (frameData.dirtyFlags bitand DFUserShaderParams) == DFUserShaderParams;
 }
 } // namespace Polly

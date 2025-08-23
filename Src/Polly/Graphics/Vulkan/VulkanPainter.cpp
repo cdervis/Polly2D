@@ -26,6 +26,8 @@
 #include "SpriteBatchPsMonochromatic.frag.hpp"
 #include "SpriteBatchVs.vert.hpp"
 
+#include <iso646.h>
+
 namespace Polly
 {
 struct alignas(16) GlobalCBufferParams
@@ -171,7 +173,7 @@ VulkanPainter::VulkanPainter(
         .maxCanvasHeight = max(0u, _vkPhysicalDeviceProps.limits.maxFramebufferHeight),
     };
 
-    postInit(caps);
+    postInit(caps, maxFramesInFlight, maxSpriteBatchSize, maxPolyVertices, maxMeshVertices);
     _imageDescriptorCache.init(this, _vkDescriptorSetLayouts[0]);
     _samplerDescriptorCache.init(this, _vkDescriptorSetLayouts[1]);
 
@@ -409,7 +411,7 @@ VulkanPainter::~VulkanPainter() noexcept
     }
 }
 
-void VulkanPainter::startFrame()
+void VulkanPainter::onFrameStarted()
 {
     auto& vulkanWindow = static_cast<VulkanWindow&>(window());
 
@@ -418,11 +420,9 @@ void VulkanPainter::startFrame()
         vulkanWindow.recreateSwapChainWithCurrentParams();
     }
 
-    auto& frameData = _frameData[_currentFrameIndex];
+    auto& frameData = _frameData[frameIndex()];
 
     vkWaitForFences(_vkDevice, 1, &frameData.inFlightFence, VK_TRUE, UINT64_MAX);
-
-    resetCurrentStates();
 
     vulkanWindow.nextSwapChainImage(
         _vkDevice,
@@ -444,25 +444,14 @@ void VulkanPainter::startFrame()
         vkBeginCommandBuffer(frameData.vkCommandBuffer, &beginInfo);
     }
 
-    frameData.currentBatchMode = none;
-
-    frameData.spriteBatchShaderKind          = SpriteShaderKind(-1);
-    frameData.spriteBatchImage               = nullptr;
     frameData.spriteVertexCounter            = 0;
     frameData.spriteIndexCounter             = 0;
     frameData.currentSpriteVertexBufferIndex = 0;
-    frameData.spriteQueue.clear();
-
-    frameData.polyVertexCounter = 0;
-
-    frameData.meshBatchImage    = nullptr;
-    frameData.meshVertexCounter = 0;
-    frameData.meshIndexCounter  = 0;
+    frameData.polyVertexCounter              = 0;
+    frameData.meshVertexCounter              = 0;
+    frameData.meshIndexCounter               = 0;
 
     setCanvas({}, black, true);
-
-    frameData.dirtyFlags = DF_All;
-    frameData.dirtyFlags &= ~DF_UserShaderParams;
 
     frameData.uboAllocator->reset();
 
@@ -472,18 +461,12 @@ void VulkanPainter::startFrame()
     frameData.lastBoundSets.fill(VK_NULL_HANDLE);
     frameData.lastBoundSet2Offset  = 0;
     frameData.lastBoundIndexBuffer = VK_NULL_HANDLE;
-
-    assume(frameData.spriteQueue.isEmpty());
-    assume(frameData.polyQueue.isEmpty());
-    assume(frameData.meshQueue.isEmpty());
 }
 
-void VulkanPainter::endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawFunc)
+void VulkanPainter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc)
 {
-    auto&      frameData   = _frameData[_currentFrameIndex];
+    auto&      frameData   = _frameData[frameIndex()];
     const auto vkCmdBuffer = frameData.vkCommandBuffer;
-
-    flushAll();
 
     // ImGui
     if (imGuiDrawFunc)
@@ -552,18 +535,12 @@ void VulkanPainter::endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDraw
 
     vkQueuePresentKHR(_vkPresentQueue, &presentInfo);
 
-    resetCurrentStates();
-
-    _currentFrameIndex = (_currentFrameIndex + 1) % maxFramesInFlight;
-
     destroyQueuedVulkanObjects();
 }
 
 void VulkanPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rectf oldViewport)
 {
-    flushAll();
-
-    auto&      frameData   = _frameData[_currentFrameIndex];
+    auto&      frameData   = _frameData[frameIndex()];
     const auto vkCmdBuffer = frameData.vkCommandBuffer;
 
     if (frameData.currentVkRenderPass != VK_NULL_HANDLE)
@@ -577,7 +554,6 @@ void VulkanPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rect
 
     // If we had a canvas bound, its Vulkan image must be transitioned from
     // being a color attachment to being a read-only image.
-
     if (oldCanvas)
     {
         constexpr auto desiredLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -616,7 +592,7 @@ void VulkanPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rect
 
 void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport)
 {
-    auto& frameData          = _frameData[_currentFrameIndex];
+    auto& frameData          = _frameData[frameIndex()];
     auto  vkCmdBuffer        = frameData.vkCommandBuffer;
     auto  renderPassCacheKey = VulkanRenderPassCache::Key();
 
@@ -712,8 +688,8 @@ void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
     frameData.lastBoundViewport = viewport;
 
     const auto vkScissorRect = VkRect2D{
-        .offset = {.x = 0, .y = 0},
-        .extent = {.width = fboCacheKey.width, .height = fboCacheKey.height},
+        .offset = VkOffset2D{.x = 0, .y = 0},
+        .extent = VkExtent2D{.width = fboCacheKey.width, .height = fboCacheKey.height},
     };
 
     vkCmdSetScissor(vkCmdBuffer, 0, 1, &vkScissorRect);
@@ -724,18 +700,16 @@ void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
     frameData.currentRenderPassTargetFormat = renderPassCacheKey.renderTargetFormat;
 #endif
 
-    {
-        auto newDf = frameData.dirtyFlags;
-        newDf |= DF_GlobalCBufferParams;
-        newDf |= DF_SystemValueCBufferParams;
-        newDf |= DF_SpriteImage;
-        newDf |= DF_MeshImage;
-        newDf |= DF_Sampler;
-        newDf |= DF_VertexBuffers;
-        newDf |= DF_PipelineState;
-
-        frameData.dirtyFlags = newDf;
-    }
+    setDirtyFlags(
+        dirtyFlags()
+        bitor DF_GlobalCBufferParams
+        bitor DF_GlobalCBufferParams
+        bitor DF_SystemValueCBufferParams
+        bitor DF_SpriteImage
+        bitor DF_MeshImage
+        bitor DF_Sampler
+        bitor DF_VertexBuffers
+        bitor DF_PipelineState);
 }
 
 void VulkanPainter::setScissorRects([[maybe_unused]] Span<Rectf> scissorRects)
@@ -827,11 +801,6 @@ VkDevice VulkanPainter::vkDevice() const
 uint32_t VulkanPainter::graphicsQueueFamilyIndex() const
 {
     return _graphicsQueueFamilyIndex;
-}
-
-uint32_t VulkanPainter::currentFrameIndex() const
-{
-    return _currentFrameIndex;
 }
 
 uint32_t VulkanPainter::presentQueueFamilyIndex() const
@@ -1422,23 +1391,20 @@ void VulkanPainter::notifyResourceDestroyed(GraphicsResource& resource)
     Impl::notifyResourceDestroyed(resource);
 }
 
-void VulkanPainter::prepareDrawCall()
+int VulkanPainter::prepareDrawCall()
 {
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    auto  df        = frameData.dirtyFlags;
-    auto& perfStats = performanceStats();
-
-    const auto batchMode = *frameData.currentBatchMode;
-
-    auto& shader                  = currentShader(batchMode);
-    auto* currentVulkanUserShader = shader ? static_cast<VulkanUserShader*>(shader.impl()) : nullptr;
+    auto&      frameData               = _frameData[frameIndex()];
+    auto       df                      = dirtyFlags();
+    auto&      perfStats               = performanceStats();
+    const auto currentBatchMode        = *batchMode();
+    auto&      shader                  = currentShader(currentBatchMode);
+    auto*      currentVulkanUserShader = shader ? static_cast<VulkanUserShader*>(shader.impl()) : nullptr;
 
     if ((df bitand DF_PipelineState) == DF_PipelineState)
     {
         auto psoCacheKey = VulkanPsoCache::Key();
 
-        switch (batchMode)
+        switch (currentBatchMode)
         {
             case BatchMode::Sprites: {
                 psoCacheKey.vkVsModule = _spriteVs;
@@ -1449,7 +1415,7 @@ void VulkanPainter::prepareDrawCall()
                 }
                 else
                 {
-                    psoCacheKey.vkPsModule = frameData.spriteBatchShaderKind == SpriteShaderKind::Default
+                    psoCacheKey.vkPsModule = spriteShaderKind() == SpriteShaderKind::Default
                                                  ? _defaultSpritePs
                                                  : _monochromaticSpritePs;
                 }
@@ -1505,7 +1471,7 @@ void VulkanPainter::prepareDrawCall()
     {
         auto vkBuffer = VkBuffer();
 
-        switch (batchMode)
+        switch (currentBatchMode)
         {
             [[likely]]
             case BatchMode::Sprites: {
@@ -1527,11 +1493,11 @@ void VulkanPainter::prepareDrawCall()
     {
         VkBuffer indexBufferToBind = VK_NULL_HANDLE;
 
-        if (batchMode == BatchMode::Sprites)
+        if (currentBatchMode == BatchMode::Sprites)
         {
             indexBufferToBind = _spriteIndexBuffer.vkBuffer();
         }
-        else if (batchMode == BatchMode::Mesh)
+        else if (currentBatchMode == BatchMode::Mesh)
         {
             indexBufferToBind = frameData.meshIndexBuffer.vkBuffer();
         }
@@ -1624,29 +1590,25 @@ void VulkanPainter::prepareDrawCall()
     auto imageDescriptorSet0Key = VulkanImageDescriptorCache::Key();
 
     // Handle image binding stuff
-    if (batchMode == BatchMode::Sprites)
+    if (currentBatchMode == BatchMode::Sprites)
     {
         if ((df bitand DF_SpriteImage) == DF_SpriteImage)
         {
-            if (frameData.spriteBatchImage != nullptr)
+            if (const auto* image = spriteBatchImage())
             {
-                imageDescriptorSet0Key.image0 =
-                    static_cast<const VulkanImage&>(*frameData.spriteBatchImage).imageAndViewPair();
-
-                mustBindDescriptorSet0 = true;
+                imageDescriptorSet0Key.image0 = static_cast<const VulkanImage&>(*image).imageAndViewPair();
+                mustBindDescriptorSet0        = true;
             }
         }
     }
-    else if (batchMode == BatchMode::Mesh)
+    else if (currentBatchMode == BatchMode::Mesh)
     {
         if ((df bitand DF_MeshImage) == DF_MeshImage)
         {
-            if (frameData.meshBatchImage != nullptr)
+            if (const auto* image = meshBatchImage())
             {
-                imageDescriptorSet0Key.image0 =
-                    static_cast<const VulkanImage&>(*frameData.meshBatchImage).imageAndViewPair();
-
-                mustBindDescriptorSet0 = true;
+                imageDescriptorSet0Key.image0 = static_cast<const VulkanImage&>(*image).imageAndViewPair();
+                mustBindDescriptorSet0        = true;
             }
         }
     }
@@ -1730,36 +1692,19 @@ void VulkanPainter::prepareDrawCall()
         }
     }
 
-    assume(df == DF_None);
-
-    frameData.dirtyFlags = df;
+    return df;
 }
 
-void VulkanPainter::flushSprites()
+void VulkanPainter::flushSprites(
+    Span<InternalSprite>  sprites,
+    GamePerformanceStats& stats,
+    Rectf                 imageSizeAndInverse)
 {
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    if (frameData.spriteQueue.isEmpty())
-    {
-        return;
-    }
-
-    prepareDrawCall();
-
-    auto& perfStats = performanceStats();
-
-    const auto& vulkanImage = static_cast<const VulkanImage&>(*frameData.spriteBatchImage);
-
-    const auto imageWidthf  = static_cast<float>(vulkanImage.width());
-    const auto imageHeightf = static_cast<float>(vulkanImage.height());
-
-    const auto imageSizeAndInverse =
-        Rectf(imageWidthf, imageHeightf, 1.0f / imageWidthf, 1.0f / imageHeightf);
-
+    auto&       frameData    = _frameData[frameIndex()];
     const auto& vertexBuffer = frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex];
 
-    const auto vertexCount = frameData.spriteQueue.size() * verticesPerSprite;
-    const auto indexCount  = frameData.spriteQueue.size() * indicesPerSprite;
+    const auto vertexCount = sprites.size() * verticesPerSprite;
+    const auto indexCount  = sprites.size() * indicesPerSprite;
 
     // Draw sprites
     SpriteVertex* dstVertices = nullptr;
@@ -1772,7 +1717,7 @@ void VulkanPainter::flushSprites()
 
     fillSpriteVertices(
         dstVertices,
-        frameData.spriteQueue,
+        sprites,
         imageSizeAndInverse,
         false,
         [](const Vec2& position, const Color& color, const Vec2& uv)
@@ -1787,39 +1732,20 @@ void VulkanPainter::flushSprites()
 
     vkCmdDrawIndexed(frameData.vkCommandBuffer, indexCount, 1, frameData.spriteIndexCounter, 0, 0);
 
-    ++perfStats.drawCallCount;
-    perfStats.vertexCount += vertexCount;
+    ++stats.drawCallCount;
+    stats.vertexCount += vertexCount;
 
     frameData.spriteVertexCounter += vertexCount;
     frameData.spriteIndexCounter += indexCount;
-
-    frameData.spriteQueue.clear();
 }
 
-void VulkanPainter::flushPolys()
+void VulkanPainter::flushPolys(
+    Span<Tessellation2D::Command> polys,
+    Span<u32>                     polyCmdVertexCounts,
+    u32                           numberOfVerticesToDraw,
+    GamePerformanceStats&         stats)
 {
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    if (frameData.polyQueue.isEmpty())
-    {
-        return;
-    }
-
-    prepareDrawCall();
-
-    auto& perfStats = performanceStats();
-
-    const auto numberOfVerticesToDraw =
-        Tessellation2D::calculatePolyQueueVertexCounts(frameData.polyQueue, frameData.polyCmdVertexCounts);
-
-    if (numberOfVerticesToDraw > maxPolyVertices)
-    {
-        throw Error(formatString(
-            "Attempting to draw too many polygons at once. The maximum number of {} polygon "
-            "vertices would be "
-            "exceeded.",
-            maxPolyVertices));
-    }
+    auto& frameData = _frameData[frameIndex()];
 
     Tessellation2D::PolyVertex* dstVertices = nullptr;
 
@@ -1832,32 +1758,22 @@ void VulkanPainter::flushPolys()
 
     dstVertices += frameData.polyVertexCounter;
 
-    Tessellation2D::processPolyQueue(frameData.polyQueue, dstVertices, frameData.polyCmdVertexCounts);
+    Tessellation2D::processPolyQueue(polys, dstVertices, polyCmdVertexCounts);
 
     vmaUnmapMemory(_vmaAllocator, frameData.polyVertexBuffer.allocation());
 
     vkCmdDraw(frameData.vkCommandBuffer, numberOfVerticesToDraw, 1, frameData.polyVertexCounter, 0);
 
-    ++perfStats.drawCallCount;
-    perfStats.vertexCount += numberOfVerticesToDraw;
+    ++stats.drawCallCount;
+    stats.vertexCount += numberOfVerticesToDraw;
 
     frameData.polyVertexCounter += numberOfVerticesToDraw;
-
-    frameData.polyQueue.clear();
 }
 
-void VulkanPainter::flushMeshes()
+void VulkanPainter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats)
 {
-    auto& frameData = _frameData[_currentFrameIndex];
+    auto& frameData = _frameData[frameIndex()];
 
-    if (frameData.meshQueue.isEmpty())
-    {
-        return;
-    }
-
-    prepareDrawCall();
-
-    auto&       perfStats   = performanceStats();
     auto        baseVertex  = frameData.meshVertexCounter;
     MeshVertex* dstVertices = nullptr;
     uint16_t*   dstIndices  = nullptr;
@@ -1882,38 +1798,8 @@ void VulkanPainter::flushMeshes()
     dstVertices += baseVertex;
     dstIndices += frameData.meshIndexCounter;
 
-    auto totalVertexCount = static_cast<u32>(0);
-    auto totalIndexCount  = static_cast<u32>(0);
-
-    for (const auto& entry : frameData.meshQueue)
-    {
-        const auto vertexCount    = entry.vertices.size();
-        const auto indexCount     = entry.indices.size();
-        const auto newVertexCount = totalVertexCount + vertexCount;
-
-        if (newVertexCount > maxMeshVertices)
-        {
-            throw Error(formatString(
-                "Attempting to draw too many meshes at once. The maximum number of {} mesh "
-                "vertices would be "
-                "exceeded.",
-                maxMeshVertices));
-        }
-
-        std::memcpy(dstVertices, entry.vertices.data(), sizeof(MeshVertex) * vertexCount);
-        dstVertices += vertexCount;
-
-        for (auto i = 0u; i < indexCount; ++i)
-        {
-            *dstIndices = entry.indices[i] + static_cast<uint16_t>(baseVertex);
-            ++dstIndices;
-        }
-
-        totalVertexCount = newVertexCount;
-        totalIndexCount += indexCount;
-
-        baseVertex += vertexCount;
-    }
+    const auto [totalVertexCount, totalIndexCount] =
+        fillMeshVertices(meshes, dstVertices, dstIndices, baseVertex);
 
     vmaUnmapMemory(_vmaAllocator, frameData.meshVertexBuffer.allocation());
     vmaUnmapMemory(_vmaAllocator, frameData.meshIndexBuffer.allocation());
@@ -1923,46 +1809,32 @@ void VulkanPainter::flushMeshes()
     frameData.meshVertexCounter += totalVertexCount;
     frameData.meshIndexCounter += totalIndexCount;
 
-    ++perfStats.drawCallCount;
-    perfStats.vertexCount += totalVertexCount;
-
-    frameData.meshQueue.clear();
+    ++stats.drawCallCount;
+    stats.vertexCount += totalVertexCount;
 }
 
-void VulkanPainter::flushAll()
+void VulkanPainter::spriteQueueLimitReached()
 {
-    const auto& frameData = _frameData[_currentFrameIndex];
+    const auto currentFrameIndex = frameIndex();
+    auto&      frameData         = _frameData[currentFrameIndex];
 
-    if (not frameData.currentBatchMode)
+    if (frameData.currentSpriteVertexBufferIndex + 1 >= frameData.spriteVertexBuffers.size())
     {
-        return;
+        // Have to allocate a new sprite vertex buffer.
+        frameData.spriteVertexBuffers.add(createSingleSpriteVertexBuffer(
+            (10u * frameData.currentSpriteVertexBufferIndex) + currentFrameIndex));
     }
 
-    switch (*frameData.currentBatchMode)
-    {
-        case BatchMode::Sprites: flushSprites(); break;
-        case BatchMode::Polygons: flushPolys(); break;
-        case BatchMode::Mesh: flushMeshes(); break;
-    }
-}
+    flush();
 
-void VulkanPainter::prepareForBatchMode(BatchMode mode)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
+    ++frameData.currentSpriteVertexBufferIndex;
+    frameData.spriteVertexCounter = 0;
+    frameData.spriteIndexCounter  = 0;
 
-    if (frameData.currentBatchMode and frameData.currentBatchMode != mode)
-    {
-        flushAll();
-        frameData.dirtyFlags |= DF_PipelineState;
-        frameData.dirtyFlags |= DF_VertexBuffers;
-        frameData.dirtyFlags |= DF_IndexBuffer;
-    }
-    else if (frameData.currentBatchMode and mustUpdateShaderParams())
-    {
-        flushAll();
-    }
+    const auto buffer = frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].vkBuffer();
+    constexpr auto offset = static_cast<VkDeviceSize>(0);
 
-    frameData.currentBatchMode = mode;
+    vkCmdBindVertexBuffers(frameData.vkCommandBuffer, 0, 1, &buffer, &offset);
 }
 
 void VulkanPainter::createPipelineLayouts()
@@ -2076,22 +1948,23 @@ void VulkanPainter::createPipelineLayouts()
 
 void VulkanPainter::createShaderModules()
 {
-    _spriteVs = compileBuiltinVkShader("sprite_vs", SpriteBatchVs_vertStringView(), VulkanShaderType::Vertex);
+    _spriteVs =
+        compileBuiltinVulkanShader("sprite_vs", SpriteBatchVs_vertStringView(), VulkanShaderType::Vertex);
 
-    _defaultSpritePs = compileBuiltinVkShader(
+    _defaultSpritePs = compileBuiltinVulkanShader(
         "sprite_ps_default",
         SpriteBatchPsDefault_fragStringView(),
         VulkanShaderType::Fragment);
 
-    _monochromaticSpritePs = compileBuiltinVkShader(
+    _monochromaticSpritePs = compileBuiltinVulkanShader(
         "sprite_monochromatic_ps",
         SpriteBatchPsMonochromatic_fragStringView(),
         VulkanShaderType::Fragment);
 
-    _polyVs = compileBuiltinVkShader("poly_vs", PolyVs_vertStringView(), VulkanShaderType::Vertex);
-    _polyPs = compileBuiltinVkShader("poly_ps", PolyPs_fragStringView(), VulkanShaderType::Fragment);
-    _meshVs = compileBuiltinVkShader("mesh_vs", MeshVs_vertStringView(), VulkanShaderType::Vertex);
-    _meshPs = compileBuiltinVkShader("mesh_ps", MeshPs_fragStringView(), VulkanShaderType::Fragment);
+    _polyVs = compileBuiltinVulkanShader("poly_vs", PolyVs_vertStringView(), VulkanShaderType::Vertex);
+    _polyPs = compileBuiltinVulkanShader("poly_ps", PolyPs_fragStringView(), VulkanShaderType::Fragment);
+    _meshVs = compileBuiltinVulkanShader("mesh_vs", MeshVs_vertStringView(), VulkanShaderType::Vertex);
+    _meshPs = compileBuiltinVulkanShader("mesh_ps", MeshPs_fragStringView(), VulkanShaderType::Fragment);
 }
 
 void VulkanPainter::createSpriteRenderingResources()
@@ -2201,13 +2074,6 @@ VulkanBuffer VulkanPainter::createSingleSpriteVertexBuffer(uint32_t index)
     return buffer;
 }
 
-bool VulkanPainter::mustUpdateShaderParams() const
-{
-    const auto& frameData = _frameData[_currentFrameIndex];
-
-    return (frameData.dirtyFlags bitand DF_UserShaderParams) == DF_UserShaderParams;
-}
-
 void VulkanPainter::destroyQueuedVulkanObjects()
 {
     const auto isThereAnythingToDestroy =
@@ -2249,7 +2115,7 @@ void VulkanPainter::destroyQueuedVulkanObjects()
     _destruction_queue.shaderModules.clear();
 }
 
-VkShaderModule VulkanPainter::compileBuiltinVkShader(
+VkShaderModule VulkanPainter::compileBuiltinVulkanShader(
     StringView       name,
     StringView       glslCode,
     VulkanShaderType type)
@@ -2270,300 +2136,6 @@ VkShaderModule VulkanPainter::compileBuiltinVkShader(
     setVulkanObjectName(mod, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT, String(name));
 
     return mod;
-}
-
-void VulkanPainter::notifyShaderParamAboutToChangeWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
-{
-    flushAll();
-}
-
-void VulkanPainter::notifyShaderParamHasChangedWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-    frameData.dirtyFlags |= DF_UserShaderParams;
-}
-
-void VulkanPainter::onBeforeTransformationChanged()
-{
-    flushAll();
-}
-
-void VulkanPainter::onAfterTransformationChanged([[maybe_unused]] const Matrix& transformation)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-    frameData.dirtyFlags |= DF_GlobalCBufferParams;
-}
-
-void VulkanPainter::onBeforeShaderChanged([[maybe_unused]] BatchMode mode)
-{
-    flushAll();
-}
-
-void VulkanPainter::onAfterShaderChanged([[maybe_unused]] BatchMode mode, [[maybe_unused]] Shader& shader)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-    frameData.dirtyFlags |= DF_PipelineState;
-    frameData.dirtyFlags |= DF_UserShaderParams;
-}
-
-void VulkanPainter::onBeforeSamplerChanged()
-{
-    flushAll();
-}
-
-void VulkanPainter::onAfterSamplerChanged([[maybe_unused]] const Sampler& sampler)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-    frameData.dirtyFlags |= DF_Sampler;
-}
-
-void VulkanPainter::onBeforeBlendStateChanged()
-{
-    flushAll();
-}
-
-void VulkanPainter::onAfterBlendStateChanged([[maybe_unused]] const BlendState& blendState)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-    frameData.dirtyFlags |= DF_PipelineState;
-}
-
-void VulkanPainter::drawSprite(const Sprite& sprite, [[maybe_unused]] SpriteShaderKind spriteShaderKind)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    if (frameData.spriteQueue.size() == maxSpriteBatchSize)
-    {
-        if (frameData.currentSpriteVertexBufferIndex + 1 >= frameData.spriteVertexBuffers.size())
-        {
-            // Have to allocate a new sprite vertex buffer.
-            frameData.spriteVertexBuffers.add(createSingleSpriteVertexBuffer(
-                (10u * frameData.currentSpriteVertexBufferIndex) + _currentFrameIndex));
-        }
-
-        flushAll();
-
-        ++frameData.currentSpriteVertexBufferIndex;
-        frameData.spriteVertexCounter = 0;
-        frameData.spriteIndexCounter  = 0;
-
-        const auto buffer =
-            frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].vkBuffer();
-        constexpr auto offset = static_cast<VkDeviceSize>(0);
-
-        vkCmdBindVertexBuffers(frameData.vkCommandBuffer, 0, 1, &buffer, &offset);
-    }
-
-    auto* imageImpl = sprite.image.impl();
-    assume(imageImpl);
-
-    prepareForBatchMode(BatchMode::Sprites);
-
-    if (frameData.spriteBatchShaderKind != spriteShaderKind or frameData.spriteBatchImage != imageImpl)
-    {
-        flushAll();
-    }
-
-    frameData.spriteQueue.add(
-        InternalSprite{
-            .dst      = sprite.dstRect,
-            .src      = sprite.srcRect.valueOr(Rectf(0, 0, sprite.image.size())),
-            .color    = sprite.color,
-            .origin   = sprite.origin,
-            .rotation = sprite.rotation,
-            .flip     = sprite.flip,
-        });
-
-    if (frameData.spriteBatchShaderKind != spriteShaderKind)
-    {
-        frameData.dirtyFlags |= DF_PipelineState;
-    }
-
-    if (frameData.spriteBatchImage != imageImpl)
-    {
-        frameData.dirtyFlags |= DF_SpriteImage;
-    }
-
-    frameData.spriteBatchShaderKind = spriteShaderKind;
-    frameData.spriteBatchImage      = imageImpl;
-
-    ++performanceStats().spriteCount;
-}
-
-void VulkanPainter::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawLineCmd{
-            .start       = start,
-            .end         = end,
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::drawLinePath(Span<Line> lines, const Color& color, float strokeWidth)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawLinePathCmd{
-            .lines       = decltype(Tessellation2D::DrawLinePathCmd::lines)(lines),
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawRectangleCmd{
-            .rectangle   = rectangle,
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::fillRectangle(const Rectf& rectangle, const Color& color)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillRectangleCmd{
-            .rectangle = rectangle,
-            .color     = color,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::fillPolygon(Span<Vec2> vertices, const Color& color)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillPolygonCmd{
-            .vertices = List<Vec2, 8>(vertices),
-            .color    = color,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Mesh);
-
-    if (image != frameData.meshBatchImage)
-    {
-        flushAll();
-    }
-
-    frameData.meshQueue.add(
-        MeshEntry{
-            .vertices = decltype(MeshEntry::vertices)(vertices),
-            .indices  = decltype(MeshEntry::indices)(indices),
-        });
-
-    if (frameData.meshBatchImage != image)
-    {
-        frameData.dirtyFlags |= DF_MeshImage;
-    }
-
-    frameData.meshBatchImage = image;
-
-    ++performanceStats().meshCount;
-}
-
-void VulkanPainter::drawRoundedRectangle(
-    const Rectf& rectangle,
-    float        cornerRadius,
-    const Color& color,
-    float        strokeWidth)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawRoundedRectangleCmd{
-            .rectangle    = rectangle,
-            .cornerRadius = cornerRadius,
-            .color        = color,
-            .strokeWidth  = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillRoundedRectangleCmd{
-            .rectangle    = rectangle,
-            .cornerRadius = cornerRadius,
-            .color        = color,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::DrawEllipseCmd{
-            .center      = center,
-            .radius      = radius,
-            .color       = color,
-            .strokeWidth = strokeWidth,
-        });
-
-    ++performanceStats().polygonCount;
-}
-
-void VulkanPainter::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    prepareForBatchMode(BatchMode::Polygons);
-
-    frameData.polyQueue.add(
-        Tessellation2D::FillEllipseCmd{
-            .center = center,
-            .radius = radius,
-            .color  = color,
-        });
-
-    ++performanceStats().polygonCount;
 }
 
 void VulkanPainter::requestFrameCapture()

@@ -35,11 +35,14 @@ constexpr u32 vertexCountForDrawLine()
 
 void process(PolyVertex* dst, const Tessellation2D::DrawLineCmd& cmd);
 
-// draw_line_path
+// drawLinePath
 
+// TODO: implement
+#if 0
 u32 vertexCountForDrawLinePath(const Tessellation2D::DrawLinePathCmd& cmd);
 
 void process(PolyVertex* dst, const Tessellation2D::DrawLinePathCmd& cmd);
+#endif
 
 // drawRectangle
 
@@ -50,7 +53,7 @@ constexpr u32 vertexCountForDrawRectangle()
 
 void process(PolyVertex* dst, const Tessellation2D::DrawRectangleCmd& cmd);
 
-// fill_rectangle
+// fillRectangle
 
 constexpr u32 vertexCountForFillRectangle()
 {
@@ -59,25 +62,25 @@ constexpr u32 vertexCountForFillRectangle()
 
 void process(PolyVertex* dst, const Tessellation2D::FillRectangleCmd& cmd);
 
-// DrawRoundedRectangle
+// drawRoundedRectangle
 
 u32 vertexCountForDrawRoundedRectangle();
 
 void process(PolyVertex* dst, const Tessellation2D::DrawRoundedRectangleCmd& cmd);
 
-// FillRoundedRectangle
+// fillRoundedRectangle
 
 u32 vertexCountForFillRoundedRectangle();
 
 void process(PolyVertex* dst, const Tessellation2D::FillRoundedRectangleCmd& cmd);
 
-// DrawEllipse
+// drawEllipse
 
 u32 vertexCountForDrawEllipse();
 
 void process(PolyVertex* dst, const Tessellation2D::DrawEllipseCmd& cmd);
 
-// FillEllipse
+// fillEllipse
 
 u32 vertexCountForFillEllipse(const Tessellation2D::FillEllipseCmd& cmd);
 

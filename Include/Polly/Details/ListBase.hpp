@@ -793,69 +793,69 @@ class ListBase
 
         // The rest runs only if allocated.
 
-        auto new_capacity = static_cast<u32>(0);
-        T*   new_data_ptr = nullptr;
+        auto newCapacity = static_cast<u32>(0);
+        T*   newDataPtr  = nullptr;
 
         if (size() > InlineCapacity)
         {
-            new_capacity = size();
-            new_data_ptr = UncheckedAllocate(new_capacity, allocationEndPtr());
+            newCapacity = size();
+            newDataPtr  = UncheckedAllocate(newCapacity, allocationEndPtr());
         }
         else
         {
             // We move to inline storage.
-            new_capacity = InlineCapacity;
-            new_data_ptr = storagePtr();
+            newCapacity = InlineCapacity;
+            newDataPtr  = storagePtr();
         }
 
-        uninitializedMove(beginPtr(), endPtr(), new_data_ptr);
+        uninitializedMove(beginPtr(), endPtr(), newDataPtr);
 
         destroyRange(beginPtr(), endPtr());
         Deallocate(dataPtr(), capacity());
 
-        setDataPtr(new_data_ptr);
-        setCapacity(new_capacity);
+        setDataPtr(newDataPtr);
+        setCapacity(newCapacity);
 
         return beginPtr();
     }
 
     template<typename... ValueT>
-    void resizeWith(u32 new_size, const ValueT&... val)
+    void resizeWith(u32 newSize, const ValueT&... val)
     {
         // ValueT... should either be T or empty.
 
-        if (new_size == 0)
+        if (newSize == 0)
         {
             eraseAll();
         }
 
-        if (capacity() < new_size)
+        if (capacity() < newSize)
         {
             // Reallocate.
 
-            const auto original_size = size();
+            const auto originalSize = size();
 
             // The check is handled by the if-guard.
-            const auto new_capacity = calculateNewCapacity(new_size);
-            auto*      new_data_ptr = allocateBuffer(new_capacity);
-            auto*      new_last     = new_data_ptr + original_size;
+            const auto newCapacity = calculateNewCapacity(newSize);
+            auto*      newDataPtr  = allocateBuffer(newCapacity);
+            auto*      newLast     = newDataPtr + originalSize;
 
-            uninitializedFill(new_last, new_data_ptr + new_size, val...);
+            uninitializedFill(newLast, newDataPtr + newSize, val...);
 
             // Strong exception guarantee.
-            uninitializedMove(beginPtr(), endPtr(), new_data_ptr);
+            uninitializedMove(beginPtr(), endPtr(), newDataPtr);
 
-            resetData(new_data_ptr, new_capacity, new_size);
+            resetData(newDataPtr, newCapacity, newSize);
         }
-        else if (size() < new_size)
+        else if (size() < newSize)
         {
             // Construct in the uninitialized section.
-            uninitializedFill(endPtr(), beginPtr() + new_size, val...);
-            setSize(new_size);
+            uninitializedFill(endPtr(), beginPtr() + newSize, val...);
+            setSize(newSize);
         }
         else
         {
-            eraseRange(beginPtr() + new_size, endPtr());
+            eraseRange(beginPtr() + newSize, endPtr());
         }
 
         // Do nothing if the count is the same as the current size.

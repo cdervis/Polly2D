@@ -25,9 +25,9 @@ freely, subject to the following restrictions:
 #ifndef MONOTONE_H
 #define MONOTONE_H
 
+#include "Polly/String.hpp"
 #include "soloud.hpp"
 #include "soloud_misc.hpp"
-#include "Polly/String.hpp"
 
 namespace SoLoud
 {
@@ -36,8 +36,8 @@ class File;
 
 struct MonotoneSong
 {
-    Polly::String         mTitle;
-    Polly::String         mComment;
+    Polly::String mTitle;
+    Polly::String mComment;
     unsigned char mVersion; // must be 1
     unsigned char mTotalPatterns;
     unsigned char mTotalTracks;

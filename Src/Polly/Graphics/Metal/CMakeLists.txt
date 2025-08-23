@@ -8,6 +8,11 @@ target_sources(Polly PRIVATE
         PRIVATE ${metal_source_files} ${metal_objc_files}
 )
 
+set_source_files_properties(
+        ${metal_objc_files}
+        PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+)
+
 target_compile_definitions(Polly PRIVATE
     -Dpolly_have_gfx_metal=1
     -DMETALCPP_SYMBOL_VISIBILITY_HIDDEN

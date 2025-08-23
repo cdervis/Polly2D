@@ -56,6 +56,12 @@ static constexpr auto maxFramesInFlight = 2u;
 
 void checkVkResultNoMsg(VkResult result);
 
+/// Verifies that a Vulkan operation was successful.
+///
+/// @param result The result to verify
+/// @param errorMessage The message to throw when the result is unsuccessful
+///
+/// @throw Error When the result is unsuccessful
 void checkVkResult(VkResult result, StringView errorMessage = StringView());
 
 VkFormat convert(ImageFormat format);

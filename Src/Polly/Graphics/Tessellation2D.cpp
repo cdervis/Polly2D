@@ -69,6 +69,8 @@ void Tessellation2D::process(PolyVertex* dst, const DrawLineCmd& cmd)
 
 // drawLinePath
 
+// TODO: implement
+#if 0
 u32 Tessellation2D::vertexCountForDrawLinePath([[maybe_unused]] const DrawLinePathCmd& cmd)
 {
     return 0;
@@ -77,6 +79,7 @@ u32 Tessellation2D::vertexCountForDrawLinePath([[maybe_unused]] const DrawLinePa
 void Tessellation2D::process([[maybe_unused]] PolyVertex* dst, [[maybe_unused]] const DrawLinePathCmd& cmd)
 {
 }
+#endif
 
 // DrawRectangle
 
@@ -561,12 +564,15 @@ u32 Tessellation2D::calculatePolyQueueVertexCounts(Span<Command> commands, List<
             totalVertexCount += count;
             dstList.add(count);
         }
+// TODO: implement
+#if 0
         if (const auto* drawLinePath = std::get_if<DrawLinePathCmd>(&cmd))
         {
             const auto count = vertexCountForDrawLinePath(*drawLinePath);
             totalVertexCount += count;
             dstList.add(count);
         }
+#endif
         else if (std::holds_alternative<DrawRectangleCmd>(cmd))
         {
             constexpr auto count = vertexCountForDrawRectangle();
@@ -622,10 +628,13 @@ void Tessellation2D::processPolyQueue(Span<Command> commands, PolyVertex* dstVer
         {
             process(dstVertices, *drawLine);
         }
+// TODO: implement
+#if 0
         if (const auto* drawLinePath = std::get_if<DrawLinePathCmd>(&cmd))
         {
             process(dstVertices, *drawLinePath);
         }
+#endif
         else if (const auto* drawRectangle = std::get_if<DrawRectangleCmd>(&cmd))
         {
             process(dstVertices, *drawRectangle);

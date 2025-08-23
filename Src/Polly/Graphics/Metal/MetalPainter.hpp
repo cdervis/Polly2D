@@ -26,9 +26,9 @@ class MetalPainter final : public Painter::Impl
 
     ~MetalPainter() noexcept override;
 
-    void startFrame() override;
+    void onFrameStarted() override;
 
-    void endFrame(ImGui imgui, const Function<void(ImGui)>& imGuiDrawFunc) override;
+    void onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc) override;
 
     void onBeforeCanvasChanged(Image oldCanvas, Rectf viewport) override;
 
@@ -36,54 +36,14 @@ class MetalPainter final : public Painter::Impl
 
     void setScissorRects(Span<Rectf> scissorRects) override;
 
-    void onBeforeTransformationChanged() override;
-
-    void onAfterTransformationChanged(const Matrix& transformation) override;
-
-    void onBeforeShaderChanged(BatchMode mode) override;
-
-    void onAfterShaderChanged(BatchMode mode, Shader& shader) override;
-
-    void onBeforeSamplerChanged() override;
-
-    void onAfterSamplerChanged(const Sampler& sampler) override;
-
-    void onBeforeBlendStateChanged() override;
-
-    void onAfterBlendStateChanged(const BlendState& blendState) override;
-
-    void drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind) override;
-
-    void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth) override;
-
-    void drawLinePath(Span<Line> lines, const Color& color, float strokeWidth) override;
-
-    void drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth) override;
-
-    void fillRectangle(const Rectf& rectangle, const Color& color) override;
-
-    void fillPolygon(Span<Vec2> vertices, const Color& color) override;
-
-    void drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image) override;
-
-    void drawRoundedRectangle(
-        const Rectf& rectangle,
-        float        cornerRadius,
-        const Color& color,
-        float        strokeWidth) override;
-
-    void fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color) override;
-
-    void drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth) override;
-
-    void fillEllipse(Vec2 center, Vec2 radius, const Color& color) override;
-
     UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
 
     UniquePtr<Image::Impl> createImage(u32 width, u32 height, ImageFormat format, const void* data) override;
 
     void readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination)
         override;
+
+    void spriteQueueLimitReached() override;
 
     void requestFrameCapture() override;
 
@@ -105,27 +65,6 @@ class MetalPainter final : public Painter::Impl
     static constexpr auto maxPolyVertices    = std::numeric_limits<uint16_t>::max();
     static constexpr auto maxMeshVertices    = std::numeric_limits<uint16_t>::max();
 
-    enum DirtyFlags
-    {
-        DFNone                     = 0,
-        DFPso                      = 1 << 0,
-        DFSampler                  = 1 << 1,
-        DFGlobalCBufferParams      = 1 << 2,
-        DFSpriteImage              = 1 << 3,
-        DFMeshImage                = 1 << 4,
-        DFUserShaderParams         = 1 << 5,
-        DFSystemValueCBufferParams = 1 << 6,
-        DFVertexBuffers            = 1 << 7,
-        DFAll                      = DFPso
-                bitor DFSampler
-                bitor DFGlobalCBufferParams
-                bitor DFSpriteImage
-                bitor DFMeshImage
-                bitor DFUserShaderParams
-                bitor DFSystemValueCBufferParams
-                bitor DFVertexBuffers,
-    };
-
     struct FrameData
     {
         UniquePtr<MetalCBufferAllocator>         cbufferAllocator;
@@ -134,9 +73,6 @@ class MetalPainter final : public Painter::Impl
         NS::SharedPtr<CA::MetalDrawable>         currentWindowDrawable;
         MTL::RenderPassDescriptor*               currentRenderPassDescriptor = nullptr;
 
-        int              dirtyFlags = DFNone;
-        Maybe<BatchMode> currentBatchMode;
-
         List<NS::SharedPtr<MTL::Buffer>> spriteVertexBuffers;
         u32                              currentSpriteVertexBufferIndex = 0;
 
@@ -144,20 +80,13 @@ class MetalPainter final : public Painter::Impl
         NS::SharedPtr<MTL::Buffer> meshVertexBuffer;
         NS::SharedPtr<MTL::Buffer> meshIndexBuffer;
 
-        SpriteShaderKind     spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
-        const Image::Impl*   spriteBatchImage      = nullptr;
-        List<InternalSprite> spriteQueue;
-        u32                  spriteVertexCounter = 0;
-        u32                  spriteIndexCounter  = 0;
+        u32 spriteVertexCounter = 0;
+        u32 spriteIndexCounter  = 0;
 
-        List<Tessellation2D::Command> polyQueue;
-        u32                           polyVertexCounter = 0;
-        List<u32>                     polyCmdVertexCounts;
+        u32 polyVertexCounter = 0;
 
-        List<MeshEntry>    meshQueue;
-        const Image::Impl* meshBatchImage    = nullptr;
-        u32                meshVertexCounter = 0;
-        u32                meshIndexCounter  = 0;
+        u32 meshVertexCounter = 0;
+        u32 meshIndexCounter  = 0;
 
         MTL::Buffer* lastBoundUserShaderParamsCBuffer = nullptr;
         Rectf        lastBoundViewport;
@@ -166,14 +95,12 @@ class MetalPainter final : public Painter::Impl
 
     FrameData& currentFrameData()
     {
-        assume(_frameIndex <= _frameDatas.size());
-        return _frameDatas[_frameIndex];
+        return _frameDatas[frameIndex()];
     }
 
     const FrameData& currentFrameData() const
     {
-        assume(_frameIndex <= _frameDatas.size());
-        return _frameDatas[_frameIndex];
+        return _frameDatas[frameIndex()];
     }
 
     UniquePtr<Shader::Impl> onCreateNativeUserShader(
@@ -184,33 +111,35 @@ class MetalPainter final : public Painter::Impl
         UserShaderFlags                     flags,
         u16                                 cbufferSize) override;
 
-    void notifyShaderParamAboutToChangeWhileBound(const Shader::Impl& shaderImpl) override;
-
-    void notifyShaderParamHasChangedWhileBound(const Shader::Impl& shaderImpl) override;
-
     void endCurrentRenderEncoder();
-    void prepareDrawCall();
-    void flushSprites();
-    void flushPolys();
-    void flushMeshes();
-    void flushAll();
-    void prepareForBatchMode(BatchMode mode);
+
+    int prepareDrawCall() override;
+
+    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectf imageSizeAndInverse)
+        override;
+
+    void flushPolys(
+        Span<Tessellation2D::Command> polys,
+        Span<u32>                     polyCmdVertexCounts,
+        u32                           numberOfVerticesToDraw,
+        GamePerformanceStats&         stats) override;
+
+    void flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats) override;
+
     void createSpriteRenderingResources(MTL::Library* shaderLib);
+
     void createPolyRenderingResources(MTL::Library* shaderLib);
+
     void createMeshRenderingResources(MTL::Library* shaderLib);
 
     NS::SharedPtr<MTL::Buffer> createSingleSpriteVertexBuffer();
-
-    [[nodiscard]]
-    bool mustUpdateShaderParams() const;
 
     NS::SharedPtr<MTL::Device>       _mtlDevice;
     NS::SharedPtr<MTL::CommandQueue> _mtlCommandQueue;
     MetalPsoCache                    _pipelineStateCache;
     MetalSamplerStateCache           _samplerStateCache;
 
-    u32                  _frameIndex = 0;
-    dispatch_semaphore_t _semaphore  = nil;
+    dispatch_semaphore_t _semaphore = nil;
 
     NS::SharedPtr<MTL::Function> _spriteVS;
     NS::SharedPtr<MTL::Function> _defaultSpritePS;

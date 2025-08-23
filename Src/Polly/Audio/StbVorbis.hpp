@@ -6,11 +6,11 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable:4244)
-#pragma warning(disable:4245)
-#pragma warning(disable:4456)
-#pragma warning(disable:4457)
-#pragma warning(disable:4701)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4245)
+#pragma warning(disable : 4456)
+#pragma warning(disable : 4457)
+#pragma warning(disable : 4701)
 #endif
 
 #if defined(__GNUC__) or defined(__clang__)
