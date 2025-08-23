@@ -273,7 +273,7 @@ function(polly_add_game)
     endif ()
 
     set(asset_decryption_key_cpp ${binary_dir}/AssetDecryptionKey.cpp)
-    configure_file(${polly_root_dir}/Misc/AssetDecryptionKey.cpp.in ${asset_decryption_key_cpp})
+    configure_file(${script_dir}/AssetDecryptionKey.cpp.in ${asset_decryption_key_cpp})
     target_sources(${target_name} PRIVATE ${asset_decryption_key_cpp})
 
     target_include_directories(${target_name} PRIVATE ${game_src_files_dir})
