@@ -1,0 +1,69 @@
+---
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveMacros: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignEscapedNewlines: Right
+AlignOperands: Align
+AlignTrailingComments: false
+AllowAllArgumentsOnNextLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLambdasOnASingleLine: Inline
+AllowShortEnumsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BreakBeforeTernaryOperators: true
+BreakAfterAttributes: Always
+AlwaysBreakBeforeMultilineStrings: false
+BreakTemplateDeclarations: Yes
+AllowAllParametersOfDeclarationOnNextLine: false
+BreakConstructorInitializers: BeforeComma
+BinPackArguments: false
+BinPackParameters: OnePerLine
+SpaceAfterTemplateKeyword: false
+BreakBeforeBinaryOperators: NonAssignment
+BreakBinaryOperations: RespectPrecedence
+BreakFunctionDefinitionParameters: false
+BreakInheritanceList: AfterComma
+BreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 2000
+BreakBeforeConceptDeclarations: Always
+BreakArrays: false
+BreakAdjacentStringLiterals: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterControlStatement: true
+  BeforeElse: true
+  AfterFunction: true
+  BeforeCatch: true
+  BeforeLambdaBody: true
+  BeforeWhile: true
+  AfterClass: true
+  AfterEnum: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterNamespace: true
+ColumnLimit: 110
+DerivePointerAlignment: false
+IndentWidth: 4
+PointerAlignment: Left
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SortIncludes: CaseInsensitive
+Standard: c++20
+TabWidth: 4
+UseTab: Never
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: None
+IndentCaseLabels: true
+IndentRequiresClause: false
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope

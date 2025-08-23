@@ -5,6 +5,7 @@ function(polly_add_game)
 
     cmake_parse_arguments(POLLY_ADD_GAME "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
+    set(script_dir ${CMAKE_CURRENT_FUNCTION_LIST_DIR})
     set(enable_verbose_logging ${POLLY_ADD_GAME_VERBOSE})
     set(target_name ${POLLY_ADD_GAME_NAME})
     set(company ${POLLY_ADD_GAME_COMPANY})
@@ -16,6 +17,7 @@ function(polly_add_game)
     set(compiled_assets_dir ${binary_dir}/CompiledAssets)
     set(xcassets_file ${misc_dir}/Assets.xcassets)
     set(game_props_file ${binary_dir}/game_props)
+    set(polly_root_dir ${script_dir}/..)
 
     file(WRITE
         ${game_props_file}
@@ -59,8 +61,6 @@ function(polly_add_game)
     target_link_libraries(${target_name} PRIVATE Polly)
 
     get_target_property(target_type Polly TYPE)
-
-    set(script_dir ${CMAKE_CURRENT_FUNCTION_LIST_DIR})
 
     file(GLOB_RECURSE asset_files CONFIGURE_DEPENDS "${assets_dir}/[^.]*")
 
@@ -125,7 +125,6 @@ function(polly_add_game)
         set(info_plist_dst_filename "${binary_dir}/Info.plist")
         configure_file("${script_dir}/Info.plist.in" ${info_plist_dst_filename})
 
-        # TODO:
         target_sources(${target_name} PRIVATE ${info_plist_dst_filename} ${misc_dir}/Assets.xcassets)
 
         set_target_properties(${target_name} PROPERTIES
