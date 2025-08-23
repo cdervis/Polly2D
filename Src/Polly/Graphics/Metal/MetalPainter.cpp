@@ -247,7 +247,6 @@ void MetalPainter::onFrameStarted()
         throw Error("Failed to obtain the Metal Drawable object for the frame.");
     }
 
-    frameData.spriteBatchShaderKind          = static_cast<SpriteShaderKind>(-1);
     frameData.spriteVertexCounter            = 0;
     frameData.spriteIndexCounter             = 0;
     frameData.currentSpriteVertexBufferIndex = 0;
@@ -599,7 +598,7 @@ int MetalPainter::prepareDrawCall()
                     }
                     else
                     {
-                        fragmentShader = frameData.spriteBatchShaderKind == SpriteShaderKind::Default
+                        fragmentShader = spriteShaderKind() == SpriteShaderKind::Default
                                              ? _defaultSpritePS.get()
                                              : _monochromaticSpritePS.get();
                     }

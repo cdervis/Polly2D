@@ -80,9 +80,8 @@ class MetalPainter final : public Painter::Impl
         NS::SharedPtr<MTL::Buffer> meshVertexBuffer;
         NS::SharedPtr<MTL::Buffer> meshIndexBuffer;
 
-        SpriteShaderKind spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
-        u32              spriteVertexCounter   = 0;
-        u32              spriteIndexCounter    = 0;
+        u32 spriteVertexCounter = 0;
+        u32 spriteIndexCounter  = 0;
 
         u32 polyVertexCounter = 0;
 
