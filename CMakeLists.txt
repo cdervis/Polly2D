@@ -81,7 +81,7 @@ configure_file(
 add_subdirectory(Src)
 add_subdirectory(Apps)
 
-# TODO: natvis support
+# TODO: natvis support (issue #32)
 #if (MSVC)
 #    set(natvis_file ${CMAKE_CURRENT_SOURCE_DIR}/Misc/DebugVis/VS/Polly.natvis)
 #    target_link_options(Polly PRIVATE /NATVIS:${natvis_file})
