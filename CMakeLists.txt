@@ -4,17 +4,17 @@
 
 cmake_minimum_required(VERSION 3.22)
 
-file(READ "Version.txt" POLLY_VERSION)
+file(READ "Version.txt" polly_version)
 
-if (POLLY_VERSION STREQUAL "")
+if (polly_version STREQUAL "")
     message(FATAL_ERROR "No version found in Version.txt!")
 endif ()
 
-if (NOT POLLY_VERSION MATCHES "[0-9]+\.[0-9]+\.[0-9]+$")
-    message(FATAL_ERROR "Invalid version '${POLLY_VERSION}' specified in Version.txt!")
+if (NOT polly_version MATCHES "[0-9]+\.[0-9]+\.[0-9]+$")
+    message(FATAL_ERROR "Invalid version '${polly_version}' specified in Version.txt!")
 endif ()
 
-message(STATUS "Configuring Polly version ${POLLY_VERSION}")
+message(STATUS "Configuring Polly version ${polly_version}")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -26,12 +26,18 @@ set(BUILD_SHARED_LIBS OFF)
 #set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "16.5")
 #set(CMAKE_XCODE_GENERATE_SCHEME ON)
 
+set(polly_languages C CXX)
+
+if (APPLE)
+    list(APPEND polly_languages OBJC OBJCXX)
+endif()
+
 project(
     Polly
     DESCRIPTION "Polly is a 2D game framework for C++"
     HOMEPAGE_URL "https://polly2d.org"
-    LANGUAGES C CXX
-    VERSION ${POLLY_VERSION})
+    LANGUAGES ${polly_languages}
+    VERSION ${polly_version})
 
 if (APPLE)
     include(CheckOBJCSourceCompiles)
