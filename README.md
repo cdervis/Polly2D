@@ -162,7 +162,7 @@ sudo yum install gcc git-core make cmake ninja-build gcc-c++ pkg-config clang-to
                  libXi-devel libXScrnSaver-devel dbus-devel ibus-devel \
                  systemd-devel mesa-libGL-devel libxkbcommon-devel mesa-libGLES-devel \
                  mesa-libEGL-devel vulkan-devel wayland-devel wayland-protocols-devel \
-                 libdrm-devel mesa-libgbm-devel libusb-devel libdecor-devel \
+                 libdrm-devel mesa-libgbm-devel libdecor-devel \
                  pipewire-jack-audio-connection-kit-devel \
 ```
 
