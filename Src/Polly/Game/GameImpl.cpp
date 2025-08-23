@@ -417,7 +417,7 @@ void Game::Impl::initializeImGui()
     io.Fonts->AddFontFromMemoryTTF(
         const_cast<u8*>(Noto_ttf_data), // NOLINT(*-pro-type-const-cast)
         Noto_ttf_size,
-        24.0f,
+        18.0f,
         &fontCfg);
 
     ::ImGui::StyleColorsDark();
