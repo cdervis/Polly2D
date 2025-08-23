@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are always welcome, be it in the form of feedback, bug reports or code changes.
+Contributions are always welcome, be it in the form of [feedback](mailto:cem@dervis.de), [bug reports](https://github.com/cdervis/Polly/issues) or code changes.
 
 There are no special rules when it comes to discussions and requests, just be friendly.
 
