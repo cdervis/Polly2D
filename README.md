@@ -172,9 +172,12 @@ sudo yum install gcc git-core make cmake ninja-build gcc-c++ pkg-config clang-to
 
 To start building and running your game, just open the game template folder in your IDE and hit run.
 
-Example for Visual Studio:
+<details>
+<summary>Example for Visual Studio:</summary>
+    
+![Opening a CMake project in Visual Studio](Docs/Resources/vs-open-cmake.webp)
 
-![Opening a CMake project in Visual Studio](#)
+</details>
 
 ### Documentation
 
