@@ -4,27 +4,13 @@
 
 cmake_minimum_required(VERSION 3.22)
 
-file(READ "Version.txt" polly_version)
-
-if (polly_version STREQUAL "")
-    message(FATAL_ERROR "No version found in Version.txt!")
-endif ()
-
-if (NOT polly_version MATCHES "[0-9]+\.[0-9]+\.[0-9]+$")
-    message(FATAL_ERROR "Invalid version '${polly_version}' specified in Version.txt!")
-endif ()
+include(Misc/Version.cmake)
 
 message(STATUS "Configuring Polly version ${polly_version}")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(BUILD_SHARED_LIBS OFF)
-
-#set(CMAKE_OSX_ARCHITECTURES "arm64")
-#set(CMAKE_XCODE_ATTRIBUTE_OSX_DEPLOYMENT_TARGET "13.5")
-#set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "13.5")
-#set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "16.5")
-#set(CMAKE_XCODE_GENERATE_SCHEME ON)
 
 set(polly_languages C CXX)
 

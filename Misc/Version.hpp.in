@@ -16,8 +16,8 @@ struct Version
 };
 
 /// Gets the currently used version of Polly.
-static constexpr auto version = Version{ ${CMAKE_PROJECT_VERSION_MAJOR}, ${CMAKE_PROJECT_VERSION_MINOR}, ${CMAKE_PROJECT_VERSION_PATCH} };
+static constexpr auto version = Version{ ${polly_version_major}, ${polly_version_minor}, ${polly_version_revision} };
 
 /// Gets the currently used version of Polly as a display string.
-static constexpr auto versionString = "${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}.${CMAKE_PROJECT_VERSION_PATCH}"_sv;
+static constexpr auto versionString = "${polly_version_major}.${polly_version_minor}.${polly_version_revision}"_sv;
 }
