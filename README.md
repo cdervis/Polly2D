@@ -30,38 +30,42 @@ In short, it provides every audiovisual aspect necessary to comfortably make a 2
 > Feedback is very much appreciated.
 
 ```cpp
-#include <Polly.hpp>
+#include "Polly.hpp"
 
-struct MyGame : Game
+struct MyGame final : Game
 {
-    Image myImage   = Image("MyImage.png");
+    Image myImage   = Image("logo.png");
     float animation = 0.0f;
 
+    List<Sound> sounds = {
+        Sound(SfxrSoundPreset::Coin, 218309),
+        Sound(SfxrSoundPreset::Explosion, 5838292),
+        Sound(SfxrSoundPreset::Laser, 2873),
+    };
+
+    // Update the game's logic.
     void update(GameTime time) override
     {
-        animation = sin(time.total() * 2) * 100;
+        animation = sin(time.total() * 3) * 100;
     }
 
+    // Draw the game's visuals.
     void draw(Painter painter) override
     {
-        auto imgPos = (window().sizePx() - img.size()) / 2 + animation;
-        painter.drawSprite(img, imgPos, blue);
+        auto imgPos = (window().sizePx() - myImage.size()) / 2 + Vec2(animation, 0);
+        painter.drawSprite(myImage, imgPos, white);
     }
 
-    void imGui(ImGui imgui) override
+    // Perform ImGui stuff.
+    void onImGui(ImGui& imgui) override
     {
-        if (imgui.button("Click here"))
-            logInfo("Button was clicked");
+        if (imgui.button("Click me!"))
+        {
+            logInfo("Button was clicked!");
+            audio().playOnce(*randomItem(sounds));
+        }
     }
-
-    // ...
 };
-
-int main()
-{
-    runGame<MyGame>();
-    return 0;
-}
 ```
 
 - **Cross-Platform**: Runs on multiple platforms, including Windows, macOS, Linux, Android and iOS.
