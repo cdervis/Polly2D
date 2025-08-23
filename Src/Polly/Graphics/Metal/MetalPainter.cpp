@@ -35,12 +35,6 @@
 #include "AllShaders.metal.hpp"
 #include "Ast.hpp"
 
-#ifndef NDEBUG
-#define DEBUG_LOG_METAL_COMMANDS 0
-#else
-#define DEBUG_LOG_METAL_COMMANDS 0
-#endif
-
 namespace Polly
 {
 struct alignas(16) GlobalCBufferParams
