@@ -7,7 +7,6 @@
 #include "Demos/TextDemo.hpp"
 
 DemoBrowser::DemoBrowser()
-    : Game(formatString("Polly Demo Browser ({})", Painter::backendName()), "Polly")
 {
     setDefaultWindowSize();
     createFactoryFunctions();

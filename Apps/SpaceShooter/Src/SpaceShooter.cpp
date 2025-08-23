@@ -3,14 +3,14 @@
 #include "Constants.hpp"
 #include "SplashScreenState.hpp"
 
-static const auto init_args = GameInitArgs{
+static const auto initArgs = GameInitArgs{
     .title             = "Space Shooter Demo",
     .initialWindowSize = sViewSize * sWindowSizeMultiplier,
     .enableAudio       = true,
 };
 
 SpaceShooter::SpaceShooter()
-    : Game(init_args)
+    : Game(initArgs)
 {
     window().setIsResizable(false);
 
