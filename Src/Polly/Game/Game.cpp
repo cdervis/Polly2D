@@ -4,14 +4,27 @@
 
 #include "Polly/Game.hpp"
 #include "Polly/ContentManagement/ContentManager.hpp"
-#include "Polly/Function.hpp"
 #include "Polly/Game/GameImpl.hpp"
 #include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Logging.hpp"
-#include <SDL3/SDL_messagebox.h>
 
 namespace Polly
 {
+static String sDefaultTitle;
+static String sDefaultCompanyName;
+
+Game::Game()
+    : Game(
+          GameInitArgs{
+              .title                  = sDefaultTitle,
+              .companyName            = sDefaultCompanyName,
+              .initialWindowSize      = none,
+              .enableAudio            = true,
+              .fullScreenDisplayIndex = none,
+          })
+{
+}
+
 Game::Game(GameInitArgs args)
     : _impl(nullptr)
 {
@@ -145,16 +158,10 @@ void Game::requestFrameCapture()
     _impl->painter().impl()->requestFrameCapture();
 }
 
-Game::Game(StringView title, StringView companyName)
-    : Game(
-          GameInitArgs{
-              .title                  = String(title),
-              .companyName            = String(companyName),
-              .initialWindowSize      = none,
-              .enableAudio            = true,
-              .fullScreenDisplayIndex = none,
-          })
+void Game::setDefaultTitleAndCompanyName(StringView title, StringView companyName)
 {
+    sDefaultTitle       = title;
+    sDefaultCompanyName = companyName;
 }
 
 void Game::update([[maybe_unused]] GameTime time)
