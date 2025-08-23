@@ -21,7 +21,7 @@ void Polly::setDefaultCaMetalLayerProps( CA::MetalLayer* layer )
 
 void Polly::setCaMetalLayerDisplaySync( CA::MetalLayer* layer, bool enabled )
 {
-#if TARGET_OS_IOS
+#if not TARGET_OS_IOS
     CAMetalLayer* objCLayer      = (CAMetalLayer*)layer;
     objCLayer.displaySyncEnabled = enabled;
 #endif
