@@ -58,8 +58,6 @@ function(polly_add_game)
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin
     )
 
-    target_link_libraries(${target_name} PRIVATE Polly)
-
     get_target_property(target_type Polly TYPE)
 
     file(GLOB_RECURSE asset_files CONFIGURE_DEPENDS "${assets_dir}/[^.]*")
@@ -161,8 +159,8 @@ function(polly_add_game)
 
             add_dependencies(${target_name} ${target_name}_CopyAssets)
 
-            set_target_properties(${target_name}_CopyAssets
-                PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${target_name}>
+            set_target_properties(${target_name}_CopyAssets PROPERTIES
+                VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${target_name}>
                 FOLDER "Polly"
             )
         endif ()
@@ -285,5 +283,27 @@ function(polly_add_game)
             "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Maybe.hpp$<ANGLE-R>>"
             "$<$<COMPILE_LANGUAGE:CXX>:<Polly/Details/magic_enum.hpp$<ANGLE-R>>"
         )
-    endif()
+    endif ()
+
+    set(main_cpp_filename "${binary_dir}/MainImpl.cpp")
+
+    set(game_header_file "Game.hpp")
+
+    if (NOT EXISTS "${game_src_files_dir}/Game.hpp")
+        # Accept a header file that has the name of the game as a fallback.
+        # For example, a game named MyGame would have to provide MyGame.hpp.
+        if (EXISTS "${game_src_files_dir}/${target_name}.hpp")
+            set(game_header_file "${target_name}.hpp")
+        else ()
+            message(FATAL_ERROR "Game does not provide a header file named 'Game.hpp' or '{target_name}.hpp'.")
+        endif ()
+    endif ()
+
+    configure_file(${script_dir}/MainImpl.cpp.in ${main_cpp_filename})
+
+    add_library(${target_name}_Main ${main_cpp_filename})
+    target_include_directories(${target_name}_Main PRIVATE ${game_src_files_dir})
+    target_link_libraries(${target_name}_Main PRIVATE SDL3-static PUBLIC Polly)
+    set_target_properties(${target_name}_Main PROPERTIES FOLDER "Polly")
+    target_link_libraries(${target_name} PRIVATE ${target_name}_Main)
 endfunction()

@@ -1,4 +1,4 @@
-#include "SpaceShooterGame.hpp"
+#include "SpaceShooter.hpp"
 
 #include "Constants.hpp"
 #include "SplashScreenState.hpp"
@@ -9,7 +9,7 @@ static const auto init_args = GameInitArgs{
     .enableAudio       = true,
 };
 
-SpaceShooterGame::SpaceShooterGame()
+SpaceShooter::SpaceShooter()
     : Game(init_args)
 {
     window().setIsResizable(false);
@@ -18,7 +18,7 @@ SpaceShooterGame::SpaceShooterGame()
     _nextState  = makeUnique<SplashScreenState>();
 }
 
-void SpaceShooterGame::update(GameTime time)
+void SpaceShooter::update(GameTime time)
 {
     if (_cameraShakeOffset and _drawnCameraShakeCount > 2)
     {
@@ -37,7 +37,7 @@ void SpaceShooterGame::update(GameTime time)
     _currentState->update(time);
 }
 
-void SpaceShooterGame::draw(Painter painter)
+void SpaceShooter::draw(Painter painter)
 {
     const auto shouldDrawIntoLowResCanvas = _currentState->drawsIntoLowResCanvas();
 
@@ -72,7 +72,7 @@ void SpaceShooterGame::draw(Painter painter)
     }
 }
 
-void SpaceShooterGame::triggerCameraShake()
+void SpaceShooter::triggerCameraShake()
 {
     _cameraShakeOffset     = Vec2(4, 4);
     _drawnCameraShakeCount = 0;

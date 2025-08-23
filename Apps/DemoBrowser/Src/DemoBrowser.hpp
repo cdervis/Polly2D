@@ -26,14 +26,14 @@ class DemoBrowser final : public Game
     void onGamepadConnected(const GamepadEvent& event) override;
     void onGamepadDisconnected(const GamepadEvent& event) override;
 
-    void go_to_previous_demo();
-    void go_to_next_demo();
-    void go_to_demo_at(int index);
+    void goToPreviousDemo();
+    void goToNextDemo();
+    void goToDemoAt(int index);
     void onImGui(ImGui& imgui) override;
-    void create_factory_functions();
-    void set_default_window_size();
+    void createFactoryFunctions();
+    void setDefaultWindowSize();
 
-    int                   _current_demo_index = 0;
-    List<DemoCreatorFunc> _demo_factory;
-    UniquePtr<Demo>       _current_demo;
+    int                   _currentDemoIndex = 0;
+    List<DemoCreatorFunc> _demoFactory;
+    UniquePtr<Demo>       _currentDemo;
 };

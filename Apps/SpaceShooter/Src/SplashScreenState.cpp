@@ -2,7 +2,7 @@
 
 #include "Constants.hpp"
 #include "MainMenuState.hpp"
-#include "SpaceShooterGame.hpp"
+#include "SpaceShooter.hpp"
 
 SplashScreenState::SplashScreenState()
     : _logoTweenChain(

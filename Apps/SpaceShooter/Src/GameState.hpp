@@ -2,11 +2,11 @@
 
 #include <Polly.hpp>
 
-class SpaceShooterGame;
+class SpaceShooter;
 
 class GameState
 {
-    friend SpaceShooterGame;
+    friend SpaceShooter;
 
   public:
     virtual ~GameState() noexcept = default;
@@ -27,5 +27,5 @@ class GameState
   protected:
     GameState() = default;
 
-    SpaceShooterGame* _game = nullptr;
+    SpaceShooter* _game = nullptr;
 };

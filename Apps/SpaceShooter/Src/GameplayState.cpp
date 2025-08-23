@@ -1,7 +1,7 @@
 #include "GameplayState.hpp"
 
 #include "Constants.hpp"
-#include "SpaceShooterGame.hpp"
+#include "SpaceShooter.hpp"
 
 constexpr auto sPlayerSize = Vec2(8.0f);
 

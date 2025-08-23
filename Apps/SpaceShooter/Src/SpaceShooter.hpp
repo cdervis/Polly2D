@@ -2,10 +2,10 @@
 
 #include "GameState.hpp"
 
-class SpaceShooterGame final : public Game
+class SpaceShooter final : public Game
 {
   public:
-    SpaceShooterGame();
+    SpaceShooter();
 
     void update(GameTime time) override;
 

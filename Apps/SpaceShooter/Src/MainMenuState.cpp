@@ -1,7 +1,7 @@
 #include "MainMenuState.hpp"
 
 #include "GameplayState.hpp"
-#include "SpaceShooterGame.hpp"
+#include "SpaceShooter.hpp"
 
 void MainMenuState::start()
 {

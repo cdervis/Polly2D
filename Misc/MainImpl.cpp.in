@@ -1,0 +1,10 @@
+#include "Polly.hpp"
+#include "${game_header_file}"
+
+#include <SDL3/SDL_main.h>
+
+int main(int /*argc*/, char* /*argv*/[])
+{
+    Game::run<${target_name}>();
+    return EXIT_SUCCESS;
+}

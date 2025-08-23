@@ -1,4 +1,6 @@
-#include "Polly/Main.hpp"
+#pragma once
+
+#include "Polly.hpp"
 
 class Testbed final : public Game
 {
@@ -20,9 +22,3 @@ class Testbed final : public Game
 
     Image img;
 };
-
-int main(int /*argc*/, char* /*argv*/[])
-{
-    Game::run<Testbed>();
-    return EXIT_SUCCESS;
-}

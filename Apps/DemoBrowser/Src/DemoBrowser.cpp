@@ -9,106 +9,106 @@
 DemoBrowser::DemoBrowser()
     : Game(formatString("Polly Demo Browser ({})", Painter::backendName()), "Polly")
 {
-    set_default_window_size();
-    create_factory_functions();
+    setDefaultWindowSize();
+    createFactoryFunctions();
 }
 
 void DemoBrowser::onStartedRunning()
 {
-    go_to_demo_at(0);
+    goToDemoAt(0);
     window().centerOnDisplay();
 }
 
 void DemoBrowser::update(GameTime time)
 {
-    _current_demo->tick(time);
+    _currentDemo->tick(time);
 }
 
 void DemoBrowser::draw(Painter painter)
 {
-    _current_demo->draw(painter);
+    _currentDemo->draw(painter);
 }
 
 void DemoBrowser::onKeyPressed(const KeyEvent& event)
 {
-    _current_demo->onKeyPressed(event);
+    _currentDemo->onKeyPressed(event);
 }
 
 void DemoBrowser::onKeyReleased(const KeyEvent& event)
 {
-    _current_demo->onKeyReleased(event);
+    _currentDemo->onKeyReleased(event);
 }
 
 void DemoBrowser::onMouseButtonPressed(const MouseButtonEvent& event)
 {
-    _current_demo->onMouseButtonPressed(event);
+    _currentDemo->onMouseButtonPressed(event);
 }
 
 void DemoBrowser::onMouseButtonReleased(const MouseButtonEvent& event)
 {
-    _current_demo->onMouseButtonReleased(event);
+    _currentDemo->onMouseButtonReleased(event);
 }
 
 void DemoBrowser::onMouseMoved(const MouseMoveEvent& event)
 {
-    _current_demo->onMouseMoved(event);
+    _currentDemo->onMouseMoved(event);
 }
 
 void DemoBrowser::onMouseWheelScrolled(const MouseWheelEvent& event)
 {
-    _current_demo->onMouseWheelScrolled(event);
+    _currentDemo->onMouseWheelScrolled(event);
 }
 
 void DemoBrowser::onGamepadConnected(const GamepadEvent& event)
 {
-    _current_demo->onGamepadConnected(event);
+    _currentDemo->onGamepadConnected(event);
 }
 
 void DemoBrowser::onGamepadDisconnected(const GamepadEvent& event)
 {
-    _current_demo->onGamepadDisconnected(event);
+    _currentDemo->onGamepadDisconnected(event);
 }
 
-void DemoBrowser::go_to_previous_demo()
+void DemoBrowser::goToPreviousDemo()
 {
-    const auto index = _current_demo_index - 1;
-    go_to_demo_at(index < 0 ? int(_demo_factory.size()) - 1 : index);
+    const auto index = _currentDemoIndex - 1;
+    goToDemoAt(index < 0 ? int(_demoFactory.size()) - 1 : index);
 }
 
-void DemoBrowser::go_to_next_demo()
+void DemoBrowser::goToNextDemo()
 {
-    const auto index = _current_demo_index + 1;
-    go_to_demo_at(index >= _demo_factory.size() ? 0 : index);
+    const auto index = _currentDemoIndex + 1;
+    goToDemoAt(index >= _demoFactory.size() ? 0 : index);
 }
 
-void DemoBrowser::go_to_demo_at(int index)
+void DemoBrowser::goToDemoAt(int index)
 {
-    _current_demo       = _demo_factory[index]();
-    _current_demo_index = index;
+    _currentDemo       = _demoFactory[index]();
+    _currentDemoIndex = index;
 
     auto window = this->window();
 
-    if (const auto maybeWindowSize = _current_demo->preferredWindowSize())
+    if (const auto maybeWindowSize = _currentDemo->preferredWindowSize())
     {
         window.setSize(*maybeWindowSize * window.currentDisplayScaleFactor());
         window.setIsResizable(false);
     }
     else
     {
-        set_default_window_size();
+        setDefaultWindowSize();
         window.setIsResizable(true);
     }
 
     logInfo(
         "Switched to demo {}/{}: '{}'",
-        _current_demo_index + 1,
-        _demo_factory.size(),
-        _current_demo->name());
+        _currentDemoIndex + 1,
+        _demoFactory.size(),
+        _currentDemo->name());
 }
 
 void DemoBrowser::onImGui(ImGui& imgui)
 {
-    const bool shouldHideSidebar = _current_demo->shouldHideSidebar();
+    const bool shouldHideSidebar = _currentDemo->shouldHideSidebar();
 
     auto       window      = this->window();
     const auto scaleFactor = window.currentDisplayScaleFactor();
@@ -139,26 +139,26 @@ void DemoBrowser::onImGui(ImGui& imgui)
 
     if (imgui.arrowButton("prevDemo", Direction::Left))
     {
-        go_to_previous_demo();
+        goToPreviousDemo();
     }
 
     imgui.sameLine();
 
     if (imgui.arrowButton("nextDemo", Direction::Right))
     {
-        go_to_next_demo();
+        goToNextDemo();
     }
 
     imgui.sameLine();
 
-    imgui.text("Demo %d/%d", _current_demo_index + 1, _demo_factory.size());
+    imgui.text("Demo %d/%d", _currentDemoIndex + 1, _demoFactory.size());
 
     if (not shouldHideSidebar)
     {
         imgui.newLine();
     }
 
-    imgui.text("%s", _current_demo->name().data());
+    imgui.text("%s", _currentDemo->name().data());
 
     if (not shouldHideSidebar)
     {
@@ -167,7 +167,7 @@ void DemoBrowser::onImGui(ImGui& imgui)
         imgui.spacing();
         imgui.newLine();
 
-        _current_demo->doImGui(imgui);
+        _currentDemo->doImGui(imgui);
     }
 
     imgui.endGroup();
@@ -181,9 +181,9 @@ void DemoBrowser::onImGui(ImGui& imgui)
         return makeUnique<name>(this);                                                                       \
     }
 
-void DemoBrowser::create_factory_functions()
+void DemoBrowser::createFactoryFunctions()
 {
-    _demo_factory = {
+    _demoFactory = {
         CREATE_DEMO(SpineDemo),
         CREATE_DEMO(SpritesDemo),
         CREATE_DEMO(TextDemo),
@@ -192,7 +192,7 @@ void DemoBrowser::create_factory_functions()
     };
 }
 
-void DemoBrowser::set_default_window_size()
+void DemoBrowser::setDefaultWindowSize()
 {
     constexpr auto defaultSize = Vec2(1280, 720);
     window().setSize(defaultSize * window().currentDisplayScaleFactor(), /*recenter:*/ false);
