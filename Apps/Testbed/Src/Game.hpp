@@ -2,14 +2,15 @@
 
 #include "Polly.hpp"
 
-class Testbed final : public Game
+struct Testbed final : Game
 {
-  public:
-    Testbed()
-        : Game("Testbed", "Polly")
-    {
-        img = Image("logo.png");
-    }
+    Image img = Image("logo.png");
+
+    List<Sound> sounds = {
+        Sound(SfxrSoundPreset::Coin, 218309),
+        Sound(SfxrSoundPreset::Explosion, 5838292),
+        Sound(SfxrSoundPreset::Laser, 2873),
+    };
 
     void update(GameTime time) override
     {
@@ -17,8 +18,15 @@ class Testbed final : public Game
 
     void draw(Painter painter) override
     {
-        painter.drawSprite(img, {100, 100});
+        painter.drawSprite(img, Vec2(100, 100));
     }
 
-    Image img;
+    void onImGui(ImGui& imgui) override
+    {
+        if (imgui.button("Click me!"))
+        {
+            logInfo("Button was clicked!");
+            audio().playOnce(*randomItem(sounds));
+        }
+    }
 };

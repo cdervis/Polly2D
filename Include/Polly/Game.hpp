@@ -166,8 +166,11 @@ class Game
     /// @note This is currently only implemented on Apple platforms.
     void requestFrameCapture();
 
+    /// Sets the default game title and company name if none was specified in the Game constructor.
+    static void setDefaultTitleAndCompanyName(StringView title, StringView companyName);
+
   protected:
-    explicit Game(StringView title, StringView companyName);
+    Game();
 
     explicit Game(GameInitArgs args);
 

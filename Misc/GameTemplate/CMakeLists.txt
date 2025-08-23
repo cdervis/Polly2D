@@ -36,6 +36,7 @@ CPMAddPackage(
 # Add our game as a CMake target.
 polly_add_game(
     NAME ${game_name}
+    DISPLAY_NAME ${game_display_name}
     COMPANY ${company_name}
     VERSION ${game_version}
     STRICT_WARNINGS ON
