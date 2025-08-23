@@ -100,7 +100,7 @@ struct MyGame final : Game
 ### Getting started
 
 Polly is designed to be very easy to start with.
-Simply grab the latest [Game Template](#) and open it in your C++ IDE or editor of choice.
+Simply grab the latest [Game Template](https://github.com/cdervis/Polly/releases) and open it in your C++ IDE or editor of choice.
 
 **Note** that the entire build process is CMake-based, your IDE therefore requires proper CMake support.
 
