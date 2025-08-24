@@ -117,7 +117,7 @@ Please ensure that [Git](https://git-scm.com/downloads/win) and [Python 3](https
 </details>
 
 <details>
-<summary>macOS </summary>
+<summary>macOS 🍏</summary>
     
 Please ensure that [Homebrew](https://github.com/Homebrew/brew/releases) is installed.
 
