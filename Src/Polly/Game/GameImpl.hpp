@@ -25,6 +25,11 @@
 
 #include <imgui.h>
 
+#ifdef polly_have_gfx_d3d11
+#include <dxgi.h>
+#include <Windows.h>
+#endif
+
 #ifdef polly_have_gfx_vulkan
 #include <volk.h>
 #endif

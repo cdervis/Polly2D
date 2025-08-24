@@ -295,6 +295,8 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
 
         mtlTexture
             ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), rowPitch);
+#elif polly_have_gfx_d3d11
+        notImplemented();
 #elif polly_have_gfx_vulkan
         auto& deviceImpl   = *Game::Impl::instance().painter().impl();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);

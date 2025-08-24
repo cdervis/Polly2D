@@ -3,7 +3,9 @@
 
 if (APPLE)
     set(polly_have_gfx_metal TRUE)
-else ()
+elseif (WIN32)
+    set(polly_have_gfx_d3d11 TRUE)
+else()
     set(polly_have_gfx_vulkan TRUE)
 endif ()
 
