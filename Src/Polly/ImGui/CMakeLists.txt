@@ -22,6 +22,13 @@ target_compile_definitions(Polly PRIVATE
     -DIMGUI_DISABLE_OBSOLETE_FUNCTIONS
 )
 
+if (polly_have_gfx_d3d11)
+    list(APPEND imgui_files
+        ${base_dir}/backends/imgui_impl_dx11.h
+        ${base_dir}/backends/imgui_impl_dx11.cpp
+    )
+endif()
+
 if (polly_have_gfx_metal)
     list(APPEND imgui_files
         ${base_dir}/backends/imgui_impl_metal.h

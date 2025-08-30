@@ -6,6 +6,7 @@
 
 #include "Polly/Error.hpp"
 #include "Polly/Format.hpp"
+#include "Polly/Logging.hpp"
 
 namespace Polly
 {
@@ -35,5 +36,19 @@ D3D11ShaderCompiler::~D3D11ShaderCompiler() noexcept
         ::FreeLibrary(_d3dCompilerDllHandle);
         _d3dCompilerDllHandle = nullptr;
     }
+}
+
+ComPtr<ID3D11VertexShader> D3D11ShaderCompiler::compileVertexShader(
+    StringView hlslSourceCode,
+    StringView entryPoint)
+{
+    notImplemented();
+}
+
+ComPtr<ID3D11PixelShader> D3D11ShaderCompiler::compilePixelShader(
+    StringView hlslSourceCode,
+    StringView entryPoint)
+{
+    notImplemented();
 }
 } // namespace Polly

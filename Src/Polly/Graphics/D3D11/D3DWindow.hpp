@@ -22,19 +22,25 @@ class D3DWindow final : public Window::Impl
 
     void createInitialSwapChain(Painter::Impl* painter);
 
+    void onResized(u32 width, u32 height) override;
+
     IDXGISwapChain* idxgiSwapChain() const
     {
         return _idxgiSwapChain.Get();
     }
 
-    void onResized(u32 width, u32 height) override;
+    ID3D11RenderTargetView* swapChainRTV() const
+    {
+        return _swapChainRTV.Get();
+    }
 
   private:
     void createSwapChain();
 
-    HWND                   _windowHandle;
-    ComPtr<IDXGIFactory>   _idxgiFactory;
-    Painter::Impl*         _painter;
-    ComPtr<IDXGISwapChain> _idxgiSwapChain;
+    HWND                           _windowHandle;
+    ComPtr<IDXGIFactory>           _idxgiFactory;
+    Painter::Impl*                 _painter;
+    ComPtr<IDXGISwapChain>         _idxgiSwapChain;
+    ComPtr<ID3D11RenderTargetView> _swapChainRTV;
 };
 } // namespace Polly

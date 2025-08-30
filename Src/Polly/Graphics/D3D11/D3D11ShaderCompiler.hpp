@@ -31,6 +31,10 @@ class D3D11ShaderCompiler final
 
     ~D3D11ShaderCompiler() noexcept;
 
+    ComPtr<ID3D11VertexShader> compileVertexShader(StringView hlslSourceCode, StringView entryPoint);
+
+    ComPtr<ID3D11PixelShader> compilePixelShader(StringView hlslSourceCode, StringView entryPoint);
+
   private:
     HMODULE        _d3dCompilerDllHandle;
     D3DCompileFunc _d3dCompileFunc;
