@@ -59,6 +59,8 @@ class D3D11Painter final : public Painter::Impl
 
     void spriteQueueLimitReached() override;
 
+    ID3D11Device* id3d11Device() const;
+
   private:
     ComPtr<ID3D11Device>        _id3d11Device;
     ComPtr<ID3D11DeviceContext> _id3d11Context;

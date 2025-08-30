@@ -26,8 +26,7 @@
 #include <imgui.h>
 
 #ifdef polly_have_gfx_d3d11
-#include <dxgi.h>
-#include <Windows.h>
+#include "Polly/Graphics/D3D11/D3D11Prerequisites.hpp"
 #endif
 
 #ifdef polly_have_gfx_vulkan
@@ -88,6 +87,13 @@ class Game::Impl final : public Object
     Maybe<Display> displayById(u32 id) const;
 
     Span<Gamepad> gamepads() const;
+
+#ifdef polly_have_gfx_d3d11
+    IDXGIFactory* idxgiFactory() const
+    {
+        return _idxgiFactory.Get();
+    }
+#endif
 
 #if polly_have_gfx_vulkan
     VkInstance vkInstance() const
@@ -184,6 +190,10 @@ class Game::Impl final : public Object
     Maybe<float>         _targetFramerate;
     GamePerformanceStats _previousPerformanceStats;
     GamePerformanceStats _performanceStats;
+
+#ifdef polly_have_gfx_d3d11
+    ComPtr<IDXGIFactory> _idxgiFactory;
+#endif
 
 #ifdef polly_have_gfx_vulkan
     void createVkInstance(StringView gameName, Version gameVersion);

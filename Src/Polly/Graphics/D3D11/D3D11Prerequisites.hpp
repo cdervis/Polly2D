@@ -4,9 +4,19 @@
 
 #pragma once
 
+#include "Polly/Maybe.hpp"
 #include <d3d11.h>
 #include <dxgi.h>
 #include <Windows.h>
 #include <WRL/client.h>
 
 using Microsoft::WRL::ComPtr;
+
+namespace Polly
+{
+enum class ImageFormat;
+
+void checkHResult(HRESULT result, StringView message);
+
+Maybe<DXGI_FORMAT> convert(ImageFormat format);
+} // namespace Polly

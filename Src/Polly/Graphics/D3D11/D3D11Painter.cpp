@@ -92,4 +92,9 @@ void D3D11Painter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& sta
 void D3D11Painter::spriteQueueLimitReached()
 {
 }
+
+ID3D11Device* D3D11Painter::id3d11Device() const
+{
+    return _id3d11Device.Get();
+}
 } // namespace Polly

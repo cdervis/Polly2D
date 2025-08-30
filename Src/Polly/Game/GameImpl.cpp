@@ -101,6 +101,10 @@ Game::Impl::Impl(const GameInitArgs& args)
 
     InputImpl::createInstance();
 
+#ifdef polly_have_gfx_d3d11
+    checkHResult(CreateDXGIFactory(IID_IDXGIFactory, &_idxgiFactory), "Failed to create the IDXGIFactory.");
+#endif
+
 #ifdef polly_have_gfx_vulkan
     checkVkResult(
         volkInitialize(),
@@ -368,7 +372,12 @@ void Game::Impl::createWindow(
 #if defined(polly_have_gfx_metal)
     auto impl = makeUnique<MetalWindow>(title, initialWindowSize, fullScreenDisplayIndex, _connectedDisplays);
 #elif defined(polly_have_gfx_d3d11)
-    auto impl = makeUnique<D3DWindow>(title, initialWindowSize, fullScreenDisplayIndex, _connectedDisplays);
+    auto impl = makeUnique<D3DWindow>(
+        title,
+        initialWindowSize,
+        fullScreenDisplayIndex,
+        _connectedDisplays,
+        _idxgiFactory);
 #elif defined(polly_have_gfx_vulkan)
     auto impl = makeUnique<VulkanWindow>(
         title,
