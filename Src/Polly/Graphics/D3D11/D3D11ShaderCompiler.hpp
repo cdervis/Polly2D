@@ -6,9 +6,12 @@
 
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/Graphics/D3D11/D3D11Prerequisites.hpp"
+#include "Polly/Span.hpp"
 
 namespace Polly
 {
+enum class VertexElement;
+
 typedef HRESULT (*D3DCompileFunc)(
     LPCVOID                 pSrcData,
     SIZE_T                  SrcDataSize,
@@ -25,13 +28,22 @@ typedef HRESULT (*D3DCompileFunc)(
 class D3D11ShaderCompiler final
 {
   public:
+    struct CompiledVertexShader
+    {
+        ComPtr<ID3D11VertexShader> vertexShader;
+        ComPtr<ID3D11InputLayout>  inputLayout;
+    };
+
     D3D11ShaderCompiler();
 
     deleteCopyAndMove(D3D11ShaderCompiler);
 
     ~D3D11ShaderCompiler() noexcept;
 
-    ComPtr<ID3D11VertexShader> compileVertexShader(StringView hlslSourceCode, StringView entryPoint);
+    CompiledVertexShader compileVertexShader(
+        StringView          hlslSourceCode,
+        StringView          entryPoint,
+        Span<VertexElement> vertexElements);
 
     ComPtr<ID3D11PixelShader> compilePixelShader(StringView hlslSourceCode, StringView entryPoint);
 

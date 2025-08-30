@@ -83,32 +83,42 @@ class D3D11Painter final : public Painter::Impl
 
     void applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 
-    ComPtr<ID3D11Device>          _id3d11Device;
-    D3D_FEATURE_LEVEL             _featureLevel;
-    ComPtr<ID3D11DeviceContext>   _id3d11Context;
-    D3D11ShaderCompiler           _d3d11ShaderCompiler;
-    D3D11PipelineObjectCache      _d3d11PipelineObjectCache;
+    ComPtr<ID3D11Device>        _id3d11Device;
+    D3D_FEATURE_LEVEL           _featureLevel;
+    ComPtr<ID3D11DeviceContext> _id3d11Context;
+    D3D11ShaderCompiler         _d3d11ShaderCompiler;
+    D3D11PipelineObjectCache    _d3d11PipelineObjectCache;
+
     ComPtr<ID3D11RasterizerState> _rasterizerStateDefault;
     ComPtr<ID3D11RasterizerState> _rasterizerStateWithScissorRects;
-    ComPtr<ID3D11Buffer>          _globalCBuffer;
-    ComPtr<ID3D11Buffer>          _systemValuesCBuffer;
-    ComPtr<ID3D11VertexShader>    _spriteVertexShader;
-    ComPtr<ID3D11PixelShader>     _spritePixelShaderDefault;
-    ComPtr<ID3D11PixelShader>     _spritePixelShaderMonochromatic;
-    ComPtr<ID3D11Buffer>          _spriteVertexBuffer;
-    ComPtr<ID3D11Buffer>          _spriteIndexBuffer;
-    ComPtr<ID3D11VertexShader>    _polyVertexShader;
-    ComPtr<ID3D11PixelShader>     _polyPixelShader;
-    ComPtr<ID3D11Buffer>          _polyVertexBuffer;
-    ComPtr<ID3D11VertexShader>    _meshVertexShader;
-    ComPtr<ID3D11PixelShader>     _meshPixelShader;
-    ComPtr<ID3D11Buffer>          _meshVertexBuffer;
-    ComPtr<ID3D11Buffer>          _meshIndexBuffer;
-    u32                           _spriteVertexCounter = 0;
-    u32                           _spriteIndexCounter  = 0;
-    u32                           _polyVertexCounter   = 0;
-    u32                           _meshVertexCounter   = 0;
-    u32                           _meshIndexCounter    = 0;
+
+    ComPtr<ID3D11Buffer> _globalCBuffer;
+    ComPtr<ID3D11Buffer> _systemValuesCBuffer;
+
+    ComPtr<ID3D11InputLayout> _spriteInputLayout;
+    ComPtr<ID3D11InputLayout> _polyInputLayout;
+    ComPtr<ID3D11InputLayout> _meshInputLayout;
+
+    ComPtr<ID3D11VertexShader> _spriteVertexShader;
+    ComPtr<ID3D11PixelShader>  _spritePixelShaderDefault;
+    ComPtr<ID3D11PixelShader>  _spritePixelShaderMonochromatic;
+    ComPtr<ID3D11Buffer>       _spriteVertexBuffer;
+    ComPtr<ID3D11Buffer>       _spriteIndexBuffer;
+
+    ComPtr<ID3D11VertexShader> _polyVertexShader;
+    ComPtr<ID3D11PixelShader>  _polyPixelShader;
+    ComPtr<ID3D11Buffer>       _polyVertexBuffer;
+
+    ComPtr<ID3D11VertexShader> _meshVertexShader;
+    ComPtr<ID3D11PixelShader>  _meshPixelShader;
+    ComPtr<ID3D11Buffer>       _meshVertexBuffer;
+    ComPtr<ID3D11Buffer>       _meshIndexBuffer;
+
+    u32 _spriteVertexCounter = 0;
+    u32 _spriteIndexCounter  = 0;
+    u32 _polyVertexCounter   = 0;
+    u32 _meshVertexCounter   = 0;
+    u32 _meshIndexCounter    = 0;
 
     ID3D11VertexShader* _lastBoundVertexShader = nullptr;
     ID3D11PixelShader*  _lastBoundPixelShader  = nullptr;

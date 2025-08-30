@@ -4,6 +4,7 @@
 
 #include "Polly/Graphics/D3D11/D3D11Painter.hpp"
 
+#include "Polly/Array.hpp"
 #include "Polly/Defer.hpp"
 #include "Polly/GamePerformanceStats.hpp"
 #include "Polly/Graphics/D3D11/D3D11Image.hpp"
@@ -11,6 +12,7 @@
 #include "Polly/Graphics/D3D11/D3DWindow.hpp"
 #include "Polly/Graphics/InternalSharedShaderStructs.hpp"
 #include "Polly/Graphics/Tessellation2D.hpp"
+#include "Polly/Graphics/VertexElement.hpp"
 #include "Polly/ImGui.hpp"
 
 #include <backends/imgui_impl_dx11.h>
@@ -37,6 +39,7 @@ D3D11Painter::D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 
     createRasterizerStates();
     createConstantBuffers();
+    createInputLayouts();
     createSpriteRenderingResources();
     createPolyRenderingResources();
     createMeshRenderingResources();
@@ -664,7 +667,10 @@ void D3D11Painter::createSpriteRenderingResources()
 void D3D11Painter::createPolyRenderingResources()
 {
     // Shaders
-    _polyVertexShader = _d3d11ShaderCompiler.compileVertexShader(AllShaders_hlslStringView(), "polyVS");
+    std::tie(_polyVertexShader, _polyInputLayout) = _d3d11ShaderCompiler.compileVertexShader(
+        AllShaders_hlslStringView(),
+        "polyVS",
+        Array{VertexElement::Vec4, VertexElement::Vec4});
 
     _polyPixelShader = _d3d11ShaderCompiler.compilePixelShader(AllShaders_hlslStringView(), "polyPS");
 
