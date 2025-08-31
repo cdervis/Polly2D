@@ -17,6 +17,8 @@ class D3D11Painter final : public Painter::Impl
   public:
     explicit D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats);
 
+    ~D3D11Painter() noexcept override;
+
     void onFrameStarted() override;
 
     void onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc) override;
@@ -81,6 +83,8 @@ class D3D11Painter final : public Painter::Impl
 
     void createMeshRenderingResources();
 
+    void applyInputLayout(ID3D11InputLayout* inputLayout);
+
     void applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 
     ComPtr<ID3D11Device>        _id3d11Device;
@@ -119,6 +123,8 @@ class D3D11Painter final : public Painter::Impl
     u32 _polyVertexCounter   = 0;
     u32 _meshVertexCounter   = 0;
     u32 _meshIndexCounter    = 0;
+
+    ID3D11InputLayout* _lastBoundInputLayout = nullptr;
 
     ID3D11VertexShader* _lastBoundVertexShader = nullptr;
     ID3D11PixelShader*  _lastBoundPixelShader  = nullptr;

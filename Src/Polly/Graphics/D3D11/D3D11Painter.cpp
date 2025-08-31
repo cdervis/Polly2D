@@ -32,6 +32,9 @@ D3D11Painter::D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 {
     createID3D11Device();
 
+    _d3d11ShaderCompiler.setID3D11Device(_id3d11Device);
+    _d3d11PipelineObjectCache.setID3D11Device(_id3d11Device);
+
     auto& d3dWindow = static_cast<D3DWindow&>(windowImpl);
 
     // Also attaches this painter to the window.
@@ -39,7 +42,6 @@ D3D11Painter::D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 
     createRasterizerStates();
     createConstantBuffers();
-    createInputLayouts();
     createSpriteRenderingResources();
     createPolyRenderingResources();
     createMeshRenderingResources();
@@ -57,6 +59,12 @@ D3D11Painter::D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& perfo
     }
 
     logVerbose("Initialized D3D11Painter");
+}
+
+D3D11Painter::~D3D11Painter() noexcept
+{
+    preBackendDtor();
+    ImGui_ImplDX11_Shutdown();
 }
 
 void D3D11Painter::onFrameStarted()
@@ -80,6 +88,16 @@ void D3D11Painter::onFrameStarted()
     _polyVertexCounter   = 0;
     _meshVertexCounter   = 0;
     _meshIndexCounter    = 0;
+
+    _lastBoundInputLayout = nullptr;
+
+    _lastBoundVertexShader = nullptr;
+    _lastBoundPixelShader  = nullptr;
+
+    _lastBoundBlendState;
+    _lastBoundSamplerState = nullptr;
+
+    _lastAppliedPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
 }
 
 void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc)
@@ -163,6 +181,8 @@ void D3D11Painter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
 
         _id3d11Context->ClearRenderTargetView(rtv, clearColorD3D.data());
     }
+
+    _id3d11Context->OMSetRenderTargets(1, &rtv, nullptr);
 
     const auto viewportD3D = D3D11_VIEWPORT{
         .TopLeftX = viewport.x,
@@ -298,38 +318,9 @@ int D3D11Painter::prepareDrawCall()
                 blendState.blendFactor.a,
             };
 
-            auto sampleMask = 0u;
-
-            if (blendState.colorWriteMask == ColorWriteMask::All) [[likely]]
-            {
-                sampleMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-            }
-            else
-            {
-                if (has_flag(blendState.colorWriteMask, ColorWriteMask::Red))
-                {
-                    sampleMask |= D3D11_COLOR_WRITE_ENABLE_RED;
-                }
-
-                if (has_flag(blendState.colorWriteMask, ColorWriteMask::Green))
-                {
-                    sampleMask |= D3D10_COLOR_WRITE_ENABLE_GREEN;
-                }
-
-                if (has_flag(blendState.colorWriteMask, ColorWriteMask::Blue))
-                {
-                    sampleMask |= D3D10_COLOR_WRITE_ENABLE_BLUE;
-                }
-
-                if (has_flag(blendState.colorWriteMask, ColorWriteMask::Alpha))
-                {
-                    sampleMask |= D3D10_COLOR_WRITE_ENABLE_ALPHA;
-                }
-            }
-
             auto* id3d11BlendState = _d3d11PipelineObjectCache.getBlendState(blendState);
 
-            _id3d11Context->OMSetBlendState(id3d11BlendState, blendFactorD3D.data(), sampleMask);
+            _id3d11Context->OMSetBlendState(id3d11BlendState, blendFactorD3D.data(), 0xffffffff);
 
             _lastBoundBlendState = blendState;
         }
@@ -458,8 +449,8 @@ void D3D11Painter::flushSprites(
         dstVertices,
         sprites,
         imageSizeAndInverse,
-        false,
-        [](const Vec2& position, const Color& color, const Vec2& uv)
+        /*flipImageUpDown:*/ false,
+        [](Vec2 position, Color color, Vec2 uv)
         {
             return SpriteVertex{
                 .positionAndUV = Vec4(position, uv),
@@ -472,6 +463,7 @@ void D3D11Painter::flushSprites(
     const auto vertexCount = sprites.size() * verticesPerSprite;
     const auto indexCount  = sprites.size() * indicesPerSprite;
 
+    applyInputLayout(_spriteInputLayout.Get());
     applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _id3d11Context->DrawIndexed(indexCount, _spriteIndexCounter, 0);
 
@@ -499,6 +491,7 @@ void D3D11Painter::flushPolys(
 
     _id3d11Context->Unmap(_polyVertexBuffer.Get(), 0);
 
+    applyInputLayout(_polyInputLayout.Get());
     applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     _id3d11Context->Draw(numberOfVerticesToDraw, _polyVertexCounter);
 
@@ -532,6 +525,7 @@ void D3D11Painter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& sta
     _id3d11Context->Unmap(_meshVertexBuffer.Get(), 0);
     _id3d11Context->Unmap(_meshIndexBuffer.Get(), 0);
 
+    applyInputLayout(_meshInputLayout.Get());
     applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _id3d11Context->DrawIndexed(totalIndexCount, _meshIndexCounter, 0);
 
@@ -625,13 +619,24 @@ void D3D11Painter::createConstantBuffers()
 void D3D11Painter::createSpriteRenderingResources()
 {
     // Shaders
-    _spriteVertexShader = _d3d11ShaderCompiler.compileVertexShader(AllShaders_hlslStringView(), "spritesVS");
+    const auto [spriteVertexShader, spriteInputLayout] = _d3d11ShaderCompiler.compileVertexShader(
+        AllShaders_hlslStringView(),
+        "spritesVS"_sv,
+        Array{VertexElement::Vec4, VertexElement::Vec4},
+        "SpriteVertexShader"_sv);
 
-    _spritePixelShaderDefault =
-        _d3d11ShaderCompiler.compilePixelShader(AllShaders_hlslStringView(), "spritesDefaultPS");
+    _spriteVertexShader = spriteVertexShader;
+    _spriteInputLayout  = spriteInputLayout;
 
-    _spritePixelShaderMonochromatic =
-        _d3d11ShaderCompiler.compilePixelShader(AllShaders_hlslStringView(), "spritesMonochromaticPS");
+    _spritePixelShaderDefault = _d3d11ShaderCompiler.compilePixelShader(
+        AllShaders_hlslStringView(),
+        "spritesDefaultPS"_sv,
+        "SpritePixelShaderDefault"_sv);
+
+    _spritePixelShaderMonochromatic = _d3d11ShaderCompiler.compilePixelShader(
+        AllShaders_hlslStringView(),
+        "spritesMonochromaticPS"_sv,
+        "SpritePixelShaderMonochromatic"_sv);
 
     // Vertex buffer
     {
@@ -667,12 +672,19 @@ void D3D11Painter::createSpriteRenderingResources()
 void D3D11Painter::createPolyRenderingResources()
 {
     // Shaders
-    std::tie(_polyVertexShader, _polyInputLayout) = _d3d11ShaderCompiler.compileVertexShader(
+    const auto [polyVertexShader, polyInputLayout] = _d3d11ShaderCompiler.compileVertexShader(
         AllShaders_hlslStringView(),
-        "polyVS",
-        Array{VertexElement::Vec4, VertexElement::Vec4});
+        "polyVS"_sv,
+        Array{VertexElement::Vec4, VertexElement::Vec4},
+        "PolyVertexShader"_sv);
 
-    _polyPixelShader = _d3d11ShaderCompiler.compilePixelShader(AllShaders_hlslStringView(), "polyPS");
+    _polyVertexShader = polyVertexShader;
+    _polyInputLayout  = polyInputLayout;
+
+    _polyPixelShader = _d3d11ShaderCompiler.compilePixelShader(
+        AllShaders_hlslStringView(),
+        "polyPS"_sv,
+        "PolyPixelShader"_sv);
 
     // Vertex buffer
     {
@@ -691,8 +703,19 @@ void D3D11Painter::createPolyRenderingResources()
 void D3D11Painter::createMeshRenderingResources()
 {
     // Shaders
-    _meshVertexShader = _d3d11ShaderCompiler.compileVertexShader(AllShaders_hlslStringView(), "meshVS");
-    _meshPixelShader  = _d3d11ShaderCompiler.compilePixelShader(AllShaders_hlslStringView(), "meshPS");
+    const auto [meshVertexShader, meshInputLayout] = _d3d11ShaderCompiler.compileVertexShader(
+        AllShaders_hlslStringView(),
+        "meshVS"_sv,
+        Array{VertexElement::Vec4, VertexElement::Vec4},
+        "MeshVertexShader"_sv);
+
+    _meshVertexShader = meshVertexShader;
+    _meshInputLayout  = meshInputLayout;
+
+    _meshPixelShader = _d3d11ShaderCompiler.compilePixelShader(
+        AllShaders_hlslStringView(),
+        "meshPS"_sv,
+        "MeshPixelShader"_sv);
 
     // Buffers
     auto desc           = D3D11_BUFFER_DESC();
@@ -711,6 +734,15 @@ void D3D11Painter::createMeshRenderingResources()
     checkHResult(
         _id3d11Device->CreateBuffer(&desc, nullptr, &_meshIndexBuffer),
         "Failed to create the mesh index buffer.");
+}
+
+void D3D11Painter::applyInputLayout(ID3D11InputLayout* inputLayout)
+{
+    if (inputLayout != _lastBoundInputLayout)
+    {
+        _id3d11Context->IASetInputLayout(inputLayout);
+        _lastBoundInputLayout = inputLayout;
+    }
 }
 
 void D3D11Painter::applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology)

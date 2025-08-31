@@ -7,7 +7,7 @@ target_sources(Polly PRIVATE
 	PRIVATE ${d3d11_source_files}
 )
 
-target_link_libraries(Polly PRIVATE d3d11 d3dcompiler dxgi dxguid)
+target_link_libraries(Polly PRIVATE d3d11 dxgi dxguid)
 
 target_compile_definitions(Polly PRIVATE -Dpolly_have_gfx_d3d11)
 

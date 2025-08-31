@@ -40,15 +40,32 @@ class D3D11ShaderCompiler final
 
     ~D3D11ShaderCompiler() noexcept;
 
+    void setID3D11Device(ComPtr<ID3D11Device> device);
+
     CompiledVertexShader compileVertexShader(
         StringView          hlslSourceCode,
         StringView          entryPoint,
-        Span<VertexElement> vertexElements);
+        Span<VertexElement> vertexElements,
+        StringView          nameHint);
 
-    ComPtr<ID3D11PixelShader> compilePixelShader(StringView hlslSourceCode, StringView entryPoint);
+    ComPtr<ID3D11PixelShader> compilePixelShader(
+        StringView hlslSourceCode,
+        StringView entryPoint,
+        StringView nameHint);
 
   private:
-    HMODULE        _d3dCompilerDllHandle;
-    D3DCompileFunc _d3dCompileFunc;
+    ComPtr<ID3DBlob> compileHLSLShader(
+        StringView hlslSourceCode,
+        StringView entryPoint,
+        StringView target,
+        StringView nameHint);
+
+    ComPtr<ID3D11InputLayout> createInputLayout(
+        ID3DBlob*           vertexShaderByteCode,
+        Span<VertexElement> vertexElements);
+
+    ComPtr<ID3D11Device> _id3d11Device;
+    HMODULE              _d3dCompilerDllHandle;
+    D3DCompileFunc       _d3dCompileFunc;
 };
 } // namespace Polly
