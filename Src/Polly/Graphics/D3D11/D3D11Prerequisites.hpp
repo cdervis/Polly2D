@@ -6,6 +6,7 @@
 
 #include "Polly/Maybe.hpp"
 #include <d3d11.h>
+#include <d3d11_1.h>
 #include <dxgi.h>
 #include <Windows.h>
 #include <WRL/client.h>

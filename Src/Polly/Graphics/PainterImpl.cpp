@@ -979,7 +979,7 @@ Matrix Painter::Impl::computeViewportTransformation(const Rectf& viewport)
     const auto mat =
         Matrix(Vec4(xScale, 0, 0, 0), Vec4(0, -yScale, 0, 0), Vec4(0, 0, 1, 0), Vec4(-1, 1, 0, 1));
 
-#ifdef __APPLE__
+#if defined(polly_have_gfx_metal) or defined(polly_have_gfx_d3d11)
     return mat;
 #else
     return mat * scale(Vec2(1, -1));

@@ -69,6 +69,8 @@ D3D11Painter::~D3D11Painter() noexcept
 
 void D3D11Painter::onFrameStarted()
 {
+    beginEvent(L"onFrameStarted");
+
     // Bind vertex buffers
     {
         const auto vertexBuffers = Array{
@@ -80,7 +82,12 @@ void D3D11Painter::onFrameStarted()
         const auto strides = Array{0u, 0u, 0u};
         const auto offsets = Array{0u, 0u, 0u};
 
-        _id3d11Context->IASetVertexBuffers(0, 1, vertexBuffers.data(), strides.data(), offsets.data());
+        _id3d11Context->IASetVertexBuffers(
+            0,
+            vertexBuffers.size(),
+            vertexBuffers.data(),
+            strides.data(),
+            offsets.data());
     }
 
     // Bind constant buffers here, because they don't change over the lifetime of the frame.
@@ -93,11 +100,10 @@ void D3D11Painter::onFrameStarted()
         _id3d11Context->VSSetConstantBuffers(0, constantBuffers.size(), constantBuffers.data());
     }
 
-    if (not _lastBoundRasterizerState)
-    {
-        _id3d11Context->RSSetState(_rasterizerStateDefault.Get());
-        _lastBoundRasterizerState = _rasterizerStateDefault.Get();
-    }
+    _id3d11Context->OMSetDepthStencilState(_depthStencilStateDefault.Get(), 0);
+
+    _id3d11Context->RSSetState(_rasterizerStateDefault.Get());
+    _lastBoundRasterizerState = _rasterizerStateDefault.Get();
 
     _spriteVertexCounter = 0;
     _spriteIndexCounter  = 0;
@@ -105,6 +111,8 @@ void D3D11Painter::onFrameStarted()
     _meshVertexCounter   = 0;
     _meshIndexCounter    = 0;
 
+    _lastBoundViewport    = Rectf();
+    _lastBoundIndexBuffer = nullptr;
     _lastBoundInputLayout = nullptr;
 
     _lastBoundVertexShader = nullptr;
@@ -114,12 +122,19 @@ void D3D11Painter::onFrameStarted()
     _lastBoundSamplerState = nullptr;
 
     _lastAppliedPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+
+    endEvent();
 }
 
 void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc)
 {
+    beginEvent(L"onFrameEnded");
+
+#if 0
     if (imGuiDrawFunc)
     {
+        beginEvent(L"ImGui");
+
         setCanvas(none, none, false);
         ImGui_ImplDX11_NewFrame();
 
@@ -133,7 +148,10 @@ void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
         ::ImGui::NewFrame();
         imGuiDrawFunc(imgui);
         ::ImGui::EndFrame();
+
+        endEvent();
     }
+#endif
 
 
     auto& d3dWindow = static_cast<D3DWindow&>(window());
@@ -143,6 +161,8 @@ void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
         "Failed to present the game window swap chain.");
 
     resetCurrentStates();
+
+    endEvent();
 }
 
 UniquePtr<Image::Impl> D3D11Painter::createCanvas(u32 width, u32 height, ImageFormat format)
@@ -200,16 +220,20 @@ void D3D11Painter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
 
     _id3d11Context->OMSetRenderTargets(1, &rtv, nullptr);
 
-    const auto viewportD3D = D3D11_VIEWPORT{
-        .TopLeftX = viewport.x,
-        .TopLeftY = viewport.y,
-        .Width    = viewport.width,
-        .Height   = viewport.height,
-        .MinDepth = 0.0f,
-        .MaxDepth = 1.0f,
-    };
+    if (_lastBoundViewport != viewport)
+    {
+        const auto viewportD3D = D3D11_VIEWPORT{
+            .TopLeftX = viewport.x,
+            .TopLeftY = viewport.y,
+            .Width    = viewport.width,
+            .Height   = viewport.height,
+            .MinDepth = 0.0f,
+            .MaxDepth = 1.0f,
+        };
 
-    _id3d11Context->RSSetViewports(1, &viewportD3D);
+        _id3d11Context->RSSetViewports(1, &viewportD3D);
+        _lastBoundViewport = viewport;
+    }
 
     setDirtyFlags(
         dirtyFlags()
@@ -269,6 +293,8 @@ void D3D11Painter::requestFrameCapture()
 
 int D3D11Painter::prepareDrawCall()
 {
+    beginEvent(L"prepareDrawCall");
+
     auto       df               = dirtyFlags();
     auto&      perfStats        = performanceStats();
     const auto currentBatchMode = *batchMode();
@@ -358,7 +384,26 @@ int D3D11Painter::prepareDrawCall()
 
     if ((df bitand DF_IndexBuffer) == DF_IndexBuffer)
     {
-        _id3d11Context->IASetIndexBuffer(_spriteIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+        ID3D11Buffer* indexBuffer = nullptr;
+
+        switch (currentBatchMode)
+        {
+            case BatchMode::Sprites: {
+                indexBuffer = _spriteIndexBuffer.Get();
+                break;
+            }
+            case BatchMode::Mesh: {
+                indexBuffer = _meshIndexBuffer.Get();
+                break;
+            }
+        }
+
+        if (indexBuffer != _lastBoundIndexBuffer)
+        {
+            _id3d11Context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+            _lastBoundIndexBuffer = indexBuffer;
+        }
+
         df &= ~DF_IndexBuffer;
     }
 
@@ -454,6 +499,8 @@ int D3D11Painter::prepareDrawCall()
         df &= ~DF_UserShaderParams;
     }
 
+    endEvent();
+
     return df;
 }
 
@@ -462,6 +509,8 @@ void D3D11Painter::flushSprites(
     GamePerformanceStats& stats,
     Rectf                 imageSizeAndInverse)
 {
+    beginEvent(L"flushSprites");
+
     // Draw sprites
     auto mappedVertices = D3D11_MAPPED_SUBRESOURCE();
     checkHResult(
@@ -502,6 +551,8 @@ void D3D11Painter::flushSprites(
 
     _spriteVertexCounter += vertexCount;
     _spriteIndexCounter += indexCount;
+
+    endEvent();
 }
 
 void D3D11Painter::flushPolys(
@@ -510,6 +561,8 @@ void D3D11Painter::flushPolys(
     u32                           numberOfVerticesToDraw,
     GamePerformanceStats&         stats)
 {
+    beginEvent(L"flushPolys");
+
     auto mappedVertices = D3D11_MAPPED_SUBRESOURCE();
     checkHResult(
         _id3d11Context->Map(
@@ -534,10 +587,14 @@ void D3D11Painter::flushPolys(
     stats.vertexCount += numberOfVerticesToDraw;
 
     _polyVertexCounter += numberOfVerticesToDraw;
+
+    endEvent();
 }
 
 void D3D11Painter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats)
 {
+    beginEvent(L"flushMeshes");
+
     const auto baseVertex = _meshVertexCounter;
 
     auto mappedVertices = D3D11_MAPPED_SUBRESOURCE();
@@ -579,6 +636,8 @@ void D3D11Painter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& sta
 
     ++stats.drawCallCount;
     stats.vertexCount += totalVertexCount;
+
+    endEvent();
 }
 
 void D3D11Painter::spriteQueueLimitReached()
@@ -631,11 +690,35 @@ void D3D11Painter::createID3D11Device()
     }
 
     checkHResult(result, "Failed to create the Direct3D 11 device.");
+
+#ifndef NDEBUG
+    if (FAILED(_id3d11Context.As<ID3DUserDefinedAnnotation>(&_id3dUserDefinedAnnotation)))
+    {
+        logWarning(
+            "Failed to query the ID3D11DeviceContext for an ID3DUserDefinedAnnotation interface. Polly won't "
+            "be able to generate begin/end markers for graphics debugging. This is fine if you don't want to "
+            "debug graphics.");
+    }
+#endif
 }
 
 PainterCapabilities D3D11Painter::determineCapabilities() const
 {
     return PainterCapabilities();
+}
+
+void D3D11Painter::createDepthStencilState()
+{
+    const auto desc = D3D11_DEPTH_STENCIL_DESC{
+        .DepthEnable    = FALSE,
+        .DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO,
+        .DepthFunc      = D3D11_COMPARISON_ALWAYS,
+        .StencilEnable  = FALSE,
+    };
+
+    checkHResult(
+        _id3d11Device->CreateDepthStencilState(&desc, &_depthStencilStateDefault),
+        "Failed to create an internal ID3D11DepthStencilState.");
 }
 
 void D3D11Painter::createRasterizerStates()
@@ -718,7 +801,7 @@ void D3D11Painter::createSpriteRenderingResources()
         const auto indices = createSpriteIndicesList<maxSpriteBatchSize>();
 
         const auto desc = D3D11_BUFFER_DESC{
-            .ByteWidth = indices.size() * sizeof(u16),
+            .ByteWidth = indices.size() * static_cast<u32>(sizeof(u16)),
             .Usage     = D3D11_USAGE_IMMUTABLE,
             .BindFlags = D3D11_BIND_INDEX_BUFFER,
         };
@@ -815,5 +898,25 @@ void D3D11Painter::applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology)
         _id3d11Context->IASetPrimitiveTopology(topology);
         _lastAppliedPrimitiveTopology = topology;
     }
+}
+
+void D3D11Painter::beginEvent([[maybe_unused]] const wchar_t* name)
+{
+#ifndef NDEBUG
+    if (_id3dUserDefinedAnnotation)
+    {
+        _id3dUserDefinedAnnotation->BeginEvent(name);
+    }
+#endif
+}
+
+void D3D11Painter::endEvent()
+{
+#ifndef NDEBUG
+    if (_id3dUserDefinedAnnotation)
+    {
+        _id3dUserDefinedAnnotation->EndEvent();
+    }
+#endif
 }
 } // namespace Polly

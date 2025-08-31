@@ -73,6 +73,8 @@ class D3D11Painter final : public Painter::Impl
 
     PainterCapabilities determineCapabilities() const;
 
+    void createDepthStencilState();
+
     void createRasterizerStates();
 
     void createConstantBuffers();
@@ -87,14 +89,19 @@ class D3D11Painter final : public Painter::Impl
 
     void applyPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 
+    void beginEvent(const wchar_t* name);
+
+    void endEvent();
+
     ComPtr<ID3D11Device>        _id3d11Device;
     D3D_FEATURE_LEVEL           _featureLevel;
     ComPtr<ID3D11DeviceContext> _id3d11Context;
     D3D11ShaderCompiler         _d3d11ShaderCompiler;
     D3D11PipelineObjectCache    _d3d11PipelineObjectCache;
 
-    ComPtr<ID3D11RasterizerState> _rasterizerStateDefault;
-    ComPtr<ID3D11RasterizerState> _rasterizerStateWithScissorRects;
+    ComPtr<ID3D11DepthStencilState> _depthStencilStateDefault;
+    ComPtr<ID3D11RasterizerState>   _rasterizerStateDefault;
+    ComPtr<ID3D11RasterizerState>   _rasterizerStateWithScissorRects;
 
     ComPtr<ID3D11Buffer> _globalCBuffer;
     ComPtr<ID3D11Buffer> _systemValuesCBuffer;
@@ -124,6 +131,9 @@ class D3D11Painter final : public Painter::Impl
     u32 _meshVertexCounter   = 0;
     u32 _meshIndexCounter    = 0;
 
+    Rectf         _lastBoundViewport;
+    ID3D11Buffer* _lastBoundIndexBuffer = nullptr;
+
     ID3D11RasterizerState* _lastBoundRasterizerState = nullptr;
     ID3D11InputLayout*     _lastBoundInputLayout     = nullptr;
 
@@ -135,5 +145,9 @@ class D3D11Painter final : public Painter::Impl
 
     Maybe<Rectf>             _lastAppliedViewportToSystemValues;
     D3D11_PRIMITIVE_TOPOLOGY _lastAppliedPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+
+#ifndef NDEBUG
+    ComPtr<ID3DUserDefinedAnnotation> _id3dUserDefinedAnnotation;
+#endif
 };
 } // namespace Polly
