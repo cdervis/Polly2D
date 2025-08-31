@@ -83,6 +83,22 @@ void D3D11Painter::onFrameStarted()
         _id3d11Context->IASetVertexBuffers(0, 1, vertexBuffers.data(), strides.data(), offsets.data());
     }
 
+    // Bind constant buffers here, because they don't change over the lifetime of the frame.
+    {
+        const auto constantBuffers = Array{
+            _globalCBuffer.Get(),
+            _systemValuesCBuffer.Get(),
+        };
+
+        _id3d11Context->VSSetConstantBuffers(0, constantBuffers.size(), constantBuffers.data());
+    }
+
+    if (not _lastBoundRasterizerState)
+    {
+        _id3d11Context->RSSetState(_rasterizerStateDefault.Get());
+        _lastBoundRasterizerState = _rasterizerStateDefault.Get();
+    }
+
     _spriteVertexCounter = 0;
     _spriteIndexCounter  = 0;
     _polyVertexCounter   = 0;
@@ -224,6 +240,15 @@ void D3D11Painter::setScissorRects(Span<Rectf> scissorRects)
     }
 
     _id3d11Context->RSSetScissorRects(scissorRectsD3D.size(), scissorRectsD3D.data());
+
+    auto* rasterizerState =
+        scissorRects.isEmpty() ? _rasterizerStateDefault.Get() : _rasterizerStateWithScissorRects.Get();
+
+    if (rasterizerState != _lastBoundRasterizerState)
+    {
+        _id3d11Context->RSSetState(rasterizerState);
+        _lastBoundRasterizerState = rasterizerState;
+    }
 }
 
 void D3D11Painter::readCanvasDataInto(
@@ -440,7 +465,12 @@ void D3D11Painter::flushSprites(
     // Draw sprites
     auto mappedVertices = D3D11_MAPPED_SUBRESOURCE();
     checkHResult(
-        _id3d11Context->Map(_spriteVertexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &mappedVertices),
+        _id3d11Context->Map(
+            _spriteVertexBuffer.Get(),
+            0,
+            _spriteVertexCounter == 0 ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE,
+            0,
+            &mappedVertices),
         "Failed to map the sprite vertex buffer.");
 
     auto* dstVertices = static_cast<SpriteVertex*>(mappedVertices.pData) + _spriteVertexCounter;
@@ -482,7 +512,12 @@ void D3D11Painter::flushPolys(
 {
     auto mappedVertices = D3D11_MAPPED_SUBRESOURCE();
     checkHResult(
-        _id3d11Context->Map(_polyVertexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &mappedVertices),
+        _id3d11Context->Map(
+            _polyVertexBuffer.Get(),
+            0,
+            _polyVertexCounter == 0 ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE,
+            0,
+            &mappedVertices),
         "Failed to map the polygon vertex buffer.");
 
     auto* dstVertices = static_cast<Tessellation2D::PolyVertex*>(mappedVertices.pData) + _polyVertexCounter;
@@ -503,18 +538,28 @@ void D3D11Painter::flushPolys(
 
 void D3D11Painter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats)
 {
-    auto baseVertex = _meshVertexCounter;
+    const auto baseVertex = _meshVertexCounter;
 
     auto mappedVertices = D3D11_MAPPED_SUBRESOURCE();
     checkHResult(
-        _id3d11Context->Map(_meshVertexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &mappedVertices),
+        _id3d11Context->Map(
+            _meshVertexBuffer.Get(),
+            0,
+            baseVertex == 0 ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE,
+            0,
+            &mappedVertices),
         "Failed to map the mesh vertex buffer.");
 
     auto* dstVertices = static_cast<MeshVertex*>(mappedVertices.pData) + baseVertex;
 
     auto mappedIndices = D3D11_MAPPED_SUBRESOURCE();
     checkHResult(
-        _id3d11Context->Map(_meshIndexBuffer.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &mappedIndices),
+        _id3d11Context->Map(
+            _meshIndexBuffer.Get(),
+            0,
+            _meshIndexCounter == 0 ? D3D11_MAP_WRITE_DISCARD : D3D11_MAP_WRITE_NO_OVERWRITE,
+            0,
+            &mappedIndices),
         "Failed to map the mesh index buffer.");
 
     auto* dstIndices = static_cast<u16*>(mappedIndices.pData) + _meshIndexCounter;
@@ -538,6 +583,7 @@ void D3D11Painter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& sta
 
 void D3D11Painter::spriteQueueLimitReached()
 {
+    throw Error("Sprite queue limit reached.");
 }
 
 ID3D11Device* D3D11Painter::id3d11Device() const
@@ -594,16 +640,31 @@ PainterCapabilities D3D11Painter::determineCapabilities() const
 
 void D3D11Painter::createRasterizerStates()
 {
-    auto desc = D3D11_RASTERIZER_DESC();
+    auto desc = D3D11_RASTERIZER_DESC{
+        .FillMode              = D3D11_FILL_SOLID,
+        .CullMode              = D3D11_CULL_NONE,
+        .FrontCounterClockwise = FALSE,
+    };
+
+    checkHResult(
+        _id3d11Device->CreateRasterizerState(&desc, &_rasterizerStateDefault),
+        "Failed to create an internal ID3D11RasterizerState.");
+
+    desc.ScissorEnable = TRUE;
+
+    checkHResult(
+        _id3d11Device->CreateRasterizerState(&desc, &_rasterizerStateWithScissorRects),
+        "Failed to create an internal ID3D11RasterizerState.");
 }
 
 void D3D11Painter::createConstantBuffers()
 {
-    auto desc           = D3D11_BUFFER_DESC();
-    desc.ByteWidth      = sizeof(GlobalCBufferParams);
-    desc.Usage          = D3D11_USAGE_DYNAMIC;
-    desc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    auto desc = D3D11_BUFFER_DESC{
+        .ByteWidth      = sizeof(GlobalCBufferParams),
+        .Usage          = D3D11_USAGE_DYNAMIC,
+        .BindFlags      = D3D11_BIND_CONSTANT_BUFFER,
+        .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+    };
 
     checkHResult(
         _id3d11Device->CreateBuffer(&desc, nullptr, &_globalCBuffer),
@@ -640,11 +701,12 @@ void D3D11Painter::createSpriteRenderingResources()
 
     // Vertex buffer
     {
-        auto desc           = D3D11_BUFFER_DESC();
-        desc.ByteWidth      = maxSpriteBatchSize * verticesPerSprite * sizeof(SpriteVertex);
-        desc.Usage          = D3D11_USAGE_DYNAMIC;
-        desc.BindFlags      = D3D11_BIND_VERTEX_BUFFER;
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        const auto desc = D3D11_BUFFER_DESC{
+            .ByteWidth      = maxSpriteBatchSize * verticesPerSprite * sizeof(SpriteVertex),
+            .Usage          = D3D11_USAGE_DYNAMIC,
+            .BindFlags      = D3D11_BIND_VERTEX_BUFFER,
+            .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+        };
 
         checkHResult(
             _id3d11Device->CreateBuffer(&desc, nullptr, &_spriteVertexBuffer),
@@ -655,10 +717,11 @@ void D3D11Painter::createSpriteRenderingResources()
     {
         const auto indices = createSpriteIndicesList<maxSpriteBatchSize>();
 
-        auto desc      = D3D11_BUFFER_DESC();
-        desc.ByteWidth = indices.size() * sizeof(u16);
-        desc.Usage     = D3D11_USAGE_IMMUTABLE;
-        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        const auto desc = D3D11_BUFFER_DESC{
+            .ByteWidth = indices.size() * sizeof(u16),
+            .Usage     = D3D11_USAGE_IMMUTABLE,
+            .BindFlags = D3D11_BIND_INDEX_BUFFER,
+        };
 
         auto subresourceData    = D3D11_SUBRESOURCE_DATA();
         subresourceData.pSysMem = indices.data();

@@ -53,16 +53,23 @@ void D3DWindow::createSwapChain()
 
     if (not _idxgiSwapChain)
     {
-        auto desc              = DXGI_SWAP_CHAIN_DESC();
-        desc.BufferDesc.Width  = size.x;
-        desc.BufferDesc.Height = size.y;
-        desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        desc.SampleDesc.Count  = 1;
-        desc.BufferUsage       = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        desc.BufferCount       = swapChainBufferCount;
-        desc.OutputWindow      = _windowHandle;
-        desc.Windowed          = not isMaximized();
-        desc.SwapEffect        = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        auto desc = DXGI_SWAP_CHAIN_DESC{
+            .BufferDesc =
+                DXGI_MODE_DESC{
+                    .Width  = size.x,
+                    .Height = size.y,
+                    .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+                },
+            .SampleDesc =
+                DXGI_SAMPLE_DESC{
+                    .Count = 1,
+                },
+            .BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+            .BufferCount  = swapChainBufferCount,
+            .OutputWindow = _windowHandle,
+            .Windowed     = not isMaximized(),
+            .SwapEffect   = DXGI_SWAP_EFFECT_FLIP_DISCARD,
+        };
 
         checkHResult(
             _idxgiFactory->CreateSwapChain(id3d11Device.get(), &desc, &_idxgiSwapChain),
@@ -82,9 +89,10 @@ void D3DWindow::createSwapChain()
             _idxgiSwapChain->GetBuffer(0, IID_ID3D11Texture2D, &texture),
             "Failed to obtain the swap chain's buffer.");
 
-        auto desc          = D3D11_RENDER_TARGET_VIEW_DESC();
-        desc.Format        = DXGI_FORMAT_UNKNOWN;
-        desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        const auto desc = D3D11_RENDER_TARGET_VIEW_DESC{
+            .Format        = DXGI_FORMAT_UNKNOWN,
+            .ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D,
+        };
 
         checkHResult(
             id3d11Device->CreateRenderTargetView(texture.Get(), &desc, &_swapChainRTV),

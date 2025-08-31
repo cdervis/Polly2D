@@ -15,7 +15,6 @@ D3D11UserShader::D3D11UserShader(
     u16             cbufferSize)
     : Impl(painter, shaderType, std::move(parameters), flags, cbufferSize)
 {
-    notImplemented();
 }
 
 ID3D11PixelShader* D3D11UserShader::id3d11PixelShader() const

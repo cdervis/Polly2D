@@ -124,7 +124,8 @@ class D3D11Painter final : public Painter::Impl
     u32 _meshVertexCounter   = 0;
     u32 _meshIndexCounter    = 0;
 
-    ID3D11InputLayout* _lastBoundInputLayout = nullptr;
+    ID3D11RasterizerState* _lastBoundRasterizerState = nullptr;
+    ID3D11InputLayout*     _lastBoundInputLayout     = nullptr;
 
     ID3D11VertexShader* _lastBoundVertexShader = nullptr;
     ID3D11PixelShader*  _lastBoundPixelShader  = nullptr;

@@ -17,15 +17,19 @@ static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
     bool                   isCanvas,
     const void*            data)
 {
-    auto desc             = D3D11_TEXTURE2D_DESC();
-    desc.Width            = width;
-    desc.Height           = height;
-    desc.MipLevels        = 1;
-    desc.ArraySize        = 1;
-    desc.Format           = *convert(format);
-    desc.SampleDesc.Count = 1;
-    desc.Usage            = isCanvas ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE;
-    desc.BindFlags        = D3D11_BIND_SHADER_RESOURCE;
+    auto desc = D3D11_TEXTURE2D_DESC{
+        .Width     = width,
+        .Height    = height,
+        .MipLevels = 1,
+        .ArraySize = 1,
+        .Format    = *convert(format),
+        .SampleDesc =
+            DXGI_SAMPLE_DESC{
+                .Count = 1,
+            },
+        .Usage     = isCanvas ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE,
+        .BindFlags = D3D11_BIND_SHADER_RESOURCE,
+    };
 
     if (isCanvas)
     {
@@ -42,6 +46,7 @@ static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
     }
 
     auto resultTexture = ComPtr<ID3D11Texture2D>();
+
     checkHResult(
         device->CreateTexture2D(&desc, data ? &subresourceData : nullptr, &resultTexture),
         "Failed to create an internal ID3D11Texture2D.");
@@ -53,10 +58,14 @@ static ComPtr<ID3D11ShaderResourceView> createSRV(
     NotNull<ID3D11Device*>    device,
     NotNull<ID3D11Texture2D*> id3d11Texture2D)
 {
-    auto desc                = D3D11_SHADER_RESOURCE_VIEW_DESC();
-    desc.Format              = DXGI_FORMAT_UNKNOWN;
-    desc.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
-    desc.Texture2D.MipLevels = 1;
+    const auto desc = D3D11_SHADER_RESOURCE_VIEW_DESC{
+        .Format        = DXGI_FORMAT_UNKNOWN,
+        .ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D,
+        .Texture2D =
+            D3D11_TEX2D_SRV{
+                .MipLevels = 1,
+            },
+    };
 
     auto resultSRV = ComPtr<ID3D11ShaderResourceView>();
     checkHResult(
@@ -85,9 +94,10 @@ D3D11Image::D3D11Image(Painter::Impl& painter, u32 width, u32 height, ImageForma
 
     // Create the RTV.
     {
-        auto desc          = D3D11_RENDER_TARGET_VIEW_DESC();
-        desc.Format        = DXGI_FORMAT_UNKNOWN;
-        desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        const auto desc = D3D11_RENDER_TARGET_VIEW_DESC{
+            .Format        = DXGI_FORMAT_UNKNOWN,
+            .ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D,
+        };
 
         checkHResult(
             id3d11Device->CreateRenderTargetView(_id3d11Texture2D.Get(), &desc, &_id3d11RTV),
