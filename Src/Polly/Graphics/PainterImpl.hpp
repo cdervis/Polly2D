@@ -142,7 +142,8 @@ class Painter::Impl : public Object
         u32         width,
         u32         height,
         ImageFormat format,
-        const void* data) = 0;
+        const void* data,
+        bool        isStatic) = 0;
 
     UniquePtr<Shader::Impl> createUserShader(StringView sourceCode, StringView filenameHint);
 

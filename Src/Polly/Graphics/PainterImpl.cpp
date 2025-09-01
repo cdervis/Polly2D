@@ -1067,13 +1067,13 @@ void Painter::Impl::postInit(
 
     // White image
     {
-        constexpr auto size       = static_cast<size_t>(1);
-        constexpr auto pixelCount = static_cast<size_t>(4) * size * size;
+        constexpr auto size       = 1u;
+        constexpr auto pixelCount = 4u * size * size;
 
         auto data = Array<u8, pixelCount>();
         data.fill(255);
 
-        _whiteImage = Image(createImage(size, size, ImageFormat::R8G8B8A8UNorm, data.data()).release());
+        _whiteImage = Image(createImage(size, size, ImageFormat::R8G8B8A8UNorm, data.data(), true).release());
         _whiteImage.setDebuggingLabel("WhiteImage");
     }
 }

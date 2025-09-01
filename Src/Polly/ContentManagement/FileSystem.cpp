@@ -291,12 +291,33 @@ Maybe<ByteBlob> FileSystem::loadFileFromDisk([[maybe_unused]] StringView filenam
 #endif
 }
 
-void FileSystem::writeFileToDisk(StringView filename, Span<u8> contents)
+void FileSystem::writeBinaryFileToDisk(StringView filename, Span<u8> contents)
 {
 #if defined(__ANDROID__) || TARGET_OS_IPHONE
     throw Error("Writing files from disk is not supported on the current system.");
 #else
     auto* ofs = SDL_IOFromFile(String(filename).cstring(), "wb");
+
+    if (not ofs)
+    {
+        throw Error(formatString("Failed to open file '{}' for writing.", filename));
+    }
+
+    defer
+    {
+        SDL_CloseIO(ofs);
+    };
+
+    SDL_WriteIO(ofs, contents.data(), contents.size());
+#endif
+}
+
+void FileSystem::writeTextFileToDisk(StringView filename, StringView contents)
+{
+#if defined(__ANDROID__) || TARGET_OS_IPHONE
+    throw Error("Writing files from disk is not supported on the current system.");
+#else
+    auto* ofs = SDL_IOFromFile(String(filename).cstring(), "w");
 
     if (not ofs)
     {

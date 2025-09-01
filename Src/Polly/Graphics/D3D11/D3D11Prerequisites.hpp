@@ -19,5 +19,7 @@ enum class ImageFormat;
 
 void checkHResult(HRESULT result, StringView message);
 
+void setD3D11ObjectLabel(ID3D11DeviceChild* object, StringView name);
+
 Maybe<DXGI_FORMAT> convert(ImageFormat format);
 } // namespace Polly

@@ -14,6 +14,8 @@
 #include "Polly/Graphics/Tessellation2D.hpp"
 #include "Polly/Graphics/VertexElement.hpp"
 #include "Polly/ImGui.hpp"
+#include "Polly/ShaderCompiler/Ast.hpp"
+#include "Polly/ShaderCompiler/HLSLShaderGenerator.hpp"
 
 #include <backends/imgui_impl_dx11.h>
 #include <backends/imgui_impl_sdl3.h>
@@ -69,7 +71,7 @@ D3D11Painter::~D3D11Painter() noexcept
 
 void D3D11Painter::onFrameStarted()
 {
-    beginEvent(L"onFrameStarted");
+    beginEvent(L"Painter Frame");
 
     // Bind vertex buffers
     {
@@ -79,7 +81,12 @@ void D3D11Painter::onFrameStarted()
             _meshVertexBuffer.Get(),
         };
 
-        const auto strides = Array{0u, 0u, 0u};
+        const auto strides = Array{
+            static_cast<UINT>(sizeof(SpriteVertex)),
+            static_cast<UINT>(sizeof(Tessellation2D::PolyVertex)),
+            static_cast<UINT>(sizeof(MeshVertex)),
+        };
+
         const auto offsets = Array{0u, 0u, 0u};
 
         _id3d11Context->IASetVertexBuffers(
@@ -122,13 +129,14 @@ void D3D11Painter::onFrameStarted()
     _lastBoundSamplerState = nullptr;
 
     _lastAppliedPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
-
-    endEvent();
 }
 
 void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc)
 {
-    beginEvent(L"onFrameEnded");
+    defer
+    {
+        endEvent();
+    };
 
 #if 0
     if (imGuiDrawFunc)
@@ -142,17 +150,16 @@ void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
         {
             ::ImGui::Render();
             ImGui_ImplDX11_RenderDrawData(::ImGui::GetDrawData());
+
+            endEvent();
         };
 
         ImGui_ImplSDL3_NewFrame();
         ::ImGui::NewFrame();
         imGuiDrawFunc(imgui);
         ::ImGui::EndFrame();
-
-        endEvent();
     }
 #endif
-
 
     auto& d3dWindow = static_cast<D3DWindow&>(window());
 
@@ -161,8 +168,6 @@ void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
         "Failed to present the game window swap chain.");
 
     resetCurrentStates();
-
-    endEvent();
 }
 
 UniquePtr<Image::Impl> D3D11Painter::createCanvas(u32 width, u32 height, ImageFormat format)
@@ -170,9 +175,14 @@ UniquePtr<Image::Impl> D3D11Painter::createCanvas(u32 width, u32 height, ImageFo
     return makeUnique<D3D11Image>(*this, width, height, format);
 }
 
-UniquePtr<Image::Impl> D3D11Painter::createImage(u32 width, u32 height, ImageFormat format, const void* data)
+UniquePtr<Image::Impl> D3D11Painter::createImage(
+    u32         width,
+    u32         height,
+    ImageFormat format,
+    const void* data,
+    bool        isStatic)
 {
-    return makeUnique<D3D11Image>(*this, width, height, format, data);
+    return makeUnique<D3D11Image>(*this, width, height, format, data, isStatic);
 }
 
 UniquePtr<Shader::Impl> D3D11Painter::onCreateNativeUserShader(
@@ -183,7 +193,14 @@ UniquePtr<Shader::Impl> D3D11Painter::onCreateNativeUserShader(
     UserShaderFlags                     flags,
     u16                                 cbufferSize)
 {
-    notImplemented();
+    return makeUnique<D3D11UserShader>(
+        *this,
+        ast.shaderType(),
+        ShaderCompiler::HLSLShaderGenerator().generate(context, ast, entryPoint, false),
+        std::move(params),
+        flags,
+        cbufferSize,
+        _d3d11ShaderCompiler);
 }
 
 void D3D11Painter::onBeforeCanvasChanged([[maybe_unused]] Image oldCanvas, [[maybe_unused]] Rectf viewport)
@@ -293,8 +310,6 @@ void D3D11Painter::requestFrameCapture()
 
 int D3D11Painter::prepareDrawCall()
 {
-    beginEvent(L"prepareDrawCall");
-
     auto       df               = dirtyFlags();
     auto&      perfStats        = performanceStats();
     const auto currentBatchMode = *batchMode();
@@ -499,8 +514,6 @@ int D3D11Painter::prepareDrawCall()
         df &= ~DF_UserShaderParams;
     }
 
-    endEvent();
-
     return df;
 }
 
@@ -650,6 +663,11 @@ ID3D11Device* D3D11Painter::id3d11Device() const
     return _id3d11Device.Get();
 }
 
+ID3D11DeviceContext* D3D11Painter::id3d11Context() const
+{
+    return _id3d11Context.Get();
+}
+
 void D3D11Painter::createID3D11Device()
 {
     auto flags = 0u;
@@ -704,7 +722,29 @@ void D3D11Painter::createID3D11Device()
 
 PainterCapabilities D3D11Painter::determineCapabilities() const
 {
-    return PainterCapabilities();
+    auto caps = PainterCapabilities();
+
+    if (_featureLevel >= D3D_FEATURE_LEVEL_11_0)
+    {
+        caps.maxImageExtent = 16384;
+    }
+    else if (_featureLevel >= D3D_FEATURE_LEVEL_10_0)
+    {
+        caps.maxImageExtent = 8192;
+    }
+    else if (_featureLevel >= D3D_FEATURE_LEVEL_9_3)
+    {
+        caps.maxImageExtent = 4096;
+    }
+    else if (_featureLevel >= D3D_FEATURE_LEVEL_9_2)
+    {
+        caps.maxImageExtent = 2048;
+    }
+
+    caps.maxCanvasWidth  = caps.maxImageExtent;
+    caps.maxCanvasHeight = caps.maxImageExtent;
+
+    return caps;
 }
 
 void D3D11Painter::createDepthStencilState()
@@ -719,6 +759,8 @@ void D3D11Painter::createDepthStencilState()
     checkHResult(
         _id3d11Device->CreateDepthStencilState(&desc, &_depthStencilStateDefault),
         "Failed to create an internal ID3D11DepthStencilState.");
+
+    setD3D11ObjectLabel(_depthStencilStateDefault.Get(), "DepthStencilStateDefault");
 }
 
 void D3D11Painter::createRasterizerStates()
@@ -733,11 +775,15 @@ void D3D11Painter::createRasterizerStates()
         _id3d11Device->CreateRasterizerState(&desc, &_rasterizerStateDefault),
         "Failed to create an internal ID3D11RasterizerState.");
 
+    setD3D11ObjectLabel(_rasterizerStateDefault.Get(), "RasterizerStateDefault");
+
     desc.ScissorEnable = TRUE;
 
     checkHResult(
         _id3d11Device->CreateRasterizerState(&desc, &_rasterizerStateWithScissorRects),
         "Failed to create an internal ID3D11RasterizerState.");
+
+    setD3D11ObjectLabel(_rasterizerStateWithScissorRects.Get(), "RasterizerStateWithScissorRects");
 }
 
 void D3D11Painter::createConstantBuffers()
@@ -767,6 +813,7 @@ void D3D11Painter::createSpriteRenderingResources()
         AllShaders_hlslStringView(),
         "spritesVS"_sv,
         Array{VertexElement::Vec4, VertexElement::Vec4},
+        0,
         "SpriteVertexShader"_sv);
 
     _spriteVertexShader = spriteVertexShader;
@@ -794,6 +841,8 @@ void D3D11Painter::createSpriteRenderingResources()
         checkHResult(
             _id3d11Device->CreateBuffer(&desc, nullptr, &_spriteVertexBuffer),
             "Failed to create the sprite vertex buffer.");
+
+        setD3D11ObjectLabel(_spriteVertexBuffer.Get(), "SpriteVertexBuffer");
     }
 
     // Index buffer
@@ -812,6 +861,8 @@ void D3D11Painter::createSpriteRenderingResources()
         checkHResult(
             _id3d11Device->CreateBuffer(&desc, &subresourceData, &_spriteIndexBuffer),
             "Failed to create the sprite index buffer.");
+
+        setD3D11ObjectLabel(_spriteIndexBuffer.Get(), "SpriteIndexBuffer");
     }
 }
 
@@ -822,6 +873,7 @@ void D3D11Painter::createPolyRenderingResources()
         AllShaders_hlslStringView(),
         "polyVS"_sv,
         Array{VertexElement::Vec4, VertexElement::Vec4},
+        1,
         "PolyVertexShader"_sv);
 
     _polyVertexShader = polyVertexShader;
@@ -843,6 +895,8 @@ void D3D11Painter::createPolyRenderingResources()
         checkHResult(
             _id3d11Device->CreateBuffer(&desc, nullptr, &_polyVertexBuffer),
             "Failed to create the polygon vertex buffer.");
+
+        setD3D11ObjectLabel(_polyVertexBuffer.Get(), "PolyVertexBuffer");
     }
 }
 
@@ -853,6 +907,7 @@ void D3D11Painter::createMeshRenderingResources()
         AllShaders_hlslStringView(),
         "meshVS"_sv,
         Array{VertexElement::Vec4, VertexElement::Vec4},
+        2,
         "MeshVertexShader"_sv);
 
     _meshVertexShader = meshVertexShader;
@@ -874,12 +929,16 @@ void D3D11Painter::createMeshRenderingResources()
         _id3d11Device->CreateBuffer(&desc, nullptr, &_meshVertexBuffer),
         "Failed to create the mesh vertex buffer.");
 
+    setD3D11ObjectLabel(_meshVertexBuffer.Get(), "MeshVertexBuffer");
+
     desc.ByteWidth = sizeof(u16) * maxMeshVertices;
     desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
     checkHResult(
         _id3d11Device->CreateBuffer(&desc, nullptr, &_meshIndexBuffer),
         "Failed to create the mesh index buffer.");
+
+    setD3D11ObjectLabel(_meshIndexBuffer.Get(), "MeshIndexBuffer");
 }
 
 void D3D11Painter::applyInputLayout(ID3D11InputLayout* inputLayout)

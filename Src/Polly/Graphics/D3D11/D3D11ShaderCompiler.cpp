@@ -5,6 +5,7 @@
 #include "Polly/Graphics/D3D11/D3D11ShaderCompiler.hpp"
 
 #include "Polly/Error.hpp"
+#include "Polly/FileSystem.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Graphics/VertexElement.hpp"
 #include "Polly/Logging.hpp"
@@ -80,6 +81,7 @@ D3D11ShaderCompiler::CompiledVertexShader D3D11ShaderCompiler::compileVertexShad
     StringView          hlslSourceCode,
     StringView          entryPoint,
     Span<VertexElement> vertexElements,
+    u32                 vertexBufferSlot,
     StringView          nameHint)
 {
     assume(_id3d11Device);
@@ -96,9 +98,11 @@ D3D11ShaderCompiler::CompiledVertexShader D3D11ShaderCompiler::compileVertexShad
             &vertexShader),
         "Failed to create a vertex shader.");
 
+    setD3D11ObjectLabel(vertexShader.Get(), nameHint);
+
     return CompiledVertexShader{
         .vertexShader = std::move(vertexShader),
-        .inputLayout  = createInputLayout(byteCode.Get(), vertexElements),
+        .inputLayout  = createInputLayout(byteCode.Get(), vertexElements, vertexBufferSlot, nameHint),
     };
 }
 
@@ -120,6 +124,8 @@ ComPtr<ID3D11PixelShader> D3D11ShaderCompiler::compilePixelShader(
             nullptr,
             &pixelShader),
         "Failed to create a pixel shader.");
+
+    setD3D11ObjectLabel(pixelShader.Get(), nameHint);
 
     return pixelShader;
 }
@@ -154,7 +160,7 @@ ComPtr<ID3DBlob> D3D11ShaderCompiler::compileHLSLShader(
         static_cast<SIZE_T>(hlslSourceCode.size()),
         nameHint.cstring(),
         nullptr,
-        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
         entryPoint.cstring(),
         target.cstring(),
         0,
@@ -183,7 +189,9 @@ ComPtr<ID3DBlob> D3D11ShaderCompiler::compileHLSLShader(
 
 ComPtr<ID3D11InputLayout> D3D11ShaderCompiler::createInputLayout(
     ID3DBlob*           vertexShaderByteCode,
-    Span<VertexElement> vertexElements)
+    Span<VertexElement> vertexElements,
+    u32                 vertexBufferSlot,
+    StringView          nameHint)
 {
     auto inputElementDescs = List<D3D11_INPUT_ELEMENT_DESC, 4>();
     inputElementDescs.reserve(vertexElements.size());
@@ -197,7 +205,7 @@ ComPtr<ID3D11InputLayout> D3D11ShaderCompiler::createInputLayout(
                 .SemanticName      = "TEXCOORD",
                 .SemanticIndex     = index,
                 .Format            = *convertVertexElementFormat(element),
-                .InputSlot         = 0,
+                .InputSlot         = vertexBufferSlot,
                 .AlignedByteOffset = offsetInBytes,
                 .InputSlotClass    = D3D11_INPUT_PER_VERTEX_DATA,
             });
@@ -216,6 +224,8 @@ ComPtr<ID3D11InputLayout> D3D11ShaderCompiler::createInputLayout(
             vertexShaderByteCode->GetBufferSize(),
             &inputLayout),
         "Failed to create an internal ID3D11InputLayout for a vertex shader.");
+
+    setD3D11ObjectLabel(inputLayout.Get(), formatString("{}_InputLayout", nameHint));
 
     return inputLayout;
 }

@@ -15,7 +15,8 @@ static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
     u32                    height,
     ImageFormat            format,
     bool                   isCanvas,
-    const void*            data)
+    const void*            data,
+    bool                   isStatic)
 {
     auto desc = D3D11_TEXTURE2D_DESC{
         .Width     = width,
@@ -27,7 +28,7 @@ static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
             DXGI_SAMPLE_DESC{
                 .Count = 1,
             },
-        .Usage     = isCanvas ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE,
+        .Usage     = (isCanvas or not isStatic) ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE,
         .BindFlags = D3D11_BIND_SHADER_RESOURCE,
     };
 
@@ -75,12 +76,18 @@ static ComPtr<ID3D11ShaderResourceView> createSRV(
     return resultSRV;
 }
 
-D3D11Image::D3D11Image(Painter::Impl& painter, u32 width, u32 height, ImageFormat format, const void* data)
+D3D11Image::D3D11Image(
+    Painter::Impl& painter,
+    u32            width,
+    u32            height,
+    ImageFormat    format,
+    const void*    data,
+    bool           isStatic)
     : Impl(painter, false, width, height, format)
 {
     NotNull id3d11Device = static_cast<D3D11Painter&>(painter).id3d11Device();
 
-    _id3d11Texture2D = createID3D11Texture2D(id3d11Device, width, height, format, false, data);
+    _id3d11Texture2D = createID3D11Texture2D(id3d11Device, width, height, format, false, data, isStatic);
     _id3d11SRV       = createSRV(id3d11Device, _id3d11Texture2D.Get());
 }
 
@@ -89,7 +96,7 @@ D3D11Image::D3D11Image(Painter::Impl& painter, u32 width, u32 height, ImageForma
 {
     NotNull id3d11Device = static_cast<D3D11Painter&>(painter).id3d11Device();
 
-    _id3d11Texture2D = createID3D11Texture2D(id3d11Device, width, height, format, true, nullptr);
+    _id3d11Texture2D = createID3D11Texture2D(id3d11Device, width, height, format, true, nullptr, false);
     _id3d11SRV       = createSRV(id3d11Device, _id3d11Texture2D.Get());
 
     // Create the RTV.
@@ -102,6 +109,20 @@ D3D11Image::D3D11Image(Painter::Impl& painter, u32 width, u32 height, ImageForma
         checkHResult(
             id3d11Device->CreateRenderTargetView(_id3d11Texture2D.Get(), &desc, &_id3d11RTV),
             "Failed to create an internal ID3D11RenderTargetView.");
+    }
+}
+
+void D3D11Image::setDebuggingLabel(StringView name)
+{
+    GraphicsResource::setDebuggingLabel(name);
+
+    setD3D11ObjectLabel(_id3d11Texture2D.Get(), name);
+
+    setD3D11ObjectLabel(_id3d11SRV.Get(), formatString("{}_SRV", name));
+
+    if (_id3d11RTV)
+    {
+        setD3D11ObjectLabel(_id3d11RTV.Get(), formatString("{}_RTV", name));
     }
 }
 

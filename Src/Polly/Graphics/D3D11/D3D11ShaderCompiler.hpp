@@ -46,6 +46,7 @@ class D3D11ShaderCompiler final
         StringView          hlslSourceCode,
         StringView          entryPoint,
         Span<VertexElement> vertexElements,
+        u32                 vertexBufferSlot,
         StringView          nameHint);
 
     ComPtr<ID3D11PixelShader> compilePixelShader(
@@ -62,7 +63,9 @@ class D3D11ShaderCompiler final
 
     ComPtr<ID3D11InputLayout> createInputLayout(
         ID3DBlob*           vertexShaderByteCode,
-        Span<VertexElement> vertexElements);
+        Span<VertexElement> vertexElements,
+        u32                 vertexBufferSlot,
+        StringView          nameHint);
 
     ComPtr<ID3D11Device> _id3d11Device;
     HMODULE              _d3dCompilerDllHandle;

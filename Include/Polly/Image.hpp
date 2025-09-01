@@ -43,12 +43,13 @@ class Image
     /// @param height The height of the image, in pixels.
     /// @param format The pixel format of the image.
     /// @param data The data of the image.
+    /// @param isStatic If true, the contents of the image can't be updated after its creation.
+    ///                 Images should be static in order to improve access performance, unless
+    ///                 there's a need to update them after creation.
     ///
     /// @throw ArgumentError If invalid extents or an invalid format was specified.
     /// @throw Error If the image couldn't be created due to a backend error.
-    ///
-    /// @name Create from raw data
-    explicit Image(u32 width, u32 height, ImageFormat format, const void* data);
+    explicit Image(u32 width, u32 height, ImageFormat format, const void* data, bool isStatic = true);
 
     /// Loads a 2D image from memory.
     ///
@@ -61,8 +62,6 @@ class Image
     ///
     /// @throw Error If the image data is invalid or if the image couldn't be created
     /// otherwise.
-    ///
-    /// @name Create from image data
     explicit Image(Span<u8> memory);
 
     /// Lazily loads an Image object from the storage.
@@ -70,8 +69,6 @@ class Image
     /// @param assetName The name of the image in the asset storage.
     ///
     /// @throw Error If the image asset doesn't exist or couldn't be read or loaded.
-    ///
-    /// @name Load from asset storage
     explicit Image(StringView assetName);
 
     /// Creates a 2D image to be used as a canvas.
@@ -79,8 +76,6 @@ class Image
     /// @param width The width of the image, in pixels.
     /// @param height The height of the image, in pixels.
     /// @param format The pixel format of the image.
-    ///
-    /// @name Create canvas
     explicit Image(u32 width, u32 height, ImageFormat format);
 
     /// Gets the name of the image, as stored in the game's assets.

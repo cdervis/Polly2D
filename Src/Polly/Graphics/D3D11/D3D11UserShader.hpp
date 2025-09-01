@@ -9,16 +9,19 @@
 
 namespace Polly
 {
+class D3D11ShaderCompiler;
+
 class D3D11UserShader final : public Shader::Impl
 {
   public:
     explicit D3D11UserShader(
-        Painter::Impl&  painter,
-        ShaderType      shaderType,
-        String          hlslSourceCode,
-        ParameterList   parameters,
-        UserShaderFlags flags,
-        u16             cbufferSize);
+        Painter::Impl&       painter,
+        ShaderType           shaderType,
+        String               hlslSourceCode,
+        ParameterList        parameters,
+        UserShaderFlags      flags,
+        u16                  cbufferSize,
+        D3D11ShaderCompiler& d3d11ShaderCompiler);
 
     ID3D11PixelShader* id3d11PixelShader() const;
 

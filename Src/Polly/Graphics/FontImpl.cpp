@@ -9,6 +9,11 @@
 #include "Polly/Logging.hpp"
 #include "Polly/Narrow.hpp"
 
+#if polly_have_gfx_d3d11
+#include "Polly/Graphics/D3D11/D3D11Image.hpp"
+#include "Polly/Graphics/D3D11/D3D11Painter.hpp"
+#endif
+
 #if polly_have_gfx_metal
 #include "Polly/Graphics/Metal/MetalImage.hpp"
 #endif
@@ -296,7 +301,18 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
         mtlTexture
             ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), rowPitch);
 #elif polly_have_gfx_d3d11
-        notImplemented();
+        auto& painterImpl  = *Game::Impl::instance().painter().impl();
+        auto& d3d11Painter = static_cast<D3D11Painter&>(painterImpl);
+
+        auto& d3d11Image    = static_cast<const Polly::D3D11Image&>(*page.atlas.impl());
+        auto* id3d11Texture = d3d11Image.id3d11Texture2D();
+
+        const auto rowPitch   = imageRowPitch(d3d11Image.width(), d3d11Image.format());
+        const auto slicePitch = imageSlicePitch(d3d11Image.width(), d3d11Image.height(), d3d11Image.format());
+
+        d3d11Painter.id3d11Context()
+            ->UpdateSubresource(id3d11Texture, 0, nullptr, page.atlasData.data(), rowPitch, slicePitch);
+
 #elif polly_have_gfx_vulkan
         auto& deviceImpl   = *Game::Impl::instance().painter().impl();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);

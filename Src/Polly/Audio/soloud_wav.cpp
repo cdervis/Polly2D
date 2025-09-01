@@ -38,6 +38,7 @@ freely, subject to the following restrictions:
 #include "dr_mp3.h"
 #include "dr_wav.h"
 
+#define STB_VORBIS_HEADER_ONLY
 #include "StbVorbis.hpp"
 // clang-format on
 

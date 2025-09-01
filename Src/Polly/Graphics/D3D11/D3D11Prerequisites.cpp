@@ -14,6 +14,13 @@ void checkHResult(HRESULT result, StringView message)
     }
 }
 
+void setD3D11ObjectLabel([[maybe_unused]] ID3D11DeviceChild* object, [[maybe_unused]] StringView name)
+{
+#ifndef NDEBUG
+    object->SetPrivateData(WKPDID_D3DDebugObjectName, name.size(), name.data());
+#endif
+}
+
 Maybe<DXGI_FORMAT> convert(ImageFormat format)
 {
     switch (format)

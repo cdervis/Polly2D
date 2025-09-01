@@ -15,6 +15,9 @@ namespace Polly
 class D3D11Painter final : public Painter::Impl
 {
   public:
+    static constexpr auto systemValuesCBufferSlot     = 1u;
+    static constexpr auto userShaderParamsCBufferSlot = 2u;
+
     explicit D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats);
 
     ~D3D11Painter() noexcept override;
@@ -25,7 +28,12 @@ class D3D11Painter final : public Painter::Impl
 
     UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
 
-    UniquePtr<Image::Impl> createImage(u32 width, u32 height, ImageFormat format, const void* data) override;
+    UniquePtr<Image::Impl> createImage(
+        u32         width,
+        u32         height,
+        ImageFormat format,
+        const void* data,
+        bool        isStatic) override;
 
     UniquePtr<Shader::Impl> onCreateNativeUserShader(
         const ShaderCompiler::Ast&          ast,
@@ -63,6 +71,8 @@ class D3D11Painter final : public Painter::Impl
     void spriteQueueLimitReached() override;
 
     ID3D11Device* id3d11Device() const;
+
+    ID3D11DeviceContext* id3d11Context() const;
 
   private:
     static constexpr auto maxSpriteBatchSize = std::numeric_limits<uint16_t>::max() / verticesPerSprite;
