@@ -2,9 +2,9 @@
 
 # Polly
 
-<p><img title="Polly logo" src="Misc/Logos/logo-squared.svg" width="160" height="160"></p>
+<p><img title="Polly logo" src="Docs/assets/images/logo.svg" width="160" height="160"></p>
 
-Minimal 2D Game Framework for C++
+2D C++ Game Framework for Minimalists
 
 [![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org)
 [![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](#getting-started)
@@ -25,7 +25,7 @@ Instead, it lets you define your game architecture however you desire it, and gi
 
 In short, it provides every audiovisual aspect necessary to comfortably make a 2D game using a pure C++, code-only approach. 
 
-![Cover image](Docs/Resources/cover-1.webp)
+![Cover image](Docs/assets/images/cover-1.webp)
 
 > [!NOTE]  
 > Polly is currently in early development. Some things might be broken, not documented and many things change frequently.

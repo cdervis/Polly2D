@@ -1,6 +1,6 @@
 // Copyright (C) 2023-2024 Cem Dervis
 // This file is part of Polly.
-// For conditions of distribution and use, see copyright notice in LICENSE.
+// For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
 #include "Polly/String.hpp"
 #include "fast_float.hpp"

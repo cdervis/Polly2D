@@ -1,6 +1,6 @@
 // Copyright (C) 2025 Cem Dervis
-// This file is part of Polly.
-// For conditions of distribution and use, see copyright notice in LICENSE.
+// This file is part of Polly, a 2D C++ game framework for minimalists.
+// For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
 // This file contains portions of code from the Beman Project.
 // https://github.com/bemanproject/optional

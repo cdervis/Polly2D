@@ -1,6 +1,6 @@
-# Copyright (C) 2025 Cemalettin Dervis
+# Copyright (C) 2025 Cem Dervis
 # This file is part of Polly, a lightweight 2D Game Framework for C++.
-# For conditions of distribution and use, see copyright notice in LICENSE.
+# For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
 cmake_minimum_required(VERSION 3.22)
 

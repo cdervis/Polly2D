@@ -1,5 +1,6 @@
-# Copyright (C) 2025 Cemalettin Dervis This file is part of Polly.
-# For conditions of distribution and use, see copyright notice in LICENSE.
+# Copyright (C) 2025 Cem Dervis
+# This file is part of Polly, a 2D C++ game framework for minimalists.
+# For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
 if (APPLE)
     set(polly_have_gfx_metal TRUE)
