@@ -48,12 +48,18 @@ class VulkanPainter final : public Painter::Impl
 
     UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
 
-    UniquePtr<Image::Impl> createImage(u32 width, u32 height, ImageFormat format, const void* data) override;
+    UniquePtr<Image::Impl> createImage(
+        u32         width,
+        u32         height,
+        ImageFormat format,
+        const void* data,
+        bool        isStatic) override;
 
     UniquePtr<Shader::Impl> onCreateNativeUserShader(
         const ShaderCompiler::Ast&          ast,
         const ShaderCompiler::SemaContext&  context,
         const ShaderCompiler::FunctionDecl* entryPoint,
+        StringView                          sourceCode,
         Shader::Impl::ParameterList         params,
         UserShaderFlags                     flags,
         u16                                 cbufferSize) override;
