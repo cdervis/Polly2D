@@ -190,7 +190,7 @@ class Game
     ///
     /// The specified function is called after a game is drawn, i.e. it is the last part
     /// before a game's visuals are presented to the screen.
-    virtual void onImGui(ImGui& imgui);
+    virtual void onImGui(ImGui imgui);
 
     /// Sets the function that should be called when the game's window becomes visible.
     virtual void onWindowShown(const WindowEvent& event);

@@ -21,7 +21,7 @@ struct Testbed final : Game
         painter.drawSprite(img, Vec2(100, 100));
     }
 
-    void onImGui(ImGui& imgui) override
+    void onImGui(ImGui imgui) override
     {
         if (imgui.button("Click me!"))
         {

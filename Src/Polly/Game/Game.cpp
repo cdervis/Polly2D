@@ -174,7 +174,7 @@ void Game::draw(Painter painter)
     // Nothing to do.
 }
 
-void Game::onImGui(ImGui& imgui)
+void Game::onImGui(ImGui imgui)
 {
     // Nothing to do.
 }

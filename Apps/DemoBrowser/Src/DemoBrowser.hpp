@@ -29,7 +29,7 @@ class DemoBrowser final : public Game
     void goToPreviousDemo();
     void goToNextDemo();
     void goToDemoAt(int index);
-    void onImGui(ImGui& imgui) override;
+    void onImGui(ImGui imgui) override;
     void createFactoryFunctions();
     void setDefaultWindowSize();
 

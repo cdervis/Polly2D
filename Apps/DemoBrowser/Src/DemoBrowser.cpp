@@ -105,7 +105,7 @@ void DemoBrowser::goToDemoAt(int index)
         _currentDemo->name());
 }
 
-void DemoBrowser::onImGui(ImGui& imgui)
+void DemoBrowser::onImGui(ImGui imgui)
 {
     const bool shouldHideSidebar = _currentDemo->shouldHideSidebar();
 
