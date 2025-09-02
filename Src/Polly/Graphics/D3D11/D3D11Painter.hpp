@@ -9,6 +9,7 @@
 #include "Polly/Graphics/D3D11/D3D11Prerequisites.hpp"
 #include "Polly/Graphics/D3D11/D3D11ShaderCompiler.hpp"
 #include "Polly/Graphics/PainterImpl.hpp"
+#include "Polly/ShaderCompiler/HLSLShaderGenerator.hpp"
 
 namespace Polly
 {
@@ -39,6 +40,7 @@ class D3D11Painter final : public Painter::Impl
         const ShaderCompiler::Ast&          ast,
         const ShaderCompiler::SemaContext&  context,
         const ShaderCompiler::FunctionDecl* entryPoint,
+        StringView                          sourceCode,
         Shader::Impl::ParameterList         params,
         UserShaderFlags                     flags,
         u16                                 cbufferSize) override;
@@ -79,6 +81,15 @@ class D3D11Painter final : public Painter::Impl
     static constexpr auto maxPolyVertices    = std::numeric_limits<uint16_t>::max();
     static constexpr auto maxMeshVertices    = std::numeric_limits<uint16_t>::max();
 
+    // For user shaders, we use buckets of cbuffers, each with increasing sizes.
+    // Since we're always using D3D11_MAP_WRITE_DISCARD every time we update a cbuffer,
+    // this should make things a bit more lightweight.
+    // In the future, we should check if the device supports D3D11.1, which provides
+    // VSSetConstantBuffers1() etc. With those functions, we can allocate a single large cbuffer,
+    // partially update it and specify a correct offset.
+    // Similar to how we do it in Metal and Vulkan.
+    static constexpr auto userShaderParamsCBufferSizes = Array{32u, 64u, 128u, 256u};
+
     void createID3D11Device();
 
     PainterCapabilities determineCapabilities() const;
@@ -103,11 +114,14 @@ class D3D11Painter final : public Painter::Impl
 
     void endEvent();
 
-    ComPtr<ID3D11Device>        _id3d11Device;
-    D3D_FEATURE_LEVEL           _featureLevel;
-    ComPtr<ID3D11DeviceContext> _id3d11Context;
-    D3D11ShaderCompiler         _d3d11ShaderCompiler;
-    D3D11PipelineObjectCache    _d3d11PipelineObjectCache;
+    ID3D11Buffer* selectUserShaderParamsCBuffer(u32 size);
+
+    ComPtr<ID3D11Device>                _id3d11Device;
+    D3D_FEATURE_LEVEL                   _featureLevel;
+    ComPtr<ID3D11DeviceContext>         _id3d11Context;
+    ShaderCompiler::HLSLShaderGenerator _hlslShaderGenerator;
+    D3D11ShaderCompiler                 _d3d11ShaderCompiler;
+    D3D11PipelineObjectCache            _d3d11PipelineObjectCache;
 
     ComPtr<ID3D11DepthStencilState> _depthStencilStateDefault;
     ComPtr<ID3D11RasterizerState>   _rasterizerStateDefault;
@@ -115,6 +129,8 @@ class D3D11Painter final : public Painter::Impl
 
     ComPtr<ID3D11Buffer> _globalCBuffer;
     ComPtr<ID3D11Buffer> _systemValuesCBuffer;
+
+    Array<ComPtr<ID3D11Buffer>, userShaderParamsCBufferSizes.size()> _userShaderParamsCBuffers;
 
     ComPtr<ID3D11InputLayout> _spriteInputLayout;
     ComPtr<ID3D11InputLayout> _polyInputLayout;
@@ -142,7 +158,8 @@ class D3D11Painter final : public Painter::Impl
     u32 _meshIndexCounter    = 0;
 
     Rectf         _lastBoundViewport;
-    ID3D11Buffer* _lastBoundIndexBuffer = nullptr;
+    ID3D11Buffer* _lastBoundIndexBuffer       = nullptr;
+    ID3D11Buffer* _lastBoundUserShaderCBuffer = nullptr;
 
     ID3D11RasterizerState* _lastBoundRasterizerState = nullptr;
     ID3D11InputLayout*     _lastBoundInputLayout     = nullptr;

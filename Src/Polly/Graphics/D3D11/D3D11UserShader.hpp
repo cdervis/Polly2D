@@ -14,14 +14,18 @@ class D3D11ShaderCompiler;
 class D3D11UserShader final : public Shader::Impl
 {
   public:
+    static constexpr auto entryPointName = "main"_sv;
+
     explicit D3D11UserShader(
         Painter::Impl&       painter,
         ShaderType           shaderType,
+        StringView           sourceCode,
         String               hlslSourceCode,
         ParameterList        parameters,
         UserShaderFlags      flags,
         u16                  cbufferSize,
-        D3D11ShaderCompiler& d3d11ShaderCompiler);
+        D3D11ShaderCompiler& d3d11ShaderCompiler,
+        StringView           nameHint);
 
     ID3D11PixelShader* id3d11PixelShader() const;
 

@@ -51,8 +51,8 @@ String HLSLShaderGenerator::doGeneration(
     {
         w << "cbuffer CBuffer1 : register(b" << D3D11Painter::systemValuesCBufferSlot << ")" << wnewline;
         w.openBrace();
-        w << "float2 viewport_size;" << wnewline;
-        w << "float2 viewport_size_inv;" << wnewline;
+        w << "float2 " << Naming::svViewportSize << ";" << wnewline;
+        w << "float2 " << Naming::svViewportSizeInv << ";" << wnewline;
         w.closeBrace(true);
         w << wnewline;
     }
@@ -177,10 +177,6 @@ void HLSLShaderGenerator::generateFunctionDecl(
                               or _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get())
                               or _ast->isSymbolAccessedAnywhere(builtins.svPixelPos.get());
 
-    const auto usesViewportSize = _ast->isSymbolAccessedAnywhere(builtins.svViewportSize.get());
-    const auto usesViewportSizeInv =
-        usesPixelPosNormalized or _ast->isSymbolAccessedAnywhere(builtins.svViewportSizeInv.get());
-
     _callStack.add(function);
 
     if (function->isNormalFunction())
@@ -205,23 +201,19 @@ void HLSLShaderGenerator::generateFunctionDecl(
     }
     else if (function->isShader())
     {
-        w << "float4 main(" << _vsOutputStructName << " " << Naming::shaderInputParam << ")" << wnewline;
+        w
+            << "float4 main("
+            << _vsOutputStructName
+            << " "
+            << Naming::shaderInputParam
+            << ") : SV_Target0"
+            << wnewline;
     }
 
     w.openBrace();
 
     if (function->isShader())
     {
-        if (usesViewportSize)
-        {
-            w << formatString("const float2 {} = viewport_size;", Naming::svViewportSize) << wnewline;
-        }
-
-        if (usesViewportSizeInv)
-        {
-            w << formatString("const float2 {} = viewport_size_inv;", Naming::svViewportSizeInv) << wnewline;
-        }
-
         if (usesPixelPos)
         {
             w
@@ -371,6 +363,13 @@ void HLSLShaderGenerator::generateFunctionCallExpr(
         generateExpr(w, uvArg.get(), context);
         w << ")";
 
+        return;
+    }
+
+    if (builtins.isSomeVectorCtor(calleeSymbol) and args.size() == 1)
+    {
+        prepareExpr(w, args[0].get(), context);
+        generateExpr(w, args[0].get(), context);
         return;
     }
 

@@ -151,6 +151,7 @@ class Painter::Impl : public Object
         const ShaderCompiler::Ast&          ast,
         const ShaderCompiler::SemaContext&  context,
         const ShaderCompiler::FunctionDecl* entryPoint,
+        StringView                          sourceCode,
         Shader::Impl::ParameterList         params,
         UserShaderFlags                     flags,
         u16                                 cbufferSize) = 0;

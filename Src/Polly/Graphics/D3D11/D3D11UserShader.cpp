@@ -12,13 +12,16 @@ namespace Polly
 D3D11UserShader::D3D11UserShader(
     Painter::Impl&       painter,
     ShaderType           shaderType,
+    StringView           sourceCode,
     String               hlslSourceCode,
     ParameterList        parameters,
     UserShaderFlags      flags,
     u16                  cbufferSize,
-    D3D11ShaderCompiler& d3d11ShaderCompiler)
-    : Impl(painter, shaderType, std::move(parameters), flags, cbufferSize)
+    D3D11ShaderCompiler& d3d11ShaderCompiler,
+    StringView           nameHint)
+    : Impl(painter, shaderType, sourceCode, std::move(parameters), flags, cbufferSize)
 {
+    _id3d11PixelShader = d3d11ShaderCompiler.compilePixelShader(hlslSourceCode, entryPointName, nameHint);
 }
 
 ID3D11PixelShader* D3D11UserShader::id3d11PixelShader() const

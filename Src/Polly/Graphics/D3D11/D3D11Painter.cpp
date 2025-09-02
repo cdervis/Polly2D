@@ -105,6 +105,7 @@ void D3D11Painter::onFrameStarted()
         };
 
         _id3d11Context->VSSetConstantBuffers(0, constantBuffers.size(), constantBuffers.data());
+        _id3d11Context->PSSetConstantBuffers(0, constantBuffers.size(), constantBuffers.data());
     }
 
     _id3d11Context->OMSetDepthStencilState(_depthStencilStateDefault.Get(), 0);
@@ -118,9 +119,10 @@ void D3D11Painter::onFrameStarted()
     _meshVertexCounter   = 0;
     _meshIndexCounter    = 0;
 
-    _lastBoundViewport    = Rectf();
-    _lastBoundIndexBuffer = nullptr;
-    _lastBoundInputLayout = nullptr;
+    _lastBoundViewport          = Rectf();
+    _lastBoundIndexBuffer       = nullptr;
+    _lastBoundUserShaderCBuffer = nullptr;
+    _lastBoundInputLayout       = nullptr;
 
     _lastBoundVertexShader = nullptr;
     _lastBoundPixelShader  = nullptr;
@@ -138,7 +140,6 @@ void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
         endEvent();
     };
 
-#if 0
     if (imGuiDrawFunc)
     {
         beginEvent(L"ImGui");
@@ -159,7 +160,6 @@ void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
         imGuiDrawFunc(imgui);
         ::ImGui::EndFrame();
     }
-#endif
 
     auto& d3dWindow = static_cast<D3DWindow&>(window());
 
@@ -189,6 +189,7 @@ UniquePtr<Shader::Impl> D3D11Painter::onCreateNativeUserShader(
     const ShaderCompiler::Ast&          ast,
     const ShaderCompiler::SemaContext&  context,
     const ShaderCompiler::FunctionDecl* entryPoint,
+    StringView                          sourceCode,
     Shader::Impl::ParameterList         params,
     UserShaderFlags                     flags,
     u16                                 cbufferSize)
@@ -196,11 +197,13 @@ UniquePtr<Shader::Impl> D3D11Painter::onCreateNativeUserShader(
     return makeUnique<D3D11UserShader>(
         *this,
         ast.shaderType(),
-        ShaderCompiler::HLSLShaderGenerator().generate(context, ast, entryPoint, false),
+        sourceCode,
+        _hlslShaderGenerator.generate(context, ast, entryPoint, false),
         std::move(params),
         flags,
         cbufferSize,
-        _d3d11ShaderCompiler);
+        _d3d11ShaderCompiler,
+        ast.filename());
 }
 
 void D3D11Painter::onBeforeCanvasChanged([[maybe_unused]] Image oldCanvas, [[maybe_unused]] Rectf viewport)
@@ -233,6 +236,12 @@ void D3D11Painter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
         };
 
         _id3d11Context->ClearRenderTargetView(rtv, clearColorD3D.data());
+    }
+
+    // Unset previously bound shader resources.
+    {
+        const auto srvs = Array<ID3D11ShaderResourceView*, maxUsedShaderResourceSlots>();
+        _id3d11Context->PSSetShaderResources(0, srvs.size(), srvs.data());
     }
 
     _id3d11Context->OMSetRenderTargets(1, &rtv, nullptr);
@@ -510,7 +519,27 @@ int D3D11Painter::prepareDrawCall()
 
     if ((df bitand DF_UserShaderParams) == DF_UserShaderParams)
     {
-        // TODO
+        if (auto& userShader = currentShader(currentBatchMode))
+        {
+            auto& shaderImpl = *userShader.impl();
+            auto* cbuffer    = selectUserShaderParamsCBuffer(shaderImpl.cbufferSize());
+            auto  mappedData = D3D11_MAPPED_SUBRESOURCE();
+
+            checkHResult(
+                _id3d11Context->Map(cbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData),
+                "Failed to map an internal constant buffer.");
+
+            std::memcpy(mappedData.pData, shaderImpl.cbufferData(), shaderImpl.cbufferSize());
+
+            _id3d11Context->Unmap(cbuffer, 0);
+
+            if (cbuffer != _lastBoundUserShaderCBuffer)
+            {
+                _id3d11Context->PSSetConstantBuffers(userShaderParamsCBufferSlot, 1, &cbuffer);
+                _lastBoundUserShaderCBuffer = cbuffer;
+            }
+        }
+
         df &= ~DF_UserShaderParams;
     }
 
@@ -804,6 +833,17 @@ void D3D11Painter::createConstantBuffers()
     checkHResult(
         _id3d11Device->CreateBuffer(&desc, nullptr, &_systemValuesCBuffer),
         "Failed to create the system values constant buffer.");
+
+    for (auto index = 0u; const auto size : userShaderParamsCBufferSizes)
+    {
+        desc.ByteWidth = size;
+
+        checkHResult(
+            _id3d11Device->CreateBuffer(&desc, nullptr, &_userShaderParamsCBuffers[index]),
+            "Failed to create a user shader constant buffer.");
+
+        ++index;
+    }
 }
 
 void D3D11Painter::createSpriteRenderingResources()
@@ -977,5 +1017,18 @@ void D3D11Painter::endEvent()
         _id3dUserDefinedAnnotation->EndEvent();
     }
 #endif
+}
+
+ID3D11Buffer* D3D11Painter::selectUserShaderParamsCBuffer(u32 size)
+{
+    for (auto i = 0u; i < userShaderParamsCBufferSizes.size(); ++i)
+    {
+        if (userShaderParamsCBufferSizes[i] >= size)
+        {
+            return _userShaderParamsCBuffers[i].Get();
+        }
+    }
+
+    throw Error("Failed to select a user shader constant buffer for the specified size.");
 }
 } // namespace Polly

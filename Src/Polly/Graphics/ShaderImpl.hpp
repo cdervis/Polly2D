@@ -38,6 +38,7 @@ class Shader::Impl : public GraphicsResource
     explicit Impl(
         Painter::Impl&  painterImpl,
         ShaderType      shaderType,
+        StringView      sourceCode,
         ParameterList   parameters,
         UserShaderFlags flags,
         u16             cbufferSize);
@@ -188,7 +189,12 @@ class Shader::Impl : public GraphicsResource
 
     void notifyPainterAfterParamChanged();
 
-    Polly::ShaderType                 _shaderType;
+    Polly::ShaderType _shaderType;
+
+#ifndef NDEBUG
+    String _sourceCode;
+#endif
+
     List<u8, 64>                      _cbufferData;
     ParameterList                     _parameters;
     SortedSet<const ShaderParameter*> _dirtyScalarParameters;

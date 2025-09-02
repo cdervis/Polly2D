@@ -212,6 +212,7 @@ UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, S
                 ast,
                 context,
                 entryPointFunc,
+                sourceCode,
                 std::move(params),
                 flags,
                 cbufferPacking.cbufferSize);
@@ -450,6 +451,13 @@ void Painter::Impl::drawSprite(const Sprite& sprite, SpriteShaderKind spriteShad
 
     auto* imageImpl = sprite.image.impl();
     assume(imageImpl);
+
+    if (sprite.image == _currentCanvas)
+    {
+        throw Error(
+            "An image can't be drawn while it's bound as a canvas. Please unset the canvas first (using "
+            "setCanvas()) before drawing it.");
+    }
 
     prepareForBatchMode(frameData, BatchMode::Sprites);
 
