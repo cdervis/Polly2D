@@ -6,13 +6,10 @@
 
 2D C++ Game Framework for Minimalists
 
-[![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org)
-[![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](#getting-started)
-[![License](https://img.shields.io/badge/license-GPLv3-green)](https://github.com/cdervis/Polly2D/blob/main/LICENSE.md)
-
-[![Build Windows](https://github.com/cdervis/Polly2D/actions/workflows/build-windows.yml/badge.svg)](https://github.com/cdervis/Polly2D/actions/workflows/build-windows.yml)
-[![Build Linux](https://github.com/cdervis/Polly2D/actions/workflows/build-linux.yml/badge.svg)](https://github.com/cdervis/Polly2D/actions/workflows/build-linux.yml)
-[![Build macOS](https://github.com/cdervis/Polly2D/actions/workflows/build-macos.yml/badge.svg)](https://github.com/cdervis/Polly2D/actions/workflows/build-macos.yml)
+[![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org) &nbsp;
+[![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](#getting-started) &nbsp;
+[![License](https://img.shields.io/badge/license-GPLv3-green)](https://github.com/cdervis/Polly2D/blob/main/LICENSE.md) &nbsp;
+[![Build](https://github.com/cdervis/Polly2D/actions/workflows/build.yaml/badge.svg)](https://github.com/cdervis/Polly2D/actions/workflows/build.yaml)
 
 </div>
 
