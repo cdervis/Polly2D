@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -9,7 +9,7 @@
 #include "Polly/Image.hpp"
 #include "Polly/Linalg.hpp"
 #include "Polly/Prerequisites.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 
 namespace Polly
 {
@@ -166,7 +166,7 @@ enum class ImGuiTableColumnOpts
 /// @tip For detailed tutorials, visit https://github.com/ocornut/imgui/wiki.
 class ImGui
 {
-    pl_object(ImGui);
+    PollyObject(ImGui);
 
   public:
     void beginWindow(StringView name, bool* isOpen = nullptr, ImGuiWindowOpts flags = ImGuiWindowOpts::None);
@@ -729,7 +729,7 @@ class ImGui
     bool isAnyItemFocused() const;
 
     [[nodiscard]]
-    Rectf itemRect() const;
+    Rectangle itemRect() const;
 };
 
 defineEnumFlagOperations(ImGuiWindowOpts);

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -10,23 +10,23 @@
 
 namespace Polly
 {
-pl_implement_object(SoundChannel);
+PollyImplementObject(SoundChannel);
 
 int SoundChannel::id() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->id() : 0;
 }
 
 bool SoundChannel::isPaused() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->isPaused() : false;
 }
 
 void SoundChannel::setIsPaused(bool value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setIsPaused(value);
@@ -35,13 +35,13 @@ void SoundChannel::setIsPaused(bool value)
 
 float SoundChannel::relativePlaybackSpeed() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->relativePlaySpeed() : 0.0f;
 }
 
 void SoundChannel::setRelativePlaybackSpeed(float value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setRelativePlaySpeed(value);
@@ -50,7 +50,7 @@ void SoundChannel::setRelativePlaybackSpeed(float value)
 
 void SoundChannel::seek(SoundTime seconds)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->seek(seconds);
@@ -59,7 +59,7 @@ void SoundChannel::seek(SoundTime seconds)
 
 void SoundChannel::stop()
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->stop();
@@ -68,13 +68,13 @@ void SoundChannel::stop()
 
 float SoundChannel::volume() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->volume() : 0.0f;
 }
 
 void SoundChannel::setVolume(float value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setVolume(clamp(value, 0.0f, 3.0f));
@@ -83,13 +83,13 @@ void SoundChannel::setVolume(float value)
 
 float SoundChannel::pan() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->pan() : 0.0f;
 }
 
 void SoundChannel::setPan(float value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setPan(clamp(value, -1.0f, 1.0f));
@@ -98,7 +98,7 @@ void SoundChannel::setPan(float value)
 
 void SoundChannel::setIsProtected(bool value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setIsProtected(value);
@@ -107,13 +107,13 @@ void SoundChannel::setIsProtected(bool value)
 
 bool SoundChannel::isLooping() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->isLooping() : false;
 }
 
 void SoundChannel::setIsLooping(bool value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setIsLooping(value);
@@ -122,13 +122,13 @@ void SoundChannel::setIsLooping(bool value)
 
 SoundTime SoundChannel::loopPoint() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->loopPoint() : SoundTime();
 }
 
 void SoundChannel::setLoopPoint(SoundTime value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setLoopPoint(value);
@@ -137,7 +137,7 @@ void SoundChannel::setLoopPoint(SoundTime value)
 
 void SoundChannel::setInaudibleBehavior(SoundInaudibleBehavior value)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->setInaudibleBehavior(value);
@@ -146,7 +146,7 @@ void SoundChannel::setInaudibleBehavior(SoundInaudibleBehavior value)
 
 void SoundChannel::fadeVolume(float toVolume, SoundTime fadeDuration)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->fadeVolume(toVolume, fadeDuration);
@@ -155,13 +155,13 @@ void SoundChannel::fadeVolume(float toVolume, SoundTime fadeDuration)
 
 void SoundChannel::fadePan(float toPan, SoundTime fadeDuration)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->fadePan(toPan, fadeDuration);
 }
 
 void SoundChannel::fadeRelativePlaybackSpeed(float toSpeed, SoundTime fadeDuration)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->fadeRelativePlaySpeed(toSpeed, fadeDuration);
@@ -170,7 +170,7 @@ void SoundChannel::fadeRelativePlaybackSpeed(float toSpeed, SoundTime fadeDurati
 
 void SoundChannel::stopAfter(SoundTime after)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->stopAfter(after);
@@ -179,7 +179,7 @@ void SoundChannel::stopAfter(SoundTime after)
 
 void SoundChannel::pauseAfter(SoundTime after)
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     if (impl)
     {
         impl->pauseAfter(after);
@@ -188,7 +188,7 @@ void SoundChannel::pauseAfter(SoundTime after)
 
 SoundTime SoundChannel::streamPosition() const
 {
-    declareThisImplNoVerify;
+    PollyDeclareThisImplNoVerify;
     return impl ? impl->streamPosition() : SoundTime();
 }
 } // namespace Polly

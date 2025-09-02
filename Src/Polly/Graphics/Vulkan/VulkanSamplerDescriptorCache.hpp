@@ -15,7 +15,7 @@ class VulkanSamplerDescriptorCache final
   public:
     VulkanSamplerDescriptorCache() = default;
 
-    deleteCopyAndMove(VulkanSamplerDescriptorCache);
+    DeleteCopyAndMove(VulkanSamplerDescriptorCache);
 
     ~VulkanSamplerDescriptorCache() noexcept = default;
 

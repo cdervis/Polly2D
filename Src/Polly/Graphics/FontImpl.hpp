@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -23,8 +23,8 @@ class Font::Impl final : public Object,
   public:
     struct RasterizedGlyph
     {
-        Rectf uvRect;
-        u32   pageIndex = 0;
+        Rectangle uvRect;
+        u32       pageIndex = 0;
     };
 
     struct FontPage
@@ -38,11 +38,11 @@ class Font::Impl final : public Object,
 
     struct GlyphIterationExtras
     {
-        float lineIncrement = 0.0f;
-        float ascent        = 0.0f;
-        float descent       = 0.0f;
-        Rectf lineRectThusFar;
-        bool  isLastOnLine = false;
+        float     lineIncrement = 0.0f;
+        float     ascent        = 0.0f;
+        float     descent       = 0.0f;
+        Rectangle lineRectThusFar;
+        bool      isLastOnLine = false;
     };
 
     explicit Impl(Span<u8> data, bool createCopyOfData);
@@ -138,11 +138,11 @@ class Font::Impl final : public Object,
 
             const auto width  = static_cast<float>(boxRight - boxLeft);
             const auto height = static_cast<float>(boxBottom - boxTop);
-            const auto rect   = Rectf(x, y, width, height);
+            const auto rect   = Rectangle(x, y, width, height);
 
             if constexpr (ComputeExtras)
             {
-                if (extras.lineRectThusFar == Rectf())
+                if (extras.lineRectThusFar == Rectangle())
                 {
                     extras.lineRectThusFar = rect;
                 }
@@ -153,7 +153,7 @@ class Font::Impl final : public Object,
                     const auto t = min(extras.lineRectThusFar.top(), rect.top());
                     const auto b = max(extras.lineRectThusFar.bottom(), rect.bottom());
 
-                    extras.lineRectThusFar = Rectf{l, t, r - l, b - t};
+                    extras.lineRectThusFar = Rectangle{l, t, r - l, b - t};
                 }
             }
 

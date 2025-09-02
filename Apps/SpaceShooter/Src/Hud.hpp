@@ -7,7 +7,7 @@ class Hud
   public:
     explicit Hud(u32& scoreRef, u32& healthRef);
 
-    deleteCopyAndMove(Hud);
+    DeleteCopyAndMove(Hud);
 
     void update(GameTime time);
 

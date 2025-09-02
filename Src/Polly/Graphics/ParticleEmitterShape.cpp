@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -14,9 +14,9 @@ ParticleEmitterShape::~ParticleEmitterShape() noexcept = default;
 ParticleEmitterShape::Result ParticleBoxFillShape::next()
 {
     return Result{
-        .offset =
-            {Random::nextFloatFast({width * -0.5f, width * 0.5f}),
-             Random::nextFloatFast({height * -0.5f, height * 0.5f})},
+        .offset = Vec2(
+            Random::nextFloatFast({width * -0.5f, width * 0.5f}),
+            Random::nextFloatFast({height * -0.5f, height * 0.5f})),
         .heading = Random::nextAngleVec2Fast(),
     };
 }
@@ -36,7 +36,7 @@ ParticleEmitterShape::Result ParticleCircleShape::next()
     const auto dist    = Random::nextFloatFast({0.0f, radius});
     const auto heading = Random::nextAngleVec2Fast();
 
-    return {
+    return Result{
         .offset  = heading * dist,
         .heading = shouldRadiate ? Random::nextAngleVec2Fast() : heading,
     };
@@ -44,8 +44,8 @@ ParticleEmitterShape::Result ParticleCircleShape::next()
 
 ParticleEmitterShape::Result ParticlePointShape::next()
 {
-    return {
-        .offset  = {},
+    return Result{
+        .offset  = Vec2(),
         .heading = Random::nextAngleVec2Fast(),
     };
 }
@@ -54,7 +54,7 @@ ParticleEmitterShape::Result ParticleRingShape::next()
 {
     const auto heading = Random::nextAngleVec2Fast();
 
-    return {
+    return Result{
         .offset  = heading * radius,
         .heading = shouldRadiate ? Random::nextAngleVec2Fast() : heading,
     };
@@ -62,12 +62,12 @@ ParticleEmitterShape::Result ParticleRingShape::next()
 
 ParticleEmitterShape::Result ParticleSprayShape::next()
 {
-    auto angle = Polly::atan2(direction.y, direction.x);
-    angle      = Random::nextFloatFast({angle - (spread * 0.5f), angle + (spread * 0.5f)});
+    auto angle = atan2(direction.y, direction.x);
+    angle      = Random::nextFloatFast(FloatInterval(angle - (spread * 0.5f), angle + (spread * 0.5f)));
 
-    return {
+    return Result{
         .offset  = {},
-        .heading = {Polly::cos(angle), Polly::sin(angle)},
+        .heading = {cos(angle), sin(angle)},
     };
 }
 } // namespace Polly

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -34,7 +34,7 @@ static auto sSDLSystemCursors = Array{
     Pair(MouseCursorType::ResizeNE, sNullSDLCursor),
 };
 
-static SDL_SystemCursor convert_cursor_type(MouseCursorType type)
+static SDL_SystemCursor convert_cursor_type(const MouseCursorType type)
 {
     switch (type)
     {
@@ -74,7 +74,7 @@ MouseCursor::Impl::Impl(
     [[maybe_unused]] u32         hotspotY,
     [[maybe_unused]] Span<Color> data)
 {
-    // TODO: issue #42
+    // TODO:
     notImplemented();
 }
 
@@ -82,11 +82,11 @@ MouseCursor::Impl::~Impl() noexcept
 {
     if (_type)
     {
-        auto& [_, sdlCursor] = sSDLSystemCursors[int(*_type)];
+        auto& [_, sdlCursor] = sSDLSystemCursors[static_cast<u32>(*_type)];
         sdlCursor            = nullptr;
     }
 
-    if (_sdlCursor != nullptr)
+    if (_sdlCursor)
     {
         SDL_DestroyCursor(_sdlCursor);
     }

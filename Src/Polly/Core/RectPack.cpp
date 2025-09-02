@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -10,7 +10,7 @@
 
 namespace Polly
 {
-pl_implement_object(RectPack);
+PollyImplementObject(RectPack);
 
 RectPack::RectPack(Vec2 area, bool shouldAllowRotation)
     : RectPack()
@@ -20,31 +20,31 @@ RectPack::RectPack(Vec2 area, bool shouldAllowRotation)
 
 void RectPack::reset(Vec2 area, bool shouldAllowRotation)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->reset(area, shouldAllowRotation);
 }
 
-void RectPack::insert(Span<Vec2> rectSizes, List<Rectf>& dst, RectPackHeuristic heuristic)
+void RectPack::insert(Span<Vec2> rectSizes, List<Rectangle>& dst, RectPackHeuristic heuristic)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->insert(rectSizes, dst, heuristic);
 }
 
-Maybe<Rectf> RectPack::insert(Vec2 rectSize, RectPackHeuristic heuristic)
+Maybe<Rectangle> RectPack::insert(Vec2 rectSize, RectPackHeuristic heuristic)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->insert(rectSize, heuristic);
 }
 
 Vec2 RectPack::area() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->area();
 }
 
 double RectPack::occupancy() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->occupancy();
 }
 } // namespace Polly

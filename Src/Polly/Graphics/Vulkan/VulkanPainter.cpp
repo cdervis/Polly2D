@@ -538,7 +538,7 @@ void VulkanPainter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGu
     destroyQueuedVulkanObjects();
 }
 
-void VulkanPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rectf oldViewport)
+void VulkanPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rectangle oldViewport)
 {
     auto&      frameData   = _frameData[frameIndex()];
     const auto vkCmdBuffer = frameData.vkCommandBuffer;
@@ -590,7 +590,7 @@ void VulkanPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rect
     }
 }
 
-void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport)
+void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport)
 {
     auto& frameData          = _frameData[frameIndex()];
     auto  vkCmdBuffer        = frameData.vkCommandBuffer;
@@ -712,7 +712,7 @@ void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
         bitor DF_PipelineState);
 }
 
-void VulkanPainter::setScissorRects([[maybe_unused]] Span<Rectf> scissorRects)
+void VulkanPainter::setScissorRects([[maybe_unused]] Span<Rectangle> scissorRects)
 {
 #if 0
 #ifndef __ANDROID__
@@ -1698,7 +1698,7 @@ int VulkanPainter::prepareDrawCall()
 void VulkanPainter::flushSprites(
     Span<InternalSprite>  sprites,
     GamePerformanceStats& stats,
-    Rectf                 imageSizeAndInverse)
+    Rectangle             imageSizeAndInverse)
 {
     auto&       frameData    = _frameData[frameIndex()];
     const auto& vertexBuffer = frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex];
@@ -2150,8 +2150,10 @@ void VulkanPainter::setResourceDebugName(
     [[maybe_unused]] StringView        name)
 {
 #ifndef NDEBUG
-    if (_vkSetObjectName == nullptr)
+    if (not _vkSetObjectName)
+    {
         return;
+    }
 
     auto info  = VkDebugMarkerObjectNameInfoEXT();
     info.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;

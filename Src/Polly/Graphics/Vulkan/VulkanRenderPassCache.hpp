@@ -21,12 +21,12 @@ class VulkanRenderPassCache final
         VkImageLayout finalLayout        = VK_IMAGE_LAYOUT_UNDEFINED;
         Maybe<Color>  clearColor;
 
-        defineDefaultEqualityOperations(Key);
+        DefineDefaultEqualityOperations(Key);
     };
 
     explicit VulkanRenderPassCache(VulkanPainter& painter);
 
-    deleteCopyAndMove(VulkanRenderPassCache);
+    DeleteCopyAndMove(VulkanRenderPassCache);
 
     ~VulkanRenderPassCache() noexcept;
 

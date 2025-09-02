@@ -49,7 +49,7 @@ void SpritesDemo::draw(Painter painter)
         Sprite{
             .image    = m_logoTiny,
             .dstRect  = {600, 600, 128.0f * m_imageScale},
-            .srcRect  = Rectf(0, 0, m_logoTiny.size() * m_uvScale),
+            .srcRect  = Rectangle(0, 0, m_logoTiny.size() * m_uvScale),
             .color    = m_imageColor,
             .rotation = Radians(m_imageRotation),
             .origin   = m_imageOrigin,

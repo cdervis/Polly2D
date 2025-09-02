@@ -7,7 +7,7 @@ class BackgroundStars
   public:
     BackgroundStars();
 
-    deleteCopyAndMove(BackgroundStars);
+    DeleteCopyAndMove(BackgroundStars);
 
     void update(float elapsedTime);
 

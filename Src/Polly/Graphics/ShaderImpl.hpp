@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -43,7 +43,7 @@ class Shader::Impl : public GraphicsResource
         u16             cbufferSize);
 
   public:
-    deleteCopyAndMove(Impl);
+    DeleteCopyAndMove(Impl);
 
     ~Impl() noexcept override;
 
@@ -178,7 +178,7 @@ class Shader::Impl : public GraphicsResource
 
     bool usesSystemValues() const
     {
-        return has_flag(_flags, UserShaderFlags::UsesSystemValues);
+        return hasFlag(_flags, UserShaderFlags::UsesSystemValues);
     }
 
   private:

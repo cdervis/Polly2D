@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -7,10 +7,10 @@
 #include "Polly/Any.hpp"
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/List.hpp"
+#include "Polly/ShaderCompiler/SourceLocation.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 #include "Polly/Span.hpp"
 #include "Polly/String.hpp"
-#include "SourceLocation.hpp"
-#include "Type.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -38,7 +38,7 @@ class Decl
     }
 
   public:
-    deleteCopyAndMove(Decl);
+    DeleteCopyAndMove(Decl);
 
     virtual ~Decl() noexcept;
 
@@ -79,7 +79,7 @@ class FunctionParamDecl final : public Decl
   public:
     explicit FunctionParamDecl(const SourceLocation& location, StringView name, const Type* type);
 
-    deleteCopyAndMove(FunctionParamDecl);
+    DeleteCopyAndMove(FunctionParamDecl);
 
     ~FunctionParamDecl() noexcept override;
 
@@ -99,7 +99,7 @@ class ForLoopVariableDecl final : public Decl
   public:
     explicit ForLoopVariableDecl(const SourceLocation& location, StringView name);
 
-    deleteCopyAndMove(ForLoopVariableDecl);
+    DeleteCopyAndMove(ForLoopVariableDecl);
 
     void onVerify(SemaContext& context, Scope& scope) override;
 
@@ -134,7 +134,7 @@ class FunctionDecl final : public Decl
         const Type*           returnType,
         UniquePtr<CodeBlock>  body);
 
-    deleteCopyAndMove(FunctionDecl);
+    DeleteCopyAndMove(FunctionDecl);
 
     ~FunctionDecl() noexcept override;
 
@@ -178,7 +178,7 @@ class ShaderParamDecl final : public Decl
         UniquePtr<Expr>       defaultValueExpr,
         u32                   indexInUbo);
 
-    deleteCopyAndMove(ShaderParamDecl);
+    DeleteCopyAndMove(ShaderParamDecl);
 
     ~ShaderParamDecl() noexcept override;
 
@@ -208,7 +208,7 @@ class VarDecl final : public Decl
     // Overload for system values
     explicit VarDecl(StringView name, const Type* type);
 
-    deleteCopyAndMove(VarDecl);
+    DeleteCopyAndMove(VarDecl);
 
     ~VarDecl() noexcept override;
 
@@ -232,7 +232,7 @@ class VectorSwizzlingDecl final : public Decl
   public:
     explicit VectorSwizzlingDecl();
 
-    deleteCopyAndMove(VectorSwizzlingDecl);
+    DeleteCopyAndMove(VectorSwizzlingDecl);
 
     void onVerify(SemaContext& context, Scope& scope) override;
 };
@@ -242,7 +242,7 @@ class ArraySizeDecl final : public Decl
   public:
     explicit ArraySizeDecl();
 
-    deleteCopyAndMove(ArraySizeDecl);
+    DeleteCopyAndMove(ArraySizeDecl);
 
     void onVerify(SemaContext& context, Scope& scope) override;
 };

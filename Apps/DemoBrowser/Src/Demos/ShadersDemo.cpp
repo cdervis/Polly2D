@@ -86,7 +86,7 @@ void ShadersDemo::drawGrayscale(Painter painter)
     painter.drawSprite(
         Sprite{
             .image   = _logo,
-            .dstRect = Rectf((window.sizePx() - _logo.size()) / 2, _logo.size()),
+            .dstRect = Rectangle((window.sizePx() - _logo.size()) / 2, _logo.size()),
         });
 }
 
@@ -102,6 +102,6 @@ void ShadersDemo::drawEdgeDetection(Painter painter)
     painter.drawSprite(
         Sprite{
             .image   = _logo,
-            .dstRect = Rectf((window.sizePx() - _logo.size()) / 2, _logo.size()),
+            .dstRect = Rectangle((window.sizePx() - _logo.size()) / 2, _logo.size()),
         });
 }

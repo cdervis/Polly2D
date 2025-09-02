@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -8,10 +8,10 @@
 
 namespace Polly
 {
-pl_implement_object(Text);
+PollyImplementObject(Text);
 
 Text::Text(StringView text, const Font& font, float fontSize, Maybe<TextDecoration> decoration)
-    : m_impl(nullptr)
+    : _impl(nullptr)
 {
     setImpl(*this, makeUnique<Impl>(text, font, fontSize, decoration).release());
 }
@@ -28,13 +28,13 @@ float Text::height() const
 
 Vec2 Text::size() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->size();
 }
 
 Span<PreshapedGlyph> Text::glyphs() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->glyphs();
 }
 } // namespace Polly

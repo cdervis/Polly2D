@@ -1,15 +1,16 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "TempVarNameGen.hpp"
-#include "../Core/Casting.hpp"
-#include "CodeBlock.hpp"
-#include "Decl.hpp"
-#include "Naming.hpp"
+#include "Polly/ShaderCompiler/TempVarNameGen.hpp"
+
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Maybe.hpp"
-#include "Stmt.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Naming.hpp"
+#include "Polly/ShaderCompiler/Stmt.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -19,7 +20,7 @@ TempVarNameGen::TempVarNameGen(const CodeBlock* block)
 {
     _prefix += "var";
 
-    if (block == nullptr)
+    if (not block)
     {
         return;
     }

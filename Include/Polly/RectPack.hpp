@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -8,7 +8,7 @@
 #include "Polly/List.hpp"
 #include "Polly/Maybe.hpp"
 #include "Polly/Prerequisites.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 #include "Polly/Span.hpp"
 
 namespace Polly
@@ -25,16 +25,16 @@ enum class RectPackHeuristic
 /// Represents a rectangle bin-packing helper class.
 class RectPack
 {
-    pl_object(RectPack);
+    PollyObject(RectPack);
 
   public:
     explicit RectPack(Vec2 area, bool shouldAllowRotation = true);
 
     void reset(Vec2 area, bool shouldAllowRotation = true);
 
-    void insert(Span<Vec2> rectSizes, List<Rectf>& dst, RectPackHeuristic heuristic);
+    void insert(Span<Vec2> rectSizes, List<Rectangle>& dst, RectPackHeuristic heuristic);
 
-    Maybe<Rectf> insert(Vec2 rectSize, RectPackHeuristic heuristic);
+    Maybe<Rectangle> insert(Vec2 rectSize, RectPackHeuristic heuristic);
 
     Vec2 area() const;
 

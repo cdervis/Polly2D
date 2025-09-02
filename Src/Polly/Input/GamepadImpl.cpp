@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -8,7 +8,7 @@
 
 namespace Polly
 {
-static Maybe<SDL_GamepadAxis> to_sdl_gamepad_axis(GamepadAxis axis)
+static Maybe<SDL_GamepadAxis> toSDLGamepadAxis(const GamepadAxis axis)
 {
     switch (axis)
     {
@@ -24,7 +24,7 @@ static Maybe<SDL_GamepadAxis> to_sdl_gamepad_axis(GamepadAxis axis)
     return none;
 }
 
-static Maybe<SDL_GamepadButton> to_sdl_gamepad_button(GamepadButton button)
+static Maybe<SDL_GamepadButton> toSDLGamepadButton(const GamepadButton button)
 {
     switch (button)
     {
@@ -56,7 +56,7 @@ static Maybe<SDL_GamepadButton> to_sdl_gamepad_button(GamepadButton button)
 }
 
 [[maybe_unused]]
-static Maybe<SDL_GamepadType> to_sdl_gamepad_type(GamepadType type)
+static Maybe<SDL_GamepadType> toSDLGamepadType(const GamepadType type)
 {
     switch (type)
     {
@@ -75,7 +75,7 @@ static Maybe<SDL_GamepadType> to_sdl_gamepad_type(GamepadType type)
     return none;
 }
 
-static Maybe<SDL_SensorType> to_sdl_gamepad_sensor_type(GamepadSensorType type)
+static Maybe<SDL_SensorType> toSDLGamepadSensorType(const GamepadSensorType type)
 {
     switch (type)
     {
@@ -92,7 +92,7 @@ static Maybe<SDL_SensorType> to_sdl_gamepad_sensor_type(GamepadSensorType type)
     return none;
 }
 
-Gamepad::Impl::Impl(SDL_JoystickID joystickId, SDL_Gamepad_t* sdlGamepad)
+Gamepad::Impl::Impl(const SDL_JoystickID joystickId, SDL_Gamepad_t* sdlGamepad)
     : _joystickId(joystickId)
     , _sdlGamepad(sdlGamepad)
 {
@@ -110,9 +110,9 @@ Maybe<StringView> Gamepad::Impl::serialNumber() const
     return serial != nullptr ? Maybe(StringView(serial)) : none;
 }
 
-double Gamepad::Impl::axisValue(GamepadAxis axis) const
+double Gamepad::Impl::axisValue(const GamepadAxis axis) const
 {
-    if (const auto sdl = to_sdl_gamepad_axis(axis))
+    if (const auto sdl = toSDLGamepadAxis(axis))
     {
         const auto value = SDL_GetGamepadAxis(_sdlGamepad, *sdl);
         return value < 0 ? static_cast<double>(value) / 32768 : static_cast<double>(value) / 32767;
@@ -121,9 +121,9 @@ double Gamepad::Impl::axisValue(GamepadAxis axis) const
     return 0.0;
 }
 
-bool Gamepad::Impl::isButtonDown(GamepadButton button) const
+bool Gamepad::Impl::isButtonDown(const GamepadButton button) const
 {
-    if (const auto sdl = to_sdl_gamepad_button(button))
+    if (const auto sdl = toSDLGamepadButton(button))
     {
         const auto state = SDL_GetGamepadButton(_sdlGamepad, *sdl);
         return static_cast<int>(state) != 0;
@@ -136,11 +136,9 @@ Maybe<Array<float, 8>> Gamepad::Impl::sensorData(GamepadSensorType sensor) const
 {
     auto result = Array<float, 8>();
 
-    if (const auto sdl = to_sdl_gamepad_sensor_type(sensor))
+    if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
-        const auto success = SDL_GetGamepadSensorData(_sdlGamepad, *sdl, result.data(), result.size());
-
-        if (not success)
+        if (not SDL_GetGamepadSensorData(_sdlGamepad, *sdl, result.data(), result.size()))
         {
             result.fill(0);
         }
@@ -151,7 +149,7 @@ Maybe<Array<float, 8>> Gamepad::Impl::sensorData(GamepadSensorType sensor) const
 
 float Gamepad::Impl::sensorDataRate(GamepadSensorType sensor) const
 {
-    if (const auto sdl = to_sdl_gamepad_sensor_type(sensor))
+    if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
         return SDL_GetGamepadSensorDataRate(_sdlGamepad, *sdl);
     }
@@ -268,7 +266,7 @@ bool Gamepad::Impl::startRumble(float leftMotorIntensity, float rightMotorIntens
 
 bool Gamepad::Impl::hasSensor(GamepadSensorType sensor) const
 {
-    if (const auto sdl = to_sdl_gamepad_sensor_type(sensor))
+    if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
         return SDL_GamepadHasSensor(_sdlGamepad, *sdl);
     }
@@ -278,7 +276,7 @@ bool Gamepad::Impl::hasSensor(GamepadSensorType sensor) const
 
 bool Gamepad::Impl::isSensorEnabled(GamepadSensorType sensor) const
 {
-    if (const auto sdl = to_sdl_gamepad_sensor_type(sensor))
+    if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
         return SDL_GamepadSensorEnabled(_sdlGamepad, *sdl);
     }
@@ -288,7 +286,7 @@ bool Gamepad::Impl::isSensorEnabled(GamepadSensorType sensor) const
 
 void Gamepad::Impl::setSensorEnabled(GamepadSensorType sensor, bool enabled)
 {
-    if (const auto sdl = to_sdl_gamepad_sensor_type(sensor))
+    if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
         SDL_SetGamepadSensorEnabled(_sdlGamepad, *sdl, enabled);
     }

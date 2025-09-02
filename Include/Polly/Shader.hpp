@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -29,7 +29,7 @@ enum class ShaderType
 
 class Shader
 {
-    pl_object(Shader);
+    PollyObject(Shader);
 
   public:
     /// Lazily loads a Shader object from the storage.

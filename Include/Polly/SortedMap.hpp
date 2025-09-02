@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -115,9 +115,9 @@ class SortedMap
 
     auto end() const;
 
-    Value& operator[](const Key& key) pl_lifetimebound;
+    Value& operator[](const Key& key) PollyLifetimeBound;
 
-    const Value& operator[](const Key& key) const pl_lifetimebound;
+    const Value& operator[](const Key& key) const PollyLifetimeBound;
 
   private:
     struct PairComparer final

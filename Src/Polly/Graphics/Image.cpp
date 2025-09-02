@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -19,7 +19,7 @@
 
 namespace Polly
 {
-pl_implement_object(Image);
+PollyImplementObject(Image);
 
 Image::Image(u32 width, u32 height, ImageFormat format, const void* data)
     : Image()
@@ -96,37 +96,37 @@ Image::Image(u32 width, u32 height, ImageFormat format)
 
 StringView Image::assetName() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->assetName();
 }
 
 StringView Image::debuggingLabel() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->debuggingLabel();
 }
 
 void Image::setDebuggingLabel(StringView name)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setDebuggingLabel(name);
 }
 
 bool Image::isCanvas() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->isCanvas();
 }
 
 u32 Image::width() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->width();
 }
 
 u32 Image::height() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->height();
 }
 
@@ -147,19 +147,19 @@ float Image::aspectRatio() const
 
 Vec2 Image::size() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return Vec2(static_cast<float>(impl->width()), static_cast<float>(impl->height()));
 }
 
 ImageFormat Image::format() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->format();
 }
 
 u32 Image::sizeInBytes() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return imageSlicePitch(impl->width(), impl->height(), impl->format());
 }
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -8,9 +8,9 @@
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/List.hpp"
 #include "Polly/Maybe.hpp"
+#include "Polly/ShaderCompiler/SourceLocation.hpp"
 #include "Polly/Span.hpp"
 #include "Polly/UniquePtr.hpp"
-#include "SourceLocation.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -36,7 +36,7 @@ class ArrayExpr;
 class Expr
 {
   public:
-    deleteCopyAndMove(Expr);
+    DeleteCopyAndMove(Expr);
 
     virtual ~Expr() noexcept;
 

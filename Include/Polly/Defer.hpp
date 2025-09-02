@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -46,7 +46,7 @@ class DeferObject final
     {
     }
 
-    deleteCopy(DeferObject);
+    DeleteCopy(DeferObject);
 
     DeferObject(DeferObject&& other) noexcept
         : _functor(std::move(other._functor))

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -12,7 +12,7 @@ namespace Polly
 {
 ImGui::Impl::~Impl() noexcept
 {
-    if (imGuiContext != nullptr)
+    if (imGuiContext)
     {
         logVerbose("Destroying ImGui");
         ImGui_ImplSDL3_Shutdown();

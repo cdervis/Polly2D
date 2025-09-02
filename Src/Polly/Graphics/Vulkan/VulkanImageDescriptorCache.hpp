@@ -20,12 +20,12 @@ class VulkanImageDescriptorCache final
     {
         VulkanImageAndViewPair image0;
 
-        defineDefaultEqualityOperations(Key);
+        DefineDefaultEqualityOperations(Key);
     };
 
     VulkanImageDescriptorCache() = default;
 
-    deleteCopyAndMove(VulkanImageDescriptorCache);
+    DeleteCopyAndMove(VulkanImageDescriptorCache);
 
     ~VulkanImageDescriptorCache() noexcept = default;
 

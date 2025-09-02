@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -22,7 +22,7 @@ class MetalPainter final : public Painter::Impl
   public:
     explicit MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats);
 
-    deleteCopyAndMove(MetalPainter);
+    DeleteCopyAndMove(MetalPainter);
 
     ~MetalPainter() noexcept override;
 
@@ -30,11 +30,11 @@ class MetalPainter final : public Painter::Impl
 
     void onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc) override;
 
-    void onBeforeCanvasChanged(Image oldCanvas, Rectf viewport) override;
+    void onBeforeCanvasChanged(Image oldCanvas, Rectangle viewport) override;
 
-    void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport) override;
+    void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) override;
 
-    void setScissorRects(Span<Rectf> scissorRects) override;
+    void setScissorRects(Span<Rectangle> scissorRects) override;
 
     UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
 
@@ -89,8 +89,8 @@ class MetalPainter final : public Painter::Impl
         u32 meshIndexCounter  = 0;
 
         MTL::Buffer* lastBoundUserShaderParamsCBuffer = nullptr;
-        Rectf        lastBoundViewport;
-        Rectf        lastAppliedViewportToSystemValues;
+        Rectangle    lastBoundViewport;
+        Rectangle    lastAppliedViewportToSystemValues;
     };
 
     FrameData& currentFrameData()
@@ -115,8 +115,10 @@ class MetalPainter final : public Painter::Impl
 
     int prepareDrawCall() override;
 
-    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectf imageSizeAndInverse)
-        override;
+    void flushSprites(
+        Span<InternalSprite>  sprites,
+        GamePerformanceStats& stats,
+        Rectangle             imageSizeAndInverse) override;
 
     void flushPolys(
         Span<Tessellation2D::Command> polys,

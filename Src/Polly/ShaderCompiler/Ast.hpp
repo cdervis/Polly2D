@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -42,7 +42,7 @@ class Ast final
 
     explicit Ast(StringView filename, DeclList decls);
 
-    deleteCopy(Ast);
+    DeleteCopy(Ast);
 
     Ast(Ast&&) noexcept = default;
 

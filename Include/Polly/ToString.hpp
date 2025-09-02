@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -19,7 +19,7 @@ struct Degrees;
 struct GamePerformanceStats;
 struct Matrix;
 struct Radians;
-struct Rectf;
+struct Rectangle;
 struct Vec2;
 struct Vec3;
 struct Vec4;
@@ -51,7 +51,7 @@ String toString(const Vec3& value);
 String toString(const Vec4& value);
 String toString(const Color& value);
 String toString(const Matrix& value);
-String toString(const Rectf& value);
+String toString(const Rectangle& value);
 String toString(Degrees value);
 String toString(Radians value);
 String toString(MouseButton value);

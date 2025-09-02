@@ -1,12 +1,12 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
-#include "BinOpTable.hpp"
-#include "BuiltinSymbols.hpp"
 #include "Polly/CopyMoveMacros.hpp"
+#include "Polly/ShaderCompiler/BinOpTable.hpp"
+#include "Polly/ShaderCompiler/BuiltinSymbols.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -25,7 +25,7 @@ class SemaContext final
         const BinaryOperationTable& binaryOperationTable,
         TypeCache&                  typeCache);
 
-    deleteCopyAndMove(SemaContext);
+    DeleteCopyAndMove(SemaContext);
 
     ~SemaContext() noexcept = default;
 

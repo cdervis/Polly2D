@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -19,17 +19,17 @@
 
 namespace Polly
 {
-pl_implement_object(Painter);
+PollyImplementObject(Painter);
 
-void Painter::setScissorRects(const Span<Rectf> scissorRects)
+void Painter::setScissorRects(const Span<Rectangle> scissorRects)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setScissorRects(scissorRects);
 }
 
 Image Painter::currentCanvas() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->currentCanvas();
 }
 
@@ -40,25 +40,25 @@ void Painter::setCanvas(Image canvas, Maybe<Color> clearColor)
         throw Error("The specified image is not a canvas.");
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setCanvas(canvas, clearColor, true);
 }
 
 Matrix Painter::transformation() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->transformation();
 }
 
 void Painter::setTransformation(Matrix transformation)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setTransformation(transformation);
 }
 
 Shader Painter::currentSpriteShader() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->currentShader(BatchMode::Sprites);
 }
 
@@ -74,13 +74,13 @@ void Painter::setSpriteShader(Shader shader)
         }
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setShader(BatchMode::Sprites, shader);
 }
 
 Shader Painter::currentPolygonShader() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->currentShader(BatchMode::Polygons);
 }
 
@@ -96,31 +96,31 @@ void Painter::setPolygonShader(Shader shader)
         }
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setShader(BatchMode::Polygons, shader);
 }
 
 Sampler Painter::currentSampler() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->currentSampler();
 }
 
 void Painter::setSampler(const Sampler& sampler)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setSampler(sampler);
 }
 
 BlendState Painter::currentBlendState() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->currentBlendState();
 }
 
 void Painter::setBlendState(const BlendState& blendState)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setBlendState(blendState);
 }
 
@@ -131,12 +131,12 @@ void Painter::drawSprite(const Image& image, const Vec2 position, const Color co
         return;
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     impl->drawSprite(
         Sprite{
             .image   = image,
-            .dstRect = Rectf(position, image.size()),
+            .dstRect = Rectangle(position, image.size()),
             .color   = color,
         },
         SpriteShaderKind::Default);
@@ -149,13 +149,13 @@ void Painter::drawSprite(const Sprite& sprite)
         return;
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawSprite(sprite, SpriteShaderKind::Default);
 }
 
 void Painter::drawSprites(Span<Sprite> sprites)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     for (const auto& sprite : sprites)
     {
@@ -174,7 +174,7 @@ void Painter::drawString(
     Color                 color,
     Maybe<TextDecoration> decoration)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     const auto& shader = impl->currentShader(BatchMode::Sprites);
     impl->setShader(BatchMode::Sprites, none);
@@ -195,7 +195,7 @@ void Painter::drawStringWithBasicShadow(
     Color                 color,
     Maybe<TextDecoration> decoration)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     const auto& shader = impl->currentShader(BatchMode::Sprites);
     impl->setShader(BatchMode::Sprites, none);
@@ -226,7 +226,7 @@ void Painter::drawStringWithBasicShadow(
 
 void Painter::drawText(const Text& text, Vec2 position, Color color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     const auto& shader = impl->currentShader(BatchMode::Sprites);
     impl->setShader(BatchMode::Sprites, none);
@@ -241,7 +241,7 @@ void Painter::drawText(const Text& text, Vec2 position, Color color)
 
 void Painter::drawTextWithBasicShadow(const Text& text, Vec2 position, Color color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     const auto& shader = impl->currentShader(BatchMode::Sprites);
     impl->setShader(BatchMode::Sprites, none);
@@ -263,39 +263,39 @@ static float clampStrokeWidth(const float width)
     return clamp(width, 1.0f, 100.0f);
 }
 
-void Painter::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
+void Painter::drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawRectangle(rectangle, color, clampStrokeWidth(strokeWidth));
 }
 
-void Painter::fillRectangle(const Rectf& rectangle, const Color& color)
+void Painter::fillRectangle(const Rectangle& rectangle, const Color& color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->fillRectangle(rectangle, color);
 }
 
 void Painter::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawPolygon(vertices, color, strokeWidth);
 }
 
 void Painter::fillPolygon(Span<Vec2> vertices, const Color& color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->fillPolygon(vertices, color);
 }
 
 void Painter::drawTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color, const float strokeWidth)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawPolygon(SmallList<Vec2>{a, b, c}, color, strokeWidth);
 }
 
 void Painter::fillTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->fillPolygon(SmallList<Vec2>{a, b, c}, color);
 }
 
@@ -380,17 +380,17 @@ void Painter::fillDirectedTriangle(Vec2 center, float radius, Direction directio
 
 void Painter::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawLine(start, end, color, clampStrokeWidth(strokeWidth));
 }
 
 void Painter::drawRoundedRectangle(
-    const Rectf& rectangle,
-    float        cornerRadius,
-    const Color& color,
-    float        strokeWidth)
+    const Rectangle& rectangle,
+    float            cornerRadius,
+    const Color&     color,
+    float            strokeWidth)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawRoundedRectangle(
         rectangle,
         clamp(cornerRadius, 1.0f, 100.0f),
@@ -398,21 +398,21 @@ void Painter::drawRoundedRectangle(
         clampStrokeWidth(strokeWidth));
 }
 
-void Painter::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
+void Painter::fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->fillRoundedRectangle(rectangle, clamp(cornerRadius, 1.0f, 100.0f), color);
 }
 
 void Painter::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawEllipse(center, radius, color, clampStrokeWidth(strokeWidth));
 }
 
 void Painter::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->fillEllipse(center, radius, color);
 }
 
@@ -423,7 +423,7 @@ void Painter::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image 
         return;
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     auto* imageImpl = image ? image.impl() : impl->whiteImage().impl();
 
@@ -437,7 +437,7 @@ void Painter::drawSpineSkeleton(SpineSkeleton skeleton)
         return;
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->drawSpineSkeleton(skeleton);
 }
 
@@ -448,13 +448,13 @@ void Painter::drawParticles(const ParticleSystem& particleSystem)
         return;
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->pushParticlesToQueue(particleSystem);
 }
 
 Vec2 Painter::viewSize() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->currentCanvasSize();
 }
 
@@ -466,7 +466,7 @@ float Painter::viewAspectRatio() const
 
 float Painter::pixelRatio() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->pixelRatio();
 }
 
@@ -512,7 +512,7 @@ void Painter::readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u
             canvasHeight));
     }
 
-    declareThisImpl;
+    PollyDeclareThisImpl;
 
     impl->readCanvasDataInto(canvas, x, y, width, height, destination);
 }
@@ -626,7 +626,7 @@ Maybe<List<u8>> Painter::saveCanvasToMemory(const Image& canvas, ImageFileFormat
     const auto writeFunc = [](void* context, void* data, int size)
     {
         const auto contextT = static_cast<Context*>(context);
-        const auto span     = Polly::Span(static_cast<const u8*>(data), size);
+        const auto span     = Span(static_cast<const u8*>(data), size);
         contextT->savedData.addRange(span);
     };
 
@@ -677,7 +677,7 @@ Maybe<List<u8>> Painter::saveCanvasToMemory(const Image& canvas, ImageFileFormat
 
 PainterCapabilities Painter::capabilities() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->capabilities();
 }
 

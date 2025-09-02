@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -9,12 +9,12 @@
 
 namespace Polly
 {
-constexpr Rectf::Rectf()
-    : Rectf(0, 0, 0, 0)
+constexpr Rectangle::Rectangle()
+    : Rectangle(0, 0, 0, 0)
 {
 }
 
-constexpr Rectf::Rectf(float x, float y, float width, float height)
+constexpr Rectangle::Rectangle(float x, float y, float width, float height)
     : x(x)
     , y(y)
     , width(width)
@@ -22,7 +22,7 @@ constexpr Rectf::Rectf(float x, float y, float width, float height)
 {
 }
 
-constexpr Rectf::Rectf(float x, float y, Vec2 size)
+constexpr Rectangle::Rectangle(float x, float y, Vec2 size)
     : x(x)
     , y(y)
     , width(size.x)
@@ -30,7 +30,7 @@ constexpr Rectf::Rectf(float x, float y, Vec2 size)
 {
 }
 
-constexpr Rectf::Rectf(Vec2 position, Vec2 size)
+constexpr Rectangle::Rectangle(Vec2 position, Vec2 size)
     : x(position.x)
     , y(position.y)
     , width(size.x)
@@ -38,7 +38,7 @@ constexpr Rectf::Rectf(Vec2 position, Vec2 size)
 {
 }
 
-constexpr Rectf::Rectf(Vec2 position, float width, float height)
+constexpr Rectangle::Rectangle(Vec2 position, float width, float height)
     : x(position.x)
     , y(position.y)
     , width(width)
@@ -46,87 +46,87 @@ constexpr Rectf::Rectf(Vec2 position, float width, float height)
 {
 }
 
-inline float Rectf::left() const
+inline float Rectangle::left() const
 {
     return x;
 }
 
-inline float Rectf::top() const
+inline float Rectangle::top() const
 {
     return y;
 }
 
-inline float Rectf::right() const
+inline float Rectangle::right() const
 {
     return x + width;
 }
 
-inline float Rectf::bottom() const
+inline float Rectangle::bottom() const
 {
     return y + height;
 }
 
-inline Vec2 Rectf::center() const
+inline Vec2 Rectangle::center() const
 {
     return Vec2(x + (width / 2), y + (height / 2));
 }
 
-inline Vec2 Rectf::topLeft() const
+inline Vec2 Rectangle::topLeft() const
 {
     return Vec2(x, y);
 }
 
-inline Vec2 Rectf::topCenter() const
+inline Vec2 Rectangle::topCenter() const
 {
     return Vec2(x + (width / 2), y);
 }
 
-inline Vec2 Rectf::topRight() const
+inline Vec2 Rectangle::topRight() const
 {
     return Vec2(x + width, y);
 }
 
-inline Vec2 Rectf::bottomLeft() const
+inline Vec2 Rectangle::bottomLeft() const
 {
     return Vec2(x, y + height);
 }
 
-inline Vec2 Rectf::bottomCenter() const
+inline Vec2 Rectangle::bottomCenter() const
 {
     return Vec2(x + (width / 2), y + height);
 }
 
-inline Vec2 Rectf::bottomRight() const
+inline Vec2 Rectangle::bottomRight() const
 {
     return Vec2(x + width, y + height);
 }
 
-inline Rectf Rectf::scaled(float scale) const
+inline Rectangle Rectangle::scaled(float scale) const
 {
     return scaled(Vec2(scale));
 }
 
-inline Rectf Rectf::scaled(const Vec2& scale) const
+inline Rectangle Rectangle::scaled(const Vec2& scale) const
 {
-    return Rectf(x * scale.x, y * scale.y, width * scale.x, height * scale.y);
+    return Rectangle(x * scale.x, y * scale.y, width * scale.x, height * scale.y);
 }
 
-inline Vec2 Rectf::position() const
+inline Vec2 Rectangle::position() const
 {
     return {x, y};
 }
 
-inline Vec2 Rectf::size() const
+inline Vec2 Rectangle::size() const
 {
     return {width, height};
 }
 
-inline bool Rectf::contains(const Vec2& point) const
+inline bool Rectangle::contains(const Vec2& point) const
 {
     return x <= point.x and point.x < x + width and y <= point.y and point.y < y + height;
 }
 
-inline bool Rectf::contains(const Rectf& other) const
+inline bool Rectangle::contains(const Rectangle& other) const
 {
     return x <= other.x
            and other.x + other.width <= x + width
@@ -134,17 +134,17 @@ inline bool Rectf::contains(const Rectf& other) const
            and other.y + other.height <= y + height;
 }
 
-inline Rectf Rectf::inflatedBy(float amount) const
+inline Rectangle Rectangle::inflatedBy(float amount) const
 {
-    return Rectf(x - amount, y - amount, width + (amount * 2), height + (amount * 2));
+    return Rectangle(x - amount, y - amount, width + (amount * 2), height + (amount * 2));
 }
 
-inline Rectf Rectf::offsetBy(const Vec2& offset) const
+inline Rectangle Rectangle::offsetBy(const Vec2& offset) const
 {
-    return Rectf(x + offset.x, y + offset.y, width, height);
+    return Rectangle(x + offset.x, y + offset.y, width, height);
 }
 
-inline bool Rectf::intersects(const Rectf& other) const
+inline bool Rectangle::intersects(const Rectangle& other) const
 {
     return other.left() < right()
            and left() < other.right()
@@ -152,7 +152,7 @@ inline bool Rectf::intersects(const Rectf& other) const
            and top() < other.bottom();
 }
 
-inline Maybe<Vec2> Rectf::intersectionDepth(const Rectf& lhs, const Rectf& rhs)
+inline Maybe<Vec2> Rectangle::intersectionDepth(const Rectangle& lhs, const Rectangle& rhs)
 {
     const auto half_width_a  = lhs.width / 2.0f;
     const auto half_height_a = lhs.height / 2.0f;
@@ -178,11 +178,11 @@ inline Maybe<Vec2> Rectf::intersectionDepth(const Rectf& lhs, const Rectf& rhs)
         distance_y > 0 ? min_distance_y - distance_y : -min_distance_y - distance_y);
 }
 
-inline Rectf Rectf::unite(const Rectf& lhs, const Rectf& rhs)
+inline Rectangle Rectangle::unite(const Rectangle& lhs, const Rectangle& rhs)
 {
     const auto x = min(lhs.x, rhs.x);
     const auto y = min(lhs.y, rhs.y);
 
-    return Rectf(x, y, max(lhs.right(), rhs.right()) - x, max(lhs.bottom(), rhs.bottom()) - y);
+    return Rectangle(x, y, max(lhs.right(), rhs.right()) - x, max(lhs.bottom(), rhs.bottom()) - y);
 }
 } // namespace Polly

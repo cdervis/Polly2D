@@ -1,39 +1,39 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
-#define deleteCopy(class_name)                                                                               \
-    class_name(const class_name&)     = delete;                                                              \
-    void operator=(const class_name&) = delete
+#define DeleteCopy(className)                                                                                \
+    className(const className&)      = delete;                                                               \
+    void operator=(const className&) = delete
 
-#define deleteMove(class_name)                                                                               \
-    class_name(class_name&&) noexcept     = delete;                                                          \
-    void operator=(class_name&&) noexcept = delete
+#define DeleteMove(className)                                                                                \
+    className(className&&) noexcept      = delete;                                                           \
+    void operator=(className&&) noexcept = delete
 
-#define deleteCopyAndMove(class_name)                                                                        \
-    deleteCopy(class_name);                                                                                  \
-    deleteMove(class_name)
+#define DeleteCopyAndMove(className)                                                                         \
+    DeleteCopy(className);                                                                                   \
+    DeleteMove(className)
 
 #if __cpp_constexpr >= 202207L
-#define defaultCopy(class_name)                                                                              \
-    constexpr class_name(const class_name&)            = default;                                            \
-    constexpr class_name& operator=(const class_name&) = default
+#define DefaultCopy(className)                                                                               \
+    constexpr className(const className&)            = default;                                              \
+    constexpr className& operator=(const className&) = default
 
-#define defaultMove(class_name)                                                                              \
-    constexpr class_name(class_name&&) noexcept            = default;                                        \
-    constexpr class_name& operator=(class_name&&) noexcept = default
+#define DefaultMove(className)                                                                               \
+    constexpr className(className&&) noexcept            = default;                                          \
+    constexpr className& operator=(className&&) noexcept = default
 #else
-#define defaultCopy(class_name)                                                                              \
-    class_name(const class_name&)            = default;                                                      \
-    class_name& operator=(const class_name&) = default
+#define DefaultCopy(className)                                                                               \
+    className(const className&)            = default;                                                        \
+    className& operator=(const className&) = default
 
-#define defaultMove(class_name)                                                                              \
-    class_name(class_name&&) noexcept            = default;                                                  \
-    class_name& operator=(class_name&&) noexcept = default
+#define DefaultMove(className)                                                                               \
+    className(className&&) noexcept            = default;                                                    \
+    className& operator=(className&&) noexcept = default
 #endif
 
-#define defaultCopyAndMove(class_name)                                                                       \
-    defaultCopy(class_name);                                                                                 \
-    defaultMove(class_name)
+#define DefaultCopyAndMove(className)                                                                        \
+    DefaultCopy(className);                                                                                  \
+    DefaultMove(className)

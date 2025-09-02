@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -6,7 +6,6 @@
 
 #include "Polly/BinaryReader.hpp"
 #include "Polly/Core/Object.hpp"
-#include "Polly/Game/GameImpl.hpp"
 #include "Polly/List.hpp"
 #include "Polly/ReadableFile.hpp"
 

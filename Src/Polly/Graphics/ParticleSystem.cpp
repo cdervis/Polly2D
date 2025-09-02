@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -9,7 +9,7 @@
 
 namespace Polly
 {
-pl_implement_object(ParticleSystem);
+PollyImplementObject(ParticleSystem);
 
 ParticleSystem::ParticleSystem(Span<ParticleEmitter> emitters)
     : ParticleSystem()
@@ -19,43 +19,43 @@ ParticleSystem::ParticleSystem(Span<ParticleEmitter> emitters)
 
 void ParticleSystem::update(float elapsedTime)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->update(elapsedTime);
 }
 
 void ParticleSystem::triggerAt(Vec2 position)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->triggerAt(position);
 }
 
 void ParticleSystem::triggerFromTo(Vec2 from, Vec2 to)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->triggerFromTo(from, to);
 }
 
 Span<ParticleEmitter> ParticleSystem::emitters() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->emitters();
 }
 
 u32 ParticleSystem::totalActiveParticles() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->totalActiveParticles();
 }
 
 bool ParticleSystem::isActive() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->isActive();
 }
 
 void ParticleSystem::setIsActive(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setIsActive(value);
 }
 } // namespace Polly

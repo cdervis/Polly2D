@@ -1,4 +1,4 @@
-// Copyright (C) 2023-2024 Cemalettin Dervis
+// Copyright (C) 2023-2024 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -43,7 +43,7 @@ class StringView
 
     // ReSharper disable once CppNonExplicitConvertingConstructor
     StringView(std::nullptr_t) =
-        pl_delete_with_reason("Constructing a StringView from a nullptr is invalid.");
+        PollyDeleteWithReason("Constructing a StringView from a nullptr is invalid.");
 
     constexpr StringView substring(u32 offset) const;
 

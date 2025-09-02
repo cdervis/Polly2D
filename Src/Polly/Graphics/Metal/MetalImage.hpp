@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -17,7 +17,7 @@ class MetalImage final : public Image::Impl
     // Canvas overload
     explicit MetalImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format);
 
-    deleteCopyAndMove(MetalImage);
+    DeleteCopyAndMove(MetalImage);
 
     ~MetalImage() noexcept override;
 

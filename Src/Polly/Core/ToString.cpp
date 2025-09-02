@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -11,7 +11,7 @@
 #include "Polly/GamePerformanceStats.hpp"
 #include "Polly/Image.hpp"
 #include "Polly/Input/InputImpl.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 #include "Polly/String.hpp"
 
 namespace Polly
@@ -38,11 +38,11 @@ auto toString(const Any& value) -> String
         case AnyType::Matrix: return toString(value.get<Matrix>());
         case AnyType::String: return value.get<String>();
         case AnyType::StringView: return String(value.get<StringView>());
-        case AnyType::VoidPointer: return toString(uintptr_t(value.get<void*>()));
-        case AnyType::Char: return toString(value.get<char>()); break;
-        case AnyType::UChar: return toString(value.get<unsigned char>()); break;
-        case AnyType::Short: return toString(value.get<short>()); break;
-        case AnyType::UShort: return toString(value.get<unsigned short>()); break;
+        case AnyType::VoidPointer: return toString(reinterpret_cast<uintptr_t>(value.get<void*>()));
+        case AnyType::Char: return toString(value.get<char>());
+        case AnyType::UChar: return toString(value.get<unsigned char>());
+        case AnyType::Short: return toString(value.get<short>());
+        case AnyType::UShort: return toString(value.get<unsigned short>());
     }
 
     return "<invalid>";
@@ -120,7 +120,7 @@ String toString(Radians value)
     return formatString("{} rad", value.value);
 }
 
-String toString(const Rectf& value)
+String toString(const Rectangle& value)
 {
     return formatString("[x={}; y={}; width={}; height={}]", value.x, value.y, value.width, value.height);
 }

@@ -10,6 +10,6 @@ struct VulkanImageAndViewPair
     VmaAllocation vmaImageAllocation = VK_NULL_HANDLE;
     VkImageView   vkImageView        = VK_NULL_HANDLE;
 
-    defineDefaultEqualityOperations(VulkanImageAndViewPair);
+    DefineDefaultEqualityOperations(VulkanImageAndViewPair);
 };
 } // namespace Polly

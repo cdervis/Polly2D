@@ -14,7 +14,7 @@ class VulkanImage final : public Image::Impl
     // Canvas overload
     explicit VulkanImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format);
 
-    deleteCopyAndMove(VulkanImage);
+    DeleteCopyAndMove(VulkanImage);
 
     VkImage vkImage() const;
 

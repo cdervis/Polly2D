@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -33,7 +33,7 @@ enum class ImageFormat
 /// Represents a 2D image.
 class Image
 {
-    pl_object(Image);
+    PollyObject(Image);
 
   public:
     /// Creates a 2D image from raw data, expected to be laid out in a specific pixel format

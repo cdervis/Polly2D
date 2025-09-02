@@ -1,4 +1,4 @@
-// Copyright (C) 2023-2025 Cemalettin Dervis
+// Copyright (C) 2023-2025 Cem Dervis
 // This file is part of cerlib.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 

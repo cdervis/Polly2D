@@ -1,13 +1,13 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
-#include "Ast.hpp"
-#include "Lexer.hpp"
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/List.hpp"
+#include "Polly/ShaderCompiler/Ast.hpp"
+#include "Polly/ShaderCompiler/Lexer.hpp"
 #include "Polly/Span.hpp"
 
 namespace Polly::ShaderCompiler
@@ -53,7 +53,7 @@ class Parser final
   public:
     explicit Parser(TypeCache& typeCache);
 
-    deleteCopyAndMove(Parser);
+    DeleteCopyAndMove(Parser);
 
     ~Parser() noexcept = default;
 
@@ -147,7 +147,7 @@ class Parser final
 
         explicit TokenPusher(StackType& stack, TokenIterator tk);
 
-        deleteCopyAndMove(TokenPusher);
+        DeleteCopyAndMove(TokenPusher);
 
         ~TokenPusher() noexcept;
 

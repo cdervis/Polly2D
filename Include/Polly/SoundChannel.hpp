@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -17,7 +17,7 @@ namespace Polly
 /// pausing the sound.
 class SoundChannel
 {
-    pl_object(SoundChannel);
+    PollyObject(SoundChannel);
 
   public:
     /// Gets the unique ID of the channel.

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -59,7 +59,7 @@ struct DisplayMode
     /// The DPI scale factor of the mode
     float pixelDensity = 0.0f;
 
-    defineDefaultEqualityOperations(DisplayMode);
+    DefineDefaultEqualityOperations(DisplayMode);
 };
 
 /// Defines the fixed orientation of a display.

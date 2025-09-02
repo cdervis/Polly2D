@@ -1,12 +1,12 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "Scope.hpp"
+#include "Polly/ShaderCompiler/Scope.hpp"
 
-#include "Decl.hpp"
 #include "Polly/Algorithm.hpp"
-#include "Type.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 
 namespace Polly::ShaderCompiler
 {

@@ -1,13 +1,13 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "Lexer.hpp"
-#include "CompileError.hpp"
+#include "Polly/ShaderCompiler/Lexer.hpp"
 #include "Polly/Error.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/Maybe.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
 #include <algorithm>
 
 namespace Polly::ShaderCompiler

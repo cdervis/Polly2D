@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -6,7 +6,7 @@
 
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/List.hpp"
-#include "Type.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -17,9 +17,9 @@ class BinaryOperationTable final
   public:
     BinaryOperationTable();
 
-    deleteCopy(BinaryOperationTable);
+    DeleteCopy(BinaryOperationTable);
 
-    defaultMove(BinaryOperationTable);
+    DefaultMove(BinaryOperationTable);
 
     ~BinaryOperationTable() noexcept = default;
 

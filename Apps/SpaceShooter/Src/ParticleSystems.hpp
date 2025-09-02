@@ -7,7 +7,7 @@ class ParticleSystems
   public:
     ParticleSystems();
 
-    deleteCopyAndMove(ParticleSystems);
+    DeleteCopyAndMove(ParticleSystems);
 
     void update(float dt);
 

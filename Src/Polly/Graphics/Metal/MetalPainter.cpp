@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -306,12 +306,14 @@ void MetalPainter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
     resetCurrentStates();
 }
 
-void MetalPainter::onBeforeCanvasChanged([[maybe_unused]] Image oldCanvas, [[maybe_unused]] Rectf viewport)
+void MetalPainter::onBeforeCanvasChanged(
+    [[maybe_unused]] Image     oldCanvas,
+    [[maybe_unused]] Rectangle viewport)
 {
     endCurrentRenderEncoder();
 }
 
-void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport)
+void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport)
 {
     auto&               frameData           = currentFrameData();
     auto*               desc                = MTL::RenderPassDescriptor::alloc()->init();
@@ -378,7 +380,7 @@ void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
         bitor DF_PipelineState);
 }
 
-void MetalPainter::setScissorRects(Span<Rectf> scissorRects)
+void MetalPainter::setScissorRects(Span<Rectangle> scissorRects)
 {
     const auto& frameData = currentFrameData();
 
@@ -765,7 +767,7 @@ int MetalPainter::prepareDrawCall()
 void MetalPainter::flushSprites(
     Span<InternalSprite>  sprites,
     GamePerformanceStats& stats,
-    Rectf                 imageSizeAndInverse)
+    Rectangle             imageSizeAndInverse)
 {
     auto& frameData = currentFrameData();
 

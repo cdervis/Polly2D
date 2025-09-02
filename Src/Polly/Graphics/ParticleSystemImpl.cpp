@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -89,7 +89,7 @@ void ParticleSystem::Impl::setIsActive(bool value)
 
 void ParticleSystem::Impl::reclaimExpiredParticles(EmitterData& data)
 {
-    auto        expiredParticleCount = 0;
+    auto        expiredParticleCount = 0u;
     const auto& emitter              = *data.emitterPtr;
     const auto  time                 = data.timer;
     const auto  count                = data.activeParticleCount;
@@ -109,7 +109,7 @@ void ParticleSystem::Impl::reclaimExpiredParticles(EmitterData& data)
 
     data.activeParticleCount -= expiredParticleCount;
 
-    assume(expiredParticleCount < int(data.particles.size()));
+    assume(expiredParticleCount < data.particles.size());
 
     std::copy_n(
         data.particles.begin() + expiredParticleCount,

@@ -1,4 +1,4 @@
-// Copyright (C) 2023-2024 Cemalettin Dervis
+// Copyright (C) 2023-2024 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 

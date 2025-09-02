@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -283,9 +283,9 @@ int InputImpl::toSDLKey(Key key)
     return SDLK_UNKNOWN;
 }
 
-Key InputImpl::fromSDLKey(SDL_Keycode sdl_key)
+Key InputImpl::fromSDLKey(const SDL_Keycode sdlKey)
 {
-    switch (sdl_key)
+    switch (sdlKey)
     {
         case SDLK_RETURN: return Key::Return;
         case SDLK_ESCAPE: return Key::Escape;
@@ -548,7 +548,7 @@ Key InputImpl::fromSDLKey(SDL_Keycode sdl_key)
     return Key::Unknown;
 }
 
-int InputImpl::toSDLMouseButton(MouseButton button)
+int InputImpl::toSDLMouseButton(const MouseButton button)
 {
     switch (button)
     {
@@ -562,9 +562,9 @@ int InputImpl::toSDLMouseButton(MouseButton button)
     return 0;
 }
 
-MouseButton InputImpl::fromSDLMouseButton(int sdl_button)
+MouseButton InputImpl::fromSDLMouseButton(const int sdlButton)
 {
-    switch (sdl_button)
+    switch (sdlButton)
     {
         case SDL_BUTTON_LEFT: return MouseButton::Left;
         case SDL_BUTTON_RIGHT: return MouseButton::Right;
@@ -578,9 +578,9 @@ static KeyModifier fromSDLKeymods(Uint16 mods)
     return static_cast<KeyModifier>(mods);
 }
 
-Pair<Key, KeyModifier> InputImpl::fromSDLKeysym(SDL_Keycode sdl_key, SDL_Keymod sdl_mod)
+Pair<Key, KeyModifier> InputImpl::fromSDLKeysym(const SDL_Keycode sdlKey, const SDL_Keymod sdlMod)
 {
-    return Pair(fromSDLKey(sdl_key), fromSDLKeymods(sdl_mod));
+    return Pair(fromSDLKey(sdlKey), fromSDLKeymods(sdlMod));
 }
 
 InputImpl::InputImpl()
@@ -619,38 +619,38 @@ static u32 to_array_index(MouseButton button)
     return static_cast<u32>(static_cast<int>(button) - 1);
 }
 
-bool InputImpl::isKeyDown(Scancode scancode) const
+bool InputImpl::isKeyDown(const Scancode scancode) const
 {
     return _keyStates[to_array_index(scancode)] == 1;
 }
 
-bool InputImpl::wasKeyJustPressed(Scancode scancode) const
+bool InputImpl::wasKeyJustPressed(const Scancode scancode) const
 {
     const auto idx = to_array_index(scancode);
 
     return _previousKeyStates[idx] == 0 and _keyStates[idx] == 1;
 }
 
-bool InputImpl::wasKeyJustReleased(Scancode scancode) const
+bool InputImpl::wasKeyJustReleased(const Scancode scancode) const
 {
     const auto idx = to_array_index(scancode);
 
     return _previousKeyStates[idx] == 1 and _keyStates[idx] == 0;
 }
 
-bool InputImpl::isMouseButtonDown(MouseButton button) const
+bool InputImpl::isMouseButtonDown(const MouseButton button) const
 {
     return _mouseButtonStates[to_array_index(button)] == 1;
 }
 
-bool InputImpl::wasMouseButtonJustPressed(MouseButton button) const
+bool InputImpl::wasMouseButtonJustPressed(const MouseButton button) const
 {
     const auto idx = to_array_index(button);
 
     return _previousMouseButtonStates[idx] == 0 and _mouseButtonStates[idx] == 1;
 }
 
-bool InputImpl::wasMouseButtonJustReleased(MouseButton button) const
+bool InputImpl::wasMouseButtonJustReleased(const MouseButton button) const
 {
     const auto idx = to_array_index(button);
 
@@ -669,7 +669,7 @@ void InputImpl::update()
 
         for (u32 i = 0; i < _keyStates.size(); ++i)
         {
-            const auto scancode     = static_cast<Polly::Scancode>(i);
+            const auto scancode     = static_cast<Scancode>(i);
             const auto sdl_scancode = toSDLScancode(scancode);
 
             _keyStates[i] = sdl_key_states_span[sdl_scancode] ? 1 : 0;
@@ -682,19 +682,19 @@ void InputImpl::update()
 
         const auto bits = SDL_GetMouseState(nullptr, nullptr);
 
-        auto set_button_state = [this, bits](MouseButton button, int sdl_button)
+        auto setButtonState = [this, bits](MouseButton button, const int sdlButton)
         {
             const auto idx = static_cast<int>(button) - 1;
             assume(idx >= 0);
-            const auto is_down      = (bits bitand SDL_BUTTON_MASK(sdl_button)) != 0u;
+            const auto is_down      = (bits bitand SDL_BUTTON_MASK(sdlButton)) != 0u;
             _mouseButtonStates[idx] = is_down ? 1 : 0;
         };
 
-        set_button_state(MouseButton::Left, SDL_BUTTON_LEFT);
-        set_button_state(MouseButton::Right, SDL_BUTTON_RIGHT);
-        set_button_state(MouseButton::Middle, SDL_BUTTON_MIDDLE);
-        set_button_state(MouseButton::Extra1, SDL_BUTTON_X1);
-        set_button_state(MouseButton::Extra2, SDL_BUTTON_X2);
+        setButtonState(MouseButton::Left, SDL_BUTTON_LEFT);
+        setButtonState(MouseButton::Right, SDL_BUTTON_RIGHT);
+        setButtonState(MouseButton::Middle, SDL_BUTTON_MIDDLE);
+        setButtonState(MouseButton::Extra1, SDL_BUTTON_X1);
+        setButtonState(MouseButton::Extra2, SDL_BUTTON_X2);
     }
 }
 
@@ -703,7 +703,7 @@ Vec2 InputImpl::mousePositionDelta() const
     return _mousePositionDelta;
 }
 
-void InputImpl::setMousePositionDelta(Vec2 value)
+void InputImpl::setMousePositionDelta(const Vec2 value)
 {
     _mousePositionDelta = value;
 }
@@ -713,7 +713,7 @@ Vec2 InputImpl::mouseWheelDelta() const
     return _mouseWheelDelta;
 }
 
-void InputImpl::setMouseWheelDelta(Vec2 value)
+void InputImpl::setMouseWheelDelta(const Vec2 value)
 {
     _mouseWheelDelta = value;
 }

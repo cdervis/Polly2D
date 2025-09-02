@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -8,22 +8,21 @@
 
 namespace Polly
 {
-struct circle;
 struct Vec2;
 
 /// Represents a floating-point rectangle that defines its coordinates as a
 /// top-left point and a size, typically in pixels.
-struct Rectf
+struct Rectangle
 {
-    constexpr Rectf();
+    constexpr Rectangle();
 
-    constexpr Rectf(float x, float y, float width, float height);
+    constexpr Rectangle(float x, float y, float width, float height);
 
-    constexpr Rectf(float x, float y, Vec2 size);
+    constexpr Rectangle(float x, float y, Vec2 size);
 
-    constexpr Rectf(Vec2 position, Vec2 size);
+    constexpr Rectangle(Vec2 position, Vec2 size);
 
-    constexpr Rectf(Vec2 position, float width, float height);
+    constexpr Rectangle(Vec2 position, float width, float height);
 
     /// Gets the left border coordinate of the rectangle (equivalent to x).
     float left() const;
@@ -59,39 +58,33 @@ struct Rectf
     Vec2 bottomRight() const;
 
     /// Scales all components of the rectangle by a specific factor.
-    Rectf scaled(float scale) const;
+    Rectangle scaled(float scale) const;
 
     /// Scales all components of the rectangle by a specific factor.
-    Rectf scaled(const Vec2& scale) const;
+    Rectangle scaled(const Vec2& scale) const;
 
     /// Gets a value indicating whether the rectangle contains a specific point.
     bool contains(const Vec2& point) const;
 
     /// Gets a value indicating whether the rectangle fully contains a specific rectangle.
-    bool contains(const Rectf& other) const;
+    bool contains(const Rectangle& other) const;
 
     /// Gets a version of the rectangle that is inflated by a specific amount.
     /// @param amount The amount by which to inflate the rectangle.
     [[nodiscard]]
-    Rectf inflatedBy(float amount) const;
+    Rectangle inflatedBy(float amount) const;
 
     /// Gets a version of the rectangle that is moved by a specific amount.
     ///
     /// @param offset The amount by which to move the rectangle.
     [[nodiscard]]
-    Rectf offsetBy(const Vec2& offset) const;
+    Rectangle offsetBy(const Vec2& offset) const;
 
     /// Gets a value indicating whether the rectangle intersects with a specific
     /// rectangle.
     ///
     /// @param other The rectangle to test for intersection.
-    bool intersects(const Rectf& other) const;
-
-    /// Gets a value indicating whether the rectangle intersects with a specific
-    /// circle.
-    ///
-    /// @param circle The circle to test for intersection.
-    bool intersects(const circle& circle) const;
+    bool intersects(const Rectangle& other) const;
 
     /// Calculates the signed depth of intersection between two rectangles.
     ///
@@ -117,11 +110,11 @@ struct Rectf
     /// resolve collisions. If the rectangles are not intersecting, an empty value is
     /// returned.
     [[nodiscard]]
-    static Maybe<Vec2> intersectionDepth(const Rectf& lhs, const Rectf& rhs);
+    static Maybe<Vec2> intersectionDepth(const Rectangle& lhs, const Rectangle& rhs);
 
     /// Calculates the intersection rectangle of two rectangles.
     [[nodiscard]]
-    static Rectf unite(const Rectf& lhs, const Rectf& rhs);
+    static Rectangle unite(const Rectangle& lhs, const Rectangle& rhs);
 
     /// Gets the top-left corner of the rectangle as a vector.
     Vec2 position() const;
@@ -129,7 +122,7 @@ struct Rectf
     /// Gets the size of the rectangle as a vector.
     Vec2 size() const;
 
-    defineDefaultEqualityOperations(Rectf);
+    DefineDefaultEqualityOperations(Rectangle);
 
     float x      = 0.0f;
     float y      = 0.0f;
@@ -138,4 +131,4 @@ struct Rectf
 };
 } // namespace Polly
 
-#include "Polly/Details/Rectf.inl"
+#include "Polly/Details/Rectangle.inl"

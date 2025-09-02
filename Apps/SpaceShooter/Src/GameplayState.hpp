@@ -24,7 +24,7 @@ class GameplayState final : public GameState
         u32  srcRectIdx  = 0;
         int  scorePoints = 10;
 
-        Rectf rect() const;
+        Rectangle rect() const;
     };
 
     struct Player
@@ -34,7 +34,7 @@ class GameplayState final : public GameState
         Maybe<Vec2> bulletPos;
         u32         health = 0;
 
-        Rectf rect() const;
+        Rectangle rect() const;
     };
 
     void updatePlayer(const GameTime& time);
@@ -47,7 +47,7 @@ class GameplayState final : public GameState
 
     void drawEnemies(Painter painter);
 
-    Maybe<Enemy&> checkCollisionWithEnemy(const Rectf& rect);
+    Maybe<Enemy&> checkCollisionWithEnemy(const Rectangle& rect);
 
     void killEnemy(const Enemy& enemy);
 

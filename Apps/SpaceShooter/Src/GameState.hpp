@@ -11,7 +11,7 @@ class GameState
   public:
     virtual ~GameState() noexcept = default;
 
-    deleteCopyAndMove(GameState);
+    DeleteCopyAndMove(GameState);
 
     virtual void start() = 0;
 

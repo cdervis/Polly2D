@@ -82,7 +82,7 @@ void DemoBrowser::goToNextDemo()
 
 void DemoBrowser::goToDemoAt(int index)
 {
-    _currentDemo       = _demoFactory[index]();
+    _currentDemo      = _demoFactory[index]();
     _currentDemoIndex = index;
 
     auto window = this->window();
@@ -98,11 +98,7 @@ void DemoBrowser::goToDemoAt(int index)
         window.setIsResizable(true);
     }
 
-    logInfo(
-        "Switched to demo {}/{}: '{}'",
-        _currentDemoIndex + 1,
-        _demoFactory.size(),
-        _currentDemo->name());
+    logInfo("Switched to demo {}/{}: '{}'", _currentDemoIndex + 1, _demoFactory.size(), _currentDemo->name());
 }
 
 void DemoBrowser::onImGui(ImGui imgui)

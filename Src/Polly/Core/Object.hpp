@@ -1,121 +1,105 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
 #include "Polly/CopyMoveMacros.hpp"
-#include "Polly/Error.hpp"
 #include "Polly/Logging.hpp"
 #include <cstdint>
 
 #define pl_implement_object_funcs(className)                                                                 \
     className::className(Impl* impl)                                                                         \
-        : m_impl(impl)                                                                                       \
+        : _impl(impl)                                                                                        \
     {                                                                                                        \
-        if (m_impl)                                                                                          \
+        if (_impl)                                                                                           \
         {                                                                                                    \
-            m_impl->addRef();                                                                                \
+            _impl->addRef();                                                                                 \
         }                                                                                                    \
     }                                                                                                        \
     className::className(const className& copyFrom)                                                          \
-        : m_impl(copyFrom.m_impl)                                                                            \
+        : _impl(copyFrom._impl)                                                                              \
     {                                                                                                        \
-        if (m_impl)                                                                                          \
+        if (_impl)                                                                                           \
         {                                                                                                    \
-            m_impl->addRef();                                                                                \
+            _impl->addRef();                                                                                 \
         }                                                                                                    \
     }                                                                                                        \
     className& className::operator=(const className& copyFrom)                                               \
     {                                                                                                        \
         if (std::addressof(copyFrom) != this)                                                                \
         {                                                                                                    \
-            if (m_impl)                                                                                      \
+            if (_impl)                                                                                       \
             {                                                                                                \
-                m_impl->release();                                                                           \
+                _impl->release();                                                                            \
             }                                                                                                \
                                                                                                              \
-            m_impl = copyFrom.m_impl;                                                                        \
+            _impl = copyFrom._impl;                                                                          \
                                                                                                              \
-            if (m_impl)                                                                                      \
+            if (_impl)                                                                                       \
             {                                                                                                \
-                m_impl->addRef();                                                                            \
+                _impl->addRef();                                                                             \
             }                                                                                                \
         }                                                                                                    \
                                                                                                              \
         return *this;                                                                                        \
     }                                                                                                        \
     className::className(className&& moveFrom) noexcept                                                      \
-        : m_impl(moveFrom.m_impl)                                                                            \
+        : _impl(moveFrom._impl)                                                                              \
     {                                                                                                        \
-        moveFrom.m_impl = nullptr;                                                                           \
+        moveFrom._impl = nullptr;                                                                            \
     }                                                                                                        \
     className& className::operator=(className&& moveFrom) noexcept                                           \
     {                                                                                                        \
         if (std::addressof(moveFrom) != this)                                                                \
         {                                                                                                    \
-            if (m_impl)                                                                                      \
+            if (_impl)                                                                                       \
             {                                                                                                \
-                m_impl->release();                                                                           \
+                _impl->release();                                                                            \
             }                                                                                                \
                                                                                                              \
-            m_impl          = moveFrom.m_impl;                                                               \
-            moveFrom.m_impl = nullptr;                                                                       \
+            _impl          = moveFrom._impl;                                                                 \
+            moveFrom._impl = nullptr;                                                                        \
         }                                                                                                    \
                                                                                                              \
         return *this;                                                                                        \
     }                                                                                                        \
     className::~className() noexcept                                                                         \
     {                                                                                                        \
-        if (m_impl)                                                                                          \
+        if (_impl)                                                                                           \
         {                                                                                                    \
-            m_impl->release();                                                                               \
+            _impl->release();                                                                                \
         }                                                                                                    \
     }
 
-#define verify_polly_object(T)                                                                               \
+#define PollyVerifyObject(T)                                                                                 \
     static_assert(sizeof(T) == sizeof(uintptr_t), "The type must be a Polly object without any extra fields.")
 
-#define pl_implement_object(className)                                                                       \
-    verify_polly_object(className);                                                                          \
+#define PollyImplementObject(className)                                                                      \
+    PollyVerifyObject(className);                                                                            \
     pl_implement_object_funcs(className)
 
-#define pl_implement_derived_object(baseClassName, className)                                                \
-    className::className()                                                                                   \
-    {                                                                                                        \
-    }                                                                                                        \
-    className::className(baseClassName::Impl* impl)                                                          \
-        : baseClassName(impl)                                                                                \
-    {                                                                                                        \
-    }
-
-#define pl_implement_derived_object_no_ctor(baseClassName, className)                                        \
-    className::className(baseClassName::Impl* impl)                                                          \
-        : baseClassName(impl)                                                                                \
-    {                                                                                                        \
-    }
-
-#define verifyImplAccess                                                                                     \
+#define PollyVerifyImplAccess                                                                                \
     if (not impl)                                                                                            \
     {                                                                                                        \
         throw Error(formatString("[{}] Attempting to access an empty object.", __FUNCTION__));               \
     }
 
-#define declareThisImpl                                                                                      \
+#define PollyDeclareThisImpl                                                                                 \
     const auto impl = this->impl();                                                                          \
-    verifyImplAccess
+    PollyVerifyImplAccess
 
-#define declareThisImplNoVerify const auto impl = this->impl();
+#define PollyDeclareThisImplNoVerify const auto impl = this->impl();
 
-#define verifyHaveImpl                                                                                       \
+#define PollyVerifyHaveImpl                                                                                  \
     if (not impl())                                                                                          \
     {                                                                                                        \
         throw Error(formatString("[{}] Attempting to access and empty object.", __FUNCTION__));              \
     }
 
-#define declareThisImplAs(type)                                                                              \
+#define PollyDeclareThisImplAs(type)                                                                         \
     auto* const impl = static_cast<type*>(this->impl());                                                     \
-    verifyImplAccess
+    PollyVerifyImplAccess
 
 namespace Polly
 {
@@ -124,7 +108,7 @@ class Object
   public:
     explicit Object() = default;
 
-    deleteCopyAndMove(Object);
+    DeleteCopyAndMove(Object);
 
     virtual ~Object() noexcept = default;
 
@@ -141,7 +125,7 @@ class Object
 template<typename T>
 struct ObjectLayout
 {
-    verify_polly_object(T);
+    PollyVerifyObject(T);
 
     typename T::Impl* impl{};
 };

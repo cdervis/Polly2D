@@ -17,7 +17,7 @@ class VulkanWindow : public Window::Impl
         Span<Display> displays,
         VkInstance    vkInstance);
 
-    deleteCopyAndMove(VulkanWindow);
+    DeleteCopyAndMove(VulkanWindow);
 
     ~VulkanWindow() noexcept override;
 

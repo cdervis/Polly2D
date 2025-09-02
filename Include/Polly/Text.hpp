@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -7,7 +7,7 @@
 #include "Polly/Image.hpp"
 #include "Polly/Maybe.hpp"
 #include "Polly/Prerequisites.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 #include "Polly/Span.hpp"
 #include "Polly/StringView.hpp"
 #include "Polly/TextDecoration.hpp"
@@ -19,10 +19,10 @@ class Font;
 /// Represents a glyph in a shaped text object.
 struct PreshapedGlyph
 {
-    char32_t codepoint;
-    Image    image;
-    Rectf    dstRect;
-    Rectf    srcRect;
+    char32_t  codepoint;
+    Image     image;
+    Rectangle dstRect;
+    Rectangle srcRect;
 };
 
 /// Represents a pre-shaped, immutable text object that can be used in Painter::drawText().
@@ -32,7 +32,7 @@ struct PreshapedGlyph
 ///       than shaping it in every draw operation.
 class Text
 {
-    pl_object(Text);
+    PollyObject(Text);
 
   public:
     /// Creates an immutable text object that is immediately shaped.

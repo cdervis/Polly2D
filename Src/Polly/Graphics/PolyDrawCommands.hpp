@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -6,9 +6,8 @@
 
 #include "Polly/Color.hpp"
 #include "Polly/Linalg.hpp"
-#include "Polly/Line.hpp"
 #include "Polly/List.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 #include <variant>
 
 namespace Polly::Tessellation2D
@@ -23,15 +22,15 @@ struct DrawLineCmd
 
 struct DrawRectangleCmd
 {
-    Rectf rectangle;
-    Color color;
-    float strokeWidth = 0.0f;
+    Rectangle rectangle;
+    Color     color;
+    float     strokeWidth = 0.0f;
 };
 
 struct FillRectangleCmd
 {
-    Rectf rectangle;
-    Color color;
+    Rectangle rectangle;
+    Color     color;
 };
 
 struct FillPolygonCmd
@@ -42,17 +41,17 @@ struct FillPolygonCmd
 
 struct DrawRoundedRectangleCmd
 {
-    Rectf rectangle;
-    float cornerRadius = 0.0f;
-    Color color;
-    float strokeWidth = 0.0f;
+    Rectangle rectangle;
+    float     cornerRadius = 0.0f;
+    Color     color;
+    float     strokeWidth = 0.0f;
 };
 
 struct FillRoundedRectangleCmd
 {
-    Rectf rectangle;
-    float cornerRadius = 0.0f;
-    Color color;
+    Rectangle rectangle;
+    float     cornerRadius = 0.0f;
+    Color     color;
 };
 
 struct DrawEllipseCmd

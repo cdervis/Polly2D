@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -6,7 +6,7 @@
 
 #include "Polly/List.hpp"
 #include "Polly/Maybe.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 
 namespace Polly
 {
@@ -29,9 +29,9 @@ class BinPack final
         {
         }
 
-        Rectf toRectf() const
+        Rectangle toRectf() const
         {
-            return Rectf(
+            return Rectangle(
                 static_cast<float>(x),
                 static_cast<float>(y),
                 static_cast<float>(width),

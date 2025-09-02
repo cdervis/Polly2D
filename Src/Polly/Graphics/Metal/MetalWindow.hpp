@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -18,7 +18,7 @@ class MetalWindow final : public Window::Impl
         Maybe<u32>    fullScreenDisplayIndex,
         Span<Display> displays);
 
-    deleteCopyAndMove(MetalWindow);
+    DeleteCopyAndMove(MetalWindow);
 
     ~MetalWindow() noexcept override;
 

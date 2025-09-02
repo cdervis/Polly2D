@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -9,7 +9,7 @@
 
 namespace Polly
 {
-pl_implement_object(ReadableFile);
+PollyImplementObject(ReadableFile);
 
 ReadableFile::ReadableFile(StringView filename)
     : ReadableFile()
@@ -19,157 +19,157 @@ ReadableFile::ReadableFile(StringView filename)
 
 StringView ReadableFile::filename() const
 {
-    declareThisImpl;
-    return m_impl->filename();
+    PollyDeclareThisImpl;
+    return _impl->filename();
 }
 
 StringView ReadableFile::fullFilename() const
 {
-    declareThisImpl;
-    return m_impl->fullFilename();
+    PollyDeclareThisImpl;
+    return _impl->fullFilename();
 }
 
 i8 ReadableFile::readInt8()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readInt8();
 }
 
 u8 ReadableFile::readUInt8()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readUInt8();
 }
 
 i16 ReadableFile::readInt16()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readInt16();
 }
 
 u16 ReadableFile::readUInt16()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readUInt16();
 }
 
 i32 ReadableFile::readInt32()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readInt32();
 }
 
 u32 ReadableFile::readUInt32()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readUInt32();
 }
 
 i64 ReadableFile::readInt64()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readInt64();
 }
 
 u64 ReadableFile::readUInt64()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readUInt64();
 }
 
 float ReadableFile::readFloat()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readFloat();
 }
 
 double ReadableFile::readDouble()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readDouble();
 }
 
 bool ReadableFile::readBool()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readBool();
 }
 
 Vec2 ReadableFile::readVec2()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readVec2();
 }
 
 Vec3 ReadableFile::readVec3()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readVec3();
 }
 
 Vec4 ReadableFile::readVec4()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readVec4();
 }
 
 Matrix ReadableFile::readMatrix()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readMatrix();
 }
 
 String ReadableFile::readString()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readString();
 }
 
 List<u8> ReadableFile::readBytes(u32 count)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().readBytes(count);
 }
 
 void ReadableFile::readBytesInto(MutableSpan<u8> dst)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->reader().readBytesInto(dst);
 }
 
 u32 ReadableFile::position() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().position();
 }
 
 void ReadableFile::seekSet(u32 offset)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->reader().seekSet(offset);
 }
 
 void ReadableFile::seekFromCurrent(int offset)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->reader().seekFromCurrent(offset);
 }
 
 const u8* ReadableFile::currentDataPtr() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().currentDataPtr();
 }
 
 Span<u8> ReadableFile::currentDataSpan() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().currentDataSpan();
 }
 
 u32 ReadableFile::remainingSize() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->reader().remainingSize();
 }
 } // namespace Polly

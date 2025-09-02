@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -90,18 +90,18 @@ class UniquePtr
         destroy();
     }
 
-    T* get() pl_lifetimebound
+    T* get() PollyLifetimeBound
     {
         return _ptr;
     }
 
-    const T* get() const pl_lifetimebound
+    const T* get() const PollyLifetimeBound
     {
         return _ptr;
     }
 
     [[nodiscard]]
-    T* release() pl_lifetimebound
+    T* release() PollyLifetimeBound
     {
         auto* ptr = _ptr;
         _ptr      = nullptr;
@@ -124,12 +124,12 @@ class UniquePtr
         return _ptr;
     }
 
-    T& operator*() pl_lifetimebound
+    T& operator*() PollyLifetimeBound
     {
         return *_ptr;
     }
 
-    const T& operator*() const pl_lifetimebound
+    const T& operator*() const PollyLifetimeBound
     {
 #ifndef polly_no_hardening
         if (not _ptr)

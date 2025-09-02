@@ -1,4 +1,4 @@
-// Copyright (C) 2023-2024 Cemalettin Dervis
+// Copyright (C) 2023-2024 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -37,7 +37,7 @@ class String
     String(const char* str);
 
     // ReSharper disable once CppNonExplicitConvertingConstructor
-    String(std::nullptr_t) = pl_delete_with_reason("Constructing a String from a nullptr is invalid.");
+    String(std::nullptr_t) = PollyDeleteWithReason("Constructing a String from a nullptr is invalid.");
 
     explicit String(const char* str, u32 size);
 
@@ -190,17 +190,17 @@ class String
     void operator+=(char ch);
 
     // ReSharper disable once CppNonExplicitConversionOperator
-    operator StringView() const pl_lifetimebound;
+    operator StringView() const PollyLifetimeBound;
 
     // ReSharper disable once CppNonExplicitConversionOperator
-    constexpr operator Span<char>() const pl_lifetimebound
+    constexpr operator Span<char>() const PollyLifetimeBound
     {
         return Span(_data, _size);
     }
 
     // ReSharper disable once CppMemberFunctionMayBeConst
     // ReSharper disable once CppNonExplicitConversionOperator
-    constexpr operator MutableSpan<char>() pl_lifetimebound
+    constexpr operator MutableSpan<char>() PollyLifetimeBound
     {
         return MutableSpan(_data, _size);
     }

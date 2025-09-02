@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -384,7 +384,7 @@ class Maybe
         return _isActive ? std::move(_value) : static_cast<T>(std::forward<U&&>(fallback));
     }
 
-    constexpr auto valueOr(String& fallback pl_lifetimebound) const -> T
+    constexpr auto valueOr(String& fallback PollyLifetimeBound) const -> T
     requires(std::is_same_v<T, StringView>)
     {
         return _isActive ? _value : T(fallback);
@@ -392,7 +392,7 @@ class Maybe
 
     constexpr auto valueOr(String&&) const -> T
     requires(std::is_same_v<T, StringView>)
-    = pl_delete_with_reason(
+    = PollyDeleteWithReason(
         "The call would return a StringView that is constructed from a temporary String, which would result "
         "in a use-after-free bug.");
 
@@ -444,7 +444,7 @@ class Maybe<T&>
     {
     }
 
-    defaultCopyAndMove(Maybe);
+    DefaultCopyAndMove(Maybe);
 
     constexpr Maybe& operator=(Details::NoObjectTag) noexcept
     {
@@ -454,11 +454,11 @@ class Maybe<T&>
 
     // ReSharper disable once CppNonExplicitConvertingConstructor
     /// Forbid construction of an Maybe<T&> from a nullptr.
-    Maybe(std::nullptr_t) = pl_delete_with_reason(
+    Maybe(std::nullptr_t) = PollyDeleteWithReason(
         "Maybe<T&> cannot be constructed from a nullptr; use 'none' or default-construction instead.");
 
     /// Forbid assignment of nullptr to an Maybe<T&>.
-    void operator=(std::nullptr_t) = pl_delete_with_reason(
+    void operator=(std::nullptr_t) = PollyDeleteWithReason(
         "Cannot assign nullptr to a Maybe<T&>; use 'none' or default-construction instead.");
 
     template<class U>
@@ -611,7 +611,7 @@ class Maybe<T&>
         return _value ? std::move(*_value) : T(std::forward<U>(fallback));
     }
 
-    constexpr T valueOr(String& fallback pl_lifetimebound) const
+    constexpr T valueOr(String& fallback PollyLifetimeBound) const
     requires(std::is_same_v<T, StringView>)
     {
         return _value ? *_value : T(fallback);
@@ -619,7 +619,7 @@ class Maybe<T&>
 
     constexpr T valueOr(String&&) const
     requires(std::is_same_v<T, StringView>)
-    = pl_delete_with_reason(
+    = PollyDeleteWithReason(
         "The call would return a StringView that is constructed from a temporary String, which would result "
         "in a use-after-free bug.");
 

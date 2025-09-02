@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -21,7 +21,7 @@ class Text;
 class Image;
 class ParticleSystem;
 class SpineSkeleton;
-struct Rectf;
+struct Rectangle;
 struct Matrix;
 struct BlendState;
 struct Sampler;
@@ -62,13 +62,13 @@ struct PainterCapabilities
 /// graphics device.
 class Painter final
 {
-    pl_object(Painter);
+    PollyObject(Painter);
 
   public:
     /// Sets the active set of scissor rectangles.
     ///
     /// @param scissorRects The scissor rectangles to set for subsequent drawing.
-    void setScissorRects(Span<Rectf> scissorRects);
+    void setScissorRects(Span<Rectangle> scissorRects);
 
     /// Gets the currently bound canvas.
     Image currentCanvas() const;
@@ -246,21 +246,21 @@ class Painter final
     /// @param rectangle The rectangle to draw.
     /// @param color The color of the rectangle.
     /// @param strokeWidth The line width of the rectangle, in pixels.
-    void drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth);
+    void drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth);
 
     /// Draws a filled solid color rectangle.
     ///
     /// @param rectangle The rectangle to draw.
     /// @param color The color of the rectangle.
-    void fillRectangle(const Rectf& rectangle, const Color& color);
+    void fillRectangle(const Rectangle& rectangle, const Color& color);
 
     void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth);
 
     void drawRoundedRectangle(
-        const Rectf& rectangle,
-        float        cornerRadius,
-        const Color& color,
-        float        strokeWidth);
+        const Rectangle& rectangle,
+        float            cornerRadius,
+        const Color&     color,
+        float            strokeWidth);
 
     /// Draws a filled rounded rectangle.
     ///
@@ -272,7 +272,7 @@ class Painter final
     /// @param rectangle The rounded rectangle area
     /// @param cornerRadius The radius of the rectangle's corners, in pixels
     /// @param color The color of the rounded rectangle
-    void fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color);
+    void fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color);
 
     /// Draws a non-filled ellipse.
     ///

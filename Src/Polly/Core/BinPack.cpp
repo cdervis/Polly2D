@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -32,7 +32,9 @@ Maybe<BinPack::Rect> BinPack::insert(int width, int height)
     const auto newNode = findPositionForNewNode(width, height, score1, score2);
 
     if (newNode)
+    {
         placeRect(*newNode);
+    }
 
     return newNode;
 }

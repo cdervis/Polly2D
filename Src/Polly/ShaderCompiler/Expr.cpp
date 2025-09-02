@@ -1,23 +1,23 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #include "Expr.hpp"
 
-#include "../Core/Casting.hpp"
-#include "BinOpTable.hpp"
-#include "CodeBlock.hpp"
-#include "CompileError.hpp"
-#include "Decl.hpp"
 #include "Polly/Algorithm.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/LinalgOps.hpp"
 #include "Polly/Maybe.hpp"
-#include "Scope.hpp"
-#include "SemaContext.hpp"
-#include "Stmt.hpp"
-#include "Type.hpp"
-#include "TypeCache.hpp"
+#include "Polly/ShaderCompiler/BinOpTable.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Scope.hpp"
+#include "Polly/ShaderCompiler/SemaContext.hpp"
+#include "Polly/ShaderCompiler/Stmt.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
+#include "Polly/ShaderCompiler/TypeCache.hpp"
 
 namespace Polly::ShaderCompiler
 {

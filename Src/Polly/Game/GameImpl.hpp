@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -46,7 +46,7 @@ class Game::Impl final : public Object
   public:
     explicit Impl(const GameInitArgs& args);
 
-    deleteCopyAndMove(Impl);
+    DeleteCopyAndMove(Impl);
 
     ~Impl() noexcept override;
 
@@ -150,7 +150,7 @@ class Game::Impl final : public Object
 
         ~Finalizer() noexcept;
 
-        deleteCopyAndMove(Finalizer);
+        DeleteCopyAndMove(Finalizer);
 
       private:
         Impl& _parentGame;

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -9,9 +9,9 @@
 namespace Polly
 {
 void shapeText(
-    StringView                   text,
+    const StringView             text,
     Font&                        font,
-    float                        fontSize,
+    const float                  fontSize,
     const Maybe<TextDecoration>& decoration,
     List<PreshapedGlyph>&        dstGlyphs,
     List<TextDecorationRect>&    dstDecorationRects)
@@ -31,7 +31,7 @@ void shapeText(
         fontImpl.forEachGlyph<false>(
             text,
             fontSize,
-            [&](char32_t codepoint, Rectf rect)
+            [&](const char32_t codepoint, const Rectangle rect)
             {
                 const auto& glyph = fontImpl.rasterizedGlyph(codepoint, fontSize);
                 const auto& page  = fontImpl.page(glyph.pageIndex);
@@ -53,7 +53,9 @@ void shapeText(
         fontImpl.forEachGlyph<true>(
             text,
             fontSize,
-            [&](char32_t codepoint, const Rectf& rect, const Font::Impl::GlyphIterationExtras& extras)
+            [&](const char32_t                          codepoint,
+                const Rectangle&                        rect,
+                const Font::Impl::GlyphIterationExtras& extras)
             {
                 const auto& glyph = fontImpl.rasterizedGlyph(codepoint, fontSize);
                 const auto& page  = fontImpl.page(glyph.pageIndex);
@@ -67,8 +69,7 @@ void shapeText(
 
                 if (extras.isLastOnLine)
                 {
-                    const auto& deco = *decoration;
-                    switch (deco.type())
+                    switch (const auto& deco = *decoration; deco.type())
                     {
                         case TextDecorationType::Underline: {
                             auto decoRect = extras.lineRectThusFar;
@@ -106,7 +107,11 @@ void shapeText(
     }
 }
 
-Text::Impl::Impl(StringView text, Font font, float fontSize, const Maybe<TextDecoration>& decoration)
+Text::Impl::Impl(
+    const StringView             text,
+    Font                         font,
+    const float                  fontSize,
+    const Maybe<TextDecoration>& decoration)
 {
     if (not font)
     {

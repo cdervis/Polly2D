@@ -28,12 +28,12 @@ class VulkanPsoCache final
         VkRenderPass           vkRenderPass{};
         List<VertexElement, 4> inputElements;
 
-        defineDefaultEqualityOperations(Key);
+        DefineDefaultEqualityOperations(Key);
     };
 
     explicit VulkanPsoCache(VulkanPainter& painter);
 
-    deleteCopyAndMove(VulkanPsoCache);
+    DeleteCopyAndMove(VulkanPsoCache);
 
     ~VulkanPsoCache() noexcept;
 
@@ -49,7 +49,7 @@ class VulkanPsoCache final
       public:
         explicit PipelineValue(VkDevice vkDevice, VkPipeline vkPipeline);
 
-        deleteCopy(PipelineValue);
+        DeleteCopy(PipelineValue);
 
         PipelineValue(PipelineValue&& moveFrom) noexcept;
         PipelineValue& operator=(PipelineValue&& moveFrom) noexcept;

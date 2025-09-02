@@ -1,12 +1,12 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
 #include "Polly/CopyMoveMacros.hpp"
+#include "Polly/ShaderCompiler/SourceLocation.hpp"
 #include "Polly/UniquePtr.hpp"
-#include "SourceLocation.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -31,7 +31,7 @@ class ContinueStmt;
 class Statement
 {
   public:
-    deleteCopyAndMove(Statement);
+    DeleteCopyAndMove(Statement);
 
     virtual ~Statement() noexcept;
 
@@ -73,7 +73,7 @@ class CompoundAssignment final : public Statement
         UniquePtr<Expr>        lhs,
         UniquePtr<Expr>        rhs);
 
-    deleteCopyAndMove(CompoundAssignment);
+    DeleteCopyAndMove(CompoundAssignment);
 
     ~CompoundAssignment() noexcept override;
 
@@ -98,7 +98,7 @@ class Assignment final : public Statement
   public:
     Assignment(const SourceLocation& location, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs);
 
-    deleteCopyAndMove(Assignment);
+    DeleteCopyAndMove(Assignment);
 
     ~Assignment() noexcept override;
 
@@ -120,7 +120,7 @@ class ReturnStmt final : public Statement
   public:
     explicit ReturnStmt(const SourceLocation& location, UniquePtr<Expr> expr);
 
-    deleteCopyAndMove(ReturnStmt);
+    DeleteCopyAndMove(ReturnStmt);
 
     ~ReturnStmt() noexcept override;
 
@@ -143,7 +143,7 @@ class ForStmt final : public Statement
         UniquePtr<RangeExpr>           range,
         UniquePtr<CodeBlock>           body);
 
-    deleteCopyAndMove(ForStmt);
+    DeleteCopyAndMove(ForStmt);
 
     ~ForStmt() noexcept override;
 
@@ -196,7 +196,7 @@ class IfStmt final : public Statement
         UniquePtr<CodeBlock>  body,
         UniquePtr<IfStmt>     next);
 
-    deleteCopyAndMove(IfStmt);
+    DeleteCopyAndMove(IfStmt);
 
     ~IfStmt() noexcept override;
 
@@ -221,7 +221,7 @@ class VarStmt final : public Statement
   public:
     explicit VarStmt(const SourceLocation& location, UniquePtr<VarDecl> variable);
 
-    deleteCopyAndMove(VarStmt);
+    DeleteCopyAndMove(VarStmt);
 
     ~VarStmt() noexcept override;
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -7,11 +7,11 @@
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/List.hpp"
 #include "Polly/Maybe.hpp"
+#include "Polly/ShaderCompiler/ShaderGenerator.hpp"
+#include "Polly/ShaderCompiler/TempVarNameGen.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 #include "Polly/SortedMap.hpp"
 #include "Polly/String.hpp"
-#include "ShaderGenerator.hpp"
-#include "TempVarNameGen.hpp"
-#include "Type.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -48,7 +48,7 @@ class TextBasedShaderGenerator : public ShaderGenerator
     TextBasedShaderGenerator();
 
   public:
-    deleteCopyAndMove(TextBasedShaderGenerator);
+    DeleteCopyAndMove(TextBasedShaderGenerator);
 
     ~TextBasedShaderGenerator() noexcept override;
 

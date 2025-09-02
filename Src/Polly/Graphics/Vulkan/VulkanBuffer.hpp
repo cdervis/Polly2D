@@ -20,7 +20,7 @@ class VulkanBuffer
         const void*              data,
         const char*              debugName);
 
-    deleteCopy(VulkanBuffer);
+    DeleteCopy(VulkanBuffer);
 
     VulkanBuffer(VulkanBuffer&& moveFrom) noexcept;
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -55,7 +55,7 @@
 #include "Polly/Radians.hpp"
 #include "Polly/Random.hpp"
 #include "Polly/ReadableFile.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 #include "Polly/RectPack.hpp"
 #include "Polly/Sampler.hpp"
 #include "Polly/Scancode.hpp"

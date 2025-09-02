@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -33,7 +33,7 @@ constexpr u32 vertexCountForDrawLine()
     return 6;
 }
 
-void process(PolyVertex* dst, const Tessellation2D::DrawLineCmd& cmd);
+void process(PolyVertex* dst, const DrawLineCmd& cmd);
 
 // drawLinePath
 
@@ -51,7 +51,7 @@ constexpr u32 vertexCountForDrawRectangle()
     return 16;
 }
 
-void process(PolyVertex* dst, const Tessellation2D::DrawRectangleCmd& cmd);
+void process(PolyVertex* dst, const DrawRectangleCmd& cmd);
 
 // fillRectangle
 
@@ -60,40 +60,37 @@ constexpr u32 vertexCountForFillRectangle()
     return 6;
 }
 
-void process(PolyVertex* dst, const Tessellation2D::FillRectangleCmd& cmd);
+void process(PolyVertex* dst, const FillRectangleCmd& cmd);
 
 // drawRoundedRectangle
 
 u32 vertexCountForDrawRoundedRectangle();
 
-void process(PolyVertex* dst, const Tessellation2D::DrawRoundedRectangleCmd& cmd);
+void process(PolyVertex* dst, const DrawRoundedRectangleCmd& cmd);
 
 // fillRoundedRectangle
 
 u32 vertexCountForFillRoundedRectangle();
 
-void process(PolyVertex* dst, const Tessellation2D::FillRoundedRectangleCmd& cmd);
+void process(PolyVertex* dst, const FillRoundedRectangleCmd& cmd);
 
 // drawEllipse
 
 u32 vertexCountForDrawEllipse();
 
-void process(PolyVertex* dst, const Tessellation2D::DrawEllipseCmd& cmd);
+void process(PolyVertex* dst, const DrawEllipseCmd& cmd);
 
 // fillEllipse
 
-u32 vertexCountForFillEllipse(const Tessellation2D::FillEllipseCmd& cmd);
+u32 vertexCountForFillEllipse(const FillEllipseCmd& cmd);
 
-void process(PolyVertex* dst, const Tessellation2D::FillEllipseCmd& cmd);
+void process(PolyVertex* dst, const FillEllipseCmd& cmd);
 
 // Misc
 
 [[nodiscard]]
-u32 calculatePolyQueueVertexCounts(Span<Tessellation2D::Command> commands, List<u32>& dstList);
+u32 calculatePolyQueueVertexCounts(Span<Command> commands, List<u32>& dstList);
 
-void processPolyQueue(
-    Span<Tessellation2D::Command> commands,
-    PolyVertex*                   dstVertices,
-    Span<u32>                     vertexCounts);
+void processPolyQueue(Span<Command> commands, PolyVertex* dstVertices, Span<u32> vertexCounts);
 } // namespace Tessellation2D
 } // namespace Polly

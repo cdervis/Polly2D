@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -10,17 +10,17 @@
 
 namespace Polly
 {
-pl_implement_object(Window);
+PollyImplementObject(Window);
 
 void Window::setSize(const Vec2& size, bool recenter)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setSize(size, recenter);
 }
 
 void Window::centerOnDisplay()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->centerOnDisplay();
 }
 
@@ -36,7 +36,7 @@ auto Window::height() const -> float
 
 auto Window::size() const -> Vec2
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->size();
 }
 
@@ -52,115 +52,115 @@ auto Window::heightPx() const -> float
 
 auto Window::sizePx() const -> Vec2
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->sizePx();
 }
 
 auto Window::pixelRatio() const -> float
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->pixelRatio();
 }
 
 auto Window::title() const -> StringView
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->title();
 }
 
 void Window::setTitle(StringView value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setTitle(value);
 }
 
 void Window::setIsVisible(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setIsVisible(value);
 }
 
 void Window::setIsBordered(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setIsBordered(value);
 }
 
 void Window::setIsFullScreen(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setIsFullScreen(value);
 }
 
 void Window::setIsResizable(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setIsResizable(value);
 }
 
 void Window::minimize()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->minimize();
 }
 
 void Window::maximize()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->maximize();
 }
 
 void Window::show()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->show();
 }
 
 void Window::hide()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->hide();
 }
 
 void Window::setMinimumSize(u32 width, u32 height)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setMinimumSize(width, height);
 }
 
 void Window::setMaximumSize(u32 width, u32 height)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setMaximumSize(width, height);
 }
 
 void Window::setMouseGrab(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setMouseGrab(value);
 }
 
 void Window::setPosition(const Vec2& position)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setPosition(position);
 }
 
 bool Window::isMinimized() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->isMinimized();
 }
 
 bool Window::isMaximized() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->isMaximized();
 }
 
 int Window::idOfDisplay() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->displayId();
 }
 
@@ -174,73 +174,73 @@ float Window::currentDisplayScaleFactor() const
 
 bool Window::isDisplaySyncEnabled() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->isDisplaySyncEnabled();
 }
 
 void Window::setIsDisplaySyncEnabled(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setIsDisplaySyncEnabled(value);
 }
 
 void Window::startAcceptingTextInput()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->startAcceptingTextInput();
 }
 
 void Window::stopAcceptingTextInput()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->stopAcceptingTextInput();
 }
 
 bool Window::hasKeyboardFocus() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->hasKeyboardFocus();
 }
 
 bool Window::hasMouseFocus() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->hasMouseFocus();
 }
 
 bool Window::isLogVisible() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return isLogToWindowEnabled();
 }
 
 void Window::setIsLogVisible(bool value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     setLogToWindowEnabled(value);
 }
 
 void Window::setLogFontSize(float value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     setWindowLoggingFontSize(value);
 }
 
 void Window::setLogPosition(WindowLoggingPosition value)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     setWindowLoggingPosition(value);
 }
 
 Color Window::clearColor() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->clearColor();
 }
 
 void Window::setClearColor(Color color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setClearColor(color);
 }
 } // namespace Polly

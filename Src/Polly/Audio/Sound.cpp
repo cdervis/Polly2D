@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -11,7 +11,7 @@
 
 namespace Polly
 {
-pl_implement_object(Sound);
+PollyImplementObject(Sound);
 
 Sound::Sound(Span<u8> data)
     : Sound()
@@ -36,13 +36,13 @@ Sound::Sound(SfxrSoundPreset sfxrPreset, i32 seed)
 
 void Sound::stop()
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->stop();
 }
 
 u32 Sound::voiceCount() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     auto&       audioDeviceImpl = *Game::Impl::instance().audioDevice().impl();
     const auto& audioSource     = impl->soloudAudioSource();
 

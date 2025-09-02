@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -6,7 +6,7 @@
 
 #include "Polly/Function.hpp"
 #include "Polly/Prerequisites.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 #include "Polly/Span.hpp"
 #include "Polly/StringView.hpp"
 
@@ -14,14 +14,14 @@ namespace Polly
 {
 struct Vec2;
 
-using GlyphAction = Function<bool(char32_t codepoint, const Rectf& rect)>;
+using GlyphAction = Function<bool(char32_t codepoint, const Rectangle& rect)>;
 
 /// Represents a font to draw simple text.
 ///
 /// Fonts can be drawn using Painter::drawString() and Painter::drawText() function.
 class Font final
 {
-    pl_object(Font);
+    PollyObject(Font);
 
   public:
     /// Lazily loads a Font object from the storage.

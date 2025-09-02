@@ -1,8 +1,10 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "MetalShaderGenerator.hpp"
+#ifdef polly_have_gfx_metal
+
+#include "Polly/ShaderCompiler/MetalShaderGenerator.hpp"
 
 #include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
@@ -70,8 +72,8 @@ String MetalShaderGenerator::doGeneration(
     {
         w << "struct " << _svCBufferStructName << " ";
         w.openBrace();
-        w << "float2 viewport_size;" << wnewline;
-        w << "float2 viewport_size_inv;" << wnewline;
+        w << "float2 " << Naming::svViewportSize << ";" << wnewline;
+        w << "float2 " << Naming::svViewportSizeInv << ";" << wnewline;
         w.closeBrace(true);
         w << wnewline;
     }
@@ -307,9 +309,10 @@ void MetalShaderGenerator::generateFunctionDecl(
         {
             w
                 << formatString(
-                       "const float2 {} = {}.viewport_size;",
+                       "const float2 {} = {}.{};",
                        Naming::svViewportSize,
-                       _svCBufferParamName)
+                       _svCBufferParamName,
+                       Naming::svViewportSize)
                 << wnewline;
         }
 
@@ -317,9 +320,10 @@ void MetalShaderGenerator::generateFunctionDecl(
         {
             w
                 << formatString(
-                       "const float2 {} = {}.viewport_size_inv;",
+                       "const float2 {} = {}.{};",
                        Naming::svViewportSizeInv,
-                       _svCBufferParamName)
+                       _svCBufferParamName,
+                       Naming::svViewportSizeInv)
                 << wnewline;
         }
 
@@ -582,3 +586,5 @@ String MetalShaderGenerator::shaderInputOutputTypeName(const Type* type)
     return Naming::forbiddenIdentifierPrefix + type->typeName();
 }
 } // namespace Polly::ShaderCompiler
+
+#endif

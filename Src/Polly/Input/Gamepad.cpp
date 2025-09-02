@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -10,29 +10,29 @@
 
 namespace Polly
 {
-pl_implement_object(Gamepad);
+PollyImplementObject(Gamepad);
 
 StringView Gamepad::name() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->name();
 }
 
 Maybe<StringView> Gamepad::serialNumber() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->serialNumber();
 }
 
 float Gamepad::axisValue(GamepadAxis axis) const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return static_cast<float>(impl->axisValue(axis));
 }
 
 bool Gamepad::isButtonDown(GamepadButton button) const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->isButtonDown(button);
 }
 
@@ -43,18 +43,18 @@ bool Gamepad::isButtonUp(GamepadButton button) const
 
 Maybe<Array<float, 8>> Gamepad::sensorData(GamepadSensorType sensor) const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->sensorData(sensor);
 }
 
 Maybe<GamepadAccelerationSensorData> Gamepad::accelerationSensorData() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     const auto maybe_data = impl->sensorData(GamepadSensorType::Acceleration);
 
     if (not maybe_data)
     {
-        return {};
+        return none;
     }
 
     const auto& data = *maybe_data;
@@ -66,12 +66,12 @@ Maybe<GamepadAccelerationSensorData> Gamepad::accelerationSensorData() const
 
 Maybe<GamepadGyroscopeData> Gamepad::gyroscopeData() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     const auto maybe_data = impl->sensorData(GamepadSensorType::Acceleration);
 
     if (not maybe_data)
     {
-        return {};
+        return none;
     }
 
     const auto& data = *maybe_data;
@@ -83,61 +83,61 @@ Maybe<GamepadGyroscopeData> Gamepad::gyroscopeData() const
 
 float Gamepad::sensorDataRate(GamepadSensorType sensor) const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->sensorDataRate(sensor);
 }
 
 Maybe<u64> Gamepad::steamHandle() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->steamHandle();
 }
 
 u32 Gamepad::touchpadCount() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->touchpadCount();
 }
 
 List<GamepadTouchpadFingerData> Gamepad::touchpadFingerData(u32 touchpad_index) const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->touchpadFingerData(touchpad_index);
 }
 
 Maybe<GamepadType> Gamepad::type() const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->type();
 }
 
 bool Gamepad::setLedColor(const Color& color)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->setLedColor(color);
 }
 
 bool Gamepad::startRumble(float left_motor_intensity, float right_motor_intensity, float duration)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->startRumble(left_motor_intensity, right_motor_intensity, duration);
 }
 
 bool Gamepad::hasSensor(GamepadSensorType sensor) const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->hasSensor(sensor);
 }
 
 bool Gamepad::isSensorEnabled(GamepadSensorType sensor) const
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     return impl->isSensorEnabled(sensor);
 }
 
 void Gamepad::setSensorEnabled(GamepadSensorType sensor, bool enabled)
 {
-    declareThisImpl;
+    PollyDeclareThisImpl;
     impl->setSensorEnabled(sensor, enabled);
 }
 } // namespace Polly

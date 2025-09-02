@@ -6,28 +6,28 @@
 constexpr auto sPlayerSize = Vec2(8.0f);
 
 constexpr auto sPlayerBulletSrcRects = Array{
-    Rectf(0, 8, 8, 8),
-    Rectf(8, 8, 8, 8),
-    Rectf(16, 8, 8, 8),
+    Rectangle(0, 8, 8, 8),
+    Rectangle(8, 8, 8, 8),
+    Rectangle(16, 8, 8, 8),
 };
 
 constexpr auto sEnemySize = Vec2(8.0f);
 
 constexpr auto sPlayerSpriteRects = Array{
-    Rectf(0, 0, 8, 8),
-    Rectf(8, 0, 8, 8),
-    Rectf(16, 0, 8, 8),
+    Rectangle(0, 0, 8, 8),
+    Rectangle(8, 0, 8, 8),
+    Rectangle(16, 0, 8, 8),
 };
 
 constexpr auto sEnemyRects = Array{
-    Array{Rectf(24, 0, 8, 8), Rectf(24, 8, 8, 8)},
-    Array{Rectf(32, 0, 8, 8), Rectf(32, 8, 8, 8)},
-    Array{Rectf(40, 0, 8, 8), Rectf(40, 8, 8, 8)},
-    Array{Rectf(48, 0, 8, 8), Rectf(48, 8, 8, 8)},
-    Array{Rectf(56, 0, 8, 8), Rectf(56, 8, 8, 8)},
+    Array{Rectangle(24, 0, 8, 8), Rectangle(24, 8, 8, 8)},
+    Array{Rectangle(32, 0, 8, 8), Rectangle(32, 8, 8, 8)},
+    Array{Rectangle(40, 0, 8, 8), Rectangle(40, 8, 8, 8)},
+    Array{Rectangle(48, 0, 8, 8), Rectangle(48, 8, 8, 8)},
+    Array{Rectangle(56, 0, 8, 8), Rectangle(56, 8, 8, 8)},
 };
 
-constexpr auto sEnemyBulletRect = Rectf(64, 32, 5, 5);
+constexpr auto sEnemyBulletRect = Rectangle(64, 32, 5, 5);
 
 // TODO: more levels
 constexpr auto sLevel1Enemies = R"(
@@ -88,14 +88,14 @@ void GameplayState::draw(Painter painter)
     _hud.draw(painter);
 }
 
-Rectf GameplayState::Enemy::rect() const
+Rectangle GameplayState::Enemy::rect() const
 {
-    return Rectf(pos, sEnemyRects[srcRectIdx][0].size());
+    return Rectangle(pos, sEnemyRects[srcRectIdx][0].size());
 }
 
-Rectf GameplayState::Player::rect() const
+Rectangle GameplayState::Player::rect() const
 {
-    return Rectf(pos, Vec2(8, 8));
+    return Rectangle(pos, Vec2(8, 8));
 }
 
 void GameplayState::updatePlayer(const GameTime& time)
@@ -129,7 +129,7 @@ void GameplayState::updatePlayer(const GameTime& time)
         auto newBulletPos = *_player.bulletPos;
         newBulletPos.y -= time.elapsed() * 110;
 
-        const auto bulletRect = Rectf(newBulletPos.x, newBulletPos.y, 4, 4);
+        const auto bulletRect = Rectangle(newBulletPos.x, newBulletPos.y, 4, 4);
 
         if (newBulletPos.y <= 0.0f)
         {
@@ -233,7 +233,7 @@ void GameplayState::updateEnemies(const GameTime& time)
                 return true;
             }
 
-            const auto bulletRect = Rectf(bulletPos, sEnemyBulletRect.size());
+            const auto bulletRect = Rectangle(bulletPos, sEnemyBulletRect.size());
 
             if (bulletRect.intersects(playerRect))
             {
@@ -300,7 +300,7 @@ void GameplayState::drawPlayer(Painter painter)
         painter.drawSprite(
             Sprite{
                 .image   = _spritesheet,
-                .dstRect = Rectf(*_player.bulletPos, Vec2(8, 8)),
+                .dstRect = Rectangle(*_player.bulletPos, Vec2(8, 8)),
                 .srcRect = bulletSrcRect,
                 .origin  = Vec2(8, 8) / 2,
             });
@@ -327,14 +327,14 @@ void GameplayState::drawEnemies(Painter painter)
         painter.drawSprite(
             Sprite{
                 .image   = _spritesheet,
-                .dstRect = Rectf(bullet, sEnemyBulletRect.size()),
+                .dstRect = Rectangle(bullet, sEnemyBulletRect.size()),
                 .srcRect = sEnemyBulletRect,
                 .origin  = sEnemyBulletRect.size() / 2,
             });
     }
 }
 
-Maybe<GameplayState::Enemy&> GameplayState::checkCollisionWithEnemy(const Rectf& rect)
+Maybe<GameplayState::Enemy&> GameplayState::checkCollisionWithEnemy(const Rectangle& rect)
 {
     return findWhere(_enemies, [&rect](const auto& e) { return e.rect().intersects(rect); });
 }

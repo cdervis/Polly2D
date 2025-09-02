@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -17,7 +17,7 @@ namespace Polly
 /// how individual particles look and how they are emitted.
 class ParticleSystem
 {
-    pl_object(ParticleSystem);
+    PollyObject(ParticleSystem);
 
   public:
     explicit ParticleSystem(Span<ParticleEmitter> emitters);

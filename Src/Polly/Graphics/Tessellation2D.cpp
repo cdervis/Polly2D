@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -23,13 +23,18 @@ class PolyVertexAppender
     {
     }
 
-    void apply(int index)
+    void apply(u32 index)
     {
         *_dst = _src[index];
         ++_dst;
     }
 
     PolyVertex* dstPtr()
+    {
+        return _dst;
+    }
+
+    const PolyVertex* dstPtr() const
     {
         return _dst;
     }
@@ -163,10 +168,10 @@ namespace Tessellation2D
 {
 template<u32 SegmentCount, typename Action>
 static constexpr void drawRoundedRectImpl(
-    const Rectf&  rect,
-    float         radius,
-    float         strokeWidth,
-    const Action& action)
+    const Rectangle& rect,
+    const float      radius,
+    const float      strokeWidth,
+    const Action&    action)
 {
     const auto x      = rect.x;
     const auto y      = rect.y;
@@ -298,7 +303,7 @@ u32 Tessellation2D::vertexCountForDrawRoundedRectangle()
         ++count;
     };
 
-    drawRoundedRectImpl<sRoundedRectangleSegmentCount>(Rectf(), 1.0f, 1.0f, action);
+    drawRoundedRectImpl<sRoundedRectangleSegmentCount>(Rectangle(), 1.0f, 1.0f, action);
 
     return count;
 }
@@ -323,7 +328,7 @@ void Tessellation2D::process(PolyVertex* dst, const DrawRoundedRectangleCmd& cmd
 namespace Tessellation2D
 {
 template<int SegmentCount, typename Action>
-static void fillRoundedRectImpl(const Rectf& rect, float radius, const Action& action)
+static void fillRoundedRectImpl(const Rectangle& rect, const float radius, const Action& action)
 {
     const auto x      = rect.x;
     const auto y      = rect.y;
@@ -406,7 +411,7 @@ u32 Tessellation2D::vertexCountForFillRoundedRectangle()
 {
     auto count = 0u;
 
-    fillRoundedRectImpl<sRoundedRectangleSegmentCount>(Rectf(), 1.0f, [&count](const Vec2&) { ++count; });
+    fillRoundedRectImpl<sRoundedRectangleSegmentCount>(Rectangle(), 1.0f, [&count](const Vec2&) { ++count; });
 
     return count;
 }
@@ -433,7 +438,7 @@ template<int SegmentCount, typename Action>
 static constexpr void drawEllipseImpl(
     const Vec2&   center,
     const Vec2&   radius,
-    float         strokeWidth,
+    const float   strokeWidth,
     const Action& action)
 {
     const auto step  = 2.0F * pi / (SegmentCount - 1);
@@ -551,7 +556,7 @@ void Tessellation2D::process(PolyVertex* dst, const FillEllipseCmd& cmd)
         });
 }
 
-u32 Tessellation2D::calculatePolyQueueVertexCounts(Span<Command> commands, List<u32>& dstList)
+u32 Tessellation2D::calculatePolyQueueVertexCounts(const Span<Command> commands, List<u32>& dstList)
 {
     dstList.clear();
     auto totalVertexCount = 0u;
@@ -620,7 +625,10 @@ u32 Tessellation2D::calculatePolyQueueVertexCounts(Span<Command> commands, List<
     return totalVertexCount;
 }
 
-void Tessellation2D::processPolyQueue(Span<Command> commands, PolyVertex* dstVertices, Span<u32> vertexCounts)
+void Tessellation2D::processPolyQueue(
+    Span<Command>   commands,
+    PolyVertex*     dstVertices,
+    const Span<u32> vertexCounts)
 {
     for (int idx = 0; const auto& cmd : commands)
     {

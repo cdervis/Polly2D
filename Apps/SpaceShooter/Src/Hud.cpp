@@ -1,6 +1,6 @@
 #include "Hud.hpp"
 
-constexpr auto hudSrcRect = Rectf(0, 104, 128, 128 - 104);
+constexpr auto hudSrcRect = Rectangle(0, 104, 128, 128 - 104);
 
 Hud::Hud(u32& scoreRef, u32& healthRef)
     : _spritesheet("spritesheet.png")
@@ -19,7 +19,7 @@ void Hud::draw(Painter painter)
     painter.drawSprite(
         Sprite{
             .image   = _spritesheet,
-            .dstRect = Rectf(Vec2(), hudSrcRect.size()),
+            .dstRect = Rectangle(Vec2(), hudSrcRect.size()),
             .srcRect = hudSrcRect,
         });
 
@@ -28,14 +28,14 @@ void Hud::draw(Painter painter)
     // Draw hearts based on the player's health.
     {
         auto           x            = 7.0f;
-        constexpr auto heartSrcRect = Rectf(32, 57, 8, 7);
+        constexpr auto heartSrcRect = Rectangle(32, 57, 8, 7);
 
         for (auto i = 0u; i < _healthRef; ++i)
         {
             painter.drawSprite(
                 Sprite{
                     .image   = _spritesheet,
-                    .dstRect = Rectf(x, 8.0f, heartSrcRect.size()),
+                    .dstRect = Rectangle(x, 8.0f, heartSrcRect.size()),
                     .srcRect = heartSrcRect,
                 });
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -20,7 +20,7 @@ class SpineAtlas::Impl final : public Object,
   public:
     explicit Impl(Span<u8> data, StringView asset_name_hint);
 
-    deleteCopyAndMove(Impl);
+    DeleteCopyAndMove(Impl);
 
     class TextureLoader final : public spine::TextureLoader
     {

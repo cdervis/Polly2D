@@ -1,8 +1,10 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
+
+#ifdef polly_have_gfx_metal
 
 #include "TextBasedShaderGenerator.hpp"
 
@@ -48,3 +50,5 @@ class MetalShaderGenerator final : public TextBasedShaderGenerator
     String _outStructName;
 };
 } // namespace Polly::ShaderCompiler
+
+#endif

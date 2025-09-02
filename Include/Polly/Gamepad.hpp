@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -125,7 +125,7 @@ struct GamepadGyroscopeData
 /// on a gamepad's touchpad.
 struct GamepadTouchpadFingerData final
 {
-    defineDefaultEqualityOperations(GamepadTouchpadFingerData);
+    DefineDefaultEqualityOperations(GamepadTouchpadFingerData);
 
     /// The index of the touch
     u32 index = 0;
@@ -144,7 +144,7 @@ struct GamepadTouchpadFingerData final
 /// Game::onGamepadDisconnected().
 class Gamepad final
 {
-    pl_object(Gamepad);
+    PollyObject(Gamepad);
 
   public:
     /// Gets the name of the gamepad as provided by the vendor.

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -71,25 +71,25 @@ T log2(T value);
 
 /// Returns the smaller of two values.
 template<Concepts::Number T>
-constexpr const T& min(pl_lifetimebound const T& lhs, pl_lifetimebound const T& rhs);
+constexpr const T& min(PollyLifetimeBound const T& lhs, PollyLifetimeBound const T& rhs);
 
 /// Returns the smallest of three values.
 template<Concepts::Number T>
 constexpr const T& min(
-    pl_lifetimebound const T& value1,
-    pl_lifetimebound const T& value2,
-    pl_lifetimebound const T& value3);
+    PollyLifetimeBound const T& value1,
+    PollyLifetimeBound const T& value2,
+    PollyLifetimeBound const T& value3);
 
 /// Returns the larger of two values.
 template<Concepts::Number T>
-constexpr const T& max(pl_lifetimebound const T& lhs, pl_lifetimebound const T& rhs);
+constexpr const T& max(PollyLifetimeBound const T& lhs, PollyLifetimeBound const T& rhs);
 
 /// Returns the largest of three values.
 template<Concepts::Number T>
 constexpr const T& max(
-    pl_lifetimebound const T& value1,
-    pl_lifetimebound const T& value2,
-    pl_lifetimebound const T& value3);
+    PollyLifetimeBound const T& value1,
+    PollyLifetimeBound const T& value2,
+    PollyLifetimeBound const T& value3);
 
 /// Returns the absolute of a value.
 template<Concepts::Number T>

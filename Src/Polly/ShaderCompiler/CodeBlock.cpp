@@ -1,15 +1,15 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "CodeBlock.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
 
-#include "../Core/Casting.hpp"
-#include "CompileError.hpp"
 #include "Polly/Algorithm.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
-#include "Scope.hpp"
-#include "Stmt.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
+#include "Polly/ShaderCompiler/Scope.hpp"
+#include "Polly/ShaderCompiler/Stmt.hpp"
 
 namespace Polly::ShaderCompiler
 {

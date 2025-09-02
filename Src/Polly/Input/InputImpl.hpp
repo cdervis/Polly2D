@@ -1,11 +1,10 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
 #include "Polly/Array.hpp"
-#include "Polly/Input.hpp"
 #include "Polly/Key.hpp"
 #include "Polly/KeyModifier.hpp"
 #include "Polly/Linalg.hpp"
@@ -32,13 +31,13 @@ class InputImpl final
 
     static int toSDLKey(Key key);
 
-    static Key fromSDLKey(SDL_Keycode sdl_key);
+    static Key fromSDLKey(SDL_Keycode sdlKey);
 
     static int toSDLMouseButton(MouseButton button);
 
-    static MouseButton fromSDLMouseButton(int sdl_button);
+    static MouseButton fromSDLMouseButton(int sdlButton);
 
-    static Pair<Key, KeyModifier> fromSDLKeysym(SDL_Keycode sdl_key, SDL_Keymod sdl_mod);
+    static Pair<Key, KeyModifier> fromSDLKeysym(SDL_Keycode sdlKey, SDL_Keymod sdlMod);
 
     bool isKeyDown(Scancode scancode) const;
 
@@ -63,14 +62,14 @@ class InputImpl final
     void setMouseWheelDelta(Vec2 value);
 
   private:
-    using key_state_array          = Array<u8, static_cast<size_t>(Scancode::EndCall)>;
-    using mouse_button_state_array = Array<u8, static_cast<size_t>(MouseButton::Extra2)>;
+    using KeyStateArray         = Array<u8, static_cast<size_t>(Scancode::EndCall)>;
+    using MouseButtonStateArray = Array<u8, static_cast<size_t>(MouseButton::Extra2)>;
 
-    key_state_array          _previousKeyStates;
-    key_state_array          _keyStates;
-    Vec2                     _mousePositionDelta;
-    Vec2                     _mouseWheelDelta;
-    mouse_button_state_array _previousMouseButtonStates;
-    mouse_button_state_array _mouseButtonStates;
+    KeyStateArray         _previousKeyStates;
+    KeyStateArray         _keyStates;
+    Vec2                  _mousePositionDelta;
+    Vec2                  _mouseWheelDelta;
+    MouseButtonStateArray _previousMouseButtonStates;
+    MouseButtonStateArray _mouseButtonStates;
 };
 } // namespace Polly

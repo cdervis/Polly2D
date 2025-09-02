@@ -22,12 +22,12 @@ class VulkanFramebufferCache final
         VkImageView  vkImageView  = VK_NULL_HANDLE;
         VkRenderPass vkRenderPass = VK_NULL_HANDLE;
 
-        defineDefaultEqualityOperations(Key);
+        DefineDefaultEqualityOperations(Key);
     };
 
     explicit VulkanFramebufferCache(VulkanPainter& painter);
 
-    deleteCopyAndMove(VulkanFramebufferCache);
+    DeleteCopyAndMove(VulkanFramebufferCache);
 
     ~VulkanFramebufferCache() noexcept;
 

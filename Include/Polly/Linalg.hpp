@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -30,7 +30,7 @@ struct Vec2
     /// @name From X and Y
     constexpr Vec2(float x, float y);
 
-    defineDefaultEqualityOperations(Vec2);
+    DefineDefaultEqualityOperations(Vec2);
 
     /// The value of the X component
     float x = 0.0f;
@@ -58,7 +58,7 @@ struct Vec2i
 
     constexpr explicit Vec2i(const Vec2& vector); // NOLINT
 
-    defineDefaultEqualityOperations(Vec2i);
+    DefineDefaultEqualityOperations(Vec2i);
 
     /// The value of the X component
     int x = 0;
@@ -84,7 +84,7 @@ struct Vec2ui
     /// @param y The Y component
     constexpr Vec2ui(unsigned int x, unsigned int y);
 
-    defineDefaultEqualityOperations(Vec2ui);
+    DefineDefaultEqualityOperations(Vec2ui);
 
     /// The value of the X component
     unsigned int x;
@@ -111,7 +111,7 @@ struct Vec3
     /// @param z The Z component
     constexpr Vec3(float x, float y, float z);
 
-    defineDefaultEqualityOperations(Vec3);
+    DefineDefaultEqualityOperations(Vec3);
 
     /// The value of the X component
     float x = 0.0f;
@@ -141,7 +141,7 @@ struct Vec3i
     /// @param z The Z component
     constexpr Vec3i(int x, int y, int z);
 
-    defineDefaultEqualityOperations(Vec3i);
+    DefineDefaultEqualityOperations(Vec3i);
 
     /// The value of the X component
     int x = 0;
@@ -191,7 +191,7 @@ struct Vec4
     /// @param w The W component
     constexpr Vec4(Vec3 xyz, float w);
 
-    defineDefaultEqualityOperations(Vec4);
+    DefineDefaultEqualityOperations(Vec4);
 
     /// The value of the X component
     float x = 0.0f;
@@ -244,7 +244,7 @@ struct Vec4i
     /// @param w The W component
     constexpr Vec4i(Vec3i xyz, int w);
 
-    defineDefaultEqualityOperations(Vec4i);
+    DefineDefaultEqualityOperations(Vec4i);
 
     /// The value of the X component
     int x = 0;
@@ -285,7 +285,7 @@ struct Matrix
 
     const float* cend() const;
 
-    defineDefaultEqualityOperations(Matrix);
+    DefineDefaultEqualityOperations(Matrix);
 
     Vec4 row1;
     Vec4 row2;

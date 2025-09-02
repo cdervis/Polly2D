@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -21,7 +21,7 @@ struct Matrix;
 /// To create such files in the first place, use the WritableFile class.
 class ReadableFile
 {
-    pl_object(ReadableFile);
+    PollyObject(ReadableFile);
 
   public:
     explicit ReadableFile(StringView filename);

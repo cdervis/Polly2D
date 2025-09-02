@@ -1,15 +1,15 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "BuiltinSymbols.hpp"
+#include "Polly/ShaderCompiler/BuiltinSymbols.hpp"
 
-#include "../Core/Casting.hpp"
-#include "CodeBlock.hpp"
-#include "Decl.hpp"
-#include "Naming.hpp"
 #include "Polly/Algorithm.hpp"
-#include "Type.hpp"
+#include "Polly/Core/Casting.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Naming.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 
 // NOLINTBEGIN
 

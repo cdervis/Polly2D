@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -6,7 +6,7 @@
 
 namespace Polly
 {
-static bool isContainedIn(const Rectf& a, const Rectf& b)
+static bool isContainedIn(const Rectangle& a, const Rectangle& b)
 {
     return a.x >= b.x and a.y >= b.y and a.x + a.width <= b.x + b.width and a.y + a.height <= b.y + b.height;
 }
@@ -36,7 +36,7 @@ void RectPack::Impl::reset(Vec2 area, bool shouldAllowRotation)
     _freeRectangles.emplace(0.0f, 0.0f, area.x, area.y);
 }
 
-void RectPack::Impl::insert(Span<Vec2> rectSizes, List<Rectf>& dst, RectPackHeuristic heuristic)
+void RectPack::Impl::insert(Span<Vec2> rectSizes, List<Rectangle>& dst, RectPackHeuristic heuristic)
 {
     auto rectsToInsert = List(rectSizes);
 
@@ -47,7 +47,7 @@ void RectPack::Impl::insert(Span<Vec2> rectSizes, List<Rectf>& dst, RectPackHeur
         float bestScore1    = std::numeric_limits<float>::max();
         float bestScore2    = std::numeric_limits<float>::max();
         auto  bestRectIndex = static_cast<u32>(-1);
-        auto  bestNode      = Rectf();
+        auto  bestNode      = Rectangle();
 
         for (u32 i = 0; i < rectsToInsert.size(); ++i)
         {
@@ -76,9 +76,9 @@ void RectPack::Impl::insert(Span<Vec2> rectSizes, List<Rectf>& dst, RectPackHeur
     }
 }
 
-Maybe<Rectf> RectPack::Impl::insert(Vec2 rectSize, RectPackHeuristic heuristic)
+Maybe<Rectangle> RectPack::Impl::insert(Vec2 rectSize, RectPackHeuristic heuristic)
 {
-    auto newNode = Rectf();
+    auto newNode = Rectangle();
     auto score1  = std::numeric_limits<float>::max();
     auto score2  = std::numeric_limits<float>::max();
 
@@ -128,9 +128,10 @@ double RectPack::Impl::occupancy() const
     return usedSurfaceArea / (static_cast<double>(_binWidth) * static_cast<double>(_binHeight));
 }
 
-Rectf RectPack::Impl::scoreRect(Vec2 rectSize, RectPackHeuristic method, float& score1, float& score2) const
+Rectangle RectPack::Impl::scoreRect(Vec2 rectSize, RectPackHeuristic method, float& score1, float& score2)
+    const
 {
-    auto newNode = Rectf();
+    auto newNode = Rectangle();
     score1       = std::numeric_limits<float>::max();
     score2       = std::numeric_limits<float>::max();
 
@@ -165,7 +166,7 @@ Rectf RectPack::Impl::scoreRect(Vec2 rectSize, RectPackHeuristic method, float& 
     return newNode;
 }
 
-void RectPack::Impl::placeRect(const Rectf& node)
+void RectPack::Impl::placeRect(const Rectangle& node)
 {
     for (u32 i = 0; i < _freeRectangles.size();)
     {
@@ -214,9 +215,9 @@ float RectPack::Impl::contactPointScoreNode(float x, float y, float width, float
     return score;
 }
 
-Rectf RectPack::Impl::findPositionForNewNodeBottomLeft(Vec2 rectSize, float& bestY, float& bestX) const
+Rectangle RectPack::Impl::findPositionForNewNodeBottomLeft(Vec2 rectSize, float& bestY, float& bestX) const
 {
-    auto bestNode = Rectf();
+    auto bestNode = Rectangle();
 
     bestY = std::numeric_limits<float>::max();
     bestX = std::numeric_limits<float>::max();
@@ -258,12 +259,12 @@ Rectf RectPack::Impl::findPositionForNewNodeBottomLeft(Vec2 rectSize, float& bes
     return bestNode;
 }
 
-Rectf RectPack::Impl::findPositionForNewNodeBestShortSideFit(
+Rectangle RectPack::Impl::findPositionForNewNodeBestShortSideFit(
     Vec2   rectSize,
     float& bestShortSideFit,
     float& bestLongSideFit) const
 {
-    auto bestNode = Rectf();
+    auto bestNode = Rectangle();
 
     bestShortSideFit = std::numeric_limits<float>::max();
     bestLongSideFit  = std::numeric_limits<float>::max();
@@ -315,12 +316,12 @@ Rectf RectPack::Impl::findPositionForNewNodeBestShortSideFit(
     return bestNode;
 }
 
-Rectf RectPack::Impl::findPositionForNewNodeBestLongSideFit(
+Rectangle RectPack::Impl::findPositionForNewNodeBestLongSideFit(
     Vec2   rectSize,
     float& bestShortSideFit,
     float& bestLongSideFit) const
 {
-    auto bestNode = Rectf();
+    auto bestNode = Rectangle();
 
     bestShortSideFit = std::numeric_limits<float>::max();
     bestLongSideFit  = std::numeric_limits<float>::max();
@@ -372,12 +373,12 @@ Rectf RectPack::Impl::findPositionForNewNodeBestLongSideFit(
     return bestNode;
 }
 
-Rectf RectPack::Impl::findPositionForNewNodeBestAreaFit(
+Rectangle RectPack::Impl::findPositionForNewNodeBestAreaFit(
     Vec2   rectSize,
     float& bestAreaFit,
     float& bestShortSideFit) const
 {
-    auto bestNode = Rectf();
+    auto bestNode = Rectangle();
 
     bestAreaFit      = std::numeric_limits<float>::max();
     bestShortSideFit = std::numeric_limits<float>::max();
@@ -427,9 +428,9 @@ Rectf RectPack::Impl::findPositionForNewNodeBestAreaFit(
     return bestNode;
 }
 
-Rectf RectPack::Impl::findPositionForNewNodeContactPoint(Vec2 rectSize, float& contactScore) const
+Rectangle RectPack::Impl::findPositionForNewNodeContactPoint(Vec2 rectSize, float& contactScore) const
 {
-    auto bestNode = Rectf();
+    auto bestNode = Rectangle();
 
     contactScore = -1;
 
@@ -468,7 +469,7 @@ Rectf RectPack::Impl::findPositionForNewNodeContactPoint(Vec2 rectSize, float& c
     return bestNode;
 }
 
-void RectPack::Impl::insertNewFreeRectangle(const Rectf& newFreeRect)
+void RectPack::Impl::insertNewFreeRectangle(const Rectangle& newFreeRect)
 {
     assume(newFreeRect.width > 0);
     assume(newFreeRect.height > 0);
@@ -500,7 +501,7 @@ void RectPack::Impl::insertNewFreeRectangle(const Rectf& newFreeRect)
     _newFreeRectangles.add(newFreeRect);
 }
 
-bool RectPack::Impl::splitFreeNode(const Rectf& freeNode, const Rectf& usedNode)
+bool RectPack::Impl::splitFreeNode(const Rectangle& freeNode, const Rectangle& usedNode)
 {
     // Test with SAT if the rectangles even intersect.
     if (usedNode.x >= freeNode.x + freeNode.width

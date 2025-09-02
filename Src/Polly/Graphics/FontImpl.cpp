@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -76,7 +76,7 @@ Vec2 Font::Impl::measure(StringView text, float fontSize) const
     forEachGlyph(
         text,
         fontSize,
-        [&](char32_t, const Rectf& rect)
+        [&](char32_t, const Rectangle& rect)
         {
             left   = min(left, rect.left());
             right  = max(right, rect.right());
@@ -119,7 +119,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
         _pageImagesToUpdate.clear();
     }
 
-    const RasterizedGlyphKey key{
+    const auto key = RasterizedGlyphKey{
         .codepoint = codepoint,
         .fontSize  = fontSize,
     };
@@ -144,7 +144,7 @@ float Font::Impl::lineHeight(float fontSize) const
 
 void Font::Impl::initialize()
 {
-    const auto data = _foreignFontData ? _foreignFontData : _ownedFontData.data();
+    const auto* data = _foreignFontData ? _foreignFontData : _ownedFontData.data();
 
     if (stbtt_InitFont(&_fontInfo, data, 0) == 0)
     {

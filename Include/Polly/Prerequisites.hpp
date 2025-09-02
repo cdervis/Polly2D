@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -39,113 +39,113 @@ static_assert(sizeof(i64) == 8);
 /// implementation in the free store (heap).
 ///
 /// @attention The reference counting mechanism for Polly objects is **not** thread-safe.
-#define pl_object(class_name)                                                                                \
+#define PollyObject(className)                                                                               \
   public:                                                                                                    \
     class Impl;                                                                                              \
-    constexpr class_name()                                                                                   \
-        : m_impl(nullptr)                                                                                    \
+    constexpr className()                                                                                    \
+        : _impl(nullptr)                                                                                     \
     {                                                                                                        \
     }                                                                                                        \
-    constexpr class_name(Details::NoObjectTag)                                                               \
-        : m_impl(nullptr)                                                                                    \
+    constexpr className(Details::NoObjectTag)                                                                \
+        : _impl(nullptr)                                                                                     \
     {                                                                                                        \
     }                                                                                                        \
-    explicit class_name(Impl* impl_ptr);                                                                     \
-    class_name(const class_name& copyFrom);                                                                  \
-    class_name& operator=(const class_name& copyFrom);                                                       \
-    class_name(class_name&& moveFrom) noexcept;                                                              \
-    class_name& operator=(class_name&& moveFrom) noexcept;                                                   \
-    ~class_name() noexcept;                                                                                  \
+    explicit className(Impl* impl);                                                                          \
+    className(const className& copyFrom);                                                                    \
+    className& operator=(const className& copyFrom);                                                         \
+    className(className&& moveFrom) noexcept;                                                                \
+    className& operator=(className&& moveFrom) noexcept;                                                     \
+    ~className() noexcept;                                                                                   \
     constexpr explicit operator bool() const                                                                 \
     {                                                                                                        \
-        return m_impl != nullptr;                                                                            \
+        return _impl != nullptr;                                                                             \
     }                                                                                                        \
-    constexpr bool operator==(const class_name& other) const                                                 \
+    constexpr bool operator==(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl == other.m_impl;                                                                       \
+        return _impl == other._impl;                                                                         \
     }                                                                                                        \
-    constexpr bool operator!=(const class_name& other) const                                                 \
+    constexpr bool operator!=(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl != other.m_impl;                                                                       \
+        return _impl != other._impl;                                                                         \
     }                                                                                                        \
-    constexpr bool operator<(const class_name& other) const                                                  \
+    constexpr bool operator<(const className& other) const                                                   \
     {                                                                                                        \
-        return m_impl < other.m_impl;                                                                        \
+        return _impl < other._impl;                                                                          \
     }                                                                                                        \
-    constexpr bool operator<=(const class_name& other) const                                                 \
+    constexpr bool operator<=(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl <= other.m_impl;                                                                       \
+        return _impl <= other._impl;                                                                         \
     }                                                                                                        \
-    constexpr bool operator>(const class_name& other) const                                                  \
+    constexpr bool operator>(const className& other) const                                                   \
     {                                                                                                        \
-        return m_impl > other.m_impl;                                                                        \
+        return _impl > other._impl;                                                                          \
     }                                                                                                        \
-    constexpr bool operator>=(const class_name& other) const                                                 \
+    constexpr bool operator>=(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl >= other.m_impl;                                                                       \
+        return _impl >= other._impl;                                                                         \
     }                                                                                                        \
-    constexpr auto  operator<=>(const class_name&) const = default;                                          \
+    constexpr auto  operator<=>(const className&) const = default;                                           \
     constexpr Impl* impl()                                                                                   \
     {                                                                                                        \
-        return m_impl;                                                                                       \
+        return _impl;                                                                                        \
     }                                                                                                        \
     constexpr const Impl* impl() const                                                                       \
     {                                                                                                        \
-        return m_impl;                                                                                       \
+        return _impl;                                                                                        \
     }                                                                                                        \
                                                                                                              \
   private:                                                                                                   \
-    Impl* m_impl
+    Impl* _impl
 
-#define pl_transient_object(class_name)                                                                      \
+#define PollyTransientObject(className)                                                                      \
   public:                                                                                                    \
-    constexpr class_name()                                                                                   \
-        : m_impl(nullptr)                                                                                    \
+    constexpr className()                                                                                    \
+        : _impl(nullptr)                                                                                     \
     {                                                                                                        \
     }                                                                                                        \
-    constexpr explicit class_name(void* impl)                                                                \
-        : m_impl(impl)                                                                                       \
+    constexpr explicit className(void* impl)                                                                 \
+        : _impl(impl)                                                                                        \
     {                                                                                                        \
     }                                                                                                        \
-    constexpr class_name(const class_name&)                = default;                                        \
-    constexpr class_name& operator=(const class_name&)     = default;                                        \
-    constexpr class_name(class_name&&) noexcept            = default;                                        \
-    constexpr class_name& operator=(class_name&&) noexcept = default;                                        \
-    constexpr explicit    operator bool() const                                                              \
+    constexpr className(const className&)                = default;                                          \
+    constexpr className& operator=(const className&)     = default;                                          \
+    constexpr className(className&&) noexcept            = default;                                          \
+    constexpr className& operator=(className&&) noexcept = default;                                          \
+    constexpr explicit   operator bool() const                                                               \
     {                                                                                                        \
-        return m_impl != nullptr;                                                                            \
+        return _impl != nullptr;                                                                             \
     }                                                                                                        \
-    constexpr bool operator==(const class_name& other) const                                                 \
+    constexpr bool operator==(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl == other.m_impl;                                                                       \
+        return _impl == other._impl;                                                                         \
     }                                                                                                        \
-    constexpr bool operator!=(const class_name& other) const                                                 \
+    constexpr bool operator!=(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl != other.m_impl;                                                                       \
+        return _impl != other._impl;                                                                         \
     }                                                                                                        \
-    constexpr bool operator<(const class_name& other) const                                                  \
+    constexpr bool operator<(const className& other) const                                                   \
     {                                                                                                        \
-        return m_impl < other.m_impl;                                                                        \
+        return _impl < other._impl;                                                                          \
     }                                                                                                        \
-    constexpr bool operator<=(const class_name& other) const                                                 \
+    constexpr bool operator<=(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl <= other.m_impl;                                                                       \
+        return _impl <= other._impl;                                                                         \
     }                                                                                                        \
-    constexpr bool operator>(const class_name& other) const                                                  \
+    constexpr bool operator>(const className& other) const                                                   \
     {                                                                                                        \
-        return m_impl > other.m_impl;                                                                        \
+        return _impl > other._impl;                                                                          \
     }                                                                                                        \
-    constexpr bool operator>=(const class_name& other) const                                                 \
+    constexpr bool operator>=(const className& other) const                                                  \
     {                                                                                                        \
-        return m_impl >= other.m_impl;                                                                       \
+        return _impl >= other._impl;                                                                         \
     }                                                                                                        \
     constexpr void* impl() const                                                                             \
     {                                                                                                        \
-        return m_impl;                                                                                       \
+        return _impl;                                                                                        \
     }                                                                                                        \
                                                                                                              \
   private:                                                                                                   \
-    void* m_impl
+    void* _impl
 
 #define defineEnumFlagOperations(enumName)                                                                   \
     static constexpr enumName operator&(enumName lhs, enumName rhs)                                          \
@@ -161,40 +161,40 @@ static_assert(sizeof(i64) == 8);
         lhs = lhs bitor rhs;                                                                                 \
         return lhs;                                                                                          \
     }                                                                                                        \
-    static constexpr bool has_flag(enumName value, enumName toTest)                                          \
+    static constexpr bool hasFlag(enumName value, enumName toTest)                                           \
     {                                                                                                        \
         return (value & toTest) == toTest;                                                                   \
     }
 
 #ifndef __has_cpp_attribute
-#define pl_lifetimebound
-#define pl_lifetime_capture_by(obj)
+#define PollyLifetimeBound
+#define PollyLifetimeCaptureBy(obj)
 #else
 #if __has_cpp_attribute(msvc::lifetimebound)
-#define pl_lifetimebound [[msvc::lifetimebound]]
+#define PollyLifetimeBound [[msvc::lifetimebound]]
 #elif __has_cpp_attribute(clang::lifetimebound)
-#define pl_lifetimebound [[clang::lifetimebound]]
+#define PollyLifetimeBound [[clang::lifetimebound]]
 #elif __has_cpp_attribute(lifetimebound)
-#define pl_lifetimebound [[lifetimebound]]
+#define PollyLifetimeBound [[lifetimebound]]
 #else
-#define pl_lifetimebound
+#define PollyLifetimeBound
 #endif
 
 #if __has_cpp_attribute(clang::lifetime_capture_by)
-#define pl_lifetime_capture_by(obj) [[clang::lifetime_capture_by(obj)]]
+#define PollyLifetimeCaptureBy(obj) [[clang::lifetime_capture_by(obj)]]
 #else
-#define pl_lifetime_capture_by(obj)
+#define PollyLifetimeCaptureBy(obj)
 #endif
 #endif
 
 // TODO: re-enable this
 // #if __cpp_deleted_function >= 202403L
-// #define pl_delete_with_reason(reason) delete (reason)
+// #define PollyDeleteWithReason(reason) delete (reason)
 // #else
-#define pl_delete_with_reason(reason) delete
+#define PollyDeleteWithReason(reason) delete
 // #endif
 
-#define defineDefaultEqualityOperations(type_name)                                                           \
+#define DefineDefaultEqualityOperations(type_name)                                                           \
     bool operator==(const type_name&) const  = default;                                                      \
     bool operator!=(const type_name&) const  = default;                                                      \
     auto operator<=>(const type_name&) const = default

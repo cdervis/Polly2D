@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -22,7 +22,7 @@ enum class WindowLoggingPosition
 /// Represents the game window.
 class Window final
 {
-    pl_object(Window);
+    PollyObject(Window);
 
   public:
     /// Gets the width of the window, in logical units.

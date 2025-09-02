@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -20,7 +20,7 @@
 #include "Polly/Maybe.hpp"
 #include "Polly/Painter.hpp"
 #include "Polly/Pair.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 #include "Polly/Sampler.hpp"
 #include "Polly/Shader.hpp"
 #include "Polly/Span.hpp"
@@ -57,8 +57,8 @@ enum class SpriteShaderKind
 
 struct InternalSprite
 {
-    Rectf      dst;
-    Rectf      src;
+    Rectangle  dst;
+    Rectangle  src;
     Color      color;
     Vec2       origin;
     Radians    rotation;
@@ -124,7 +124,7 @@ class Painter::Impl : public Object
     static constexpr auto verticesPerSprite = 4u;
     static constexpr auto indicesPerSprite  = 6u;
 
-    deleteCopyAndMove(Impl);
+    DeleteCopyAndMove(Impl);
 
     ~Impl() noexcept override;
 
@@ -172,11 +172,11 @@ class Painter::Impl : public Object
 
     void setCanvas(Image canvas, Maybe<Color> clearColor, bool force);
 
-    virtual void onBeforeCanvasChanged(Image oldCanvas, Rectf viewport) = 0;
+    virtual void onBeforeCanvasChanged(Image oldCanvas, Rectangle viewport) = 0;
 
-    virtual void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport) = 0;
+    virtual void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) = 0;
 
-    virtual void setScissorRects(Span<Rectf> scissorRects) = 0;
+    virtual void setScissorRects(Span<Rectangle> scissorRects) = 0;
 
     const Matrix& transformation() const;
     void          setTransformation(const Matrix& transformation);
@@ -194,18 +194,18 @@ class Painter::Impl : public Object
     void drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind);
 
     void fillRectangleUsingSprite(
-        const Rectf& rectangle,
-        const Color& color,
-        Radians      rotation,
-        const Vec2&  origin);
+        const Rectangle& rectangle,
+        const Color&     color,
+        Radians          rotation,
+        const Vec2&      origin);
 
     void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth);
 
     void drawLinePath(Span<Line> lines, const Color& color, float strokeWidth);
 
-    void drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth);
+    void drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth);
 
-    void fillRectangle(const Rectf& rectangle, const Color& color);
+    void fillRectangle(const Rectangle& rectangle, const Color& color);
 
     void drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth);
 
@@ -216,12 +216,12 @@ class Painter::Impl : public Object
     void drawSpineSkeleton(SpineSkeleton& skeleton);
 
     void drawRoundedRectangle(
-        const Rectf& rectangle,
-        float        cornerRadius,
-        const Color& color,
-        float        strokeWidth);
+        const Rectangle& rectangle,
+        float            cornerRadius,
+        const Color&     color,
+        float            strokeWidth);
 
-    void fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color);
+    void fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color);
 
     void drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth);
 
@@ -325,7 +325,7 @@ class Painter::Impl : public Object
     void fillSpriteVertices(
         T*                   dst,
         Span<InternalSprite> sprites,
-        const Rectf&         imageSizeAndInverse,
+        const Rectangle&     imageSizeAndInverse,
         bool                 flipImageUpDown,
         const Action&        action) const;
 
@@ -345,7 +345,7 @@ class Painter::Impl : public Object
 
     void resetCurrentStates();
 
-    const Rectf& currentViewport() const;
+    const Rectangle& currentViewport() const;
 
     const Matrix& combinedTransformation() const;
 
@@ -377,7 +377,7 @@ class Painter::Impl : public Object
     virtual void flushSprites(
         Span<InternalSprite>  sprites,
         GamePerformanceStats& stats,
-        Rectf                 imageSizeAndInverse) = 0;
+        Rectangle             imageSizeAndInverse) = 0;
 
     virtual void flushPolys(
         Span<Tessellation2D::Command> polys,
@@ -392,7 +392,7 @@ class Painter::Impl : public Object
   private:
     virtual bool mustIndirectlyFlush(const FrameData& frameData) const;
 
-    static Matrix computeViewportTransformation(const Rectf& viewport);
+    static Matrix computeViewportTransformation(const Rectangle& viewport);
 
     void computeCombinedTransformation();
 
@@ -402,7 +402,7 @@ class Painter::Impl : public Object
     static void renderSprite(
         const InternalSprite& sprite,
         T*                    dstVertices,
-        const Rectf&          imageSizeAndInverse,
+        const Rectangle&      imageSizeAndInverse,
         bool                  flipImageUpDown,
         const Action&         action);
 
@@ -428,7 +428,7 @@ class Painter::Impl : public Object
     u32                     _maxSpriteBatchSize = 0;
     u32                     _maxPolyVertices    = 0;
     u32                     _maxMeshVertices    = 0;
-    Rectf                   _viewport;
+    Rectangle               _viewport;
     Matrix                  _viewportTransformation;
     Matrix                  _combinedTransformation;
     float                   _pixelRatio = 1.0f;
@@ -456,7 +456,7 @@ template<typename T, typename Action>
 void Painter::Impl::fillSpriteVertices(
     T*                   dst,
     Span<InternalSprite> sprites,
-    const Rectf&         imageSizeAndInverse,
+    const Rectangle&     imageSizeAndInverse,
     bool                 flipImageUpDown,
     const Action&        action) const
 {
@@ -517,7 +517,7 @@ template<typename T, typename Action>
 void Painter::Impl::renderSprite(
     const InternalSprite& sprite,
     T*                    dstVertices,
-    const Rectf&          imageSizeAndInverse,
+    const Rectangle&      imageSizeAndInverse,
     bool                  flipImageUpDown,
     const Action&         action)
 {

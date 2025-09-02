@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -18,7 +18,7 @@ void Tweener::resume()
     _isRunning = true;
 }
 
-void Tweener::update(float elapsedTime)
+void Tweener::update(const float elapsedTime)
 {
     if (not _isRunning or _elapsed == _duration)
     {
@@ -111,7 +111,9 @@ float Tweener::backEaseInOut(float t, float b, float c, float d)
     float s = 1.70158f;
 
     if ((t /= d / 2) < 1)
+    {
         return c / 2 * (t * t * (((s *= (1.525f)) + 1) * t - s)) + b;
+    }
 
     return c / 2 * ((t -= 2) * t * (((s *= (1.525f)) + 1) * t + s) + 2) + b;
 }
@@ -122,10 +124,14 @@ float Tweener::bounceEaseOut(float t, float b, float c, float d)
         return c * (7.5625f * t * t) + b;
 
     if (t < 2 / 2.75)
+    {
         return c * (7.5625f * (t -= (1.5f / 2.75f)) * t + .75f) + b;
+    }
 
     if (t < 2.5 / 2.75)
+    {
         return c * (7.5625f * (t -= 2.25f / 2.75f) * t + .9375f) + b;
+    }
 
     return c * (7.5625f * (t -= (2.625f / 2.75f)) * t + .984375f) + b;
 }
@@ -138,7 +144,9 @@ float Tweener::bounceEaseIn(float t, float b, float c, float d)
 float Tweener::bounceEaseInOut(float t, float b, float c, float d)
 {
     if (t < d / 2)
+    {
         return bounceEaseIn(t * 2, 0, c, d) * 0.5f + b;
+    }
 
     return bounceEaseOut(t * 2 - d, 0, c, d) * .5f + c * 0.5f + b;
 }
@@ -156,7 +164,9 @@ float Tweener::circularEaseOut(float t, float b, float c, float d)
 float Tweener::circularEaseInOut(float t, float b, float c, float d)
 {
     if ((t /= d / 2) < 1)
+    {
         return -c / 2 * (Polly::sqrt(1 - t * t) - 1) + b;
+    }
 
     return c / 2 * (Polly::sqrt(1 - (t -= 2) * t) + 1) + b;
 }
@@ -174,7 +184,9 @@ float Tweener::cubicEaseOut(float t, float b, float c, float d)
 float Tweener::cubicEaseInOut(float t, float b, float c, float d)
 {
     if ((t /= d / 2) < 1)
+    {
         return c / 2 * t * t * t + b;
+    }
 
     return c / 2 * ((t -= 2) * t * t + 2) + b;
 }
@@ -182,10 +194,14 @@ float Tweener::cubicEaseInOut(float t, float b, float c, float d)
 float Tweener::elasticEaseIn(float t, float b, float c, float d)
 {
     if (t == 0)
+    {
         return b;
+    }
 
     if ((t /= d) == 1)
+    {
         return b + c;
+    }
 
     float p = d * 0.3f;
     float s = p / 4;
@@ -213,10 +229,14 @@ float Tweener::elasticEaseOut(float t, float b, float c, float d)
 float Tweener::elasticEaseInOut(float t, float b, float c, float d)
 {
     if (t == 0)
+    {
         return b;
+    }
 
     if ((t /= d / 2) == 2)
+    {
         return b + c;
+    }
 
     const auto p = d * (.3f * 1.5f);
     const auto a = c;
@@ -346,7 +366,7 @@ float Tweener::sinusoidalEaseInOut(float t, float b, float c, float d)
 
 // NOLINTEND
 
-TweenerChain::TweenerChain(Span<Tweener> tweeners)
+TweenerChain::TweenerChain(const Span<Tweener> tweeners)
     : _tweeners(tweeners)
     , _currentTweenerIndex(0)
 {

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -34,7 +34,7 @@ enum class MouseCursorType
 
 class MouseCursor final
 {
-    pl_object(MouseCursor);
+    PollyObject(MouseCursor);
 
   public:
     // ReSharper disable once CppNonExplicitConvertingConstructor

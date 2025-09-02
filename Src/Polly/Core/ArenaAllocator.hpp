@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -15,7 +15,7 @@ class ArenaAllocator
   public:
     explicit ArenaAllocator(u32 defaultArenaSize = 1024 * 8);
 
-    deleteCopyAndMove(ArenaAllocator);
+    DeleteCopyAndMove(ArenaAllocator);
 
     void* allocate(u32 size, Maybe<u32> alignment = none);
 
@@ -29,7 +29,7 @@ class ArenaAllocator
     {
         explicit Arena(u32 size);
 
-        deleteCopy(Arena);
+        DeleteCopy(Arena);
 
         Arena(Arena&& moveFrom) noexcept;
 

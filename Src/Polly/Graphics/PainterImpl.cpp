@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -329,7 +329,7 @@ void Painter::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool force)
 
         _currentCanvas = canvas;
 
-        auto newViewport = Rectf();
+        auto newViewport = Rectangle();
 
         if (canvas)
         {
@@ -461,7 +461,7 @@ void Painter::Impl::drawSprite(const Sprite& sprite, SpriteShaderKind spriteShad
     frameData.spriteQueue.add(
         InternalSprite{
             .dst      = sprite.dstRect,
-            .src      = sprite.srcRect.valueOr(Rectf(0, 0, sprite.image.size())),
+            .src      = sprite.srcRect.valueOr(Rectangle(0, 0, sprite.image.size())),
             .color    = sprite.color,
             .origin   = sprite.origin,
             .rotation = sprite.rotation,
@@ -537,7 +537,7 @@ void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
 
         for (const auto& particle : particlesSpan)
         {
-            sprite.dstRect  = Rectf(particle.position, imageSize * particle.scale);
+            sprite.dstRect  = Rectangle(particle.position, imageSize * particle.scale);
             sprite.color    = particle.color;
             sprite.rotation = particle.rotation;
 
@@ -547,10 +547,10 @@ void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
 }
 
 void Painter::Impl::fillRectangleUsingSprite(
-    const Rectf& rectangle,
-    const Color& color,
-    Radians      rotation,
-    const Vec2&  origin)
+    const Rectangle& rectangle,
+    const Color&     color,
+    Radians          rotation,
+    const Vec2&      origin)
 {
     drawSprite(
         Sprite{
@@ -606,7 +606,7 @@ void Painter::Impl::drawLinePath(
 #endif
 }
 
-void Painter::Impl::drawRectangle(const Rectf& rectangle, const Color& color, float strokeWidth)
+void Painter::Impl::drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -622,7 +622,7 @@ void Painter::Impl::drawRectangle(const Rectf& rectangle, const Color& color, fl
     ++performanceStats().polygonCount;
 }
 
-void Painter::Impl::fillRectangle(const Rectf& rectangle, const Color& color)
+void Painter::Impl::fillRectangle(const Rectangle& rectangle, const Color& color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -730,10 +730,10 @@ void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
     setBlendState(prevBlendState);
 }
 void Painter::Impl::drawRoundedRectangle(
-    const Rectf& rectangle,
-    float        cornerRadius,
-    const Color& color,
-    float        strokeWidth)
+    const Rectangle& rectangle,
+    float            cornerRadius,
+    const Color&     color,
+    float            strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -750,7 +750,7 @@ void Painter::Impl::drawRoundedRectangle(
     ++performanceStats().polygonCount;
 }
 
-void Painter::Impl::fillRoundedRectangle(const Rectf& rectangle, float cornerRadius, const Color& color)
+void Painter::Impl::fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -813,7 +813,7 @@ void Painter::Impl::resetCurrentStates()
     }
 }
 
-const Rectf& Painter::Impl::currentViewport() const
+const Rectangle& Painter::Impl::currentViewport() const
 {
     return _viewport;
 }
@@ -910,7 +910,7 @@ void Painter::Impl::flush()
             flushSprites(
                 frameData.spriteQueue,
                 _performanceStats,
-                Rectf(imageWidthf, imageHeightf, 1.0f / imageWidthf, 1.0f / imageHeightf));
+                Rectangle(imageWidthf, imageHeightf, 1.0f / imageWidthf, 1.0f / imageHeightf));
 
             frameData.spriteQueue.clear();
 
@@ -971,7 +971,7 @@ bool Painter::Impl::mustIndirectlyFlush(const FrameData& frameData) const
     return (frameData.dirtyFlags bitand DF_UserShaderParams) == DF_UserShaderParams;
 }
 
-Matrix Painter::Impl::computeViewportTransformation(const Rectf& viewport)
+Matrix Painter::Impl::computeViewportTransformation(const Rectangle& viewport)
 {
     const auto xScale = viewport.width > 0 ? 2.0f / viewport.width : 0.0f;
     const auto yScale = viewport.height > 0 ? 2.0f / viewport.height : 0.0f;

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -123,8 +123,6 @@ Archive::UnpackedAssetData Archive::unpackAsset(StringView name) const
     {
         throw Error("Failed to unpack asset data.");
     }
-
-    // PNG size: 32758
 
     reader = BinaryReader(uncompressedData, Details::asset_decryption_key);
 

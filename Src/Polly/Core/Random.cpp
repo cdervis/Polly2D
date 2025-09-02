@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -75,12 +75,10 @@ int Polly::Random::nextIntFast(Maybe<IntInterval> interval)
             static_cast<double>(max),
             static_cast<double>(floatOneToZeroFast())));
     }
-    else
-    {
-        sFastrandSeed = 214013 * sFastrandSeed + 2531011;
 
-        return (sFastrandSeed >> 16) bitand 0x7FFF;
-    }
+    sFastrandSeed = 214013 * sFastrandSeed + 2531011;
+
+    return (sFastrandSeed >> 16) bitand 0x7FFF;
 }
 
 float Polly::Random::floatOneToZeroFast()

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -60,7 +60,7 @@ class Game
   public:
     class Impl;
 
-    deleteCopyAndMove(Game);
+    DeleteCopyAndMove(Game);
 
     virtual ~Game() noexcept;
 

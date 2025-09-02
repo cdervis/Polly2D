@@ -68,7 +68,7 @@ void InputDemo::draw(Painter painter)
 
             painter.fillEllipse(stickPos + xyOffset, stickRadius, cornflowerblue);
 
-            auto triggerRect = Rectf(
+            auto triggerRect = Rectangle(
                 stickPos.x - axisCircleRadius.x - 100.0f,
                 stickPos.y - (triggerRectHeight / 2),
                 50.0f,
@@ -100,7 +100,7 @@ void InputDemo::draw(Painter painter)
             painter.drawEllipse(stickPos, axisCircleRadius, gray, 3.0f);
             painter.fillEllipse(stickPos + xyOffset, stickRadius, cornflowerblue);
 
-            auto trigger_rect = Rectf(
+            auto trigger_rect = Rectangle(
                 stickPos.x + axisCircleRadius.x + 50.0f,
                 stickPos.y - (triggerRectHeight / 2),
                 50.0f,

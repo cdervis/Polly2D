@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -13,8 +13,6 @@ namespace Polly
 {
 String Shader::Impl::shaderParameterTypeString(ShaderParameterType type)
 {
-    // TODO: move this to a separate, minimal static lib some day.
-    // So that it's consistent for the asset compiler also.
     switch (type)
     {
         case ShaderParameterType::Float: return "float";
@@ -66,7 +64,7 @@ Shader::Impl::~Impl() noexcept
     painter().notifyUserShaderDestroyed(*this);
 }
 
-Polly::ShaderType Shader::Impl::shaderType() const
+ShaderType Shader::Impl::shaderType() const
 {
     return _shaderType;
 }

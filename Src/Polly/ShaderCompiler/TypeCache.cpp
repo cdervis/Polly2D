@@ -1,11 +1,11 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "TypeCache.hpp"
+#include "Polly/ShaderCompiler/TypeCache.hpp"
 
-#include "Expr.hpp"
-#include "Type.hpp"
+#include "Polly/ShaderCompiler/Expr.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 
 namespace Polly::ShaderCompiler
 {

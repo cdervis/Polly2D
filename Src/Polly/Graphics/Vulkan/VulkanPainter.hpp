@@ -27,7 +27,7 @@ class VulkanPainter final : public Painter::Impl
         u32                   vkApiVersion,
         bool                  haveVkDebugLayer);
 
-    deleteCopyAndMove(VulkanPainter);
+    DeleteCopyAndMove(VulkanPainter);
 
     ~VulkanPainter() noexcept override;
 

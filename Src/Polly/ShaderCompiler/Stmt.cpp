@@ -1,16 +1,16 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "Stmt.hpp"
+#include "Polly/ShaderCompiler/Stmt.hpp"
 
-#include "CodeBlock.hpp"
-#include "CompileError.hpp"
-#include "Decl.hpp"
-#include "Expr.hpp"
 #include "Polly/Format.hpp"
-#include "Scope.hpp"
-#include "SemaContext.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Expr.hpp"
+#include "Polly/ShaderCompiler/Scope.hpp"
+#include "Polly/ShaderCompiler/SemaContext.hpp"
 
 namespace Polly::ShaderCompiler
 {

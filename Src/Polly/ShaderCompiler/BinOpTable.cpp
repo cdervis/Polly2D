@@ -1,11 +1,11 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "BinOpTable.hpp"
+#include "Polly/ShaderCompiler/BinOpTable.hpp"
 
-#include "Expr.hpp"
 #include "Polly/Algorithm.hpp"
+#include "Polly/ShaderCompiler/Expr.hpp"
 
 namespace Polly::ShaderCompiler
 {

@@ -1,12 +1,12 @@
-// Copyright (C) 2023-2025 Cemalettin Dervis
+// Copyright (C) 2023-2025 Cem Dervis
 // This file is part of cerlib.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #include "Polly/ShaderCompiler/GLSLShaderGenerator.hpp"
 
-#include "CommonVulkanInfo.hpp"
 #include "Polly/Core/Casting.hpp"
 #include "Polly/FileSystem.hpp"
+#include "Polly/Graphics/CommonVulkanInfo.hpp"
 #include "Polly/Shader.hpp"
 #include "Polly/ShaderCompiler/Ast.hpp"
 #include "Polly/ShaderCompiler/BuiltinSymbols.hpp"

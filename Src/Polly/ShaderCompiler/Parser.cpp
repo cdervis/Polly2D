@@ -1,18 +1,18 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "Parser.hpp"
+#include "Polly/ShaderCompiler/Parser.hpp"
 
-#include "../Core/Casting.hpp"
-#include "CodeBlock.hpp"
-#include "CompileError.hpp"
-#include "Decl.hpp"
-#include "Expr.hpp"
-#include "Lexer.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Maybe.hpp"
 #include "Polly/Pair.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Expr.hpp"
+#include "Polly/ShaderCompiler/Lexer.hpp"
 #include "Stmt.hpp"
 #include "Type.hpp"
 #include "TypeCache.hpp"
@@ -831,7 +831,7 @@ UniquePtr<UnaryOpExpr> Parser::parseUnaryOperation()
 
     auto expr = parsePrimaryExpr();
 
-    if (expr == nullptr)
+    if (not expr)
     {
         throw ShaderCompileError(_token->location, "Expected an expression for the unary operation.");
     }

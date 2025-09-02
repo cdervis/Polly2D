@@ -1,14 +1,13 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
 #include "Polly/CopyMoveMacros.hpp"
-#include "Polly/Linalg.hpp"
+#include "Polly/ShaderCompiler/SourceLocation.hpp"
 #include "Polly/String.hpp"
 #include "Polly/UniquePtr.hpp"
-#include "SourceLocation.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -33,7 +32,7 @@ class Type
     explicit Type(const SourceLocation& location);
 
   public:
-    deleteCopyAndMove(Type);
+    DeleteCopyAndMove(Type);
 
     virtual ~Type() noexcept = default;
 
@@ -86,7 +85,7 @@ class VoidType final : public Type
   public:
     VoidType();
 
-    deleteCopyAndMove(VoidType);
+    DeleteCopyAndMove(VoidType);
 
     static const Type* instance();
 
@@ -104,7 +103,7 @@ class IntType final : public Type
   public:
     IntType();
 
-    deleteCopyAndMove(IntType);
+    DeleteCopyAndMove(IntType);
 
     static const Type* instance();
 
@@ -126,7 +125,7 @@ class BoolType final : public Type
   public:
     BoolType();
 
-    deleteCopyAndMove(BoolType);
+    DeleteCopyAndMove(BoolType);
 
     static const Type* instance();
 
@@ -146,7 +145,7 @@ class FloatType final : public Type
   public:
     FloatType();
 
-    deleteCopyAndMove(FloatType);
+    DeleteCopyAndMove(FloatType);
 
     static const Type* instance();
 
@@ -168,7 +167,7 @@ class Vec2Type final : public Type
   public:
     Vec2Type();
 
-    deleteCopyAndMove(Vec2Type);
+    DeleteCopyAndMove(Vec2Type);
 
     static const Type* instance();
 
@@ -192,7 +191,7 @@ class Vec3Type final : public Type
   public:
     Vec3Type();
 
-    deleteCopyAndMove(Vec3Type);
+    DeleteCopyAndMove(Vec3Type);
 
     static const Type* instance();
 
@@ -216,7 +215,7 @@ class Vec4Type final : public Type
   public:
     Vec4Type();
 
-    deleteCopyAndMove(Vec4Type);
+    DeleteCopyAndMove(Vec4Type);
 
     static const Type* instance();
 
@@ -240,7 +239,7 @@ class MatrixType final : public Type
   public:
     MatrixType();
 
-    deleteCopyAndMove(MatrixType);
+    DeleteCopyAndMove(MatrixType);
 
     static const Type* instance();
 
@@ -262,7 +261,7 @@ class ImageType final : public Type
   public:
     ImageType();
 
-    deleteCopyAndMove(ImageType);
+    DeleteCopyAndMove(ImageType);
 
     static const Type* instance();
 
@@ -288,7 +287,7 @@ class ArrayType final : public Type
 
     ~ArrayType() noexcept override;
 
-    deleteCopyAndMove(ArrayType);
+    DeleteCopyAndMove(ArrayType);
 
     const Decl* findMemberSymbol(const SemaContext& context, StringView name) const override;
 
@@ -320,7 +319,7 @@ class UnresolvedType final : public Type
   public:
     explicit UnresolvedType(const SourceLocation& location, StringView name);
 
-    deleteCopyAndMove(UnresolvedType);
+    DeleteCopyAndMove(UnresolvedType);
 
     const Type* resolve(SemaContext& context, Scope& scope) const override;
 

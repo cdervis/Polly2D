@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -28,7 +28,7 @@ enum class SfxrSoundPreset
 /// AudioDevice::playSoundWithChannel().
 class Sound
 {
-    pl_object(Sound);
+    PollyObject(Sound);
 
   public:
     /// Creates a Sound from memory that represents decodable audio data, such as .wav or .mp3.

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -32,7 +32,7 @@ namespace Polly::Details
 {
 void set_android_asset_manager([[maybe_unused]] void* asset_manager)
 {
-    if (asset_manager == nullptr)
+    if (not asset_manager)
     {
         throw Error("No Android asset manager specified.");
     }
@@ -48,7 +48,7 @@ namespace Polly
 #ifdef __ANDROID__
 static auto GetAndroidAssetManager() -> AAssetManager*
 {
-    if (s_PollyAndroidAssetManager == nullptr)
+    if (not s_PollyAndroidAssetManager)
     {
         throw Error(
             "Attempting to load a file, however no Android asset "

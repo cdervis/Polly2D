@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -42,13 +42,17 @@ Window::Impl::Impl(StringView title)
 void Window::Impl::startAcceptingTextInput()
 {
     if (Platform::isMobile())
+    {
         SDL_StartTextInput(_sdlWindow);
+    }
 }
 
 void Window::Impl::stopAcceptingTextInput()
 {
     if (Platform::isMobile())
+    {
         SDL_StopTextInput(_sdlWindow);
+    }
 }
 
 bool Window::Impl::hasKeyboardFocus() const
@@ -139,7 +143,7 @@ Vec2 Window::Impl::size() const
     int width  = 0;
     int height = 0;
     SDL_GetWindowSize(_sdlWindow, &width, &height);
-    return {float(width), float(height)};
+    return Vec2(static_cast<float>(width), static_cast<float>(height));
 }
 
 Vec2ui Window::Impl::sizeUInt() const
@@ -147,7 +151,7 @@ Vec2ui Window::Impl::sizeUInt() const
     int width  = 0;
     int height = 0;
     SDL_GetWindowSize(_sdlWindow, &width, &height);
-    return Vec2ui(u32(width), u32(height));
+    return Vec2ui(static_cast<u32>(width), static_cast<u32>(height));
 }
 
 Vec2 Window::Impl::sizePx() const
@@ -238,12 +242,12 @@ void Window::Impl::setMouseGrab(bool value)
 
 void Window::Impl::setPosition(const Vec2& position)
 {
-    SDL_SetWindowPosition(_sdlWindow, int(position.x), int(position.y));
+    SDL_SetWindowPosition(_sdlWindow, static_cast<int>(position.x), static_cast<int>(position.y));
 }
 
 void Window::Impl::setSize(const Vec2& size, bool recenter)
 {
-    SDL_SetWindowSize(_sdlWindow, int(size.x), int(size.y));
+    SDL_SetWindowSize(_sdlWindow, static_cast<int>(size.x), static_cast<int>(size.y));
 
     if (recenter)
     {

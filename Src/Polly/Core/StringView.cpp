@@ -1,4 +1,4 @@
-// Copyright (C) 2023-2024 Cemalettin Dervis
+// Copyright (C) 2023-2024 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -22,7 +22,7 @@ Maybe<u32> StringView::find(StringView str, u32 offset) const
 
     if (needleSize == 0 or offset >= mySize)
     {
-        return {};
+        return none;
     }
 
     const auto  needleData = str._data;

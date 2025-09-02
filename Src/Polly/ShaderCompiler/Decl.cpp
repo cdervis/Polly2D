@@ -1,24 +1,24 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "Decl.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
 
-#include "Ast.hpp"
-#include "BuiltinSymbols.hpp"
-#include "Casting.hpp"
-#include "CodeBlock.hpp"
-#include "CompileError.hpp"
-#include "Expr.hpp"
-#include "Naming.hpp"
 #include "Polly/Algorithm.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/Shader.hpp"
-#include "Scope.hpp"
-#include "SemaContext.hpp"
-#include "Stmt.hpp"
-#include "Type.hpp"
+#include "Polly/ShaderCompiler/Ast.hpp"
+#include "Polly/ShaderCompiler/BuiltinSymbols.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
+#include "Polly/ShaderCompiler/Expr.hpp"
+#include "Polly/ShaderCompiler/Naming.hpp"
+#include "Polly/ShaderCompiler/Scope.hpp"
+#include "Polly/ShaderCompiler/SemaContext.hpp"
+#include "Polly/ShaderCompiler/Stmt.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 #include <algorithm>
 
 namespace Polly::ShaderCompiler
@@ -202,7 +202,7 @@ void FunctionDecl::onVerify(SemaContext& context, Scope& scope)
 
     context.verifySymbolName(location(), name());
 
-    const bool isBuiltIn = _body == nullptr;
+    const bool isBuiltIn = not _body;
 
     if (not isBuiltIn and scope.containsSymbolOnlyHere(name()))
     {

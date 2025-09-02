@@ -1,22 +1,22 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "TextBasedShaderGenerator.hpp"
+#include "Polly/ShaderCompiler/TextBasedShaderGenerator.hpp"
 
-#include "../Core/Casting.hpp"
-#include "Ast.hpp"
-#include "CodeBlock.hpp"
-#include "CompileError.hpp"
-#include "Decl.hpp"
-#include "Expr.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Defer.hpp"
 #include "Polly/FileSystem.hpp"
 #include "Polly/Format.hpp"
-#include "SemaContext.hpp"
-#include "Stmt.hpp"
-#include "Type.hpp"
-#include "Writer.hpp"
+#include "Polly/ShaderCompiler/Ast.hpp"
+#include "Polly/ShaderCompiler/CodeBlock.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Expr.hpp"
+#include "Polly/ShaderCompiler/SemaContext.hpp"
+#include "Polly/ShaderCompiler/Stmt.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
+#include "Polly/ShaderCompiler/Writer.hpp"
 
 namespace Polly::ShaderCompiler
 {
@@ -34,7 +34,7 @@ String TextBasedShaderGenerator::generate(
     const FunctionDecl*   entryPoint,
     [[maybe_unused]] bool withDebugInfo)
 {
-    assume(_ast == nullptr);
+    assume(not _ast);
     assume(ast.isVerified());
 
     _ast = std::addressof(ast);

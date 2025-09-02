@@ -14,7 +14,7 @@ class VulkanSamplerCache final
   public:
     explicit VulkanSamplerCache(VulkanPainter& painter);
 
-    deleteCopyAndMove(VulkanSamplerCache);
+    DeleteCopyAndMove(VulkanSamplerCache);
 
     ~VulkanSamplerCache() noexcept;
 

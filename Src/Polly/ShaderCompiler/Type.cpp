@@ -1,20 +1,20 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "Type.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 
-#include "../Core/Casting.hpp"
-#include "BuiltinSymbols.hpp"
-#include "CompileError.hpp"
-#include "Decl.hpp"
-#include "Expr.hpp"
-#include "Naming.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Maybe.hpp"
 #include "Polly/Narrow.hpp"
-#include "Scope.hpp"
-#include "SemaContext.hpp"
+#include "Polly/ShaderCompiler/BuiltinSymbols.hpp"
+#include "Polly/ShaderCompiler/CompileError.hpp"
+#include "Polly/ShaderCompiler/Decl.hpp"
+#include "Polly/ShaderCompiler/Expr.hpp"
+#include "Polly/ShaderCompiler/Naming.hpp"
+#include "Polly/ShaderCompiler/Scope.hpp"
+#include "Polly/ShaderCompiler/SemaContext.hpp"
 
 namespace Polly::ShaderCompiler
 {

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -18,13 +18,13 @@
 
 namespace Polly
 {
-struct Rectf;
+struct Rectangle;
 class SpineAttachment;
 class SpineSkeleton;
 
 class SpineAtlas
 {
-    pl_object(SpineAtlas);
+    PollyObject(SpineAtlas);
 
   public:
     explicit SpineAtlas(StringView assetName);
@@ -34,12 +34,12 @@ class SpineAtlas
 
 class SpineSkin
 {
-    pl_transient_object(SpineSkin);
+    PollyTransientObject(SpineSkin);
 };
 
 class SpineAnimation
 {
-    pl_transient_object(SpineAnimation);
+    PollyTransientObject(SpineAnimation);
 
   public:
     StringView name() const;
@@ -51,12 +51,12 @@ class SpineAnimation
 
 class SpineBoneData
 {
-    pl_transient_object(SpineBoneData);
+    PollyTransientObject(SpineBoneData);
 };
 
 class SpineBone
 {
-    pl_transient_object(SpineBone);
+    PollyTransientObject(SpineBone);
 
   public:
     [[nodiscard]]
@@ -108,7 +108,7 @@ class SpineBone
 
 class SpineSlotData
 {
-    pl_transient_object(SpineSlotData);
+    PollyTransientObject(SpineSlotData);
 
     u32 index() const;
 
@@ -137,7 +137,7 @@ class SpineSlotData
 
 class SpineSlot
 {
-    pl_transient_object(SpineSlot);
+    PollyTransientObject(SpineSlot);
 
     void setToSetupPose();
 
@@ -171,7 +171,7 @@ class SpineSlot
 
 class SpineIKConstraintData
 {
-    pl_transient_object(SpineIKConstraintData);
+    PollyTransientObject(SpineIKConstraintData);
 
     StringView name() const;
 
@@ -186,7 +186,7 @@ class SpineIKConstraintData
 
 class SpineTransformConstraintData
 {
-    pl_transient_object(SpineTransformConstraintData);
+    PollyTransientObject(SpineTransformConstraintData);
 
     List<SpineBoneData> bones() const;
 
@@ -255,42 +255,42 @@ class SpineTransformConstraintData
 
 class SpinePathConstraintData
 {
-    pl_transient_object(SpinePathConstraintData);
+    PollyTransientObject(SpinePathConstraintData);
 };
 
 class SpinePhysicsConstraintData
 {
-    pl_transient_object(SpinePhysicsConstraintData);
+    PollyTransientObject(SpinePhysicsConstraintData);
 };
 
 class SpineIkConstraint
 {
-    pl_transient_object(SpineIkConstraint);
+    PollyTransientObject(SpineIkConstraint);
 };
 
 class SpineTransformConstraint
 {
-    pl_transient_object(SpineTransformConstraint);
+    PollyTransientObject(SpineTransformConstraint);
 };
 
 class SpinePathConstraint
 {
-    pl_transient_object(SpinePathConstraint);
+    PollyTransientObject(SpinePathConstraint);
 };
 
 class SpinePhysicsConstraint
 {
-    pl_transient_object(SpinePhysicsConstraint);
+    PollyTransientObject(SpinePhysicsConstraint);
 };
 
 class SpineEventData
 {
-    pl_transient_object(SpineEventData);
+    PollyTransientObject(SpineEventData);
 };
 
 class SpineSkeletonData
 {
-    pl_object(SpineSkeletonData);
+    PollyObject(SpineSkeletonData);
 
   public:
     explicit SpineSkeletonData(StringView assetName, SpineAtlas atlas, float scale = 1.0f);
@@ -368,7 +368,7 @@ class SpineSkeletonData
 
 class SpineAnimationStateData
 {
-    pl_object(SpineAnimationStateData);
+    PollyObject(SpineAnimationStateData);
 
   public:
     explicit SpineAnimationStateData(SpineSkeletonData skeletonData);
@@ -388,7 +388,7 @@ class SpineAnimationStateData
 
 class SpineAttachment
 {
-    pl_transient_object(SpineAttachment);
+    PollyTransientObject(SpineAttachment);
 
   public:
     StringView name() const;
@@ -413,7 +413,7 @@ enum class SpineUpdatePhysics
 
 class SpineSkeleton
 {
-    pl_object(SpineSkeleton);
+    PollyObject(SpineSkeleton);
 
   public:
     explicit SpineSkeleton(SpineSkeletonData skeletonData);
@@ -448,7 +448,7 @@ class SpineSkeleton
 
     SpinePhysicsConstraint findPhysicsConstraint(StringView name);
 
-    Rectf bounds() const;
+    Rectangle bounds() const;
 
     SpineBone rootBone();
 
@@ -496,7 +496,7 @@ enum class SpineMixBlend
 
 class SpineTrack
 {
-    pl_transient_object(SpineTrack);
+    PollyTransientObject(SpineTrack);
 
   public:
     u32 trackIndex() const;
@@ -608,7 +608,7 @@ class SpineTrack
 
 class SpineAnimationState
 {
-    pl_object(SpineAnimationState);
+    PollyObject(SpineAnimationState);
 
   public:
     explicit SpineAnimationState(SpineAnimationStateData data);

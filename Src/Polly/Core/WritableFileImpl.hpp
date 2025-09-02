@@ -1,15 +1,12 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #pragma once
 
 #include "Polly/Core/Object.hpp"
-#include "Polly/Core/PlatformDetection.hpp"
 #include "Polly/Game/GameImpl.hpp"
-#include "Polly/List.hpp"
 #include "Polly/WritableFile.hpp"
-#include <SDL3/SDL_filesystem.h>
 
 namespace Polly
 {
@@ -18,7 +15,7 @@ class WritableFile::Impl final : public Object
   public:
     explicit Impl(StringView filename);
 
-    deleteCopyAndMove(Impl);
+    DeleteCopyAndMove(Impl);
 
     ~Impl() noexcept override;
 

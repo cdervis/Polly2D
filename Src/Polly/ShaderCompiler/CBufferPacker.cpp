@@ -1,18 +1,18 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include "CBufferPacker.hpp"
+#include "Polly/ShaderCompiler/CBufferPacker.hpp"
 
 #include "Polly/Math.hpp"
-#include "Type.hpp"
+#include "Polly/ShaderCompiler/Type.hpp"
 
 namespace Polly::ShaderCompiler
 {
 CBufferPacker::Result CBufferPacker::pack(
-    Span<const Type*> fieldTypes,
-    u16               cbufferAlignment,
-    bool              takeMaxOfAlignmentAndSize)
+    const Span<const Type*> fieldTypes,
+    const u16               cbufferAlignment,
+    const bool              takeMaxOfAlignmentAndSize)
 {
     auto result = Result();
     result.offsets.reserve(fieldTypes.size());

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -101,7 +101,7 @@ Vec2 BinaryReader::readVec2()
     const auto x = readFloat();
     const auto y = readFloat();
 
-    return {x, y};
+    return Vec2(x, y);
 }
 
 Vec3 BinaryReader::readVec3()
@@ -110,7 +110,7 @@ Vec3 BinaryReader::readVec3()
     const auto y = readFloat();
     const auto z = readFloat();
 
-    return {x, y, z};
+    return Vec3(x, y, z);
 }
 
 Vec4 BinaryReader::readVec4()
@@ -120,7 +120,7 @@ Vec4 BinaryReader::readVec4()
     const auto z = readFloat();
     const auto w = readFloat();
 
-    return {x, y, z, w};
+    return Vec4(x, y, z, w);
 }
 
 Matrix BinaryReader::readMatrix()
@@ -130,7 +130,7 @@ Matrix BinaryReader::readMatrix()
     const auto row3 = readVec4();
     const auto row4 = readVec4();
 
-    return {row1, row2, row3, row4};
+    return Matrix(row1, row2, row3, row4);
 }
 
 String BinaryReader::readString()
@@ -146,12 +146,12 @@ String BinaryReader::readString()
 
 String BinaryReader::readEncryptedString()
 {
-    auto       str      = readString();
-    const auto key_size = _decryptionKey.size();
+    auto       str     = readString();
+    const auto keySize = _decryptionKey.size();
 
     for (u32 i = 0, size = str.size(); i < size; ++i)
     {
-        str[i] = static_cast<int>(str[i]) xor _decryptionKey[i % key_size];
+        str[i] = static_cast<int>(str[i]) xor _decryptionKey[i % keySize];
     }
 
     return str;
@@ -166,15 +166,15 @@ List<u8> BinaryReader::readBytes(u32 count)
 
 void BinaryReader::readBytesInto(MutableSpan<u8> dst)
 {
-    const auto new_position = _position + dst.size();
+    const auto newPosition = _position + dst.size();
 
-    if (new_position > _data.size())
+    if (newPosition > _data.size())
     {
         throw Error("Attempted to read out of data bounds.");
     }
 
     std::memcpy(dst.data(), _data.data() + _position, dst.size());
-    _position = new_position;
+    _position = newPosition;
 }
 
 u32 BinaryReader::position() const

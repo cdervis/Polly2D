@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Cemalettin Dervis
+// Copyright (C) 2025 Cem Dervis
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -8,7 +8,7 @@
 #include "Polly/Linalg.hpp"
 #include "Polly/Maybe.hpp"
 #include "Polly/Radians.hpp"
-#include "Polly/Rectf.hpp"
+#include "Polly/Rectangle.hpp"
 
 namespace Polly
 {
@@ -37,10 +37,10 @@ struct Sprite
     Image image;
 
     /// The destination area of the sprite, in pixels.
-    Rectf dstRect;
+    Rectangle dstRect;
 
     /// The image coordinates of the sprite, in pixels.
-    Maybe<Rectf> srcRect = none;
+    Maybe<Rectangle> srcRect = none;
 
     /// The multiplicative color of the sprite.
     Color color = white;
@@ -54,6 +54,6 @@ struct Sprite
     /// Flip flags of the sprite.
     SpriteFlip flip = SpriteFlip::None;
 
-    defineDefaultEqualityOperations(Sprite);
+    DefineDefaultEqualityOperations(Sprite);
 };
 } // namespace Polly
