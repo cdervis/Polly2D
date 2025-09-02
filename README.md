@@ -18,18 +18,15 @@
 
 ## Introduction
 
-Polly makes it easy to get started with C++ 2D game development using a clean, modern API.
+Polly is a framework that makes it easy to get started with C++ 2D game development using a clean, modern API, for beginners and experts alike.
 
-It's **not** a game engine and doesn't provide any kind of visual editor.
-Instead, it lets you define your game architecture however you desire it, and gives you all the necessary tools to do so.
-
-In short, it provides every audiovisual aspect necessary to comfortably make a 2D game using a pure C++, code-only approach. 
+It provides every audiovisual aspect necessary to comfortably make a 2D game using a code-only approach. 
 
 ![Cover image](Docs/assets/images/cover-1.webp)
 
 > [!NOTE]  
 > Polly is currently in early development. Some things might be broken, not documented and many things change frequently.
-> Feedback is very much appreciated.
+> Feedback and contributions are very much appreciated.
 
 ```cpp
 // Minimal example
@@ -60,7 +57,7 @@ struct MyGame final : Game
     }
 
     // Perform ImGui stuff.
-    void onImGui(ImGui& imgui) override
+    void onImGui(ImGui imgui) override
     {
         if (imgui.button("Click me!"))
         {
@@ -78,8 +75,6 @@ struct MyGame final : Game
 - **Free and Open Source**: GPLv3 for the framework itself, MIT for games produced with it, with no royalties attached.
 
 - **Modern C++**: Improved C++ types and containers, providing an ergonomic API and safety guarantees by default.
-
-- **App Framework**: Based on an optimized SDL fork, with easy-to-use input, window and event handling.
 
 - **Modern 2D Renderer**: Efficient 2D rendering using the platform's native graphics API, such as Vulkan and Metal.
 
@@ -99,92 +94,7 @@ struct MyGame final : Game
 
 ### Getting started
 
-Polly is designed to be very easy to start with.
-Simply grab the latest [Game Template](https://github.com/cdervis/Polly2D/releases) and open it in your C++ IDE or editor of choice.
-
-**Note** that the entire build process is CMake-based, your IDE therefore requires proper CMake support.
-
-If you're on Windows, [Visual Studio](https://visualstudio.com) or [CLion](https://www.jetbrains.com/clion/) is recommended, whichever you prefer.
-Visual Studio Community is free for individual developers and can be used to produce free or paid games. CLion is free for non-commercial projects.
-
-#### Requirements
-
-<details>
-<summary>Windows :window:</summary>
-
-Please ensure that [Git](https://git-scm.com/downloads/win) and [Python 3](https://www.python.org/downloads/windows/) are installed.
-
-</details>
-
-<details>
-<summary>macOS 🍏</summary>
-    
-Please ensure that [Homebrew](https://github.com/Homebrew/brew/releases) is installed.
-
-Then install Xcode via the [App Store](https://apps.apple.com/us/app/xcode/id497799835?mt=12) **or** via the command line:
-```sh
-xcode-select --install
-```
-
-Then install Git and CMake:
-```sh
-brew install git cmake
-```
-
-If you're **not** using CLion or another IDE / editor, you can generate an Xcode project for your game:
-```sh
-cmake -B build/xcode -G Xcode
-open build/xcode/MyGame.xcodeproj
-```
-
-</details>
-
-<details>
-<summary>Linux :penguin:</summary>
-
-On Linux, development libraries for e.g. X11, Wayland and ALSA are required.
-
-##### Ubuntu and similar:
-```sh
-sudo apt install build-essential git make binutils pkg-config cmake ninja-build clang-format \
-                 gnome-desktop-testing libasound2-dev libpulse-dev \
-                 libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-                 libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
-                 libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-                 libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
-```
-
-##### Fedora and similar:
-```sh
-sudo yum install gcc git-core make cmake ninja-build gcc-c++ pkg-config clang-tools-extra \
-                 alsa-lib-devel pulseaudio-libs-devel nas-devel pipewire-devel \
-                 libX11-devel libXext-devel libXrandr-devel libXcursor-devel libXfixes-devel \
-                 libXi-devel libXScrnSaver-devel dbus-devel ibus-devel \
-                 systemd-devel mesa-libGL-devel libxkbcommon-devel mesa-libGLES-devel \
-                 mesa-libEGL-devel vulkan-devel wayland-devel wayland-protocols-devel \
-                 libdrm-devel mesa-libgbm-devel libdecor-devel \
-                 pipewire-jack-audio-connection-kit-devel
-```
-
-</details>
-
-#### Starting the game
-
-To start building and running your game, just open the game template folder in your IDE and hit run.
-
-<details>
-<summary>Example for Visual Studio:</summary>
-    
-![Opening a CMake project in Visual Studio](Docs/Resources/vs-open-cmake.webp)
-
-</details>
-
-### Documentation
-
-Documentation is currently being worked on, alongside an API reference.
-
-In the meantime, you're welcome to explore the code of the [Demo Browser](https://github.com/cdervis/Polly2D/tree/main/Apps/DemoBrowser)
-and the [Space Shooter Demo](https://github.com/cdervis/Polly2D/tree/main/Apps/SpaceShooter).
+Please visit the [homepage](https://polly2d.org) for an introduction and documentation.
 
 ### Platform support
 
@@ -211,5 +121,5 @@ Polly was tested and can be built with the following toolchains:
 
 Contributions are always welcome, be it in the form of feedback, bug reports or code changes.
 
-To learn more about how to contribute, please visit [Contributing](CONTRIBUTING.md).
+To learn more about how to contribute, please visit [Contributing](https://polly2d.org/contributing/).
 
