@@ -6,6 +6,7 @@
 
 #include "Polly/Core/Object.hpp"
 #include "Polly/Core/ReadableFileImpl.hpp"
+#include "Polly/UniquePtr.hpp"
 
 namespace Polly
 {

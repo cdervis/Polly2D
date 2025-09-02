@@ -6,6 +6,7 @@
 
 #include "Polly/Defer.hpp"
 #include "Polly/FileSystem.hpp"
+#include "Polly/Game/GameImpl.hpp"
 #include <SDL3/SDL_filesystem.h>
 
 namespace Polly
