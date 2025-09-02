@@ -39,11 +39,15 @@ String Shader::Impl::shaderParameterTypeString(ShaderParameterType type)
 Shader::Impl::Impl(
     Painter::Impl&  painterImpl,
     ShaderType      shaderType,
+    StringView      sourceCode,
     ParameterList   parameters,
     UserShaderFlags flags,
     u16             cbufferSize)
     : GraphicsResource(painterImpl, GraphicsResourceType::Shader)
     , _shaderType(shaderType)
+#ifndef NDEBUG
+    , _sourceCode(sourceCode)
+#endif
     , _parameters(std::move(parameters))
     , _flags(flags)
 {
@@ -183,12 +187,16 @@ void Shader::Impl::setDefaultParameterValues()
 void Shader::Impl::notifyPainterBeforeParamChanged()
 {
     if (_isInUse)
+    {
         painter().notifyShaderParamAboutToChangeWhileBound(*this);
+    }
 }
 
 void Shader::Impl::notifyPainterAfterParamChanged()
 {
     if (_isInUse)
+    {
         painter().notifyShaderParamHasChangedWhileBound(*this);
+    }
 }
 } // namespace Polly

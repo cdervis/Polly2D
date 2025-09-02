@@ -15,6 +15,7 @@ class VulkanUserShader final : public Shader::Impl
     explicit VulkanUserShader(
         Painter::Impl&  painter,
         ShaderType      shaderType,
+        StringView      sourceCode,
         Span<u8>        spirvByteCode,
         ParameterList   parameters,
         UserShaderFlags flags,

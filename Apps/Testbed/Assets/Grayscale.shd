@@ -1,0 +1,15 @@
+#type sprite
+
+float Saturation;
+
+Vec4 main()
+{
+    auto imageColor = sample(pl_spriteImage, pl_spriteUV);
+    auto intensity  = dot(imageColor.xyz, Vec3(0.30, 0.59, 0.11));
+    auto grayColor  = Vec3(intensity);
+    
+    auto finalColor = lerp(grayColor, imageColor.xyz, Saturation);
+
+    return Vec4(finalColor, imageColor.w);
+}
+

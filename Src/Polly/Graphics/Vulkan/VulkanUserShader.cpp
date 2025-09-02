@@ -11,11 +11,12 @@ namespace Polly
 VulkanUserShader::VulkanUserShader(
     Painter::Impl&  painter,
     ShaderType      shaderType,
+    StringView      sourceCode,
     Span<u8>        spirvByteCode,
     ParameterList   parameters,
     UserShaderFlags flags,
     u16             cbufferSize)
-    : Impl(painter, shaderType, std::move(parameters), flags, cbufferSize)
+    : Impl(painter, shaderType, sourceCode, std::move(parameters), flags, cbufferSize)
 {
     auto&      vulkanDevice = static_cast<VulkanPainter&>(painter);
     const auto vkDevice     = vulkanDevice.vkDevice();

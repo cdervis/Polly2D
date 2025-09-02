@@ -36,9 +36,14 @@ int Polly::Details::runGame(int a, char* b[], MainFunction c, [[maybe_unused]] v
 #include <TargetConditionals.h>
 #endif
 
-#if polly_have_gfx_metal
+#ifdef polly_have_gfx_metal
 #include "Polly/Graphics/Metal/MetalPainter.hpp"
 #include "Polly/Graphics/Metal/MetalWindow.hpp"
+#endif
+
+#ifdef polly_have_gfx_d3d11
+#include "Polly/Graphics/D3D11/D3D11Painter.hpp"
+#include "Polly/Graphics/D3D11/D3DWindow.hpp"
 #endif
 
 #ifdef polly_have_gfx_vulkan
@@ -95,6 +100,10 @@ Game::Impl::Impl(const GameInitArgs& args)
     enumerateConnectedDisplays();
 
     InputImpl::createInstance();
+
+#ifdef polly_have_gfx_d3d11
+    checkHResult(CreateDXGIFactory(IID_IDXGIFactory, &_idxgiFactory), "Failed to create the IDXGIFactory.");
+#endif
 
 #ifdef polly_have_gfx_vulkan
     checkVkResult(
@@ -362,6 +371,13 @@ void Game::Impl::createWindow(
 {
 #if defined(polly_have_gfx_metal)
     auto impl = makeUnique<MetalWindow>(title, initialWindowSize, fullScreenDisplayIndex, _connectedDisplays);
+#elif defined(polly_have_gfx_d3d11)
+    auto impl = makeUnique<D3DWindow>(
+        title,
+        initialWindowSize,
+        fullScreenDisplayIndex,
+        _connectedDisplays,
+        _idxgiFactory);
 #elif defined(polly_have_gfx_vulkan)
     auto impl = makeUnique<VulkanWindow>(
         title,
@@ -442,6 +458,8 @@ void Game::Impl::createPainter()
 
 #if defined(polly_have_gfx_metal)
     impl = makeUnique<MetalPainter>(*_window.impl(), _performanceStats);
+#elif defined(polly_have_gfx_d3d11)
+    impl = makeUnique<D3D11Painter>(*_window.impl(), _performanceStats);
 #elif defined(polly_have_gfx_vulkan)
     assume(_vkInstance != VK_NULL_HANDLE);
     assume(_vkApiVersion != 0);

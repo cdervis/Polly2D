@@ -15,12 +15,12 @@ Maybe<ByteBlob> loadAssetData(StringView filename);
 
 Maybe<String> loadTextFileFromDisk(StringView filename);
 
-/// Loads a file from disk.
 [[nodiscard]]
 Maybe<ByteBlob> loadFileFromDisk(StringView filename);
 
-/// Writes a file to disk.
-void writeFileToDisk(StringView filename, Span<u8> contents);
+void writeBinaryFileToDisk(StringView filename, Span<u8> contents);
+
+void writeTextFileToDisk(StringView filename, StringView contents);
 
 [[nodiscard]]
 String fileSizeDisplayString(uintmax_t size);

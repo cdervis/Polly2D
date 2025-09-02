@@ -26,8 +26,6 @@
 #include "SpriteBatchPsMonochromatic.frag.hpp"
 #include "SpriteBatchVs.vert.hpp"
 
-#include <iso646.h>
-
 namespace Polly
 {
 struct alignas(16) GlobalCBufferParams
@@ -755,15 +753,21 @@ UniquePtr<Image::Impl> VulkanPainter::createCanvas(u32 width, u32 height, ImageF
     return makeUnique<VulkanImage>(*this, width, height, format);
 }
 
-UniquePtr<Image::Impl> VulkanPainter::createImage(u32 width, u32 height, ImageFormat format, const void* data)
+UniquePtr<Image::Impl> VulkanPainter::createImage(
+    u32         width,
+    u32         height,
+    ImageFormat format,
+    const void* data,
+    bool        isStatic)
 {
-    return makeUnique<VulkanImage>(*this, width, height, format, data);
+    return makeUnique<VulkanImage>(*this, width, height, format, data, isStatic);
 }
 
 UniquePtr<Shader::Impl> VulkanPainter::onCreateNativeUserShader(
     const ShaderCompiler::Ast&          ast,
     const ShaderCompiler::SemaContext&  context,
     const ShaderCompiler::FunctionDecl* entryPoint,
+    StringView                          sourceCode,
     Shader::Impl::ParameterList         params,
     UserShaderFlags                     flags,
     u16                                 cbufferSize)
