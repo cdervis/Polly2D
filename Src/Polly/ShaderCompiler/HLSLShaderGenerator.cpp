@@ -2,6 +2,8 @@
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
+#ifdef polly_have_gfx_d3d11
+
 #include "HLSLShaderGenerator.hpp"
 
 #include "Polly/Core/Casting.hpp"
@@ -466,3 +468,5 @@ String HLSLShaderGenerator::shaderInputOutputTypeName(const Type* type)
     return Naming::forbiddenIdentifierPrefix + type->typeName();
 }
 } // namespace Polly::ShaderCompiler
+
+#endif

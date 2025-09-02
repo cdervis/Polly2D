@@ -405,9 +405,14 @@ UniquePtr<Image::Impl> MetalPainter::createCanvas(u32 width, u32 height, ImageFo
     return makeUnique<MetalImage>(*this, width, height, format);
 }
 
-UniquePtr<Image::Impl> MetalPainter::createImage(u32 width, u32 height, ImageFormat format, const void* data)
+UniquePtr<Image::Impl> MetalPainter::createImage(
+    u32         width,
+    u32         height,
+    ImageFormat format,
+    const void* data,
+    bool        isStatic)
 {
-    return makeUnique<MetalImage>(*this, width, height, format, data);
+    return makeUnique<MetalImage>(*this, width, height, format, data, isStatic);
 }
 
 void MetalPainter::readCanvasDataInto(
@@ -528,6 +533,7 @@ UniquePtr<Shader::Impl> MetalPainter::onCreateNativeUserShader(
     const ShaderCompiler::Ast&          ast,
     const ShaderCompiler::SemaContext&  context,
     const ShaderCompiler::FunctionDecl* entryPoint,
+    StringView                          sourceCode,
     Shader::Impl::ParameterList         params,
     UserShaderFlags                     flags,
     u16                                 cbufferSize)
@@ -535,7 +541,8 @@ UniquePtr<Shader::Impl> MetalPainter::onCreateNativeUserShader(
     return makeUnique<MetalUserShader>(
         *this,
         ast.shaderType(),
-        ShaderCompiler::MetalShaderGenerator().generate(context, ast, entryPoint, false),
+        sourceCode,
+        _metalShaderGenerator.generate(context, ast, entryPoint, false),
         std::move(params),
         flags,
         cbufferSize);

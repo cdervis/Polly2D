@@ -4,6 +4,8 @@
 
 #pragma once
 
+#ifdef polly_have_gfx_d3d11
+
 #include "TextBasedShaderGenerator.hpp"
 
 namespace Polly::ShaderCompiler
@@ -43,3 +45,5 @@ class HLSLShaderGenerator final : public TextBasedShaderGenerator
     String _vsOutputStructName;
 };
 } // namespace Polly::ShaderCompiler
+
+#endif

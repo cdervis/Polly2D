@@ -12,14 +12,12 @@ namespace Polly
 MetalUserShader::MetalUserShader(
     Painter::Impl&  painter,
     ShaderType      shaderType,
+    StringView      sourceCode,
     String          metalSourceCode,
     ParameterList   parameters,
     UserShaderFlags flags,
     u16             cbufferSize)
-    : Impl(painter, shaderType, std::move(parameters), flags, cbufferSize)
-#ifndef NDEBUG
-    , _metalSourceCode(std::move(metalSourceCode))
-#endif
+    : Impl(painter, shaderType, sourceCode, std::move(parameters), flags, cbufferSize)
 {
     auto& metalPainter = static_cast<MetalPainter&>(painter);
     auto* mtlDevice    = metalPainter.mtlDevice();
@@ -28,13 +26,8 @@ MetalUserShader::MetalUserShader(
     // This is fine, because it optionally frees the specified buffer.
     // But since we pass false (don't free the buffer), it's a read-only operation.
     const auto metalSrcCodeStr = NS::String::alloc()->init(
-#ifndef NDEBUG
-        /*pBytes=*/_metalSourceCode.data(),
-        /*len=*/_metalSourceCode.size(),
-#else
         /*pBytes=*/metalSourceCode.data(),
         /*len=*/metalSourceCode.size(),
-#endif
         /*encoding=*/NS::StringEncoding::UTF8StringEncoding,
         /*freeBuffer=*/false);
 

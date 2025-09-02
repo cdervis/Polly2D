@@ -9,6 +9,7 @@
 #include "Polly/Graphics/Metal/MetalSamplerStateCache.hpp"
 #include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Graphics/PolyDrawCommands.hpp"
+#include "Polly/ShaderCompiler/MetalShaderGenerator.hpp"
 #include <atomic>
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalDrawable.hpp>
@@ -38,7 +39,12 @@ class MetalPainter final : public Painter::Impl
 
     UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
 
-    UniquePtr<Image::Impl> createImage(u32 width, u32 height, ImageFormat format, const void* data) override;
+    UniquePtr<Image::Impl> createImage(
+        u32         width,
+        u32         height,
+        ImageFormat format,
+        const void* data,
+        bool        isStatic) override;
 
     void readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination)
         override;
@@ -107,6 +113,7 @@ class MetalPainter final : public Painter::Impl
         const ShaderCompiler::Ast&          ast,
         const ShaderCompiler::SemaContext&  context,
         const ShaderCompiler::FunctionDecl* entryPoint,
+        StringView                          sourceCode,
         Shader::Impl::ParameterList         params,
         UserShaderFlags                     flags,
         u16                                 cbufferSize) override;
@@ -134,10 +141,11 @@ class MetalPainter final : public Painter::Impl
 
     NS::SharedPtr<MTL::Buffer> createSingleSpriteVertexBuffer();
 
-    NS::SharedPtr<MTL::Device>       _mtlDevice;
-    NS::SharedPtr<MTL::CommandQueue> _mtlCommandQueue;
-    MetalPsoCache                    _pipelineStateCache;
-    MetalSamplerStateCache           _samplerStateCache;
+    NS::SharedPtr<MTL::Device>           _mtlDevice;
+    NS::SharedPtr<MTL::CommandQueue>     _mtlCommandQueue;
+    ShaderCompiler::MetalShaderGenerator _metalShaderGenerator;
+    MetalPsoCache                        _pipelineStateCache;
+    MetalSamplerStateCache               _samplerStateCache;
 
     dispatch_semaphore_t _semaphore = nil;
 
