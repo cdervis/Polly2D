@@ -13,6 +13,7 @@
 #include "Polly/FileSystem.hpp"
 #include "Polly/Game/WindowImpl.hpp"
 #include "Polly/GamePerformanceStats.hpp"
+#include "Polly/Graphics/InternalSharedShaderStructs.hpp"
 #include "Polly/Graphics/Metal/MetalConversion.hpp"
 #include "Polly/Graphics/Metal/MetalHelper.hpp"
 #include "Polly/Graphics/Metal/MetalImage.hpp"
@@ -37,23 +38,6 @@
 
 namespace Polly
 {
-struct alignas(16) GlobalCBufferParams
-{
-    Matrix transformation;
-};
-
-struct alignas(16) SystemValueCBufferParams
-{
-    Vec2 viewportSize;
-    Vec2 viewportSizeInv;
-};
-
-struct alignas(16) SpriteVertex
-{
-    Vec4  positionAndUV;
-    Color color;
-};
-
 MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
     : Impl(windowImpl, performanceStats)
     , _pipelineStateCache(*this)
@@ -135,7 +119,7 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
         throw Error("Failed to initialize the Metal backend of ImGui.");
     }
 
-    logVerbose("Initialized MetalGraphicsDevice");
+    logVerbose("Initialized MetalPainter");
     logVerbose("  maxSpriteBatchSize: {}", maxSpriteBatchSize);
     logVerbose("  maxPolyVertices:    {}", maxPolyVertices);
     logVerbose("  maxMeshVertices:    {}", maxMeshVertices);

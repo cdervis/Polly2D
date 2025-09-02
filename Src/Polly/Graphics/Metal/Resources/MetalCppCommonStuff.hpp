@@ -1,5 +1,7 @@
 #pragma once
 
+// Keep this in sync with AllShaders.metal!
+
 // [[buffer(n)]] slots
 enum MetalBufferSlots
 {
