@@ -14,7 +14,7 @@ module.exports = {
 
     sidebar: {
         collapsible: true,
-        defaultCollapsed: true,
+        defaultCollapsed: false,
     },
 
     theme: {

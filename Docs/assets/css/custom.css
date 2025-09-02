@@ -1,13 +1,10 @@
 :root {
-    /*--callout-info-background-color: #f5f9ff;*/
-}
-
-:root[data-theme="light"] {
-    --sky-primary: #3e8083ff;
-    --sky-primary-dark: #316468;
-    --sky-primary-light: #ceebec;
-    --sidebar-link-active-bg: #e2f2f2;
-    --sidebar-bg: #fbfbfb;
+    --callout-info-background-color: #83a2a4 !important;
+    --sky-primary: #3e8083ff !important;
+    --sky-primary-dark: #316468 !important;
+    --sky-primary-light: #ceebec !important;
+    --sidebar-link-active-bg: #e2f2f2 !important;
+    --sidebar-bg: #fbfbfb !important;
 }
 
 .margin-top-minus {
@@ -71,7 +68,7 @@ code, pre {
 }
 
 .content-area {
-    /*max-width: 1300px;*/
+    max-width: 1350px;
 }
 
 .center-text {
