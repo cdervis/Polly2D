@@ -13,6 +13,7 @@ SpaceShooter::SpaceShooter()
     : Game(initArgs)
 {
     window().setIsResizable(false);
+    window().setClearColor(black);
 
     _mainCanvas = Image(sViewSize.x, sViewSize.y, ImageFormat::R8G8B8A8UNorm);
     _nextState  = makeUnique<SplashScreenState>();
