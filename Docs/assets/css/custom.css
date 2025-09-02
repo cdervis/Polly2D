@@ -1,0 +1,80 @@
+:root {
+    /*--callout-info-background-color: #f5f9ff;*/
+}
+
+:root[data-theme="light"] {
+    --sky-primary: #3e8083ff;
+    --sky-primary-dark: #316468;
+    --sky-primary-light: #ceebec;
+    --sidebar-link-active-bg: #e2f2f2;
+    --sidebar-bg: #fbfbfb;
+}
+
+.margin-top-minus {
+    margin-top: -20px;
+}
+
+@font-face {
+    font-family: "MonaspaceNeon";
+    src: url("/assets/fonts/MonaspaceNeon.ttf");
+}
+
+code, pre {
+    font-family: "MonaspaceNeon";
+    font-size: 10pt;
+}
+
+.sidebar-header {
+    height: 4em;
+}
+
+.logo-link img {
+    height: 100%;
+    max-height: 100%;
+}
+
+.callout-info {
+    background-color: var(--callout-info-background-color);
+    border-radius: 2px;
+}
+
+.features-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    column-gap: 15px;
+    row-gap: 40px;
+    padding-bottom: 20px;
+    padding-top: 10px;
+}
+
+.feature-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.features-container hr {
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.centering-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.centering-container video {
+    border-radius: 10px;
+}
+
+.content-area {
+    /*max-width: 1300px;*/
+}
+
+.center-text {
+    text-align: center;
+}
+
