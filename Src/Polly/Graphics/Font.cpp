@@ -22,7 +22,7 @@ Font::Font(StringView assetName)
 Font::Font(Span<u8> data)
     : m_impl(nullptr)
 {
-    setImpl(*this, makeUnique<Impl>(data, true).release());
+    setImpl(*this, makeUnique<Impl>(data, true, false).release());
 }
 
 Font Font::builtin()

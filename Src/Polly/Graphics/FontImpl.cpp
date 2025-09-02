@@ -26,7 +26,10 @@ namespace Polly
 {
 static auto sBuiltInFontRegular = UniquePtr<Font::Impl>();
 
-Font::Impl::Impl(Span<u8> data, bool createCopyOfData)
+Font::Impl::Impl(Span<u8> data, bool createCopyOfData, [[maybe_unused]] bool isBuiltin)
+#ifndef NDEBUG
+    : _isBuiltin(isBuiltin)
+#endif
 {
     if (createCopyOfData)
     {
@@ -51,8 +54,8 @@ void Font::Impl::createBuiltInFonts()
 {
     logVerbose("Creating built-in font objects");
 
-    sBuiltInFontRegular = makeUnique<Impl>(Noto_ttfSpan(), false);
-    sBuiltInFontRegular->setAssetName("BuiltInFontRegular");
+    sBuiltInFontRegular = makeUnique<Impl>(Noto_ttfSpan(), false, true);
+    sBuiltInFontRegular->setAssetName("//BuiltIn");
     sBuiltInFontRegular->addRef();
 }
 
