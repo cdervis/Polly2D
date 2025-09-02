@@ -98,22 +98,22 @@ ID3D11BlendState* D3D11PipelineObjectCache::getBlendState(const BlendState& stat
     {
         auto writeMask = static_cast<UINT8>(0u);
 
-        if (has_flag(state.colorWriteMask, ColorWriteMask::Red))
+        if (hasFlag(state.colorWriteMask, ColorWriteMask::Red))
         {
             writeMask |= D3D11_COLOR_WRITE_ENABLE_RED;
         }
 
-        if (has_flag(state.colorWriteMask, ColorWriteMask::Green))
+        if (hasFlag(state.colorWriteMask, ColorWriteMask::Green))
         {
             writeMask |= D3D10_COLOR_WRITE_ENABLE_GREEN;
         }
 
-        if (has_flag(state.colorWriteMask, ColorWriteMask::Blue))
+        if (hasFlag(state.colorWriteMask, ColorWriteMask::Blue))
         {
             writeMask |= D3D10_COLOR_WRITE_ENABLE_BLUE;
         }
 
-        if (has_flag(state.colorWriteMask, ColorWriteMask::Alpha))
+        if (hasFlag(state.colorWriteMask, ColorWriteMask::Alpha))
         {
             writeMask |= D3D10_COLOR_WRITE_ENABLE_ALPHA;
         }

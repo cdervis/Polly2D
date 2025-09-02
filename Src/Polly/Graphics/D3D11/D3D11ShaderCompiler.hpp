@@ -36,7 +36,7 @@ class D3D11ShaderCompiler final
 
     D3D11ShaderCompiler();
 
-    deleteCopyAndMove(D3D11ShaderCompiler);
+    DeleteCopyAndMove(D3D11ShaderCompiler);
 
     ~D3D11ShaderCompiler() noexcept;
 
