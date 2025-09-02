@@ -212,6 +212,7 @@ UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, S
                 ast,
                 context,
                 entryPointFunc,
+                sourceCode,
                 std::move(params),
                 flags,
                 cbufferPacking.cbufferSize);
@@ -450,6 +451,13 @@ void Painter::Impl::drawSprite(const Sprite& sprite, SpriteShaderKind spriteShad
 
     auto* imageImpl = sprite.image.impl();
     assume(imageImpl);
+
+    if (sprite.image == _currentCanvas)
+    {
+        throw Error(
+            "An image can't be drawn while it's bound as a canvas. Please unset the canvas first (using "
+            "setCanvas()) before drawing it.");
+    }
 
     prepareForBatchMode(frameData, BatchMode::Sprites);
 
@@ -979,7 +987,7 @@ Matrix Painter::Impl::computeViewportTransformation(const Rectangle& viewport)
     const auto mat =
         Matrix(Vec4(xScale, 0, 0, 0), Vec4(0, -yScale, 0, 0), Vec4(0, 0, 1, 0), Vec4(-1, 1, 0, 1));
 
-#ifdef __APPLE__
+#if defined(polly_have_gfx_metal) or defined(polly_have_gfx_d3d11)
     return mat;
 #else
     return mat * scale(Vec2(1, -1));
@@ -1067,13 +1075,13 @@ void Painter::Impl::postInit(
 
     // White image
     {
-        constexpr auto size       = static_cast<size_t>(1);
-        constexpr auto pixelCount = static_cast<size_t>(4) * size * size;
+        constexpr auto size       = 1u;
+        constexpr auto pixelCount = 4u * size * size;
 
         auto data = Array<u8, pixelCount>();
         data.fill(255);
 
-        _whiteImage = Image(createImage(size, size, ImageFormat::R8G8B8A8UNorm, data.data()).release());
+        _whiteImage = Image(createImage(size, size, ImageFormat::R8G8B8A8UNorm, data.data(), true).release());
         _whiteImage.setDebuggingLabel("WhiteImage");
     }
 }

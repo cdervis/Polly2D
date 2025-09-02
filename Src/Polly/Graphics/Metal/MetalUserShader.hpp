@@ -15,6 +15,7 @@ class MetalUserShader final : public Shader::Impl
     explicit MetalUserShader(
         Painter::Impl&  painter,
         ShaderType      shaderType,
+        StringView      sourceCode,
         String          metalSourceCode,
         ParameterList   parameters,
         UserShaderFlags flags,
@@ -26,9 +27,5 @@ class MetalUserShader final : public Shader::Impl
 
   private:
     MTL::Function* _mtlFunction = nullptr;
-
-#ifndef NDEBUG
-    String _metalSourceCode;
-#endif
 };
 } // namespace Polly

@@ -74,6 +74,13 @@ add_subdirectory(Apps)
 #    target_sources(Polly PRIVATE ${natvis_file})
 #endif ()
 
+# Debugging support
+if (MSVC)
+    set(natvis_file ${polly_root_dir}/Misc/DebugVis/PollyMSVC.natvis)
+    target_sources(Polly PRIVATE ${natvis_file})
+    target_link_options(Polly PRIVATE /NATVIS:${natvis_file})
+endif()
+
 target_sources(Polly PRIVATE ${misc_cmake_files_in_sources})
 source_group("Misc" FILES ${misc_cmake_files_in_sources})
 

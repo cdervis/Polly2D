@@ -13,6 +13,7 @@
 #include "Polly/FileSystem.hpp"
 #include "Polly/Game/WindowImpl.hpp"
 #include "Polly/GamePerformanceStats.hpp"
+#include "Polly/Graphics/InternalSharedShaderStructs.hpp"
 #include "Polly/Graphics/Metal/MetalConversion.hpp"
 #include "Polly/Graphics/Metal/MetalHelper.hpp"
 #include "Polly/Graphics/Metal/MetalImage.hpp"
@@ -37,23 +38,6 @@
 
 namespace Polly
 {
-struct alignas(16) GlobalCBufferParams
-{
-    Matrix transformation;
-};
-
-struct alignas(16) SystemValueCBufferParams
-{
-    Vec2 viewportSize;
-    Vec2 viewportSizeInv;
-};
-
-struct alignas(16) SpriteVertex
-{
-    Vec4  positionAndUV;
-    Color color;
-};
-
 MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
     : Impl(windowImpl, performanceStats)
     , _pipelineStateCache(*this)
@@ -135,7 +119,7 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
         throw Error("Failed to initialize the Metal backend of ImGui.");
     }
 
-    logVerbose("Initialized MetalGraphicsDevice");
+    logVerbose("Initialized MetalPainter");
     logVerbose("  maxSpriteBatchSize: {}", maxSpriteBatchSize);
     logVerbose("  maxPolyVertices:    {}", maxPolyVertices);
     logVerbose("  maxMeshVertices:    {}", maxMeshVertices);
@@ -407,9 +391,14 @@ UniquePtr<Image::Impl> MetalPainter::createCanvas(u32 width, u32 height, ImageFo
     return makeUnique<MetalImage>(*this, width, height, format);
 }
 
-UniquePtr<Image::Impl> MetalPainter::createImage(u32 width, u32 height, ImageFormat format, const void* data)
+UniquePtr<Image::Impl> MetalPainter::createImage(
+    u32         width,
+    u32         height,
+    ImageFormat format,
+    const void* data,
+    bool        isStatic)
 {
-    return makeUnique<MetalImage>(*this, width, height, format, data);
+    return makeUnique<MetalImage>(*this, width, height, format, data, isStatic);
 }
 
 void MetalPainter::readCanvasDataInto(
@@ -530,6 +519,7 @@ UniquePtr<Shader::Impl> MetalPainter::onCreateNativeUserShader(
     const ShaderCompiler::Ast&          ast,
     const ShaderCompiler::SemaContext&  context,
     const ShaderCompiler::FunctionDecl* entryPoint,
+    StringView                          sourceCode,
     Shader::Impl::ParameterList         params,
     UserShaderFlags                     flags,
     u16                                 cbufferSize)
@@ -537,7 +527,8 @@ UniquePtr<Shader::Impl> MetalPainter::onCreateNativeUserShader(
     return makeUnique<MetalUserShader>(
         *this,
         ast.shaderType(),
-        ShaderCompiler::MetalShaderGenerator().generate(context, ast, entryPoint, false),
+        sourceCode,
+        _metalShaderGenerator.generate(context, ast, entryPoint, false),
         std::move(params),
         flags,
         cbufferSize);

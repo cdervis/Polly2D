@@ -4,7 +4,8 @@
 
 struct Testbed final : Game
 {
-    Image img = Image("logo.png");
+    Image  img    = Image("logo.png");
+    Shader shader = Shader("Grayscale.shd");
 
     List<Sound> sounds = {
         Sound(SfxrSoundPreset::Coin, 218309),
@@ -18,6 +19,7 @@ struct Testbed final : Game
 
     void draw(Painter painter) override
     {
+        painter.setSpriteShader(shader);
         painter.drawSprite(img, Vec2(100, 100));
     }
 

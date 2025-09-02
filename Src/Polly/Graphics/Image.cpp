@@ -21,7 +21,7 @@ namespace Polly
 {
 PollyImplementObject(Image);
 
-Image::Image(u32 width, u32 height, ImageFormat format, const void* data)
+Image::Image(u32 width, u32 height, ImageFormat format, const void* data, bool isStatic)
     : Image()
 {
     if (not data)
@@ -32,7 +32,7 @@ Image::Image(u32 width, u32 height, ImageFormat format, const void* data)
 
     auto& deviceImpl = *Game::Impl::instance().painter().impl();
 
-    const PainterCapabilities caps = deviceImpl.capabilities();
+    const auto caps = deviceImpl.capabilities();
 
     if (width > caps.maxImageExtent or height > caps.maxImageExtent)
     {
@@ -43,7 +43,7 @@ Image::Image(u32 width, u32 height, ImageFormat format, const void* data)
             caps.maxImageExtent));
     }
 
-    setImpl(*this, deviceImpl.createImage(width, height, format, data).release());
+    setImpl(*this, deviceImpl.createImage(width, height, format, data, isStatic).release());
 }
 
 Image::Image(Span<u8> memory)

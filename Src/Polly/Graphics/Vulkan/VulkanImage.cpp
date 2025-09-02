@@ -12,16 +12,17 @@ VulkanImage::VulkanImage(
     u32            width,
     uint32_t       height,
     ImageFormat    format,
-    const void*    data)
+    const void*    data,
+    bool           isStatic)
     : Impl(painter, false, width, height, format)
 {
-    createVkImage(data);
+    createVkImage(data, isStatic);
 }
 
 VulkanImage::VulkanImage(Painter::Impl& painter, uint32_t width, uint32_t height, ImageFormat format)
     : Impl(painter, true, width, height, format)
 {
-    createVkImage(nullptr);
+    createVkImage(nullptr, false);
 }
 
 VkImage VulkanImage::vkImage() const
@@ -58,7 +59,7 @@ void VulkanImage::setDebuggingLabel(StringView value)
 #endif
 }
 
-void VulkanImage::createVkImage(const void* data)
+void VulkanImage::createVkImage(const void* data, [[maybe_unused]] bool isStatic)
 {
     auto&      vulkanPainter = static_cast<VulkanPainter&>(painter());
     const auto vkDevice      = vulkanPainter.vkDevice();

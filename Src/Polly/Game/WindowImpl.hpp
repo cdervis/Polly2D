@@ -8,6 +8,7 @@
 #include "Polly/Display.hpp"
 #include "Polly/Linalg.hpp"
 #include "Polly/Maybe.hpp"
+#include "Polly/Span.hpp"
 #include "Polly/String.hpp"
 #include "Polly/Window.hpp"
 

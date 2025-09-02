@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="Polly::List&lt;*&gt;">
+		<DisplayString>{{ size={_data._size} }}</DisplayString>
+		<Expand HideRawView="true">
+			<Item Name="[capacity]" ExcludeView="simple">_data._capacity</Item>
+			<Item Name="[inlined]" Condition="_data._capacity &lt;= inlineCapacityV" ExcludeView="simple">true</Item>
+			<Item Name="[inlined]" Condition="_data._capacity != inlineCapacityV" ExcludeView="simple">false</Item>
+			<ArrayItems>
+				<Size>_data._size</Size>
+				<ValuePointer>_data._dataPtr</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::Maybe&lt;*&gt;">
+		<DisplayString Condition="_isActive">{_value}</DisplayString>
+		<DisplayString Condition="_isActive == false">none</DisplayString>
+		<Expand HideRawView="true">
+			<Item Name="Value" Condition="_isActive">_value</Item>
+			<Item Name="Value" Condition="_isActive == false">none</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::String">
+		<DisplayString Condition="_size &gt; 0">{_data,[_size]na}</DisplayString>
+		<DisplayString Condition="_size == 0">empty</DisplayString>
+		<StringView Condition="_size &gt; 0">_data,[_size]na</StringView>
+		<Expand HideRawView="true">
+			<Item Name="[size]" Condition="_size &gt; 0">_size</Item>
+			<Item Name="[capacity]">_capacity</Item>
+			<Item Name="[small]" Condition="_size &gt; 0">_size &lt; (smallBufferSize - 1)</Item>
+			<ArrayItems>
+				<Size>_size</Size>
+				<ValuePointer>_data</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::StringView">
+		<DisplayString Condition="_size &gt; 0">{_data,[_size]na}</DisplayString>
+		<DisplayString Condition="_size == 0">empty</DisplayString>
+		<StringView Condition="_size &gt; 0">_data,[_size]na</StringView>
+		<Expand HideRawView="false">
+			<Item Name="[size]" Condition="_size &gt; 0">_size</Item>
+			<Item Name="[nullTerminated]" Condition="_size &gt; 0">_isNullTerminated</Item>
+			<ArrayItems>
+				<Size>_size</Size>
+				<ValuePointer>_data</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::SortedMap&lt;*,*&gt;">
+		<DisplayString Condition="_tree._size &gt; 0">{{ size={_tree._size} }}</DisplayString>
+		<DisplayString Condition="_tree._size == 0">empty</DisplayString>
+		<Expand HideRawView="true">
+			<TreeItems>
+				<Size>_tree._size</Size>
+				<HeadPointer>_tree.rootNode</HeadPointer>
+				<LeftPointer>left</LeftPointer>
+				<RightPointer>right</RightPointer>
+				<ValueNode>this-&gt;value</ValueNode>
+			</TreeItems>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::Array&lt;*,*&gt;">
+		<DisplayString>{{ size={fixedSize} }}</DisplayString>
+		<Expand HideRawView="true">
+			<ArrayItems>
+				<Size>fixedSize</Size>
+				<ValuePointer>items</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::Vec2">
+		<DisplayString>x={x}; y={y}</DisplayString>
+	</Type>
+
+	<Type Name="Polly::Vec3">
+		<DisplayString>x={x}; y={y}; z={z}</DisplayString>
+	</Type>
+
+	<Type Name="Polly::Vec4">
+		<DisplayString>x={x}; y={y}; z={z}; w={w}</DisplayString>
+	</Type>
+
+	<Type Name="Polly::Image">
+		<DisplayString Condition="m_impl == nullptr">none</DisplayString>
+		<DisplayString Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0">{m_impl-&gt;_assetName} ({m_impl-&gt;_width}x{m_impl-&gt;_height})</DisplayString>
+		<DisplayString Condition="m_impl != nullptr">{m_impl-&gt;_width}x{m_impl-&gt;_height}</DisplayString>
+		<Expand>
+			<Item Name="[references]" Condition="m_impl != nullptr">m_impl-&gt;_refCount</Item>
+			<Item Name="[assetName]" Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0 &amp;&amp; m_impl-&gt;_isCanvas == false">m_impl-&gt;_assetName</Item>
+			<Item Name="[isCanvas]" Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size == 0">m_impl-&gt;_isCanvas</Item>
+			<Item Name="[width]" Condition="m_impl != nullptr">m_impl-&gt;_width</Item>
+			<Item Name="[height]" Condition="m_impl != nullptr">m_impl-&gt;_height</Item>
+			<Item Name="[format]" Condition="m_impl != nullptr">m_impl-&gt;_format</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::Shader">
+		<DisplayString Condition="m_impl == nullptr">none</DisplayString>
+		<DisplayString Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0">{m_impl-&gt;_assetName}</DisplayString>
+		<Expand>
+			<Item Name="[references]" Condition="m_impl != nullptr">m_impl-&gt;_refCount</Item>
+			<Item Name="[assetName]" Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0">m_impl-&gt;_assetName</Item>
+			<Item Name="[code]" Condition="m_impl != nullptr">m_impl-&gt;_sourceCode</Item>
+			<Item Name="[parameters]" Condition="m_impl != nullptr">m_impl-&gt;_parameters</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::Font">
+		<DisplayString Condition="m_impl == nullptr">none</DisplayString>
+		<DisplayString Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_isBuiltin">(built-in)</DisplayString>
+		<DisplayString Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0">{m_impl-&gt;_assetName}</DisplayString>
+		<Expand>
+			<Item Name="[references]" Condition="m_impl != nullptr">m_impl-&gt;_refCount</Item>
+			<Item Name="[assetName]" Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0 &amp;&amp; m_impl-&gt;_isBuiltin == false">m_impl-&gt;_assetName</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::Sound">
+		<DisplayString Condition="m_impl == nullptr">none</DisplayString>
+		<DisplayString Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0">{m_impl-&gt;_assetName}</DisplayString>
+		<Expand>
+			<Item Name="[references]" Condition="m_impl != nullptr">m_impl-&gt;_refCount</Item>
+			<Item Name="[assetName]" Condition="m_impl != nullptr &amp;&amp; m_impl-&gt;_assetName._size &gt; 0">m_impl-&gt;_assetName</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="Polly::ShaderParameter">
+		<DisplayString>{name} ({type})</DisplayString>
+	</Type>
+</AutoVisualizer>

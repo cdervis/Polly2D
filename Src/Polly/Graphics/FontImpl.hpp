@@ -45,7 +45,7 @@ class Font::Impl final : public Object,
         bool      isLastOnLine = false;
     };
 
-    explicit Impl(Span<u8> data, bool createCopyOfData);
+    explicit Impl(Span<u8> data, bool createCopyOfData, bool isBuiltin);
 
     explicit Impl(List<u8> data);
 
@@ -224,5 +224,9 @@ class Font::Impl final : public Object,
     Maybe<u32>            _currentPageIndex;
     SortedSet<float>      _initializedSizes;
     SortedSet<u32>        _pageImagesToUpdate;
+
+#ifndef NDEBUG
+    bool _isBuiltin = false;
+#endif
 };
 } // namespace Polly

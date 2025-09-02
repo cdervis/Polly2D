@@ -4,6 +4,7 @@
 
 #include "Polly/Error.hpp"
 
+#include "Polly/Logging.hpp"
 #include "Polly/String.hpp"
 
 namespace Polly
@@ -18,18 +19,21 @@ Error::Error(const char* message)
     : _impl(new Impl())
 {
     _impl->message = message;
+    logError("Error: {}", message);
 }
 
 Error::Error(String message)
     : _impl(new Impl())
 {
     _impl->message = std::move(message);
+    logError("Error: {}", message);
 }
 
 Error::Error(StringView message)
     : _impl(new Impl())
 {
     _impl->message = message;
+    logError("Error: {}", message);
 }
 
 Error::Error(const Error& copyFrom)
