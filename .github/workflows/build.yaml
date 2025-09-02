@@ -1,0 +1,181 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_macos:
+    name: Build macOS
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ macos-14, macos-15 ]
+        config: [ Debug, Release ]
+
+    runs-on: ${{matrix.os}}
+    env:
+      build-dir: build-${{matrix.os}}-${{matrix.config}}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-sources
+        with:
+          path: ${{github.workspace}}/${{env.build-dir}}/_deps/*-src
+          key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{env.cache-name}}-
+
+      - name: Cache CMake dependencies build objects
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-builds
+        with:
+          path: |
+            ${{github.workspace}}/${{env.build-dir}}/_deps/*-build
+            ${{github.workspace}}/${{env.build-dir}}/_deps/*-subbuild
+          key: ${{env.cache-name}}-${{matrix.os}}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{env.cache-name}}-${{matrix.os}}-${{matrix.config}}-
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{env.build-dir}} -G Xcode -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          -DCMAKE_OSX_ARCHITECTURES="arm64"
+          -DCMAKE_XCODE_ATTRIBUTE_OSX_DEPLOYMENT_TARGET="13.5"
+          -DCMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET="13.5"
+          -DCMAKE_XCODE_GENERATE_SCHEME=ON
+
+      - name: Build CMake
+        run: cmake --build ${{env.build-dir}} --parallel
+
+  build_windows:
+    name: Build Windows
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ windows-latest ]
+        config: [ Debug, Release ]
+        arch: [ x64, ARM64 ]
+
+    runs-on: ${{matrix.os}}
+    env:
+      build-dir: build-${{matrix.os}}-${{matrix.arch}}-${{matrix.config}}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-sources
+        with:
+          path: ${{github.workspace}}/${{env.build-dir}}/_deps/*-src
+          key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{env.cache-name}}-
+
+      - name: Cache CMake dependencies build objects
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-builds
+        with:
+          path: |
+            ${{github.workspace}}/${{env.build-dir}}/_deps/*-build
+            ${{github.workspace}}/${{env.build-dir}}/_deps/*-subbuild
+          key: ${{env.cache-name}}-${{matrix.os}}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{env.cache-name}}-${{matrix.os}}-${{matrix.arch}}-${{matrix.config}}-
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/${{env.build-dir}} -G "Visual Studio 17 2022" -A ${{matrix.arch}} -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+
+      - name: Build CMake
+        run: cmake --build ${{github.workspace}}/${{env.build-dir}} --parallel --config ${{matrix.config}}
+
+  build_linux:
+    name: Build Linux
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-22.04, ubuntu-latest ]
+        config: [ Debug, Release ]
+        c-compiler: [ gcc, clang ]
+        cpp-compiler: [ g++, clang++ ]
+        exclude:
+          - c-compiler: gcc
+            cpp-compiler: clang++
+          - c-compiler: clang
+            cpp-compiler: g++
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: "17.0"
+        if: matrix.c-compiler == 'clang'
+
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        name: Install APT packages
+        with:
+          packages: >
+            build-essential git make binutils
+            pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev
+            libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev
+            libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev
+            libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev
+            libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
+          version: 1.0
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-sources
+        with:
+          path: ${{github.workspace}}/build/_deps/*-src
+          key: ${{ env.cache-name }}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{ env.cache-name }}-
+
+      - name: Cache CMake dependencies build objects
+        uses: actions/cache@v4.2.4
+        env:
+          cache-name: cache-cmake-dependency-builds
+        with:
+          path: |
+            ${{github.workspace}}/build/_deps/*-build
+            ${{github.workspace}}/build/_deps/*-subbuild
+          key: ${{env.cache-name}}-${{matrix.os}}-${{ hashFiles('**/CMakeLists.txt', 'CMake/**', 'Src/*.cmake') }}
+          restore-keys: |
+            ${{env.cache-name}}-${{matrix.os}}-
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{github.workspace}}/build -G Ninja
+          -DCMAKE_BUILD_TYPE=${{matrix.config}}
+          -DCMAKE_C_COMPILER=${{matrix.c-compiler}}
+          -DCMAKE_CXX_COMPILER=${{matrix.cpp-compiler}}
+
+      - name: Configure CMake (with Clang / lld)
+        run: >
+          cmake -B ${{github.workspace}}/build -G Ninja
+          -DCMAKE_BUILD_TYPE=${{matrix.config}}
+          -DCMAKE_C_COMPILER=${{matrix.c-compiler}}
+          -DCMAKE_CXX_COMPILER=${{matrix.cpp-compiler}}
+          -DCMAKE_EXE_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
+          -DCMAKE_MODULE_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
+          -DCMAKE_SHARED_LINKER_FLAGS_INIT="-fuse-ld=${{matrix.linker}}"
+        if: matrix.c-compiler == 'clang'
+
+      - name: Build CMake
+        run: cmake --build ${{github.workspace}}/build --parallel --config ${{matrix.config}}
