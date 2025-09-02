@@ -35,11 +35,11 @@ class VulkanPainter final : public Painter::Impl
 
     void onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc) override;
 
-    void onBeforeCanvasChanged(Image oldCanvas, Rectf oldViewport) override;
+    void onBeforeCanvasChanged(Image oldCanvas, Rectangle oldViewport) override;
 
-    void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport) override;
+    void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) override;
 
-    void setScissorRects(Span<Rectf> scissorRects) override;
+    void setScissorRects(Span<Rectangle> scissorRects) override;
 
     void requestFrameCapture() override;
 
@@ -143,7 +143,7 @@ class VulkanPainter final : public Painter::Impl
 
     int prepareDrawCall() override;
 
-    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectf imageSizeAndInverse)
+    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectangle imageSizeAndInverse)
         override;
 
     void flushPolys(
@@ -244,8 +244,8 @@ class VulkanPainter final : public Painter::Impl
         UniquePtr<VulkanUBOAllocator> uboAllocator;
 
         VkBuffer lastBoundUserShaderParamsCbuffer = VK_NULL_HANDLE;
-        Rectf    lastBoundViewport;
-        Rectf    lastAppliedViewportToSystemValues;
+        Rectangle    lastBoundViewport;
+        Rectangle    lastAppliedViewportToSystemValues;
         VkBuffer lastBoundIndexBuffer = VK_NULL_HANDLE;
     };
 

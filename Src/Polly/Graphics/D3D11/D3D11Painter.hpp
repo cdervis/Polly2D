@@ -45,11 +45,11 @@ class D3D11Painter final : public Painter::Impl
         UserShaderFlags                     flags,
         u16                                 cbufferSize) override;
 
-    void onBeforeCanvasChanged(Image oldCanvas, Rectf viewport) override;
+    void onBeforeCanvasChanged(Image oldCanvas, Rectangle viewport) override;
 
-    void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport) override;
+    void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) override;
 
-    void setScissorRects(Span<Rectf> scissorRects) override;
+    void setScissorRects(Span<Rectangle> scissorRects) override;
 
     void readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination)
         override;
@@ -59,7 +59,7 @@ class D3D11Painter final : public Painter::Impl
     [[nodiscard]]
     int prepareDrawCall() override;
 
-    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectf imageSizeAndInverse)
+    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectangle imageSizeAndInverse)
         override;
 
     void flushPolys(
@@ -157,7 +157,7 @@ class D3D11Painter final : public Painter::Impl
     u32 _meshVertexCounter   = 0;
     u32 _meshIndexCounter    = 0;
 
-    Rectf         _lastBoundViewport;
+    Rectangle         _lastBoundViewport;
     ID3D11Buffer* _lastBoundIndexBuffer       = nullptr;
     ID3D11Buffer* _lastBoundUserShaderCBuffer = nullptr;
 
@@ -170,7 +170,7 @@ class D3D11Painter final : public Painter::Impl
     Maybe<BlendState>   _lastBoundBlendState;
     ID3D11SamplerState* _lastBoundSamplerState = nullptr;
 
-    Maybe<Rectf>             _lastAppliedViewportToSystemValues;
+    Maybe<Rectangle>             _lastAppliedViewportToSystemValues;
     D3D11_PRIMITIVE_TOPOLOGY _lastAppliedPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
 
 #ifndef NDEBUG

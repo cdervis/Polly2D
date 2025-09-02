@@ -119,7 +119,7 @@ void D3D11Painter::onFrameStarted()
     _meshVertexCounter   = 0;
     _meshIndexCounter    = 0;
 
-    _lastBoundViewport          = Rectf();
+    _lastBoundViewport          = Rectangle();
     _lastBoundIndexBuffer       = nullptr;
     _lastBoundUserShaderCBuffer = nullptr;
     _lastBoundInputLayout       = nullptr;
@@ -206,12 +206,12 @@ UniquePtr<Shader::Impl> D3D11Painter::onCreateNativeUserShader(
         ast.filename());
 }
 
-void D3D11Painter::onBeforeCanvasChanged([[maybe_unused]] Image oldCanvas, [[maybe_unused]] Rectf viewport)
+void D3D11Painter::onBeforeCanvasChanged([[maybe_unused]] Image oldCanvas, [[maybe_unused]] Rectangle viewport)
 {
     // Nothing to do.
 }
 
-void D3D11Painter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectf viewport)
+void D3D11Painter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport)
 {
     ID3D11RenderTargetView* rtv = nullptr;
 
@@ -272,7 +272,7 @@ void D3D11Painter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
         bitor DF_PipelineState);
 }
 
-void D3D11Painter::setScissorRects(Span<Rectf> scissorRects)
+void D3D11Painter::setScissorRects(Span<Rectangle> scissorRects)
 {
     flush();
 
@@ -549,7 +549,7 @@ int D3D11Painter::prepareDrawCall()
 void D3D11Painter::flushSprites(
     Span<InternalSprite>  sprites,
     GamePerformanceStats& stats,
-    Rectf                 imageSizeAndInverse)
+    Rectangle                 imageSizeAndInverse)
 {
     beginEvent(L"flushSprites");
 
