@@ -8,6 +8,7 @@
 #include "Polly/Core/LoggingInternals.hpp"
 #include "Polly/Graphics/FontImpl.hpp"
 #include "Polly/ImGui/ImGuiImpl.hpp"
+#include "Polly/Input.hpp"
 #include "Polly/Input/GamepadImpl.hpp"
 #include "Polly/Input/InputImpl.hpp"
 #include "Polly/Input/MouseCursorImpl.hpp"
