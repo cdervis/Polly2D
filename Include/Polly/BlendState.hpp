@@ -125,7 +125,7 @@ static constexpr auto opaque = BlendState{
 /// A blend state with alpha-blending enabled.
 /// The state assumes that the RGB channels have been premultiplied with the alpha
 /// channel.
-static constexpr auto alpha_blend = BlendState{
+static constexpr auto alphaBlend = BlendState{
     .isBlendingEnabled = true,
     .blendFactor       = white,
     .colorSrcBlend     = Blend::One,
@@ -137,7 +137,7 @@ static constexpr auto alpha_blend = BlendState{
 /// A blend state with alpha-blending enabled.
 /// The state assumes that the RGB channels haven't been premultiplied with the alpha
 /// channel.
-static constexpr auto non_premultiplied = BlendState{
+static constexpr auto nonPremultiplied = BlendState{
     .isBlendingEnabled = true,
     .blendFactor       = white,
     .colorSrcBlend     = Blend::SrcAlpha,

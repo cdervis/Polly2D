@@ -14,17 +14,17 @@ class SpritesDemo final : public Demo
     void doImGui(ImGui imgui) override;
 
   private:
-    Image m_logo;
-    Image m_logoTiny;
-    Color m_imageColor          = white;
-    float m_imageRotation       = 0.0f;
-    bool  m_rotate              = true;
-    float m_rotationSpeed       = 5.0f;
-    Vec2  m_imageScale          = {1, 1};
-    Vec2  m_imageOrigin         = {16, 16};
-    bool  m_enableInterpolation = true;
-    bool  m_enableAlphaBlending = true;
-    bool  m_flipImage           = false;
-    bool  m_samplerMirror       = false;
-    float m_uvScale             = 1.0f;
+    Image _logo;
+    Image _logoTiny;
+    Color _imageColor          = white;
+    float _imageRotation       = 0.0f;
+    bool  _rotate              = true;
+    float _rotationSpeed       = 5.0f;
+    Vec2  _imageScale          = Vec2(1, 1);
+    Vec2  _imageOrigin         = Vec2(16, 16);
+    bool  _enableInterpolation = true;
+    bool  _enableAlphaBlending = true;
+    bool  _flipImage           = false;
+    bool  _samplerMirror       = false;
+    float _uvScale             = 1.0f;
 };

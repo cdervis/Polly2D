@@ -14,7 +14,7 @@ class SpineDemo final : public Demo
     void doImGui(ImGui imgui) override;
 
   private:
-    void switch_to_spine_entry(u32 index);
+    void switchToSpineEntry(u32 index);
 
     void onMouseWheelScrolled(const MouseWheelEvent& event) override;
 
@@ -25,15 +25,15 @@ class SpineDemo final : public Demo
     void onMouseMoved(const MouseMoveEvent& event) override;
 
     Camera                  _camera;
-    int                     _current_asset_index = 0;
-    SpineSkeletonData       _skeleton_data;
-    SpineAnimationStateData _animation_state_data;
-    SpineAnimationState     _animation_state;
+    int                     _currentAssetIndex = 0;
+    SpineSkeletonData       _skeletonData;
+    SpineAnimationStateData _animationStateData;
+    SpineAnimationState     _animationState;
     SpineSkeleton           _skeleton;
-    float                   _target_zoom             = 1.0f;
-    bool                    _is_dragging_camera      = false;
-    int                     _current_animation_index = 0;
-    bool                    _is_animation_playing    = true;
-    float                   _playback_speed          = 1.0f;
-    bool                    _should_draw_extras      = false;
+    float                   _targetZoom            = 1.0f;
+    bool                    _isDraggingCamera      = false;
+    int                     _currentAnimationIndex = 0;
+    bool                    _isAnimationPlaying    = true;
+    float                   _playbackSpeed         = 1.0f;
+    bool                    _shouldDrawExtras      = false;
 };

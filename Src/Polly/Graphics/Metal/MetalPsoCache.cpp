@@ -57,13 +57,13 @@ MTL::RenderPipelineState* MetalPsoCache::operator[](const Key& key)
 
             const auto blendState = key.blendState;
             attachment->setBlendingEnabled(blendState.isBlendingEnabled);
-            attachment->setRgbBlendOperation(*convert_to_mtl(blendState.colorBlendFunction));
-            attachment->setAlphaBlendOperation(*convert_to_mtl(blendState.alphaBlendFunction));
-            attachment->setSourceRGBBlendFactor(*convert_to_mtl(blendState.colorSrcBlend));
-            attachment->setSourceAlphaBlendFactor(*convert_to_mtl(blendState.alphaSrcBlend));
-            attachment->setDestinationRGBBlendFactor(*convert_to_mtl(blendState.colorDstBlend));
-            attachment->setDestinationAlphaBlendFactor(*convert_to_mtl(blendState.alphaDstBlend));
-            attachment->setWriteMask(*convert_to_mtl(blendState.colorWriteMask));
+            attachment->setRgbBlendOperation(*convertToMtl(blendState.colorBlendFunction));
+            attachment->setAlphaBlendOperation(*convertToMtl(blendState.alphaBlendFunction));
+            attachment->setSourceRGBBlendFactor(*convertToMtl(blendState.colorSrcBlend));
+            attachment->setSourceAlphaBlendFactor(*convertToMtl(blendState.alphaSrcBlend));
+            attachment->setDestinationRGBBlendFactor(*convertToMtl(blendState.colorDstBlend));
+            attachment->setDestinationAlphaBlendFactor(*convertToMtl(blendState.alphaDstBlend));
+            attachment->setWriteMask(*convertToMtl(blendState.colorWriteMask));
             attachment->setPixelFormat(key.colorAttachmentFormat);
         }
 

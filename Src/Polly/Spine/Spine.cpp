@@ -34,22 +34,22 @@ static StringView convertView(const spine::String& str)
     return StringView(str.buffer(), static_cast<u32>(str.length()));
 }
 
-static String getAnimationNotFoundMessage(StringView searched_for, Span<SpineAnimation> animations)
+static String getAnimationNotFoundMessage(StringView searchedFor, const Span<SpineAnimation> animations)
 {
     auto minDistanceName = StringView();
     auto minDistance     = std::numeric_limits<double>::max();
 
     for (const auto& anim : animations)
     {
-        const auto anim_name = anim.name();
-        const auto len       = max(searched_for.size(), anim_name.size());
+        const auto animName = anim.name();
+        const auto len      = max(searchedFor.size(), animName.size());
         const auto normalized =
-            static_cast<double>(levensteinDistance(searched_for, anim_name)) / static_cast<double>(len);
+            static_cast<double>(levensteinDistance(searchedFor, animName)) / static_cast<double>(len);
 
         if (normalized < minDistance)
         {
             minDistance     = normalized;
-            minDistanceName = anim_name;
+            minDistanceName = animName;
         }
     }
 
@@ -57,11 +57,11 @@ static String getAnimationNotFoundMessage(StringView searched_for, Span<SpineAni
     {
         return formatString(
             "No animation named '{}' in the skeleton; did you mean '{}'?",
-            searched_for,
+            searchedFor,
             minDistanceName);
     }
 
-    return formatString("No animation named '{}' in the skeleton.", searched_for);
+    return formatString("No animation named '{}' in the skeleton.", searchedFor);
 }
 
 PollyImplementObject(SpineAtlas);
@@ -92,13 +92,13 @@ Seconds SpineAnimation::duration() const
     return impl->getDuration();
 }
 
-void SpineAnimation::setDuration(Seconds value)
+void SpineAnimation::setDuration(const Seconds value)
 {
     PollyDeclareThisImplAs(spine::Animation);
     impl->setDuration(value);
 }
 
-Vec2 SpineBone::worldToLocal(Vec2 worldPosition) const
+Vec2 SpineBone::worldToLocal(const Vec2 worldPosition) const
 {
     PollyDeclareThisImplAs(spine::Bone);
 
@@ -109,7 +109,7 @@ Vec2 SpineBone::worldToLocal(Vec2 worldPosition) const
     return Vec2(x, y);
 }
 
-Vec2 SpineBone::worldToParent(Vec2 worldPosition) const
+Vec2 SpineBone::worldToParent(const Vec2 worldPosition) const
 {
     PollyDeclareThisImplAs(spine::Bone);
 
@@ -120,7 +120,7 @@ Vec2 SpineBone::worldToParent(Vec2 worldPosition) const
     return Vec2(x, y);
 }
 
-Vec2 SpineBone::localToWorld(Vec2 localPosition) const
+Vec2 SpineBone::localToWorld(const Vec2 localPosition) const
 {
     PollyDeclareThisImplAs(spine::Bone);
 
@@ -131,7 +131,7 @@ Vec2 SpineBone::localToWorld(Vec2 localPosition) const
     return Vec2(x, y);
 }
 
-Vec2 SpineBone::parentToWorld(Vec2 worldPosition) const
+Vec2 SpineBone::parentToWorld(const Vec2 worldPosition) const
 {
     PollyDeclareThisImplAs(spine::Bone);
 
@@ -142,19 +142,19 @@ Vec2 SpineBone::parentToWorld(Vec2 worldPosition) const
     return Vec2(x, y);
 }
 
-Degrees SpineBone::worldToLocalRotation(Degrees worldRotation) const
+Degrees SpineBone::worldToLocalRotation(const Degrees worldRotation) const
 {
     PollyDeclareThisImplAs(spine::Bone);
     return Degrees(impl->worldToLocalRotation(worldRotation.value));
 }
 
-Degrees SpineBone::localToWorldRotation(Degrees localRotation) const
+Degrees SpineBone::localToWorldRotation(const Degrees localRotation) const
 {
     PollyDeclareThisImplAs(spine::Bone);
     return Degrees(impl->localToWorldRotation(localRotation.value));
 }
 
-void SpineBone::rotateWorld(Degrees amount)
+void SpineBone::rotateWorld(const Degrees amount)
 {
     PollyDeclareThisImplAs(spine::Bone);
     impl->rotateWorld(amount.value);
@@ -172,7 +172,7 @@ Vec2 SpineBone::localPosition() const
     return {impl->getX(), impl->getY()};
 }
 
-void SpineBone::setLocalPosition(Vec2 value)
+void SpineBone::setLocalPosition(const Vec2 value)
 {
     PollyDeclareThisImplAs(spine::Bone);
     impl->setX(value.x);
@@ -304,7 +304,7 @@ void SpineSlotData::setAttachmentName(StringView value)
 BlendState SpineSlotData::blendState() const
 {
     // TODO
-    return non_premultiplied;
+    return nonPremultiplied;
 }
 
 bool SpineSlotData::isVisible() const
@@ -350,55 +350,55 @@ StringView SpineSkeletonData::assetName() const
     return impl->assetName();
 }
 
-SpineBoneData SpineSkeletonData::findBone(StringView name)
+SpineBoneData SpineSkeletonData::findBone(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineBoneData(impl->skeleton_data->findBone(convert(name)));
 }
 
-SpineSlotData SpineSkeletonData::findSlot(StringView name)
+SpineSlotData SpineSkeletonData::findSlot(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineSlotData(impl->skeleton_data->findSlot(convert(name)));
 }
 
-SpineSkin SpineSkeletonData::findSkin(StringView name)
+SpineSkin SpineSkeletonData::findSkin(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineSkin(impl->skeleton_data->findSkin(convert(name)));
 }
 
-SpineEventData SpineSkeletonData::findEvent(StringView name)
+SpineEventData SpineSkeletonData::findEvent(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineEventData(impl->skeleton_data->findEvent(convert(name)));
 }
 
-SpineAnimation SpineSkeletonData::findAnimation(StringView name)
+SpineAnimation SpineSkeletonData::findAnimation(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineAnimation(impl->skeleton_data->findAnimation(convert(name)));
 }
 
-SpineIKConstraintData SpineSkeletonData::findIKConstraint(StringView name)
+SpineIKConstraintData SpineSkeletonData::findIKConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineIKConstraintData(impl->skeleton_data->findIkConstraint(convert(name)));
 }
 
-SpineTransformConstraintData SpineSkeletonData::findTransformConstraint(StringView name)
+SpineTransformConstraintData SpineSkeletonData::findTransformConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineTransformConstraintData(impl->skeleton_data->findTransformConstraint(convert(name)));
 }
 
-SpinePathConstraintData SpineSkeletonData::findPathConstraint(StringView name)
+SpinePathConstraintData SpineSkeletonData::findPathConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpinePathConstraintData(impl->skeleton_data->findPathConstraint(convert(name)));
 }
 
-SpinePhysicsConstraintData SpineSkeletonData::findPhysicsConstraint(StringView name)
+SpinePhysicsConstraintData SpineSkeletonData::findPhysicsConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpinePhysicsConstraintData(impl->skeleton_data->findPhysicsConstraint(convert(name)));
@@ -410,7 +410,7 @@ StringView SpineSkeletonData::name() const
     return convertView(const_cast<Impl*>(impl)->skeleton_data->getName());
 }
 
-void SpineSkeletonData::setName(StringView value)
+void SpineSkeletonData::setName(const StringView value)
 {
     PollyDeclareThisImpl;
     impl->skeleton_data->setName(convert(value));
@@ -458,13 +458,13 @@ Span<SpineAnimation> SpineSkeletonData::animations()
     return impl->animations;
 }
 
-bool SpineSkeletonData::hasAnimationNamed(StringView name) const
+bool SpineSkeletonData::hasAnimationNamed(const StringView name) const
 {
     PollyDeclareThisImpl;
     return const_cast<Impl*>(impl)->skeleton_data->findAnimation(convert(name)) != nullptr;
 }
 
-bool SpineSkeletonData::hasAnimationsNamed(Span<StringView> names) const
+bool SpineSkeletonData::hasAnimationsNamed(const Span<StringView> names) const
 {
     PollyDeclareThisImpl;
     auto* non_const_impl = const_cast<Impl*>(impl);
@@ -509,12 +509,12 @@ Span<SpinePhysicsConstraintData> SpineSkeletonData::physicsConstraints()
 Vec2 SpineSkeletonData::position() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return Vec2(non_const_impl->skeleton_data->getX(), non_const_impl->skeleton_data->getY());
+    return Vec2(nonConstImpl->skeleton_data->getX(), nonConstImpl->skeleton_data->getY());
 }
 
-void SpineSkeletonData::setPosition(Vec2 value)
+void SpineSkeletonData::setPosition(const Vec2 value)
 {
     PollyDeclareThisImpl;
 
@@ -525,12 +525,12 @@ void SpineSkeletonData::setPosition(Vec2 value)
 Vec2 SpineSkeletonData::size() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return {non_const_impl->skeleton_data->getWidth(), non_const_impl->skeleton_data->getHeight()};
+    return {nonConstImpl->skeleton_data->getWidth(), nonConstImpl->skeleton_data->getHeight()};
 }
 
-void SpineSkeletonData::setSize(Vec2 value)
+void SpineSkeletonData::setSize(const Vec2 value)
 {
     PollyDeclareThisImpl;
 
@@ -541,12 +541,12 @@ void SpineSkeletonData::setSize(Vec2 value)
 float SpineSkeletonData::referenceScale() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return non_const_impl->skeleton_data->getReferenceScale();
+    return nonConstImpl->skeleton_data->getReferenceScale();
 }
 
-void SpineSkeletonData::setReferenceScale(float value)
+void SpineSkeletonData::setReferenceScale(const float value)
 {
     PollyDeclareThisImpl;
     impl->skeleton_data->setReferenceScale(value);
@@ -555,12 +555,12 @@ void SpineSkeletonData::setReferenceScale(float value)
 float SpineSkeletonData::framesPerSecond() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return non_const_impl->skeleton_data->getFps();
+    return nonConstImpl->skeleton_data->getFps();
 }
 
-void SpineSkeletonData::setFramesPerSecond(float value)
+void SpineSkeletonData::setFramesPerSecond(const float value)
 {
     PollyDeclareThisImpl;
     impl->skeleton_data->setFps(value);
@@ -591,13 +591,13 @@ SpineSkeleton::SpineSkeleton(SpineSkeletonData skeletonData)
     setImpl(*this, makeUnique<Impl>(std::move(skeletonData)).release());
 }
 
-void SpineSkeleton::update(float dt)
+void SpineSkeleton::update(const float dt)
 {
     PollyDeclareThisImpl;
     impl->update(dt);
 }
 
-void SpineSkeleton::updateWorldTransform(SpineUpdatePhysics physics)
+void SpineSkeleton::updateWorldTransform(const SpineUpdatePhysics physics)
 {
     PollyDeclareThisImpl;
     impl->update_world_transform(physics);
@@ -616,10 +616,10 @@ void SpineSkeleton::setAnimationState(SpineAnimationState value)
 
     if (impl->animation_state)
     {
-        auto* anim_state = impl->animation_state.impl()->state.get();
-        auto* skeleton   = impl->skeleton.get();
+        auto* animState = impl->animation_state.impl()->state.get();
+        auto* skeleton  = impl->skeleton.get();
 
-        anim_state->apply(*skeleton);
+        animState->apply(*skeleton);
 
         skeleton->update(0.0f);
         skeleton->updateWorldTransform(spine::Physics_Update);
@@ -650,44 +650,44 @@ void SpineSkeleton::setSkin(const SpineSkin& newSkin)
     impl->skeleton->setSkin(static_cast<spine::Skin*>(newSkin.impl()));
 }
 
-SpineAttachment SpineSkeleton::attachment(StringView slotName, StringView attachmentName)
+SpineAttachment SpineSkeleton::attachment(StringView slotName, const StringView attachmentName)
 {
     PollyDeclareThisImpl;
     return SpineAttachment(impl->skeleton->getAttachment(convert(slotName), convert(attachmentName)));
 }
 
-SpineAttachment SpineSkeleton::attachment(u32 slotIndex, StringView attachmentName)
+SpineAttachment SpineSkeleton::attachment(u32 slotIndex, const StringView attachmentName)
 {
     PollyDeclareThisImpl;
     return SpineAttachment(
         impl->skeleton->getAttachment(static_cast<int>(slotIndex), convert(attachmentName)));
 }
 
-void SpineSkeleton::setAttachment(StringView slotName, StringView attachmentName)
+void SpineSkeleton::setAttachment(StringView slotName, const StringView attachmentName)
 {
     PollyDeclareThisImpl;
     impl->skeleton->setAttachment(convert(slotName), convert(attachmentName));
 }
 
-SpineIkConstraint SpineSkeleton::findIKConstraint(StringView name)
+SpineIkConstraint SpineSkeleton::findIKConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineIkConstraint(impl->skeleton->findIkConstraint(convert(name)));
 }
 
-SpineTransformConstraint SpineSkeleton::findTransformConstraint(StringView name)
+SpineTransformConstraint SpineSkeleton::findTransformConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpineTransformConstraint(impl->skeleton->findTransformConstraint(convert(name)));
 }
 
-SpinePathConstraint SpineSkeleton::findPathConstraint(StringView name)
+SpinePathConstraint SpineSkeleton::findPathConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpinePathConstraint(impl->skeleton->findPathConstraint(convert(name)));
 }
 
-SpinePhysicsConstraint SpineSkeleton::findPhysicsConstraint(StringView name)
+SpinePhysicsConstraint SpineSkeleton::findPhysicsConstraint(const StringView name)
 {
     PollyDeclareThisImpl;
     return SpinePhysicsConstraint(impl->skeleton->findPhysicsConstraint(convert(name)));
@@ -706,7 +706,7 @@ Rectangle SpineSkeleton::bounds() const
     auto height = 0.0f;
     nonConstImpl->skeleton->getBounds(x, y, width, height, vec);
 
-    return {x, y, width, height};
+    return Rectangle(x, y, width, height);
 }
 
 SpineBone SpineSkeleton::rootBone()
@@ -766,9 +766,9 @@ SpineSkin SpineSkeleton::skin()
 Vec2 SpineSkeleton::position() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return {non_const_impl->skeleton->getX(), non_const_impl->skeleton->getY()};
+    return {nonConstImpl->skeleton->getX(), nonConstImpl->skeleton->getY()};
 }
 
 void SpineSkeleton::setPosition(Vec2 value)
@@ -782,7 +782,7 @@ Vec2 SpineSkeleton::scale() const
     PollyDeclareThisImpl;
     auto* non_const_impl = const_cast<Impl*>(impl);
 
-    return {non_const_impl->skeleton->getScaleX(), non_const_impl->skeleton->getScaleY()};
+    return Vec2(non_const_impl->skeleton->getScaleX(), non_const_impl->skeleton->getScaleY());
 }
 
 void SpineSkeleton::setScale(Vec2 value)
@@ -796,9 +796,9 @@ void SpineSkeleton::setScale(Vec2 value)
 Seconds SpineSkeleton::time() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return non_const_impl->skeleton->getTime();
+    return nonConstImpl->skeleton->getTime();
 }
 
 void SpineSkeleton::setTime(Seconds value)
@@ -1144,19 +1144,22 @@ SpineTrack SpineAnimationState::setAnimation(u32 trackIndex, StringView animatio
 {
     PollyDeclareThisImpl;
 
-    auto& skeleton_data_impl = *impl->data.impl()->skeleton_data.impl();
-    auto& skeleton_data      = *skeleton_data_impl.skeleton_data;
-    auto* anim_ptr           = skeleton_data.findAnimation(convert(animationName));
+    auto& skeletonDataImpl = *impl->data.impl()->skeleton_data.impl();
+    auto& skeletonData     = *skeletonDataImpl.skeleton_data;
+    auto* animPtr          = skeletonData.findAnimation(convert(animationName));
 
-    if (not anim_ptr)
+    if (not animPtr)
     {
-        throw Error(getAnimationNotFoundMessage(animationName, skeleton_data_impl.animations));
+        throw Error(getAnimationNotFoundMessage(animationName, skeletonDataImpl.animations));
     }
 
-    return SpineTrack(impl->state->setAnimation(trackIndex, anim_ptr, shouldLoop));
+    return SpineTrack(impl->state->setAnimation(trackIndex, animPtr, shouldLoop));
 }
 
-SpineTrack SpineAnimationState::setAnimation(u32 trackIndex, const SpineAnimation& animation, bool shouldLoop)
+SpineTrack SpineAnimationState::setAnimation(
+    const u32             trackIndex,
+    const SpineAnimation& animation,
+    const bool            shouldLoop)
 {
     if (not animation)
     {
@@ -1170,20 +1173,20 @@ SpineTrack SpineAnimationState::setAnimation(u32 trackIndex, const SpineAnimatio
 }
 
 SpineTrack SpineAnimationState::addAnimation(
-    u32        trackIndex,
-    StringView animationName,
-    bool       shouldLoop,
-    Seconds    delay)
+    const u32        trackIndex,
+    const StringView animationName,
+    const bool       shouldLoop,
+    const Seconds    delay)
 {
     PollyDeclareThisImpl;
     return SpineTrack(impl->state->addAnimation(trackIndex, convert(animationName), shouldLoop, delay));
 }
 
 SpineTrack SpineAnimationState::addAnimation(
-    u32                   trackIndex,
+    const u32             trackIndex,
     const SpineAnimation& animation,
-    bool                  shouldLoop,
-    Seconds               delay)
+    const bool            shouldLoop,
+    const Seconds         delay)
 {
     if (not animation)
     {
@@ -1197,19 +1200,19 @@ SpineTrack SpineAnimationState::addAnimation(
             ->addAnimation(trackIndex, static_cast<spine::Animation*>(animation.impl()), shouldLoop, delay));
 }
 
-SpineTrack SpineAnimationState::setEmptyAnimation(u32 trackIndex, Seconds mixDuration)
+SpineTrack SpineAnimationState::setEmptyAnimation(const u32 trackIndex, const Seconds mixDuration)
 {
     PollyDeclareThisImpl;
     return SpineTrack(impl->state->setEmptyAnimation(trackIndex, mixDuration));
 }
 
-void SpineAnimationState::setEmptyAnimations(Seconds mixDuration)
+void SpineAnimationState::setEmptyAnimations(const Seconds mixDuration)
 {
     PollyDeclareThisImpl;
     impl->state->setEmptyAnimations(mixDuration);
 }
 
-SpineTrack SpineAnimationState::current(u32 trackIndex)
+SpineTrack SpineAnimationState::current(const u32 trackIndex)
 {
     PollyDeclareThisImpl;
     return SpineTrack(impl->state->getCurrent(trackIndex));
@@ -1224,12 +1227,12 @@ SpineAnimationStateData SpineAnimationState::animationStateData()
 Seconds SpineAnimationState::timeScale() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return non_const_impl->state->getTimeScale();
+    return nonConstImpl->state->getTimeScale();
 }
 
-void SpineAnimationState::setTimeScale(Seconds value)
+void SpineAnimationState::setTimeScale(const Seconds value)
 {
     PollyDeclareThisImpl;
     impl->state->setTimeScale(value);
@@ -1238,13 +1241,13 @@ void SpineAnimationState::setTimeScale(Seconds value)
 Color SpineSkeleton::color() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    const auto color = non_const_impl->skeleton->getColor();
+    const auto color = nonConstImpl->skeleton->getColor();
     return {color.r, color.g, color.b, color.a};
 }
 
-void SpineSkeleton::setColor(Color value)
+void SpineSkeleton::setColor(const Color value)
 {
     PollyDeclareThisImpl;
     impl->skeleton->getColor() = spine::Color(value.r, value.g, value.b, value.a);
@@ -1266,9 +1269,9 @@ SpineAnimationStateData::SpineAnimationStateData(SpineSkeletonData skeletonData)
 Seconds SpineAnimationStateData::defaultMix() const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return non_const_impl->data->getDefaultMix();
+    return nonConstImpl->data->getDefaultMix();
 }
 
 void SpineAnimationStateData::setDefaultMix(float duration)
@@ -1280,37 +1283,40 @@ void SpineAnimationStateData::setDefaultMix(float duration)
 Seconds SpineAnimationStateData::mix(const SpineAnimation& from, const SpineAnimation& to) const
 {
     PollyDeclareThisImpl;
-    auto* non_const_impl = const_cast<Impl*>(impl);
+    auto* nonConstImpl = const_cast<Impl*>(impl);
 
-    return non_const_impl->data->getMix(
+    return nonConstImpl->data->getMix(
         static_cast<spine::Animation*>(from.impl()),
         static_cast<spine::Animation*>(to.impl()));
 }
 
-void SpineAnimationStateData::setMix(StringView fromName, StringView toName, float duration)
+void SpineAnimationStateData::setMix(const StringView fromName, const StringView toName, const float duration)
 {
     PollyDeclareThisImpl;
 
-    auto& skeleton_data_impl = *impl->skeleton_data.impl();
-    auto& skeleton_data      = *skeleton_data_impl.skeleton_data;
+    auto& skeletonDataImpl = *impl->skeleton_data.impl();
+    auto& skeletonData     = *skeletonDataImpl.skeleton_data;
 
-    auto* anim1_ptr = skeleton_data.findAnimation(convert(fromName));
-    auto* anim2_ptr = skeleton_data.findAnimation(convert(toName));
+    auto* anim1Ptr = skeletonData.findAnimation(convert(fromName));
+    auto* anim2Ptr = skeletonData.findAnimation(convert(toName));
 
-    if (not anim1_ptr)
+    if (not anim1Ptr)
     {
-        throw Error(getAnimationNotFoundMessage(fromName, skeleton_data_impl.animations));
+        throw Error(getAnimationNotFoundMessage(fromName, skeletonDataImpl.animations));
     }
 
-    if (not anim2_ptr)
+    if (not anim2Ptr)
     {
-        throw Error(getAnimationNotFoundMessage(toName, skeleton_data_impl.animations));
+        throw Error(getAnimationNotFoundMessage(toName, skeletonDataImpl.animations));
     }
 
-    impl->data->setMix(anim1_ptr, anim2_ptr, duration);
+    impl->data->setMix(anim1Ptr, anim2Ptr, duration);
 }
 
-void SpineAnimationStateData::setMix(const SpineAnimation& from, const SpineAnimation& to, Seconds duration)
+void SpineAnimationStateData::setMix(
+    const SpineAnimation& from,
+    const SpineAnimation& to,
+    const Seconds         duration)
 {
     PollyDeclareThisImpl;
 

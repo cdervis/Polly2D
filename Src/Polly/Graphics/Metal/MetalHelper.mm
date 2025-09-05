@@ -51,11 +51,13 @@ MTL::Function* Polly::findMtlLibraryFunction(MTL::Library* library, StringView n
     const auto        names         = library->functionNames();
     const auto        functionCount = names->count();
 
-    for (NS::UInteger i = 0; i < functionCount; ++i) {
+    for (NS::UInteger i = 0; i < functionCount; ++i)
+    {
         auto* obj = names->object(i);
         auto* str = obj->description();
 
-        if (name == str->utf8String()) {
+        if (name == str->utf8String())
+        {
             nameStr = str;
             break;
         }

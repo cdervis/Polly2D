@@ -18,7 +18,7 @@
 
 namespace Polly::ShaderCompiler
 {
-Ast::Ast(StringView filename, DeclList decls)
+Ast::Ast(const StringView filename, DeclList decls)
     : _filename(filename)
     , _decls(std::move(decls))
     , _shaderType(static_cast<ShaderType>(-1))

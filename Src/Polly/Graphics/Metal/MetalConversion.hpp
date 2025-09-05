@@ -17,17 +17,17 @@ struct Color;
 
 enum class VertexElement;
 
-Maybe<MTL::PixelFormat> convert_to_mtl(ImageFormat format);
+Maybe<MTL::PixelFormat> convertToMtl(ImageFormat format);
 
-Maybe<MTL::BlendFactor> convert_to_mtl(Blend blend);
+Maybe<MTL::BlendFactor> convertToMtl(Blend blend);
 
-Maybe<MTL::BlendOperation> convert_to_mtl(BlendFunction func);
+Maybe<MTL::BlendOperation> convertToMtl(BlendFunction func);
 
-Maybe<MTL::ColorWriteMask> convert_to_mtl(ColorWriteMask mask);
+Maybe<MTL::ColorWriteMask> convertToMtl(ColorWriteMask mask);
 
-Maybe<Pair<MTL::VertexFormat, int>> convert_to_mtl(VertexElement element);
+Maybe<Pair<MTL::VertexFormat, int>> convertToMtl(VertexElement element);
 
-Maybe<MTL::SamplerAddressMode> convert_to_mtl(ImageAddressMode mode);
+Maybe<MTL::SamplerAddressMode> convertToMtl(ImageAddressMode mode);
 
-Maybe<MTL::ClearColor> convert_to_mtl_clear_color(const Color& color);
+Maybe<MTL::ClearColor> convertToMtlClearColor(const Color& color);
 } // namespace Polly

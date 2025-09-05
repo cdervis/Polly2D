@@ -21,7 +21,7 @@ MetalWindow::MetalWindow(
 {
     auto arp = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
-    int additionalFlags = 0;
+    auto additionalFlags = 0;
 
     additionalFlags |= SDL_WINDOW_METAL;
     additionalFlags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
@@ -67,6 +67,7 @@ CA::MetalLayer* MetalWindow::caMetalLayer() const
 
 void MetalWindow::onResized([[maybe_unused]] u32 width, [[maybe_unused]] u32 height)
 {
+    // Nothing to do.
 }
 
 void MetalWindow::updateCaMetalLayerDrawableSizeToWindowPxSize() const

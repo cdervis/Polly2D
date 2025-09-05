@@ -11,7 +11,7 @@
 
 namespace Polly
 {
-String Shader::Impl::shaderParameterTypeString(ShaderParameterType type)
+String Shader::Impl::shaderParameterTypeString(const ShaderParameterType type)
 {
     switch (type)
     {
@@ -35,12 +35,12 @@ String Shader::Impl::shaderParameterTypeString(ShaderParameterType type)
 }
 
 Shader::Impl::Impl(
-    Painter::Impl&  painterImpl,
-    ShaderType      shaderType,
-    StringView      sourceCode,
-    ParameterList   parameters,
-    UserShaderFlags flags,
-    u16             cbufferSize)
+    Painter::Impl&        painterImpl,
+    const ShaderType      shaderType,
+    const StringView      sourceCode,
+    ParameterList         parameters,
+    const UserShaderFlags flags,
+    const u16             cbufferSize)
     : GraphicsResource(painterImpl, GraphicsResourceType::Shader)
     , _shaderType(shaderType)
 #ifndef NDEBUG
@@ -74,9 +74,9 @@ ShaderType Shader::Impl::shaderType() const
 }
 
 void Shader::Impl::verifyParameterRead(
-    StringView          parameterName,
-    ShaderParameterType dstType,
-    ShaderParameterType srcType)
+    StringView                parameterName,
+    const ShaderParameterType dstType,
+    const ShaderParameterType srcType)
 {
     if (dstType != srcType)
     {
@@ -90,9 +90,9 @@ void Shader::Impl::verifyParameterRead(
 }
 
 void Shader::Impl::verifyParameterWrite(
-    StringView          parameterName,
-    ShaderParameterType dstType,
-    ShaderParameterType srcType)
+    StringView                parameterName,
+    const ShaderParameterType dstType,
+    const ShaderParameterType srcType)
 {
     if (dstType != srcType)
     {
@@ -105,12 +105,12 @@ void Shader::Impl::verifyParameterWrite(
     }
 }
 
-ShaderParameter* Shader::Impl::findParameter(StringView name)
+ShaderParameter* Shader::Impl::findParameter(const StringView name)
 {
     return binaryFind(_parameters, name);
 }
 
-const ShaderParameter* Shader::Impl::findParameter(StringView name) const
+const ShaderParameter* Shader::Impl::findParameter(const StringView name) const
 {
     return binaryFind(_parameters, name);
 }

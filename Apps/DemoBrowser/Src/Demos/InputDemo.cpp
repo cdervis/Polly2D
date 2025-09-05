@@ -100,18 +100,18 @@ void InputDemo::draw(Painter painter)
             painter.drawEllipse(stickPos, axisCircleRadius, gray, 3.0f);
             painter.fillEllipse(stickPos + xyOffset, stickRadius, cornflowerblue);
 
-            auto trigger_rect = Rectangle(
+            auto triggerRect = Rectangle(
                 stickPos.x + axisCircleRadius.x + 50.0f,
                 stickPos.y - (triggerRectHeight / 2),
                 50.0f,
                 triggerRectHeight);
 
-            painter.drawRoundedRectangle(trigger_rect, 8.0f, darkGray, 3.0f);
+            painter.drawRoundedRectangle(triggerRect, 8.0f, darkGray, 3.0f);
 
             if (triggerValue > 0.05f)
             {
-                trigger_rect.height *= triggerValue;
-                painter.fillRoundedRectangle(trigger_rect, 8.0f, cornflowerblue);
+                triggerRect.height *= triggerValue;
+                painter.fillRoundedRectangle(triggerRect, 8.0f, cornflowerblue);
             }
         }
 

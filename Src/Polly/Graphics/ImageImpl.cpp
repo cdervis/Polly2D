@@ -6,7 +6,12 @@
 
 namespace Polly
 {
-Image::Impl::Impl(Painter::Impl& painterImpl, bool isCanvas, u32 width, u32 height, ImageFormat format)
+Image::Impl::Impl(
+    Painter::Impl&    painterImpl,
+    const bool        isCanvas,
+    const u32         width,
+    const u32         height,
+    const ImageFormat format)
     : GraphicsResource(painterImpl, GraphicsResourceType::Image)
     , _isCanvas(isCanvas)
     , _width(width)

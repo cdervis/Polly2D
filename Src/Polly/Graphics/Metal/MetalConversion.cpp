@@ -11,7 +11,7 @@
 
 namespace Polly
 {
-Maybe<MTL::PixelFormat> convert_to_mtl(ImageFormat format)
+Maybe<MTL::PixelFormat> convertToMtl(ImageFormat format)
 {
     switch (format)
     {
@@ -24,7 +24,7 @@ Maybe<MTL::PixelFormat> convert_to_mtl(ImageFormat format)
     return none;
 }
 
-Maybe<MTL::BlendFactor> convert_to_mtl(Blend blend)
+Maybe<MTL::BlendFactor> convertToMtl(Blend blend)
 {
     switch (blend)
     {
@@ -46,7 +46,7 @@ Maybe<MTL::BlendFactor> convert_to_mtl(Blend blend)
     return none;
 }
 
-Maybe<MTL::BlendOperation> convert_to_mtl(BlendFunction func)
+Maybe<MTL::BlendOperation> convertToMtl(BlendFunction func)
 {
     switch (func)
     {
@@ -60,7 +60,7 @@ Maybe<MTL::BlendOperation> convert_to_mtl(BlendFunction func)
     return none;
 }
 
-Maybe<MTL::ColorWriteMask> convert_to_mtl(ColorWriteMask mask)
+Maybe<MTL::ColorWriteMask> convertToMtl(ColorWriteMask mask)
 {
     auto result = MTL::ColorWriteMask();
 
@@ -87,7 +87,7 @@ Maybe<MTL::ColorWriteMask> convert_to_mtl(ColorWriteMask mask)
     return result;
 }
 
-Maybe<Pair<MTL::VertexFormat, int>> convert_to_mtl(VertexElement element)
+Maybe<Pair<MTL::VertexFormat, int>> convertToMtl(VertexElement element)
 {
     switch (element)
     {
@@ -101,7 +101,7 @@ Maybe<Pair<MTL::VertexFormat, int>> convert_to_mtl(VertexElement element)
     return none;
 }
 
-Maybe<MTL::SamplerAddressMode> convert_to_mtl(ImageAddressMode mode)
+Maybe<MTL::SamplerAddressMode> convertToMtl(ImageAddressMode mode)
 {
     switch (mode)
     {
@@ -117,7 +117,7 @@ Maybe<MTL::SamplerAddressMode> convert_to_mtl(ImageAddressMode mode)
     return MTL::SamplerAddressModeClampToEdge;
 }
 
-Maybe<MTL::ClearColor> convert_to_mtl_clear_color(const Color& color)
+Maybe<MTL::ClearColor> convertToMtlClearColor(const Color& color)
 {
     return MTL::ClearColor(color.r, color.g, color.b, color.a);
 }

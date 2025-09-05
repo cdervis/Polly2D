@@ -316,7 +316,7 @@ void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
 
     if (clearColor)
     {
-        colorAttachment->setClearColor(*convert_to_mtl_clear_color(*clearColor));
+        colorAttachment->setClearColor(*convertToMtlClearColor(*clearColor));
         colorAttachment->setLoadAction(MTL::LoadActionClear);
     }
     else
@@ -565,7 +565,7 @@ int MetalPainter::prepareDrawCall()
 
         assume(currentDrawable);
 
-        const auto renderTargetFormat = currentCanvas() ? *convert_to_mtl(currentCanvas().format())
+        const auto renderTargetFormat = currentCanvas() ? *convertToMtl(currentCanvas().format())
                                                         : currentDrawable->texture()->pixelFormat();
 
         MTL::Function* vertexShader      = nullptr;

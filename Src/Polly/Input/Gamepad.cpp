@@ -50,14 +50,14 @@ Maybe<Array<float, 8>> Gamepad::sensorData(GamepadSensorType sensor) const
 Maybe<GamepadAccelerationSensorData> Gamepad::accelerationSensorData() const
 {
     PollyDeclareThisImpl;
-    const auto maybe_data = impl->sensorData(GamepadSensorType::Acceleration);
+    const auto maybeData = impl->sensorData(GamepadSensorType::Acceleration);
 
-    if (not maybe_data)
+    if (not maybeData)
     {
         return none;
     }
 
-    const auto& data = *maybe_data;
+    const auto& data = *maybeData;
 
     return GamepadAccelerationSensorData{
         .axisAcceleration = Vec3(data[0], data[1], data[2]),
@@ -67,14 +67,14 @@ Maybe<GamepadAccelerationSensorData> Gamepad::accelerationSensorData() const
 Maybe<GamepadGyroscopeData> Gamepad::gyroscopeData() const
 {
     PollyDeclareThisImpl;
-    const auto maybe_data = impl->sensorData(GamepadSensorType::Acceleration);
+    const auto maybeData = impl->sensorData(GamepadSensorType::Acceleration);
 
-    if (not maybe_data)
+    if (not maybeData)
     {
         return none;
     }
 
-    const auto& data = *maybe_data;
+    const auto& data = *maybeData;
 
     return GamepadGyroscopeData{
         .angularSpeed = Vec3(data[0], data[1], data[2]),
@@ -99,10 +99,10 @@ u32 Gamepad::touchpadCount() const
     return impl->touchpadCount();
 }
 
-List<GamepadTouchpadFingerData> Gamepad::touchpadFingerData(u32 touchpad_index) const
+List<GamepadTouchpadFingerData> Gamepad::touchpadFingerData(u32 touchpadIndex) const
 {
     PollyDeclareThisImpl;
-    return impl->touchpadFingerData(touchpad_index);
+    return impl->touchpadFingerData(touchpadIndex);
 }
 
 Maybe<GamepadType> Gamepad::type() const
@@ -117,10 +117,13 @@ bool Gamepad::setLedColor(const Color& color)
     return impl->setLedColor(color);
 }
 
-bool Gamepad::startRumble(float left_motor_intensity, float right_motor_intensity, float duration)
+bool Gamepad::startRumble(
+    const float leftMotorIntensity,
+    const float rightMotorIntensity,
+    const float duration)
 {
     PollyDeclareThisImpl;
-    return impl->startRumble(left_motor_intensity, right_motor_intensity, duration);
+    return impl->startRumble(leftMotorIntensity, rightMotorIntensity, duration);
 }
 
 bool Gamepad::hasSensor(GamepadSensorType sensor) const

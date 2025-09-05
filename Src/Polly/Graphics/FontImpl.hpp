@@ -179,8 +179,11 @@ class Font::Impl final : public Object,
 
             if (not isLast)
             {
-                const auto kern =
-                    stbtt_GetCodepointKernAdvance(&_fontInfo, int(codepoint), int(nextCodepoint));
+                const auto kern = stbtt_GetCodepointKernAdvance(
+                    &_fontInfo,
+                    static_cast<int>(codepoint),
+                    static_cast<int>(nextCodepoint));
+
                 penX += static_cast<float>(kern) * scale;
             }
 

@@ -73,7 +73,7 @@ const Type* Decl::type() const
     return _type;
 }
 
-ShaderTypeDecl::ShaderTypeDecl(const SourceLocation& location, StringView id)
+ShaderTypeDecl::ShaderTypeDecl(const SourceLocation& location, const StringView id)
     : Decl(location, "#type")
     , _id(id)
 {
@@ -134,7 +134,7 @@ void ForLoopVariableDecl::onVerify([[maybe_unused]] SemaContext& context, Scope&
 
 FunctionDecl::FunctionDecl(
     const SourceLocation& location,
-    StringView            name,
+    const StringView      name,
     param_list            parameters,
     const Type*           returnType,
     UniquePtr<CodeBlock>  body)

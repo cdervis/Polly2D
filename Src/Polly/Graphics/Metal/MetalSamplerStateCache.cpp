@@ -22,11 +22,11 @@ MTL::SamplerState* MetalSamplerStateCache::operator[](const Sampler& state)
 {
     const auto it = findWhere(_list, [&state](const auto& p) { return p.first == state; });
 
-    MTL::SamplerState* mtl_sampler_state = nullptr;
+    MTL::SamplerState* mtlSamplerState = nullptr;
 
     if (it)
     {
-        mtl_sampler_state = it->second.get();
+        mtlSamplerState = it->second.get();
     }
     else
     {
@@ -54,8 +54,8 @@ MTL::SamplerState* MetalSamplerStateCache::operator[](const Sampler& state)
                 break;
         }
 
-        desc->setSAddressMode(*convert_to_mtl(state.addressU));
-        desc->setTAddressMode(*convert_to_mtl(state.addressV));
+        desc->setSAddressMode(*convertToMtl(state.addressU));
+        desc->setTAddressMode(*convertToMtl(state.addressV));
 
 #if TARGET_OS_OSX
         desc->setBorderColor(
@@ -77,13 +77,13 @@ MTL::SamplerState* MetalSamplerStateCache::operator[](const Sampler& state)
 
         desc->setMaxAnisotropy(1);
 
-        mtl_sampler_state = _device.mtlDevice()->newSamplerState(desc);
+        mtlSamplerState = _device.mtlDevice()->newSamplerState(desc);
 
-        _list.emplace(state, NS::TransferPtr(mtl_sampler_state));
+        _list.emplace(state, NS::TransferPtr(mtlSamplerState));
     }
 
-    assume(mtl_sampler_state);
+    assume(mtlSamplerState);
 
-    return mtl_sampler_state;
+    return mtlSamplerState;
 }
 } // namespace Polly

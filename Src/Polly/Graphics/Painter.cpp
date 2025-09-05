@@ -33,7 +33,7 @@ Image Painter::currentCanvas() const
     return impl->currentCanvas();
 }
 
-void Painter::setCanvas(Image canvas, Maybe<Color> clearColor)
+void Painter::setCanvas(Image& canvas, Maybe<Color> clearColor)
 {
     if (canvas and not canvas.isCanvas())
     {

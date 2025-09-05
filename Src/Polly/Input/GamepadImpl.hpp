@@ -44,13 +44,13 @@ class Gamepad::Impl final : public Object
 
     u32 touchpadCount() const;
 
-    List<GamepadTouchpadFingerData> touchpadFingerData(u32 touchpad_index) const;
+    List<GamepadTouchpadFingerData> touchpadFingerData(u32 touchpadIndex) const;
 
     Maybe<GamepadType> type() const;
 
     bool setLedColor(const Color& color);
 
-    bool startRumble(float left_motor_intensity, float right_motor_intensity, float duration);
+    bool startRumble(float leftMotorIntensity, float rightMotorIntensity, float duration);
 
     bool hasSensor(GamepadSensorType sensor) const;
 

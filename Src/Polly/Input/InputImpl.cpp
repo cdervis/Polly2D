@@ -11,14 +11,14 @@
 
 namespace Polly
 {
-static InputImpl* s_input_impl_instance;
+static InputImpl* sInputImplInstance;
 
 int InputImpl::toSDLScancode(Scancode scancode)
 {
     return static_cast<int>(scancode);
 }
 
-int InputImpl::toSDLKey(Key key)
+int InputImpl::toSDLKey(const Key key)
 {
     switch (key)
     {
@@ -593,66 +593,66 @@ InputImpl::InputImpl()
 
 void InputImpl::createInstance()
 {
-    assume(not s_input_impl_instance);
-    s_input_impl_instance = new InputImpl();
+    assume(not sInputImplInstance);
+    sInputImplInstance = new InputImpl();
 }
 
 void InputImpl::destroyInstance()
 {
-    assume(s_input_impl_instance);
-    delete s_input_impl_instance;
+    assume(sInputImplInstance);
+    delete sInputImplInstance;
 }
 
 InputImpl& InputImpl::instance()
 {
-    assume(s_input_impl_instance);
-    return *s_input_impl_instance;
+    assume(sInputImplInstance);
+    return *sInputImplInstance;
 }
 
-static u32 to_array_index(Scancode scancode)
+static u32 toArrayIndex(Scancode scancode)
 {
     return static_cast<u32>(scancode);
 }
 
-static u32 to_array_index(MouseButton button)
+static u32 toArrayIndex(MouseButton button)
 {
     return static_cast<u32>(static_cast<int>(button) - 1);
 }
 
 bool InputImpl::isKeyDown(const Scancode scancode) const
 {
-    return _keyStates[to_array_index(scancode)] == 1;
+    return _keyStates[toArrayIndex(scancode)] == 1;
 }
 
 bool InputImpl::wasKeyJustPressed(const Scancode scancode) const
 {
-    const auto idx = to_array_index(scancode);
+    const auto idx = toArrayIndex(scancode);
 
     return _previousKeyStates[idx] == 0 and _keyStates[idx] == 1;
 }
 
 bool InputImpl::wasKeyJustReleased(const Scancode scancode) const
 {
-    const auto idx = to_array_index(scancode);
+    const auto idx = toArrayIndex(scancode);
 
     return _previousKeyStates[idx] == 1 and _keyStates[idx] == 0;
 }
 
 bool InputImpl::isMouseButtonDown(const MouseButton button) const
 {
-    return _mouseButtonStates[to_array_index(button)] == 1;
+    return _mouseButtonStates[toArrayIndex(button)] == 1;
 }
 
 bool InputImpl::wasMouseButtonJustPressed(const MouseButton button) const
 {
-    const auto idx = to_array_index(button);
+    const auto idx = toArrayIndex(button);
 
     return _previousMouseButtonStates[idx] == 0 and _mouseButtonStates[idx] == 1;
 }
 
 bool InputImpl::wasMouseButtonJustReleased(const MouseButton button) const
 {
-    const auto idx = to_array_index(button);
+    const auto idx = toArrayIndex(button);
 
     return _previousMouseButtonStates[idx] == 1 and _mouseButtonStates[idx] == 0;
 }
@@ -661,18 +661,18 @@ void InputImpl::update()
 {
     // Key states
     {
-        auto        num_keys            = 0;
-        const auto* sdl_key_states      = SDL_GetKeyboardState(&num_keys);
-        const auto  sdl_key_states_span = Span(sdl_key_states, num_keys);
+        auto        numKeys          = 0;
+        const auto* sdlKeyStates     = SDL_GetKeyboardState(&numKeys);
+        const auto  sdlKeyStatesSpan = Span(sdlKeyStates, numKeys);
 
         _previousKeyStates = _keyStates;
 
         for (u32 i = 0; i < _keyStates.size(); ++i)
         {
             const auto scancode     = static_cast<Scancode>(i);
-            const auto sdl_scancode = toSDLScancode(scancode);
+            const auto sdlScancode = toSDLScancode(scancode);
 
-            _keyStates[i] = sdl_key_states_span[sdl_scancode] ? 1 : 0;
+            _keyStates[i] = sdlKeyStatesSpan[sdlScancode] ? 1 : 0;
         }
     }
 
@@ -686,8 +686,8 @@ void InputImpl::update()
         {
             const auto idx = static_cast<int>(button) - 1;
             assume(idx >= 0);
-            const auto is_down      = (bits bitand SDL_BUTTON_MASK(sdlButton)) != 0u;
-            _mouseButtonStates[idx] = is_down ? 1 : 0;
+            const auto isDown       = (bits bitand SDL_BUTTON_MASK(sdlButton)) != 0u;
+            _mouseButtonStates[idx] = isDown ? 1 : 0;
         };
 
         setButtonState(MouseButton::Left, SDL_BUTTON_LEFT);

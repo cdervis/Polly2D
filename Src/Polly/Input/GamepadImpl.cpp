@@ -169,10 +169,10 @@ u32 Gamepad::Impl::touchpadCount() const
     return SDL_GetNumGamepadTouchpads(_sdlGamepad);
 }
 
-List<GamepadTouchpadFingerData> Gamepad::Impl::touchpadFingerData(u32 touchpad_index) const
+List<GamepadTouchpadFingerData> Gamepad::Impl::touchpadFingerData(const u32 touchpadIndex) const
 {
-    const auto sdl_touchpad_index = static_cast<int>(touchpad_index);
-    const auto count              = SDL_GetNumGamepadTouchpadFingers(_sdlGamepad, sdl_touchpad_index);
+    const auto sdlTouchpadIndex = static_cast<int>(touchpadIndex);
+    const auto count            = SDL_GetNumGamepadTouchpadFingers(_sdlGamepad, sdlTouchpadIndex);
 
     auto result = List<GamepadTouchpadFingerData>();
     result.resize(count);
@@ -184,7 +184,7 @@ List<GamepadTouchpadFingerData> Gamepad::Impl::touchpadFingerData(u32 touchpad_i
         auto y        = 0.0f;
         auto pressure = 0.0f;
 
-        if (SDL_GetGamepadTouchpadFinger(_sdlGamepad, sdl_touchpad_index, i, &state, &x, &y, &pressure))
+        if (SDL_GetGamepadTouchpadFinger(_sdlGamepad, sdlTouchpadIndex, i, &state, &x, &y, &pressure))
         {
             result[i] = {
                 .index    = static_cast<u32>(i),
@@ -197,7 +197,7 @@ List<GamepadTouchpadFingerData> Gamepad::Impl::touchpadFingerData(u32 touchpad_i
     return result;
 }
 
-static Maybe<GamepadType> from_sdl_gamepad_type(SDL_GamepadType type)
+static Maybe<GamepadType> fromSdlGamepadType(const SDL_GamepadType type)
 {
     switch (type)
     {
@@ -219,9 +219,9 @@ static Maybe<GamepadType> from_sdl_gamepad_type(SDL_GamepadType type)
 
 Maybe<GamepadType> Gamepad::Impl::type() const
 {
-    const auto sdl_gamepad_type = SDL_GetGamepadType(_sdlGamepad);
+    const auto sdlGamepadType = SDL_GetGamepadType(_sdlGamepad);
 
-    return from_sdl_gamepad_type(sdl_gamepad_type);
+    return fromSdlGamepadType(sdlGamepadType);
 }
 
 bool Gamepad::Impl::setLedColor(const Color& color)
@@ -240,12 +240,12 @@ bool Gamepad::Impl::setLedColor(const Color& color)
 
 bool Gamepad::Impl::startRumble(float leftMotorIntensity, float rightMotorIntensity, float duration)
 {
-    const auto normalized_left_motor_intensity =
+    const auto normalizedLeftMotorIntensity =
         isZero(leftMotorIntensity)
             ? static_cast<Uint16>(0)
             : static_cast<Uint16>(clamp(leftMotorIntensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
 
-    const auto normalized_right_motor_intensity =
+    const auto normalizedRightMotorIntensity =
         isZero(rightMotorIntensity)
             ? static_cast<Uint16>(0)
             : static_cast<Uint16>(clamp(rightMotorIntensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
@@ -254,8 +254,8 @@ bool Gamepad::Impl::startRumble(float leftMotorIntensity, float rightMotorIntens
     {
         const auto success = SDL_RumbleGamepad(
             _sdlGamepad,
-            normalized_left_motor_intensity,
-            normalized_right_motor_intensity,
+            normalizedLeftMotorIntensity,
+            normalizedRightMotorIntensity,
             static_cast<Uint32>(static_cast<double>(duration) * 1000));
 
         return success == 0; // NOLINT
@@ -264,7 +264,7 @@ bool Gamepad::Impl::startRumble(float leftMotorIntensity, float rightMotorIntens
     return false;
 }
 
-bool Gamepad::Impl::hasSensor(GamepadSensorType sensor) const
+bool Gamepad::Impl::hasSensor(const GamepadSensorType sensor) const
 {
     if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
@@ -274,7 +274,7 @@ bool Gamepad::Impl::hasSensor(GamepadSensorType sensor) const
     return false;
 }
 
-bool Gamepad::Impl::isSensorEnabled(GamepadSensorType sensor) const
+bool Gamepad::Impl::isSensorEnabled(const GamepadSensorType sensor) const
 {
     if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
@@ -284,7 +284,7 @@ bool Gamepad::Impl::isSensorEnabled(GamepadSensorType sensor) const
     return false;
 }
 
-void Gamepad::Impl::setSensorEnabled(GamepadSensorType sensor, bool enabled)
+void Gamepad::Impl::setSensorEnabled(const GamepadSensorType sensor, const bool enabled)
 {
     if (const auto sdl = toSDLGamepadSensorType(sensor))
     {

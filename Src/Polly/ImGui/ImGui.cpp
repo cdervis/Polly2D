@@ -140,17 +140,13 @@ void ImGui::endWindow()
 }
 
 void ImGui::beginChildWindow(
-    StringView      id,
-    Maybe<Vec2>     size,
-    ImGuiChildOpts  child_flags,
-    ImGuiWindowOpts window_flags)
+    const StringView      id,
+    const Maybe<Vec2>     size,
+    const ImGuiChildOpts  childFlags,
+    const ImGuiWindowOpts windowFlags)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::BeginChild(
-        id.data(),
-        convert(size.valueOr(Vec2())),
-        convert(child_flags),
-        convert(window_flags));
+    ::ImGui::BeginChild(id.data(), convert(size.valueOr(Vec2())), convert(childFlags), convert(windowFlags));
 }
 
 void ImGui::endChildWindow()
@@ -255,10 +251,10 @@ void ImGui::separator()
     ::ImGui::Separator();
 }
 
-void ImGui::sameLine(float offset_from_start_x, float spacing)
+void ImGui::sameLine(float offsetFromStartX, float spacing)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::SameLine(offset_from_start_x, spacing);
+    ::ImGui::SameLine(offsetFromStartX, spacing);
 }
 
 void ImGui::newLine()
@@ -279,16 +275,16 @@ void ImGui::dummy(Vec2 size)
     ::ImGui::Dummy(convert(size));
 }
 
-void ImGui::indent(float indent_w)
+void ImGui::indent(float indentW)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::Indent(indent_w);
+    ::ImGui::Indent(indentW);
 }
 
-void ImGui::unindent(float indent_w)
+void ImGui::unindent(float indentW)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::Unindent(indent_w);
+    ::ImGui::Unindent(indentW);
 }
 
 void ImGui::beginGroup()
@@ -342,7 +338,7 @@ void ImGui::textUnformatted(StringView text)
 void ImGui::text(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::TextV(fmt.data(), args);
     va_end(args);
@@ -351,7 +347,7 @@ void ImGui::text(StringView fmt, ...)
 void ImGui::textColored(Color color, StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::TextColoredV(convert(color), fmt.data(), args);
     va_end(args);
@@ -360,7 +356,7 @@ void ImGui::textColored(Color color, StringView fmt, ...)
 void ImGui::textDisabled(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::TextDisabledV(fmt.data(), args);
     va_end(args);
@@ -369,7 +365,7 @@ void ImGui::textDisabled(StringView fmt, ...)
 void ImGui::textWrapped(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::TextWrappedV(fmt.data(), args);
     va_end(args);
@@ -378,7 +374,7 @@ void ImGui::textWrapped(StringView fmt, ...)
 void ImGui::labelText(StringView label, StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::LabelTextV(label.data(), fmt.data(), args);
     va_end(args);
@@ -387,7 +383,7 @@ void ImGui::labelText(StringView label, StringView fmt, ...)
 void ImGui::bulletText(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::BulletTextV(fmt.data(), args);
     va_end(args);
@@ -399,52 +395,52 @@ void ImGui::separatorWithText(StringView label)
     ::ImGui::SeparatorText(label.data());
 }
 
-auto ImGui::button(StringView label, Maybe<Vec2> size) -> bool
+bool ImGui::button(StringView label, Maybe<Vec2> size)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::Button(label.data(), convert(size.valueOr(Vec2())));
 }
 
-auto ImGui::smallButton(StringView label) -> bool
+bool ImGui::smallButton(StringView label)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::SmallButton(label.data());
 }
 
-auto ImGui::invisibleButton(StringView id, Vec2 size, ImGuiButtonOpts flags) -> bool
+bool ImGui::invisibleButton(StringView id, Vec2 size, ImGuiButtonOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InvisibleButton(id.data(), convert(size), convert(flags));
 }
 
-auto ImGui::arrowButton(StringView id, Direction direction) -> bool
+bool ImGui::arrowButton(StringView id, Direction direction)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::ArrowButton(id.data(), convert(direction));
 }
 
-bool ImGui::checkbox(StringView label, bool& is_checked)
+bool ImGui::checkbox(StringView label, bool& isChecked)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::Checkbox(label.data(), &is_checked);
+    return ::ImGui::Checkbox(label.data(), &isChecked);
 }
 
-auto ImGui::checkboxFlags(StringView label, int& flags, int flags_value) -> bool
+bool ImGui::checkboxFlags(StringView label, int& flags, int flagsValue)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::CheckboxFlags(label.data(), &flags, flags_value);
+    return ::ImGui::CheckboxFlags(label.data(), &flags, flagsValue);
 }
 
-auto ImGui::radioButton(StringView label, bool isActive) -> bool
+bool ImGui::radioButton(StringView label, bool isActive)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::RadioButton(label.data(), isActive);
 }
 
-bool ImGui::radioButton(StringView label, int& value, int value_button)
+bool ImGui::radioButton(StringView label, int& value, int valueButton)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::RadioButton(label.data(), &value, value_button);
+    return ::ImGui::RadioButton(label.data(), &value, valueButton);
 }
 
 void ImGui::progressBar(float fraction, Maybe<Vec2> size, StringView overlay)
@@ -459,7 +455,7 @@ void ImGui::bullet()
     ::ImGui::Bullet();
 }
 
-auto ImGui::textLink(StringView label) -> bool
+bool ImGui::textLink(StringView label)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::TextLink(label.data());
@@ -473,10 +469,10 @@ void ImGui::textLinkOpenUrl(StringView label, StringView url)
 
 void ImGui::image(
     [[maybe_unused]] Image image,
-    [[maybe_unused]] Vec2  image_size,
+    [[maybe_unused]] Vec2  imageSize,
     [[maybe_unused]] Vec2  uv0,
     [[maybe_unused]] Vec2  uv1,
-    [[maybe_unused]] Color tint_color,
+    [[maybe_unused]] Color tintColor,
     [[maybe_unused]] Color borderColor)
 {
     notImplemented();
@@ -485,19 +481,19 @@ void ImGui::image(
 void ImGui::imageButton(
     [[maybe_unused]] StringView id,
     [[maybe_unused]] Image      image,
-    [[maybe_unused]] Vec2       image_size,
+    [[maybe_unused]] Vec2       imageSize,
     [[maybe_unused]] Vec2       uv0,
     [[maybe_unused]] Vec2       uv1,
-    [[maybe_unused]] Color      background_color,
+    [[maybe_unused]] Color      backgroundColor,
     [[maybe_unused]] Color      borderColor)
 {
     notImplemented();
 }
 
-auto ImGui::beginCombo(StringView label, StringView preview_value, ImGuiComboOpts flags) -> bool
+bool ImGui::beginCombo(StringView label, StringView previewValue, ImGuiComboOpts flags)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::BeginCombo(label.data(), preview_value.data(), convert(flags));
+    return ::ImGui::BeginCombo(label.data(), previewValue.data(), convert(flags));
 }
 
 void ImGui::endCombo()
@@ -506,15 +502,15 @@ void ImGui::endCombo()
     ::ImGui::EndCombo();
 }
 
-auto ImGui::combo(
+bool ImGui::combo(
     StringView       label,
-    int&             current_item,
+    int&             currentItem,
     Span<StringView> items,
-    Maybe<u32>       popup_max_height_in_items) -> bool
+    Maybe<u32>       popupMaxHeightInItems)
 {
     PollyDeclareThisImpl;
 
-    const auto height = popup_max_height_in_items.valueOr(-1);
+    const auto height = popupMaxHeightInItems.valueOr(-1);
 
     auto stringPtrList = Impl::StringPtrList();
     stringPtrList.ptrs.reserve(items.size());
@@ -529,10 +525,10 @@ auto ImGui::combo(
 
     return ::ImGui::Combo(
         label.data(),
-        &current_item,
+        &currentItem,
         impl->tmpStringPtrLists.last().ptrs.data(),
         static_cast<int>(items.size()),
-        height);
+        static_cast<int>(height));
 }
 
 bool ImGui::drag(
@@ -587,14 +583,14 @@ bool ImGui::drag(
     return ::ImGui::DragFloat4(label.data(), &value.x, speed, min, max, format.data(), convert(flags));
 }
 
-auto ImGui::drag(
+bool ImGui::drag(
     StringView      label,
     int&            value,
     float           speed,
     int             min,
     int             max,
     StringView      format,
-    ImGuiSliderOpts flags) const -> bool
+    ImGuiSliderOpts flags) const
 {
     PollyVerifyHaveImpl;
     return ::ImGui::DragInt(label.data(), &value, speed, min, max, format.data(), convert(flags));
@@ -687,13 +683,13 @@ bool ImGui::slider(
     return ::ImGui::SliderFloat4(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
-auto ImGui::sliderAngle(
+bool ImGui::sliderAngle(
     StringView      label,
     Degrees&        value,
     Degrees         min,
     Degrees         max,
     StringView      format,
-    ImGuiSliderOpts flags) -> bool
+    ImGuiSliderOpts flags)
 {
     PollyVerifyHaveImpl;
 
@@ -706,29 +702,25 @@ auto ImGui::sliderAngle(
         convert(flags));
 }
 
-auto ImGui::slider(StringView label, int& value, int min, int max, StringView format, ImGuiSliderOpts flags)
-    -> bool
+bool ImGui::slider(StringView label, int& value, int min, int max, StringView format, ImGuiSliderOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::SliderInt(label.data(), &value, min, max, format.data(), convert(flags));
 }
 
-auto ImGui::slider(StringView label, Vec2i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
-    -> bool
+bool ImGui::slider(StringView label, Vec2i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::SliderInt2(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
-auto ImGui::slider(StringView label, Vec3i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
-    -> bool
+bool ImGui::slider(StringView label, Vec3i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::SliderInt3(label.data(), &value.x, min, max, format.data(), convert(flags));
 }
 
-auto ImGui::slider(StringView label, Vec4i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
-    -> bool
+bool ImGui::slider(StringView label, Vec4i& value, int min, int max, StringView format, ImGuiSliderOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::SliderInt4(label.data(), &value.x, min, max, format.data(), convert(flags));
@@ -794,12 +786,12 @@ bool ImGui::input(
     StringView            label,
     float&                value,
     float                 step,
-    float                 step_fast,
+    float                 stepFast,
     StringView            format,
     imgui_input_text_opts flags)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::InputFloat(label.data(), &value, step, step_fast, format.data(), convert(flags));
+    return ::ImGui::InputFloat(label.data(), &value, step, stepFast, format.data(), convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec2& value, StringView format, imgui_input_text_opts flags)
@@ -820,10 +812,10 @@ bool ImGui::input(StringView label, Vec4& value, StringView format, imgui_input_
     return ::ImGui::InputFloat4(label.data(), &value.x, format.data(), convert(flags));
 }
 
-bool ImGui::input(StringView label, int& value, int step, int step_fast, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, int& value, int step, int stepFast, imgui_input_text_opts flags)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::InputInt(label.data(), &value, step, step_fast, convert(flags));
+    return ::ImGui::InputInt(label.data(), &value, step, stepFast, convert(flags));
 }
 
 bool ImGui::input(StringView label, Vec2i& value, imgui_input_text_opts flags)
@@ -884,7 +876,7 @@ bool ImGui::treeNode(StringView id, StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
 
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     const auto result = ::ImGui::TreeNodeV(id.data(), fmt.data(), args);
     va_end(args);
@@ -896,7 +888,7 @@ bool ImGui::treeNodeEx(StringView id, ImGuiTreeNodeOpts flags, StringView fmt, .
 {
     PollyVerifyHaveImpl;
 
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     const auto result = ::ImGui::TreeNodeExV(id.data(), convert(flags), fmt.data(), args);
     va_end(args);
@@ -934,26 +926,26 @@ bool ImGui::collapsingHeader(StringView label, bool& isVisible, ImGuiTreeNodeOpt
     return ::ImGui::CollapsingHeader(label.data(), &isVisible, convert(flags));
 }
 
-void ImGui::setNextItemOpen(bool is_open, ImGuiCondition cond)
+void ImGui::setNextItemOpen(bool isOpen, ImGuiCondition cond)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::SetNextItemOpen(is_open, convert(cond));
+    ::ImGui::SetNextItemOpen(isOpen, convert(cond));
 }
 
-bool ImGui::selectable(StringView label, bool is_selected, ImGuiSelectableOpts flags, Maybe<Vec2> size)
+bool ImGui::selectable(StringView label, bool isSelected, ImGuiSelectableOpts flags, Maybe<Vec2> size)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::Selectable(label.data(), is_selected, convert(flags), convert(size.valueOr(Vec2())));
+    return ::ImGui::Selectable(label.data(), isSelected, convert(flags), convert(size.valueOr(Vec2())));
 }
 
 bool ImGui::selectableWithBinding(
     StringView          label,
-    bool&               is_selected,
+    bool&               isSelected,
     ImGuiSelectableOpts flags,
     Maybe<Vec2>         size)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::Selectable(label.data(), &is_selected, convert(flags), convert(size.valueOr(Vec2())));
+    return ::ImGui::Selectable(label.data(), &isSelected, convert(flags), convert(size.valueOr(Vec2())));
 }
 
 bool ImGui::beginListBox(StringView label, Maybe<Vec2> size)
@@ -968,11 +960,11 @@ void ImGui::endListBox()
     ::ImGui::EndListBox();
 }
 
-bool ImGui::listBox(StringView label, int& current_item, Span<StringView> items, Maybe<u32> height_in_items)
+bool ImGui::listBox(StringView label, int& currentItem, Span<StringView> items, Maybe<u32> heightInItems)
 {
     PollyDeclareThisImpl;
 
-    const auto height = height_in_items.valueOr(-1);
+    const auto height = heightInItems.valueOr(-1);
 
     auto stringPtrList = Impl::StringPtrList();
     stringPtrList.ptrs.reserve(items.size());
@@ -987,10 +979,10 @@ bool ImGui::listBox(StringView label, int& current_item, Span<StringView> items,
 
     return ::ImGui::ListBox(
         label.data(),
-        &current_item,
+        &currentItem,
         impl->tmpStringPtrLists.last().ptrs.data(),
         static_cast<int>(items.size()),
-        height);
+        static_cast<int>(height));
 }
 
 void ImGui::value(StringView prefix, bool value)
@@ -1011,10 +1003,10 @@ void ImGui::value(StringView prefix, unsigned int value)
     ::ImGui::Value(prefix.data(), value);
 }
 
-void ImGui::value(StringView prefix, float value, StringView float_format)
+void ImGui::value(StringView prefix, float value, StringView floatFormat)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::Value(prefix.data(), value, float_format.data());
+    ::ImGui::Value(prefix.data(), value, floatFormat.data());
 }
 
 bool ImGui::beginMenuBar()
@@ -1041,13 +1033,13 @@ void ImGui::endMainMenuBar()
     ::ImGui::EndMainMenuBar();
 }
 
-auto ImGui::beginMenu(StringView label, bool enabled) -> bool
+bool ImGui::beginMenu(StringView label, bool enabled)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::BeginMenu(label.data(), enabled);
 }
 
-auto ImGui::endMenu() -> void
+void ImGui::endMenu()
 {
     PollyVerifyHaveImpl;
     ::ImGui::EndMenu();
@@ -1059,13 +1051,13 @@ bool ImGui::menuItem(StringView label, StringView shortcut, bool selected, bool 
     return ::ImGui::MenuItem(label.data(), shortcut.data(), selected, enabled);
 }
 
-bool ImGui::menuItemWithBinding(StringView label, StringView shortcut, bool& is_selected, bool enabled)
+bool ImGui::menuItemWithBinding(StringView label, StringView shortcut, bool& isSelected, bool enabled)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::MenuItem(label.data(), shortcut.data(), &is_selected, enabled);
+    return ::ImGui::MenuItem(label.data(), shortcut.data(), &isSelected, enabled);
 }
 
-auto ImGui::beginTooltip() -> bool
+bool ImGui::beginTooltip()
 {
     PollyVerifyHaveImpl;
     return ::ImGui::BeginTooltip();
@@ -1074,20 +1066,20 @@ auto ImGui::beginTooltip() -> bool
 void ImGui::endTooltip()
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::EndTooltip();
+    ::ImGui::EndTooltip();
 }
 
 void ImGui::setTooltip(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
 
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::SetTooltipV(fmt.data(), args);
     va_end(args);
 }
 
-auto ImGui::beginItemTooltip() -> bool
+bool ImGui::beginItemTooltip()
 {
     PollyVerifyHaveImpl;
     return ::ImGui::BeginItemTooltip();
@@ -1097,22 +1089,22 @@ void ImGui::setItemTooltip(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
 
-    va_list args;
+    auto args = va_list();
     va_start(args, fmt);
     ::ImGui::SetItemTooltipV(fmt.data(), args);
     va_end(args);
 }
 
-auto ImGui::beginPopup(StringView id, ImGuiWindowOpts flags) -> bool
+bool ImGui::beginPopup(StringView id, ImGuiWindowOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::BeginPopup(id.data(), convert(flags));
 }
 
-auto ImGui::beginPopupModal(StringView name, bool& is_open, ImGuiWindowOpts flags) -> bool
+bool ImGui::beginPopupModal(StringView name, bool& isOpen, ImGuiWindowOpts flags)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::BeginPopupModal(name.data(), &is_open, convert(flags));
+    return ::ImGui::BeginPopupModal(name.data(), &isOpen, convert(flags));
 }
 
 void ImGui::endPopup()
@@ -1139,45 +1131,45 @@ void ImGui::closeCurrentPopup()
     ::ImGui::CloseCurrentPopup();
 }
 
-auto ImGui::beginPopupContextItem(StringView id, ImGuiPopupOpts flags) -> bool
+bool ImGui::beginPopupContextItem(StringView id, ImGuiPopupOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::BeginPopupContextItem(id.data(), convert(flags));
 }
 
-auto ImGui::beginPopupContextWindow(StringView id, ImGuiPopupOpts flags) -> bool
+bool ImGui::beginPopupContextWindow(StringView id, ImGuiPopupOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::BeginPopupContextWindow(id.data(), convert(flags));
 }
 
-auto ImGui::beginPopupContextVoid(StringView id, ImGuiPopupOpts flags) -> bool
+bool ImGui::beginPopupContextVoid(StringView id, ImGuiPopupOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::BeginPopupContextVoid(id.data(), convert(flags));
 }
 
-auto ImGui::isPopupOpen(StringView id, ImGuiPopupOpts flags) const -> bool
+bool ImGui::isPopupOpen(StringView id, ImGuiPopupOpts flags) const
 {
     PollyVerifyHaveImpl;
     return ::ImGui::IsPopupOpen(id.data(), convert(flags));
 }
 
-auto ImGui::beginTable(
+bool ImGui::beginTable(
     StringView     id,
     u32            columns,
     ImGuiTableOpts flags,
-    Maybe<Vec2>    outer_size,
-    Maybe<float>   inner_width) -> bool
+    Maybe<Vec2>    outerSize,
+    Maybe<float>   innerWidth)
 {
     PollyVerifyHaveImpl;
 
     return ::ImGui::BeginTable(
         id.data(),
-        columns,
+        static_cast<int>(columns),
         convert(flags),
-        convert(outer_size.valueOr(Vec2())),
-        inner_width.valueOr(0.0f));
+        convert(outerSize.valueOr(Vec2())),
+        innerWidth.valueOr(0.0f));
 }
 
 void ImGui::endTable()
@@ -1186,19 +1178,19 @@ void ImGui::endTable()
     ::ImGui::EndTable();
 }
 
-void ImGui::tableNextRow(ImGuiTableRowOpts flags, Maybe<float> min_row_height)
+void ImGui::tableNextRow(ImGuiTableRowOpts flags, Maybe<float> minRowHeight)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::TableNextRow(convert(flags), min_row_height.valueOr(0.0f));
+    ::ImGui::TableNextRow(convert(flags), minRowHeight.valueOr(0.0f));
 }
 
-auto ImGui::tableNextColumn() -> bool
+bool ImGui::tableNextColumn()
 {
     PollyVerifyHaveImpl;
     return ::ImGui::TableNextColumn();
 }
 
-auto ImGui::tableSetColumnIndex(int column) -> bool
+bool ImGui::tableSetColumnIndex(int column)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::TableSetColumnIndex(column);
@@ -1213,7 +1205,7 @@ void ImGui::tableSetupColumn(StringView label, ImGuiTableColumnOpts flags)
 void ImGui::tableSetupScrollFreeze(u32 cols, u32 rows)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::TableSetupScrollFreeze(cols, rows);
+    ::ImGui::TableSetupScrollFreeze(static_cast<int>(cols), static_cast<int>(rows));
 }
 
 void ImGui::tableHeader(StringView label)
@@ -1234,25 +1226,25 @@ void ImGui::tableAngledHeadersRow()
     ::ImGui::TableAngledHeadersRow();
 }
 
-auto ImGui::tableColumnCount() const -> int
+int ImGui::tableColumnCount() const
 {
     PollyVerifyHaveImpl;
     return ::ImGui::TableGetColumnCount();
 }
 
-auto ImGui::tableColumnIndex() const -> int
+int ImGui::tableColumnIndex() const
 {
     PollyVerifyHaveImpl;
     return ::ImGui::TableGetColumnIndex();
 }
 
-auto ImGui::tableRowIndex() const -> int
+int ImGui::tableRowIndex() const
 {
     PollyVerifyHaveImpl;
     return ::ImGui::TableGetRowIndex();
 }
 
-auto ImGui::tableColumnName(Maybe<int> column) const -> StringView
+StringView ImGui::tableColumnName(Maybe<int> column) const
 {
     PollyVerifyHaveImpl;
     return ::ImGui::TableGetColumnName(column.valueOr(-1));

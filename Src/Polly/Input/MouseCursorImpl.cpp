@@ -34,7 +34,7 @@ static auto sSDLSystemCursors = Array{
     Pair(MouseCursorType::ResizeNE, sNullSDLCursor),
 };
 
-static SDL_SystemCursor convert_cursor_type(const MouseCursorType type)
+static SDL_SystemCursor convertCursorType(const MouseCursorType type)
 {
     switch (type)
     {
@@ -98,7 +98,7 @@ SDL_Cursor* MouseCursor::Impl::demandCreateSdlCursorForType(MouseCursorType type
 
     if (not sdlCursor)
     {
-        sdlCursor = SDL_CreateSystemCursor(convert_cursor_type(type));
+        sdlCursor = SDL_CreateSystemCursor(convertCursorType(type));
     }
 
     return sdlCursor;

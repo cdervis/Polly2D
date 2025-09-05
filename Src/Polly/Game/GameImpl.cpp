@@ -925,7 +925,7 @@ void Game::Impl::drawOnScreenLogMessages(Painter::Impl& painterImpl)
 
     if (not entries.isEmpty())
     {
-        painterImpl.setBlendState(non_premultiplied);
+        painterImpl.setBlendState(nonPremultiplied);
 
         // TODO: consider window logging position (anchor)
         auto       pos        = Vec2(50, 50);

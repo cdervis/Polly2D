@@ -12,7 +12,7 @@ ParticleColorLerpMod::ParticleColorLerpMod(Color initialColor, Color finalColor)
 {
 }
 
-void ParticleColorLerpMod::modify(float elapsedTime, MutableSpan<Particle> particles)
+void ParticleColorLerpMod::modify([[maybe_unused]] float elapsedTime, MutableSpan<Particle> particles)
 {
     const auto delta = Color(
         finalColor.r - initialColor.r,
@@ -41,7 +41,7 @@ ParticleContainerMod::ParticleContainerMod(
 {
 }
 
-void ParticleContainerMod::modify(float elapsedTime, MutableSpan<Particle> particles)
+void ParticleContainerMod::modify([[maybe_unused]] float elapsedTime, MutableSpan<Particle> particles)
 {
     const auto left   = width * -0.5f;
     const auto right  = width * 0.5f;
@@ -106,7 +106,7 @@ void ParticleLinearGravityMod::modify(float elapsedTime, MutableSpan<Particle> p
         particle.velocity += vector * particle.mass;
 }
 
-void ParticleFastFadeMod::modify(float elapsedTime, MutableSpan<Particle> particles)
+void ParticleFastFadeMod::modify([[maybe_unused]] float elapsedTime, MutableSpan<Particle> particles)
 {
     for (auto& particle : particles)
         particle.color.a = 1.0f - particle.age;
@@ -118,7 +118,7 @@ ParticleOpacityMod::ParticleOpacityMod(float initialOpacity, float finalOpacity)
 {
 }
 
-void ParticleOpacityMod::modify(float elapsedTime, MutableSpan<Particle> particles)
+void ParticleOpacityMod::modify([[maybe_unused]] float elapsedTime, MutableSpan<Particle> particles)
 {
     const auto delta = finalOpacity - initialOpacity;
 
@@ -141,13 +141,13 @@ void ParticleRotationMod::modify(float elapsedTime, MutableSpan<Particle> partic
     }
 }
 
-ParticleScaleLerpMod::ParticleScaleLerpMod(float initialScale, float finalScale)
+ParticleScaleLerpMod::ParticleScaleLerpMod(const float initialScale, const float finalScale)
     : initialScale(initialScale)
     , finalScale(finalScale)
 {
 }
 
-void ParticleScaleLerpMod::modify(float elapsedTime, MutableSpan<Particle> particles)
+void ParticleScaleLerpMod::modify([[maybe_unused]] float elapsedTime, MutableSpan<Particle> particles)
 {
     const auto delta = finalScale - initialScale;
 
@@ -192,14 +192,14 @@ void ParticleVelocityColorMod::modify([[maybe_unused]] float elapsedTime, Mutabl
     }
 }
 
-ParticleVortexMod::ParticleVortexMod(Vec2 position, float mass, float maxSpeed)
+ParticleVortexMod::ParticleVortexMod(const Vec2 position, const float mass, const float maxSpeed)
     : position(position)
     , mass(mass)
     , maxSpeed(maxSpeed)
 {
 }
 
-void ParticleVortexMod::modify(float elapsedTime, MutableSpan<Particle> particles)
+void ParticleVortexMod::modify([[maybe_unused]] float elapsedTime, MutableSpan<Particle> particles)
 {
     for (auto& particle : particles)
     {

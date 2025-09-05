@@ -108,7 +108,11 @@ class Shader::Impl : public GraphicsResource
     }
 
     template<typename T>
-    void updateScalarArrayParameter(StringView name, ShaderParameterType type, Span<T> srcData, u32 offset)
+    void updateScalarArrayParameter(
+        StringView                name,
+        const ShaderParameterType type,
+        Span<T>                   srcData,
+        const u32                 offset)
     {
         const auto* param = findParameter(name);
 

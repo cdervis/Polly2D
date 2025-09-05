@@ -16,7 +16,7 @@ namespace Tessellation2D
 {
 struct alignas(16) PolyVertex
 {
-    constexpr PolyVertex(Vec2 position, Color color)
+    constexpr PolyVertex(const Vec2 position, const Color color)
         : position(position, 0, 1)
         , color(color)
     {

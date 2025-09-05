@@ -812,7 +812,7 @@ void Painter::Impl::resetCurrentStates()
     _currentCanvas          = {};
     _currentTransformation  = {};
     _combinedTransformation = _viewportTransformation;
-    _currentBlendState      = non_premultiplied;
+    _currentBlendState      = nonPremultiplied;
     _currentSampler         = linearClamp;
 
     for (auto& shader : _currentShaders)

@@ -60,7 +60,7 @@ constexpr Array s_spine_asset_entries = {
 };
 
 // Save the display names for the combo box in the GUI.
-constexpr auto extract_display_names()
+constexpr auto extractDisplayNames()
 {
     auto list = Array<StringView, s_spine_asset_entries.size()>();
 
@@ -70,25 +70,25 @@ constexpr auto extract_display_names()
     return list;
 }
 
-constexpr auto s_asset_display_names = extract_display_names();
+constexpr auto sAssetDisplayNames = extractDisplayNames();
 
 SpineDemo::SpineDemo(DemoBrowser* browser)
     : Demo("Spine Demo", browser)
 {
-    switch_to_spine_entry(0);
+    switchToSpineEntry(0);
 }
 
 void SpineDemo::tick(GameTime time)
 {
-    if (distance(_camera.zoom, _target_zoom) > 0.001f)
+    if (distance(_camera.zoom, _targetZoom) > 0.001f)
     {
-        _camera.zoom = lerp(_camera.zoom, _target_zoom, time.elapsed() * 3.0f);
+        _camera.zoom = lerp(_camera.zoom, _targetZoom, time.elapsed() * 3.0f);
     }
 
-    if (_is_animation_playing)
+    if (_isAnimationPlaying)
     {
-        _animation_state.update(time.elapsed());
-        _animation_state.applyTo(_skeleton);
+        _animationState.update(time.elapsed());
+        _animationState.applyTo(_skeleton);
         _skeleton.update(time.elapsed());
         _skeleton.updateWorldTransform();
     }
@@ -96,18 +96,18 @@ void SpineDemo::tick(GameTime time)
 
 void SpineDemo::draw(Painter painter)
 {
-    const auto window        = browser().window();
-    const auto pixel_ratio   = painter.pixelRatio();
-    const auto cam_transform = _camera.transformation(painter.viewSize());
+    const auto window       = browser().window();
+    const auto pixelRatio   = painter.pixelRatio();
+    const auto camTransform = _camera.transformation(painter.viewSize());
 
     // Apply the camera's transformation to the scene.
-    painter.setTransformation(cam_transform);
+    painter.setTransformation(camTransform);
 
     // Draw the entire Spine skeleton instance.
     painter.drawSpineSkeleton(_skeleton);
 
     // Draw some extra information about the skeleton.
-    if (_should_draw_extras)
+    if (_shouldDrawExtras)
     {
         for (const auto& bone : _skeleton.bones())
         {
@@ -124,7 +124,7 @@ void SpineDemo::draw(Painter painter)
         "This demo shows how to load and play Spine sprites.\nVisit https://esotericsoftware.com "
         "for more information.",
         Font::builtin(),
-        16 * pixel_ratio,
+        16 * pixelRatio,
         Vec2(50, 50));
 
     painter.drawStringWithBasicShadow(
@@ -136,50 +136,50 @@ void SpineDemo::draw(Painter painter)
 
 void SpineDemo::doImGui(ImGui imgui)
 {
-    if (imgui.combo("Asset", _current_asset_index, s_asset_display_names))
+    if (imgui.combo("Asset", _currentAssetIndex, sAssetDisplayNames))
     {
-        switch_to_spine_entry(_current_asset_index);
-        _animation_state.setTimeScale(_is_animation_playing ? _playback_speed : 0.0f);
+        switchToSpineEntry(_currentAssetIndex);
+        _animationState.setTimeScale(_isAnimationPlaying ? _playbackSpeed : 0.0f);
     }
 
-    if (const Span animations = _skeleton_data.animations(); animations.size() > 1)
+    if (const Span animations = _skeletonData.animations(); animations.size() > 1)
     {
-        if (imgui.combo("Animation", _current_animation_index, _skeleton_data.animationNames()))
+        if (imgui.combo("Animation", _currentAnimationIndex, _skeletonData.animationNames()))
         {
-            _animation_state.setAnimation(0, animations[_current_animation_index], true);
+            _animationState.setAnimation(0, animations[_currentAnimationIndex], true);
         }
     }
 
-    if (imgui.checkbox("Animate", _is_animation_playing))
+    if (imgui.checkbox("Animate", _isAnimationPlaying))
     {
-        _animation_state.setTimeScale(_is_animation_playing ? _playback_speed : 0.0f);
+        _animationState.setTimeScale(_isAnimationPlaying ? _playbackSpeed : 0.0f);
     }
 
-    if (_is_animation_playing)
+    if (_isAnimationPlaying)
     {
-        bool should_update_anim_state = false;
+        auto shouldUpdateAnimState = false;
 
-        if (imgui.slider("Speed", _playback_speed, 0.1f, 3.0f))
+        if (imgui.slider("Speed", _playbackSpeed, 0.1f, 3.0f))
         {
-            should_update_anim_state = true;
+            shouldUpdateAnimState = true;
         }
 
         if (imgui.button("Reset"))
         {
-            _playback_speed          = 1.0f;
-            should_update_anim_state = true;
+            _playbackSpeed        = 1.0f;
+            shouldUpdateAnimState = true;
         }
 
-        if (should_update_anim_state)
+        if (shouldUpdateAnimState)
         {
-            _animation_state.setTimeScale(_playback_speed);
+            _animationState.setTimeScale(_playbackSpeed);
         }
     }
 
-    imgui.checkbox("Draw Extras", _should_draw_extras);
+    imgui.checkbox("Draw Extras", _shouldDrawExtras);
 }
 
-void SpineDemo::switch_to_spine_entry(u32 index)
+void SpineDemo::switchToSpineEntry(u32 index)
 {
     const auto& entry = s_spine_asset_entries[index];
 
@@ -187,45 +187,45 @@ void SpineDemo::switch_to_spine_entry(u32 index)
     const auto atlas = SpineAtlas(entry.atlas_name);
 
     // Load the Spine skeleton data.
-    _skeleton_data = SpineSkeletonData(entry.skeleton_data_name, atlas, entry.scale);
+    _skeletonData = SpineSkeletonData(entry.skeleton_data_name, atlas, entry.scale);
 
     // Create an animation state buffer from the skeleton data.
-    _animation_state_data = SpineAnimationStateData(_skeleton_data);
-    _animation_state_data.setDefaultMix(0.1f);
+    _animationStateData = SpineAnimationStateData(_skeletonData);
+    _animationStateData.setDefaultMix(0.1f);
 
-    if (_skeleton_data.hasAnimationsNamed(SmallList<StringView>{"jump"_sv, "walk"_sv}))
+    if (_skeletonData.hasAnimationsNamed(SmallList<StringView>{"jump"_sv, "walk"_sv}))
     {
-        _animation_state_data.setMix("jump", "walk", 0.5f);
+        _animationStateData.setMix("jump", "walk", 0.5f);
     }
 
     // Create an instance of the animation state data.
-    _animation_state = SpineAnimationState(_animation_state_data);
+    _animationState = SpineAnimationState(_animationStateData);
 
     // Create a skeleton instance from the skeleton data.
-    _skeleton = SpineSkeleton(_skeleton_data);
+    _skeleton = SpineSkeleton(_skeletonData);
 
     // Hook the animation state to the skeleton.
-    _skeleton.setAnimationState(_animation_state);
+    _skeleton.setAnimationState(_animationState);
 
     // Start playing the default initial animation of the skeleton.
-    _animation_state.setAnimation(0, entry.initial_animation_name, true);
+    _animationState.setAnimation(0, entry.initial_animation_name, true);
 
     _camera.position = _skeleton.bounds().center() + Vec2(250, 0);
 
     // Update some UI properties.
-    _current_animation_index = int(*_skeleton_data.indexOfAnimation(entry.initial_animation_name));
+    _currentAnimationIndex = static_cast<int>(*_skeletonData.indexOfAnimation(entry.initial_animation_name));
 }
 
 void SpineDemo::onMouseWheelScrolled(const MouseWheelEvent& event)
 {
-    _target_zoom = clamp(_target_zoom + (event.delta.y * 0.1f), 0.1f, 1.5f);
+    _targetZoom = clamp(_targetZoom + (event.delta.y * 0.1f), 0.1f, 1.5f);
 }
 
 void SpineDemo::onMouseButtonPressed(MouseButtonEvent event)
 {
     if (event.button == MouseButton::Right)
     {
-        _is_dragging_camera = true;
+        _isDraggingCamera = true;
     }
 }
 
@@ -233,13 +233,13 @@ void SpineDemo::onMouseButtonReleased(const MouseButtonEvent& event)
 {
     if (event.button == MouseButton::Right)
     {
-        _is_dragging_camera = false;
+        _isDraggingCamera = false;
     }
 }
 
 void SpineDemo::onMouseMoved(const MouseMoveEvent& event)
 {
-    if (_is_dragging_camera)
+    if (_isDraggingCamera)
     {
         _camera.position += Vec2(-event.delta.x, event.delta.y);
     }

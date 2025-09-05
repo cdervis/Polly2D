@@ -32,7 +32,7 @@ MTL::Texture* createMtlTexture(
     desc->setDepth(1);
 
     {
-        const auto maybeFormat = convert_to_mtl(format);
+        const auto maybeFormat = convertToMtl(format);
 
         if (not maybeFormat)
         {
