@@ -423,12 +423,10 @@ T&& Any::get() &&
 template<Concepts::SupportedByAny T>
 Maybe<T&> Any::tryGet()
 {
-#ifndef polly_no_hardening
     if (_type == AnyType::None)
     {
-        Details::raiseEmptyAnyError();
+        return none;
     }
-#endif
 
     constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
@@ -438,12 +436,10 @@ Maybe<T&> Any::tryGet()
 template<Concepts::SupportedByAny T>
 Maybe<const T&> Any::tryGet() const
 {
-#ifndef polly_no_hardening
     if (_type == AnyType::None)
     {
-        Details::raiseEmptyAnyError();
+        return none;
     }
-#endif
 
     constexpr auto resultType = Details::AnyTypeMapper<T>::type;
 
