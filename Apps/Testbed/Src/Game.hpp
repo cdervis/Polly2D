@@ -4,9 +4,9 @@
 
 struct Testbed final : Game
 {
-    Image  img    = Image("logo.png");
-    Shader shader = Shader("Grayscale.shd");
-    float saturation = 1.0f;
+    Image  img        = Image("logo.png");
+    Shader shader     = Shader("Grayscale.shd");
+    float  saturation = 1.0f;
 
     List<Sound> sounds = {
         Sound(SfxrSoundPreset::Coin, 218309),

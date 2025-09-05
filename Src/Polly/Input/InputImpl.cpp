@@ -669,7 +669,7 @@ void InputImpl::update()
 
         for (u32 i = 0; i < _keyStates.size(); ++i)
         {
-            const auto scancode     = static_cast<Scancode>(i);
+            const auto scancode    = static_cast<Scancode>(i);
             const auto sdlScancode = toSDLScancode(scancode);
 
             _keyStates[i] = sdlKeyStatesSpan[sdlScancode] ? 1 : 0;

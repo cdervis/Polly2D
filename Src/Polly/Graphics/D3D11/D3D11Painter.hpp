@@ -59,8 +59,10 @@ class D3D11Painter final : public Painter::Impl
     [[nodiscard]]
     int prepareDrawCall() override;
 
-    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectangle imageSizeAndInverse)
-        override;
+    void flushSprites(
+        Span<InternalSprite>  sprites,
+        GamePerformanceStats& stats,
+        Rectangle             imageSizeAndInverse) override;
 
     void flushPolys(
         Span<Tessellation2D::Command> polys,
@@ -157,7 +159,7 @@ class D3D11Painter final : public Painter::Impl
     u32 _meshVertexCounter   = 0;
     u32 _meshIndexCounter    = 0;
 
-    Rectangle         _lastBoundViewport;
+    Rectangle     _lastBoundViewport;
     ID3D11Buffer* _lastBoundIndexBuffer       = nullptr;
     ID3D11Buffer* _lastBoundUserShaderCBuffer = nullptr;
 
@@ -170,7 +172,7 @@ class D3D11Painter final : public Painter::Impl
     Maybe<BlendState>   _lastBoundBlendState;
     ID3D11SamplerState* _lastBoundSamplerState = nullptr;
 
-    Maybe<Rectangle>             _lastAppliedViewportToSystemValues;
+    Maybe<Rectangle>         _lastAppliedViewportToSystemValues;
     D3D11_PRIMITIVE_TOPOLOGY _lastAppliedPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
 
 #ifndef NDEBUG

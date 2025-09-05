@@ -143,8 +143,10 @@ class VulkanPainter final : public Painter::Impl
 
     int prepareDrawCall() override;
 
-    void flushSprites(Span<InternalSprite> sprites, GamePerformanceStats& stats, Rectangle imageSizeAndInverse)
-        override;
+    void flushSprites(
+        Span<InternalSprite>  sprites,
+        GamePerformanceStats& stats,
+        Rectangle             imageSizeAndInverse) override;
 
     void flushPolys(
         Span<Tessellation2D::Command> polys,
@@ -243,10 +245,10 @@ class VulkanPainter final : public Painter::Impl
 
         UniquePtr<VulkanUBOAllocator> uboAllocator;
 
-        VkBuffer lastBoundUserShaderParamsCbuffer = VK_NULL_HANDLE;
-        Rectangle    lastBoundViewport;
-        Rectangle    lastAppliedViewportToSystemValues;
-        VkBuffer lastBoundIndexBuffer = VK_NULL_HANDLE;
+        VkBuffer  lastBoundUserShaderParamsCbuffer = VK_NULL_HANDLE;
+        Rectangle lastBoundViewport;
+        Rectangle lastAppliedViewportToSystemValues;
+        VkBuffer  lastBoundIndexBuffer = VK_NULL_HANDLE;
     };
 
     Array<FrameData, maxFramesInFlight> _frameData;

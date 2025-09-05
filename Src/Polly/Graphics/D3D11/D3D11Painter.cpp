@@ -206,7 +206,9 @@ UniquePtr<Shader::Impl> D3D11Painter::onCreateNativeUserShader(
         ast.filename());
 }
 
-void D3D11Painter::onBeforeCanvasChanged([[maybe_unused]] Image oldCanvas, [[maybe_unused]] Rectangle viewport)
+void D3D11Painter::onBeforeCanvasChanged(
+    [[maybe_unused]] Image     oldCanvas,
+    [[maybe_unused]] Rectangle viewport)
 {
     // Nothing to do.
 }
@@ -549,7 +551,7 @@ int D3D11Painter::prepareDrawCall()
 void D3D11Painter::flushSprites(
     Span<InternalSprite>  sprites,
     GamePerformanceStats& stats,
-    Rectangle                 imageSizeAndInverse)
+    Rectangle             imageSizeAndInverse)
 {
     beginEvent(L"flushSprites");
 
