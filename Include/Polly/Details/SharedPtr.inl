@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Polly/Assume.hpp"
-#include <memory>
+#include <utility>
 
 namespace Polly
 {
