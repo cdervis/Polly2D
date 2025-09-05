@@ -286,7 +286,7 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
     if (not page.atlas)
     {
         logVerbose("  Reallocating page image");
-        page.atlas = Image(page.width, page.height, ImageFormat::R8Unorm, page.atlasData.data());
+        page.atlas = Image(page.width, page.height, ImageFormat::R8Unorm, page.atlasData.data(), false);
 
         const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());
         page.atlas.setDebuggingLabel(imageLabel);
