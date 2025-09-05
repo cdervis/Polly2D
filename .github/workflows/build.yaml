@@ -58,7 +58,11 @@ jobs:
         run: cmake --build ${{env.build-dir}} --parallel
 
       - name: Run Tests
-        run: ctest --test-dir ${{env.build-dir}}/Testing --output-on-failure
+        run: >
+          ctest
+          --test-dir ${{env.build-dir}}/Testing
+          --output-on-failure
+          -C ${{matrix.config}}
 
   build_windows:
     name: Build Windows
