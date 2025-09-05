@@ -57,6 +57,9 @@ jobs:
       - name: Build CMake
         run: cmake --build ${{env.build-dir}} --parallel
 
+      - name: Run Tests
+        run: ctest --test-dir ${{env.build-dir}}/Testing --output-on-failure
+
   build_windows:
     name: Build Windows
     strategy:
@@ -103,6 +106,9 @@ jobs:
 
       - name: Build CMake
         run: cmake --build ${{github.workspace}}/${{env.build-dir}} --parallel --config ${{matrix.config}}
+
+      - name: Run Tests
+        run: ctest --test-dir ${{github.workspace}}/${{env.build-dir}}/Testing --output-on-failure
 
   build_linux:
     name: Build Linux
