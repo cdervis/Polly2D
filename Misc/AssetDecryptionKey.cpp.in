@@ -2,5 +2,5 @@
 
 namespace Polly::Details
 {
-constexpr StringView asset_decryption_key = "${asset_encryption_key}";
+constexpr StringView assetDecryptionKey = "${asset_encryption_key}";
 }

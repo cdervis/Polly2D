@@ -14,11 +14,6 @@
 #include "Polly/Narrow.hpp"
 #include "Polly/String.hpp"
 
-#ifdef POLLY_ENABLE_TESTS
-#include <stb_image.hpp>
-#include <stb_image_write.hpp>
-#endif
-
 #if defined(__APPLE__)
 #include <CoreFoundation/CFBundle.h>
 #include <TargetConditionals.h>
@@ -133,26 +128,26 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
 {
     logVerbose("Loading binary file '{}'", filename);
 
-    auto filename_str = String(Game::Impl::storageBasePath());
-    transformToCleanPath(filename_str, true);
+    auto filenameStr = String(Game::Impl::storageBasePath());
+    transformToCleanPath(filenameStr, true);
 
-    filename_str += filename;
-    transformToCleanPath(filename_str, false);
+    filenameStr += filename;
+    transformToCleanPath(filenameStr, false);
 
 #if TARGET_OS_IPHONE or TARGET_OS_OSX
-    auto*      ifs           = static_cast<SDL_IOStream*>(nullptr);
-    const auto ext           = pathExtension(filename_str);
-    const auto resource_name = pathExtension(filename_str, false);
+    auto*      ifs          = static_cast<SDL_IOStream*>(nullptr);
+    const auto ext          = pathExtension(filenameStr);
+    const auto resourceName = pathExtension(filenameStr, false);
 
-    CFStringRef resource_name_ref{};
-    CFStringRef resource_type_ref{};
-    CFURLRef    asset_url{};
+    auto resourceNameRef = CFStringRef();
+    auto resourceTypeRef = CFStringRef();
+    auto assetUrl        = CFURLRef();
 
     defer
     {
         SDL_CloseIO(ifs);
 
-        const auto cf_release = [](const auto* obj)
+        const auto cfRelease = [](const auto* obj)
         {
             if (obj != nullptr)
             {
@@ -160,34 +155,33 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
             }
         };
 
-        cf_release(resource_type_ref);
-        cf_release(resource_name_ref);
-        cf_release(asset_url);
+        cfRelease(resourceTypeRef);
+        cfRelease(resourceNameRef);
+        cfRelease(assetUrl);
     };
 
-    resource_name_ref =
-        CFStringCreateWithCString(kCFAllocatorDefault, resource_name.cstring(), kCFStringEncodingMacRoman);
+    resourceNameRef =
+        CFStringCreateWithCString(kCFAllocatorDefault, resourceName.cstring(), kCFStringEncodingMacRoman);
 
-    assumeWithMsg(resource_name_ref, "Failed to create resource_name_ref");
+    assumeWithMsg(resourceNameRef, "Failed to create resource_name_ref");
 
-    resource_type_ref =
+    resourceTypeRef =
         CFStringCreateWithCString(kCFAllocatorDefault, ext.cstring(), kCFStringEncodingMacRoman);
 
-    assumeWithMsg(resource_type_ref, "Failed to create resource_type_ref");
+    assumeWithMsg(resourceTypeRef, "Failed to create resource_type_ref");
 
-    asset_url =
-        CFBundleCopyResourceURL(CFBundleGetMainBundle(), resource_name_ref, resource_type_ref, nullptr);
+    assetUrl = CFBundleCopyResourceURL(CFBundleGetMainBundle(), resourceNameRef, resourceTypeRef, nullptr);
 
-    if (asset_url)
+    if (assetUrl)
     {
         auto fullAssetPath = Array<UInt8, 512>();
-        CFURLGetFileSystemRepresentation(asset_url, TRUE, fullAssetPath.data(), sizeof(fullAssetPath));
+        CFURLGetFileSystemRepresentation(assetUrl, TRUE, fullAssetPath.data(), sizeof(fullAssetPath));
 
-        const auto full_asset_path_str = StringView(reinterpret_cast<const char*>(fullAssetPath.data()));
+        const auto fullAssetPathStr = StringView(reinterpret_cast<const char*>(fullAssetPath.data()));
 
-        if (not full_asset_path_str.isEmpty())
+        if (not fullAssetPathStr.isEmpty())
         {
-            ifs = SDL_IOFromFile(full_asset_path_str.data(), "rb");
+            ifs = SDL_IOFromFile(fullAssetPathStr.data(), "rb");
         }
         else
         {
@@ -197,7 +191,7 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
 
     if (not ifs)
     {
-        ifs = SDL_IOFromFile(filename_str.cstring(), "rb");
+        ifs = SDL_IOFromFile(filenameStr.cstring(), "rb");
     }
 
 #elif defined(__ANDROID__)
@@ -218,7 +212,7 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
         ifs = MemoryStream{AAsset_getBuffer(asset_handle), int(AAsset_getLength64(asset_handle))};
     }
 #else
-    auto* ifs = SDL_IOFromFile(filename_str.cstring(), "rb");
+    auto* ifs = SDL_IOFromFile(filenameStr.cstring(), "rb");
 #endif
 
     if (not ifs)
@@ -238,7 +232,7 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
 
 Maybe<String> FileSystem::loadTextFileFromDisk(StringView filename)
 {
-#if defined(__ANDROID__) || TARGET_OS_IPHONE
+#if defined(__ANDROID__) or TARGET_OS_IPHONE
     throw Error("Loading files from disk is not supported on the current system.");
 #else
     auto* ifs = SDL_IOFromFile(String(filename).cstring(), "r");

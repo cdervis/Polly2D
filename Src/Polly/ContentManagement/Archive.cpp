@@ -64,7 +64,7 @@ Archive::Archive(const StringView archiveName)
         _compressedData = std::move(*data);
         try
         {
-            auto reader = BinaryReader(_compressedData, Details::asset_decryption_key);
+            auto reader = BinaryReader(_compressedData, Details::assetDecryptionKey);
             verifyArchive(reader);
             readEntries(reader);
             _tmpDecompressionBuffer = ByteBlob(tmpDecompressionBufferSize);
@@ -85,7 +85,7 @@ Archive::UnpackedAssetData Archive::unpackAsset(StringView name) const
         throw Error(formatString("Asset '{}' not found.", name));
     }
 
-    auto reader = BinaryReader(_compressedData, Details::asset_decryption_key);
+    auto reader = BinaryReader(_compressedData, Details::assetDecryptionKey);
     reader.seekSet(entry->position);
 
     auto zs = zng_stream();
@@ -124,7 +124,7 @@ Archive::UnpackedAssetData Archive::unpackAsset(StringView name) const
         throw Error("Failed to unpack asset data.");
     }
 
-    reader = BinaryReader(uncompressedData, Details::asset_decryption_key);
+    reader = BinaryReader(uncompressedData, Details::assetDecryptionKey);
 
     const auto type = narrow<char>(reader.readUInt8());
 

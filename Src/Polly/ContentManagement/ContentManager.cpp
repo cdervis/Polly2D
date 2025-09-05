@@ -145,7 +145,7 @@ Shader ContentManager::loadShader(StringView name)
         [this](StringView assetName)
         {
             const auto [type, unpacked_data] = _archive.unpackAsset(assetName);
-            auto reader                      = BinaryReader(unpacked_data, Details::asset_decryption_key);
+            auto reader                      = BinaryReader(unpacked_data, Details::assetDecryptionKey);
 
             verifyAssetType(assetName, type, 's', "a shader");
 
@@ -234,7 +234,7 @@ SpineAtlas ContentManager::loadSpineAtlas(StringView name)
         [this](StringView assetName)
         {
             const auto [type, unpacked_data] = _archive.unpackAsset(assetName);
-            auto reader                      = BinaryReader(unpacked_data, Details::asset_decryption_key);
+            auto reader                      = BinaryReader(unpacked_data, Details::assetDecryptionKey);
 
             verifyAssetType(assetName, type, 'y', "a Spine atlas");
 
@@ -278,7 +278,7 @@ SpineSkeletonData ContentManager::loadSpineSkeletonData(StringView name, SpineAt
         [this, &atlas, scale, &key](StringView assetName)
         {
             const auto [type, unpacked_data] = _archive.unpackAsset(assetName);
-            auto reader                      = BinaryReader(unpacked_data, Details::asset_decryption_key);
+            auto reader                      = BinaryReader(unpacked_data, Details::assetDecryptionKey);
 
             verifyAssetType(assetName, type, 'x', "a Spine skeleton");
 
