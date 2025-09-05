@@ -15,4 +15,6 @@ if (BUILD_TESTING)
     file(GLOB_RECURSE test_files CONFIGURE_DEPENDS "*.hpp" "*.cpp" "Tests/*.cpp")
     add_executable(PollyTests ${test_files})
     target_link_libraries(PollyTests PRIVATE Polly snitch::snitch)
+
+    add_test(NAME PollyTests COMMAND PollyTests)
 endif()

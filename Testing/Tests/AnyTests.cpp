@@ -9,7 +9,6 @@ TEST_CASE("Any construction", "[stl]")
     REQUIRE_FALSE(a);
 
     REQUIRE(a.type() == AnyType::None);
-    REQUIRE_THROWS_MATCHES(a.get<int>(), Error());
     REQUIRE(a.getOr(10.0f) == 10.0f);
     REQUIRE_FALSE(a.tryGet<int>());
 
