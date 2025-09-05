@@ -114,7 +114,7 @@ class Any final
 
     template<Concepts::SupportedByAny T>
     [[nodiscard]]
-    T getOr(const T& fallback_value) const;
+    T getOr(const T& fallbackValue) const;
 
     explicit operator bool() const
     {
@@ -136,12 +136,12 @@ class Any final
 namespace Details
 {
 template<class T>
-inline constexpr bool false_constant = false;
+inline constexpr bool falseConstant = false;
 
 template<typename T>
 struct AnyTypeMapper
 {
-    static_assert(false_constant<T>, "Attempting to use the Any type with an unsupported type.");
+    static_assert(falseConstant<T>, "Attempting to use the Any type with an unsupported type.");
 };
 
 template<>
@@ -260,7 +260,7 @@ struct AnyTypeInfo
     StringView name;
 };
 
-static Maybe<AnyTypeInfo> any_type_info(AnyType type)
+static Maybe<AnyTypeInfo> anyTypeInfo(AnyType type)
 {
     switch (type)
     {
@@ -295,9 +295,9 @@ inline void raiseEmptyAnyError()
 inline void raiseInvalidAnyConversionError(AnyType from, AnyType to)
 {
     auto msg = "Attempting to obtain the value of an Any object of type '"_s;
-    msg += any_type_info(from)->name;
+    msg += anyTypeInfo(from)->name;
     msg += "' as a '";
-    msg += any_type_info(to)->name;
+    msg += anyTypeInfo(to)->name;
     msg += "'.";
 
     throw Error(std::move(msg));
@@ -479,7 +479,7 @@ void Any::constructFromBuffer(Ptr ptr)
         }
     };
 
-    if (const auto info = *Details::any_type_info(_type); info.isTrivial)
+    if (const auto info = *Details::anyTypeInfo(_type); info.isTrivial)
     {
         // Can copy bitwise.
         std::memcpy(_buffer, ptr, info.size);
@@ -515,5 +515,42 @@ inline void Any::destroy()
     {
         destroyNonTrivialType.operator()<StringView>();
     }
+}
+
+inline bool operator==(const Any& lhs, const Any& rhs)
+{
+    if (lhs.type() != rhs.type())
+    {
+        return false;
+    }
+
+    switch (lhs.type())
+    {
+        case AnyType::None: return true;
+        case AnyType::Char: return lhs.get<char>() == rhs.get<char>();
+        case AnyType::UChar: return lhs.get<unsigned char>() == rhs.get<unsigned char>();
+        case AnyType::Short: return lhs.get<short>() == rhs.get<short>();
+        case AnyType::UShort: return lhs.get<unsigned short>() == rhs.get<unsigned short>();
+        case AnyType::Int: return lhs.get<int>() == rhs.get<int>();
+        case AnyType::UInt: return lhs.get<unsigned int>() == rhs.get<unsigned int>();
+        case AnyType::Float: return lhs.get<float>() == rhs.get<float>();
+        case AnyType::Double: return lhs.get<double>() == rhs.get<double>();
+        case AnyType::Bool: return lhs.get<bool>() == rhs.get<bool>();
+        case AnyType::Vec2: return lhs.get<Vec2>() == rhs.get<Vec2>();
+        case AnyType::Vec3: return lhs.get<Vec3>() == rhs.get<Vec3>();
+        case AnyType::Vec4: return lhs.get<Vec4>() == rhs.get<Vec4>();
+        case AnyType::Color: return lhs.get<Color>() == rhs.get<Color>();
+        case AnyType::Matrix: return lhs.get<Matrix>() == rhs.get<Matrix>();
+        case AnyType::String: return lhs.get<String>() == rhs.get<String>();
+        case AnyType::StringView: return lhs.get<StringView>() == rhs.get<StringView>();
+        case AnyType::VoidPointer: return lhs.get<void*>() == rhs.get<void*>();
+    }
+
+    return false;
+}
+
+inline bool operator!=(const Any& lhs, const Any& rhs)
+{
+    return not(lhs == rhs);
 }
 } // namespace Polly

@@ -31,7 +31,7 @@ String bytesDisplayString(u64 size)
 
 String toString(AnyType value)
 {
-    const auto info = Details::any_type_info(value);
+    const auto info = Details::anyTypeInfo(value);
     return info ? String(info->name) : "<unknown>";
 }
 } // namespace Polly
