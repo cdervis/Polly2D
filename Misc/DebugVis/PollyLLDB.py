@@ -1,3 +1,10 @@
+# Polly debug visualizers for LLDB.
+#
+# Copyright (C) 2025 Cem Dervis
+# This file is part of Polly, a 2D C++ game framework for minimalists.
+# For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
+#
+
 import sys
 from itertools import count
 import lldb
@@ -648,66 +655,66 @@ class SpanChildrenProvider:
 def __lldb_init_module(debugger, dict):
     print('Polly LLDB debugging modules loaded. https://polly2d.org.')
 
-    debugger.HandleCommand('type summary add pl::Vec2 -F polly.summary_vec2')
-    debugger.HandleCommand('type summary add pl::Vec2i -F polly.summary_vec2')
-    debugger.HandleCommand('type summary add pl::Vec2ui -F polly.summary_vec2')
+    debugger.HandleCommand('type summary add Polly::Vec2 -F PollyLLDB.summary_vec2')
+    debugger.HandleCommand('type summary add Polly::Vec2i -F PollyLLDB.summary_vec2')
+    debugger.HandleCommand('type summary add Polly::Vec2ui -F PollyLLDB.summary_vec2')
 
-    debugger.HandleCommand('type summary add pl::Vec3 -F polly.summary_vec3')
-    debugger.HandleCommand('type summary add pl::Vec3i -F polly.summary_vec3')
+    debugger.HandleCommand('type summary add Polly::Vec3 -F PollyLLDB.summary_vec3')
+    debugger.HandleCommand('type summary add Polly::Vec3i -F PollyLLDB.summary_vec3')
 
-    debugger.HandleCommand('type summary add pl::Vec4 -F polly.summary_vec4')
-    debugger.HandleCommand('type summary add pl::Vec4i -F polly.summary_vec4')
+    debugger.HandleCommand('type summary add Polly::Vec4 -F PollyLLDB.summary_vec4')
+    debugger.HandleCommand('type summary add Polly::Vec4i -F PollyLLDB.summary_vec4')
 
-    debugger.HandleCommand('type summary add pl::Color -F polly.summary_color')
-    debugger.HandleCommand('type summary add pl::Rectf -F polly.summary_rectf')
-    debugger.HandleCommand('type summary add pl::Degrees -F polly.summary_degrees')
-    debugger.HandleCommand('type summary add pl::Radians -F polly.summary_radians')
-    debugger.HandleCommand('type summary add pl::sprite -F polly.summary_sprite')
-    debugger.HandleCommand('type summary add pl::StringView -F polly.summary_string')
-    debugger.HandleCommand('type summary add pl::String -F polly.summary_string')
-    debugger.HandleCommand('type summary add pl::Any -F polly.summary_any')
-    debugger.HandleCommand('type summary add pl::ByteBlob -F polly.summary_arraylike')
-    debugger.HandleCommand('type summary add -x "^pl::Pair<.+>$" -F polly.summary_pair')
-    debugger.HandleCommand('type summary add -x "^pl::UniquePtr<.+>$" -F polly.summary_uniqueptr')
-    debugger.HandleCommand('type summary add -x "^pl::Maybe<.+>$" -F polly.summary_maybe')
-    debugger.HandleCommand('type summary add -x "^pl::List<.+>$" -F polly.summary_list')
-    debugger.HandleCommand('type summary add -x "^pl::LinkedList<.+>$" -F polly.summary_arraylike')
-    debugger.HandleCommand('type summary add -x "^pl::SortedSet<.+>$" -F polly.summary_sortedset_and_sortedmap')
-    debugger.HandleCommand('type summary add -x "^pl::SortedMap<.+>$" -F polly.summary_sortedset_and_sortedmap')
-    debugger.HandleCommand('type summary add -x "^pl::Span<.+>$" -F polly.summary_arraylike')
-    debugger.HandleCommand('type summary add -x "^pl::MutableSpan<.+>$" -F polly.summary_arraylike')
-
-    debugger.HandleCommand(
-        'type synthetic add -x "^pl::Maybe<.+>$" --python-class polly.MaybeChildrenProvider')
+    debugger.HandleCommand('type summary add Polly::Color -F PollyLLDB.summary_color')
+    debugger.HandleCommand('type summary add Polly::Rectf -F PollyLLDB.summary_rectf')
+    debugger.HandleCommand('type summary add Polly::Degrees -F PollyLLDB.summary_degrees')
+    debugger.HandleCommand('type summary add Polly::Radians -F PollyLLDB.summary_radians')
+    debugger.HandleCommand('type summary add Polly::sprite -F PollyLLDB.summary_sprite')
+    debugger.HandleCommand('type summary add Polly::StringView -F PollyLLDB.summary_string')
+    debugger.HandleCommand('type summary add Polly::String -F PollyLLDB.summary_string')
+    debugger.HandleCommand('type summary add Polly::Any -F PollyLLDB.summary_any')
+    debugger.HandleCommand('type summary add Polly::ByteBlob -F PollyLLDB.summary_arraylike')
+    debugger.HandleCommand('type summary add -x "^Polly::Pair<.+>$" -F PollyLLDB.summary_pair')
+    debugger.HandleCommand('type summary add -x "^Polly::UniquePtr<.+>$" -F PollyLLDB.summary_uniqueptr')
+    debugger.HandleCommand('type summary add -x "^Polly::Maybe<.+>$" -F PollyLLDB.summary_maybe')
+    debugger.HandleCommand('type summary add -x "^Polly::List<.+>$" -F PollyLLDB.summary_list')
+    debugger.HandleCommand('type summary add -x "^Polly::LinkedList<.+>$" -F PollyLLDB.summary_arraylike')
+    debugger.HandleCommand('type summary add -x "^Polly::SortedSet<.+>$" -F PollyLLDB.summary_sortedset_and_sortedmap')
+    debugger.HandleCommand('type summary add -x "^Polly::SortedMap<.+>$" -F PollyLLDB.summary_sortedset_and_sortedmap')
+    debugger.HandleCommand('type summary add -x "^Polly::Span<.+>$" -F PollyLLDB.summary_arraylike')
+    debugger.HandleCommand('type summary add -x "^Polly::MutableSpan<.+>$" -F PollyLLDB.summary_arraylike')
 
     debugger.HandleCommand(
-        'type synthetic add pl::Any -python-class polly.AnyChildrenProvider')
+        'type synthetic add -x "^Polly::Maybe<.+>$" --python-class PollyLLDB.MaybeChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add -x "^pl::List<.+>$" --python-class polly.ListChildrenProvider')
+        'type synthetic add Polly::Any -python-class PollyLLDB.AnyChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add -x "^LinkedList<.+>$" --python-class polly.LinkedListChildrenProvider')
+        'type synthetic add -x "^Polly::List<.+>$" --python-class PollyLLDB.ListChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add -x "^pl::Span<.+>$" --python-class polly.SpanChildrenProvider')
+        'type synthetic add -x "^LinkedList<.+>$" --python-class PollyLLDB.LinkedListChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add -x "^pl::MutableSpan<.+>$" --python-class polly.SpanChildrenProvider')
+        'type synthetic add -x "^Polly::Span<.+>$" --python-class PollyLLDB.SpanChildrenProvider')
+
+    debugger.HandleCommand(
+        'type synthetic add -x "^Polly::MutableSpan<.+>$" --python-class PollyLLDB.SpanChildrenProvider')
 
     # debugger.HandleCommand(
-    #     'type synthetic add -x "^pl::Array<.+>$" --python-class polly.ArrayChildrenProvider')
+    #     'type synthetic add -x "^Polly::Array<.+>$" --python-class PollyLLDB.ArrayChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add -x "^pl::SortedSet<.+>$" --python-class polly.SortedSetChildrenProvider')
+        'type synthetic add -x "^Polly::SortedSet<.+>$" --python-class PollyLLDB.SortedSetChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add -x "pl::SortedMap" --python-class polly.SortedMapChildrenProvider')
+        'type synthetic add -x "Polly::SortedMap" --python-class PollyLLDB.SortedMapChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add pl::String --python-class polly.StringChildrenProvider')
+        'type synthetic add Polly::String --python-class PollyLLDB.StringChildrenProvider')
 
     debugger.HandleCommand(
-        'type synthetic add pl::StringView --python-class polly.StringChildrenProvider')
+        'type synthetic add Polly::StringView --python-class PollyLLDB.StringChildrenProvider')
 
-    debugger.HandleCommand('type summary add pl::ShaderParameter --summary-string "${var.name}"')
+    debugger.HandleCommand('type summary add Polly::ShaderParameter --summary-string "${var.name}"')

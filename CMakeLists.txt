@@ -68,19 +68,7 @@ add_subdirectory(Src)
 add_subdirectory(Apps)
 add_subdirectory(Testing)
 
-# TODO: natvis support (issue #32)
-#if (MSVC)
-#    set(natvis_file ${CMAKE_CURRENT_SOURCE_DIR}/Misc/DebugVis/VS/Polly.natvis)
-#    target_link_options(Polly PRIVATE /NATVIS:${natvis_file})
-#    target_sources(Polly PRIVATE ${natvis_file})
-#endif ()
-
-# Debugging support
-if (MSVC)
-    set(natvis_file ${polly_root_dir}/Misc/DebugVis/PollyMSVC.natvis)
-    target_sources(Polly PRIVATE ${natvis_file})
-    target_link_options(Polly PRIVATE /NATVIS:${natvis_file})
-endif()
+include(Misc/DebuggingSupport.cmake)
 
 target_sources(Polly PRIVATE ${misc_cmake_files_in_sources})
 source_group("Misc" FILES ${misc_cmake_files_in_sources})
