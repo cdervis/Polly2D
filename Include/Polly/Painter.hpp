@@ -89,7 +89,7 @@ class Painter final
     /// painter.drawSprite(canvas, {0, 0});       // Draws the canvas into the window.
     /// painter.drawSprite(mySprite, {100, 100}); // Draws the sprite on top.
     /// @endcode
-    void setCanvas(Image& canvas, Maybe<Color> clearColor);
+    void setCanvas(Image canvas, Maybe<Color> clearColor);
 
     /// Gets the active transformation matrix to apply to all subsequent 2D objects.
     Matrix transformation() const;
