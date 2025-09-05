@@ -1,6 +1,6 @@
 #type sprite
 
-float Saturation;
+float Saturation = 1.0;
 
 Vec4 main()
 {

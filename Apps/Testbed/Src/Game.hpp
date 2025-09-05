@@ -6,12 +6,18 @@ struct Testbed final : Game
 {
     Image  img    = Image("logo.png");
     Shader shader = Shader("Grayscale.shd");
+    float saturation = 1.0f;
 
     List<Sound> sounds = {
         Sound(SfxrSoundPreset::Coin, 218309),
         Sound(SfxrSoundPreset::Explosion, 5838292),
         Sound(SfxrSoundPreset::Laser, 2873),
     };
+
+    Testbed()
+    {
+        window().setIsLogVisible(true);
+    }
 
     void update(GameTime time) override
     {
@@ -29,6 +35,11 @@ struct Testbed final : Game
         {
             logInfo("Button was clicked!");
             audio().playOnce(*randomItem(sounds));
+        }
+
+        if (imgui.slider("Saturation", saturation, 0.0f, 1.0f))
+        {
+            shader.set("Saturation", saturation);
         }
     }
 };
