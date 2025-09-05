@@ -338,7 +338,7 @@ void ImGui::textUnformatted(StringView text)
 void ImGui::text(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::TextV(fmt.data(), args);
     va_end(args);
@@ -347,7 +347,7 @@ void ImGui::text(StringView fmt, ...)
 void ImGui::textColored(Color color, StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::TextColoredV(convert(color), fmt.data(), args);
     va_end(args);
@@ -356,7 +356,7 @@ void ImGui::textColored(Color color, StringView fmt, ...)
 void ImGui::textDisabled(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::TextDisabledV(fmt.data(), args);
     va_end(args);
@@ -365,7 +365,7 @@ void ImGui::textDisabled(StringView fmt, ...)
 void ImGui::textWrapped(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::TextWrappedV(fmt.data(), args);
     va_end(args);
@@ -374,7 +374,7 @@ void ImGui::textWrapped(StringView fmt, ...)
 void ImGui::labelText(StringView label, StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::LabelTextV(label.data(), fmt.data(), args);
     va_end(args);
@@ -383,7 +383,7 @@ void ImGui::labelText(StringView label, StringView fmt, ...)
 void ImGui::bulletText(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::BulletTextV(fmt.data(), args);
     va_end(args);
@@ -876,7 +876,7 @@ bool ImGui::treeNode(StringView id, StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
 
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     const auto result = ::ImGui::TreeNodeV(id.data(), fmt.data(), args);
     va_end(args);
@@ -888,7 +888,7 @@ bool ImGui::treeNodeEx(StringView id, ImGuiTreeNodeOpts flags, StringView fmt, .
 {
     PollyVerifyHaveImpl;
 
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     const auto result = ::ImGui::TreeNodeExV(id.data(), convert(flags), fmt.data(), args);
     va_end(args);
@@ -1073,7 +1073,7 @@ void ImGui::setTooltip(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
 
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::SetTooltipV(fmt.data(), args);
     va_end(args);
@@ -1089,7 +1089,7 @@ void ImGui::setItemTooltip(StringView fmt, ...)
 {
     PollyVerifyHaveImpl;
 
-    auto args = va_list();
+    va_list args{};
     va_start(args, fmt);
     ::ImGui::SetItemTooltipV(fmt.data(), args);
     va_end(args);
