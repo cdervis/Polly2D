@@ -66,6 +66,7 @@ configure_file(
 
 add_subdirectory(Src)
 add_subdirectory(Apps)
+add_subdirectory(Testing)
 
 # TODO: natvis support (issue #32)
 #if (MSVC)
