@@ -214,6 +214,7 @@ void Game::Impl::run(NotNull<Game*> backLink)
 
             _backLink->draw(_painter);
 
+            _painter.setSpriteShader({});
             _painter.setTransformation({});
             drawOnScreenLogMessages(painterImpl);
 
@@ -944,6 +945,7 @@ void Game::Impl::drawOnScreenLogMessages(Painter::Impl& painterImpl)
             color.a = entry.ttl / OnScreenLogEntry::defaultTimeToLive;
 
             const auto text = Text(entry.message, font, fontSize);
+            painterImpl.pushTextToQueue(text, pos + Vec2(pixelRatio), black.withAlpha(color.a * 0.5f));
             painterImpl.pushTextToQueue(text, pos, color);
             pos.y += text.height();
         }
