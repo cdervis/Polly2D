@@ -19,10 +19,10 @@ class TextDemo final : public Demo
         Underline,
     };
 
-    String             m_inputText;
-    float              m_fontSize            = 48;
-    Color              m_textColor           = Color::fromInt(166, 147, 140);
-    DemoTextDecoration m_decoration          = DemoTextDecoration::None;
-    float              m_decorationThickness = 0.0f;
-    Color              m_decorationColor     = transparent;
+    String             _inputText;
+    float              _fontSize            = 48;
+    Color              _textColor           = Color::fromInt(166, 255, 140);
+    DemoTextDecoration _decoration          = DemoTextDecoration::None;
+    float              _decorationThickness = 0.0f;
+    Color              _decorationColor     = transparent;
 };

@@ -5,8 +5,8 @@
 TextDemo::TextDemo(DemoBrowser* browser)
     : Demo("Drawing & Handling Text", browser)
 {
-    m_inputText.ensureSize(150);
-    String::rawConcat(m_inputText.data(), "Hello World!");
+    _inputText.ensureSize(150);
+    String::rawConcat(_inputText.data(), "Hello World!");
 }
 
 void TextDemo::draw(Painter painter)
@@ -19,31 +19,29 @@ void TextDemo::draw(Painter painter)
     painter.setSampler(pointClamp);
 
     // Use DrawString for simple fire-and-forget text drawing.
-    painter
-        .drawString("Enter some text in the sidebar! >>>", font, static_cast<int>(48 * pixelRatio), {50, 50});
-
+    painter.drawString("Enter some text in the sidebar! >>>", font, 48 * pixelRatio, Vec2(50));
     auto decoration = Maybe<TextDecoration>();
-    switch (m_decoration)
+    switch (_decoration)
     {
         case DemoTextDecoration::Strikethrough:
             decoration = Strikethrough{
-                .thickness = isZero(m_decorationThickness) ? Maybe<float>() : m_decorationThickness,
-                .color     = m_decorationColor == transparent ? Maybe<Color>() : m_decorationColor,
+                .thickness = isZero(_decorationThickness) ? Maybe<float>() : _decorationThickness,
+                .color     = _decorationColor == transparent ? Maybe<Color>() : _decorationColor,
             };
             break;
         case DemoTextDecoration::Underline:
             decoration = Underline{
-                .thickness = isZero(m_decorationThickness) ? Maybe<float>() : m_decorationThickness,
-                .color     = m_decorationColor == transparent ? Maybe<Color>() : m_decorationColor,
+                .thickness = isZero(_decorationThickness) ? Maybe<float>() : _decorationThickness,
+                .color     = _decorationColor == transparent ? Maybe<Color>() : _decorationColor,
             };
             break;
         case DemoTextDecoration::None: break;
     }
 
-    const auto text    = Text(m_inputText.data(), font, m_fontSize * pixelRatio, decoration);
+    const auto text    = Text(_inputText.data(), font, _fontSize * pixelRatio, decoration);
     const auto textPos = Vec2(300, 300);
 
-    painter.drawText(text, textPos, m_textColor);
+    painter.drawText(text, textPos, _textColor);
 
     const auto mousePos = currentMousePosition() * pixelRatio;
 
@@ -60,33 +58,33 @@ void TextDemo::draw(Painter painter)
 
 void TextDemo::doImGui(ImGui imgui)
 {
-    imgui.inputTextMultiline("Text", m_inputText);
+    imgui.inputTextMultiline("Text", _inputText);
     imgui.newLine();
 
-    imgui.slider("Font Size", m_fontSize, 8, 64);
-    imgui.colorEdit("Text Color", m_textColor);
+    imgui.slider("Font Size", _fontSize, 8, 64);
+    imgui.colorEdit("Text Color", _textColor);
     imgui.newLine();
 
     imgui.separatorWithText("Decoration");
-    if (imgui.radioButton("None", m_decoration == DemoTextDecoration::None))
+    if (imgui.radioButton("None", _decoration == DemoTextDecoration::None))
     {
-        m_decoration = DemoTextDecoration::None;
+        _decoration = DemoTextDecoration::None;
     }
 
-    if (imgui.radioButton("Strikethrough", m_decoration == DemoTextDecoration::Strikethrough))
+    if (imgui.radioButton("Strikethrough", _decoration == DemoTextDecoration::Strikethrough))
     {
-        m_decoration = DemoTextDecoration::Strikethrough;
+        _decoration = DemoTextDecoration::Strikethrough;
     }
 
-    if (imgui.radioButton("Underline", m_decoration == DemoTextDecoration::Underline))
+    if (imgui.radioButton("Underline", _decoration == DemoTextDecoration::Underline))
     {
-        m_decoration = DemoTextDecoration::Underline;
+        _decoration = DemoTextDecoration::Underline;
     }
 
-    if (m_decoration != DemoTextDecoration::None)
+    if (_decoration != DemoTextDecoration::None)
     {
         imgui.spacing();
-        imgui.slider("Thickness", m_decorationThickness, 0.0f, 10.0f, "%.2f");
-        imgui.colorEdit("Color", m_decorationColor);
+        imgui.slider("Thickness", _decorationThickness, 0.0f, 10.0f, "%.2f");
+        imgui.colorEdit("Color", _decorationColor);
     }
 }

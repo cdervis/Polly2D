@@ -24,7 +24,7 @@ enum class SfxrSoundPreset
 
 /// Represents a sound, ready for playback.
 ///
-/// Sounds can be played for example using e.g. AudioDevice::playSoundOnce() and
+/// Sounds can be played for example using e.g. AudioDevice::playOnce() and
 /// AudioDevice::playSoundWithChannel().
 class Sound
 {
