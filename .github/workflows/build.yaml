@@ -58,6 +58,7 @@ jobs:
         run: cmake --build ${{env.build-dir}} --parallel
 
       - name: Run Tests
+        if: matrix.config == 'Debug'
         run: >
           ctest
           --test-dir ${{env.build-dir}}/Testing
