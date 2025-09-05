@@ -1,10 +1,10 @@
 module.exports = {
-    siteTitle: 'Polly',
+    siteTitle: 'Polly - 2D C++ Game Framework for Minimalists',
     siteUrl: 'https://polly2d.org',
 
     logo: {
-        light: '/assets/images/logo-splash.svg',
-        dark: '/assets/images/logo-splash-dark.svg',
+        light: '/assets/images/logo-splash-light.webp',
+        dark: '/assets/images/logo-splash-dark.webp',
         alt: 'Polly logo',
         href: '/',
     },
@@ -20,7 +20,7 @@ module.exports = {
     theme: {
         name: 'sky',
         defaultMode: 'light',
-        enableModeToggle: true,
+        enableModeToggle: false,
         positionMode: 'top',
         codeHighlight: true,
         customCss: [
@@ -33,7 +33,7 @@ module.exports = {
 
     plugins: {
         seo: {
-            defaultDescription: 'Polly2D is 2D C++ game framework for minimalists.',
+            defaultDescription: 'Polly is a framework that makes it easy to get started with C++ 2D game development using a clean, modern API, for beginners and experts alike.',
             openGraph: {
                 defaultImage: '/assets/images/polly-preview.png',
             },
@@ -45,15 +45,9 @@ module.exports = {
     },
     navigation: [
         {
-            title: 'Introduction',
+            title: 'Home',
             path: '/',
             icon: 'home',
-        },
-        {
-            title: 'GitHub',
-            path: 'https://github.com/cdervis/Polly2D',
-            icon: 'github',
-            external: true
         },
         {
             title: 'Game',
@@ -133,6 +127,11 @@ module.exports = {
                     icon: 'spray-can'
                 },
                 {
+                    title: 'Canvas',
+                    path: 'graphics/canvas',
+                    icon: 'frame'
+                },
+                {
                     title: 'Polygons',
                     path: 'graphics/polygons',
                     icon: 'shapes'
@@ -192,13 +191,13 @@ module.exports = {
             path: 'cpp'
         },
         {
-            title: 'Package Management',
+            title: 'Packages',
             icon: 'package-plus',
             path: 'package-management'
         },
         {
             title: 'Publishing',
-            icon: 'message-square-share',
+            icon: 'rss',
             path: 'publishing'
         },
         {
@@ -225,10 +224,18 @@ module.exports = {
         },
         {
             title: 'Contributing',
-            path: 'contributing',
+            path: '/contributing',
             icon: 'users-round'
+        },
+        {
+            title: 'GitHub',
+            path: 'https://github.com/cdervis/Polly2D',
+            icon: 'github',
+            external: true
         }
     ],
+
+    madeWithDocmd: 'Made with',
 
     footer: '© ' + new Date().getFullYear() + ' [Cem Dervis](https://dervis.de)',
     favicon: '/assets/images/favicon.ico',

@@ -5,9 +5,9 @@ This page outlines some basic rules to remember when deploying your game to othe
 - Polly is built as a **static** library (i.e. `.lib`, `.a`).
 - Your game is an executable that links with Polly **statically**.
 - Both Polly and your game link with the C++ runtime **statically**.
-- Your game's assets are stored in a file called `data.pla`, which is produced by the BuildTool at build time.
+- Your game's assets are stored in a file called `data.pla`, which is produced at build time.
 
-Once built, a Polly game does **not** depend on the C++ runtime, since it's statically linked into it. A Polly game is therefore standalone and depends only on components that are already available on the target system and its asset file `data.pla`.
+Once built, a Polly game does **not** depend on the C++ runtime, since it's statically linked into it. A Polly game is therefore standalone and depends only on its asset file `data.pla` and components that are already available on the target system.
 
 ## Windows
 

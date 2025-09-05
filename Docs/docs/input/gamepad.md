@@ -1,6 +1,6 @@
 # Gamepad
 
-## Query connected gamepads
+## Query Connected Gamepads
 
 At all times, a game maintains a list of connected gamepads.
 
@@ -12,7 +12,7 @@ auto gamepads = game.gamepads(); // MutableSpan<Gamepad>
 
 A `Gamepad` is a Polly object and therefore automatically reference-counted.
 
-## Query and manipulate gamepad state
+## Query and manipulate Gamepad State
 
 Besides general information about the gamepad, the `Gamepad` class is used to directly
 query a connected gamepad's state, such as pressed buttons or triggers and sensor values.

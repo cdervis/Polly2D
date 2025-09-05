@@ -4,7 +4,7 @@ Polly provides an easy-to-use, safe audio API.
 Compared to full-fledged audio engines like [FMOD](https://www.fmod.com) and [WWise](https://www.audiokinetic.com/en/wwise/overview/),
 Polly's audio API is rather simple, but powerful enough for most cases.
 
-The central type for audio playback is the `AudioDevice` class and can be obtained via `Game::audioDevice()`.
+The central type for audio playback is the `AudioDevice` class and can be obtained via `Game::audio()`.
 
 ## Sounds
 
@@ -15,7 +15,7 @@ Since assets are reference-counted objects, loading the same sound multiple time
 
 When all references to a sound vanish, the sound is automatically unloaded.
 
-Playing a sound is done using `AudioDevice::playSoundOnce()`:
+Playing a sound is done using `AudioDevice::playOnce()`:
 
 ```cpp
 auto sound = Sound("Boom.wav");
@@ -27,7 +27,7 @@ audio().playSoundOnce(sound, /*volume: */ 1.0f, /*pan: */ 0.0f, /*delay: */ none
 
 The playback of a sound can be controlled by capturing its virtual channel, represented by the `SoundChannel` class.
 
-The `AudioDevice::playSound()` method does exactly the same as `playSoundOnce()`, but returns the sound's channel. Since a sound channel is reference-counted, the sound will play as long as the channel is referenced. Capturing a channel allows you, for example, to control the sound's volume, fade, playback speed, panning and looping.
+The `AudioDevice::playSound()` method does exactly the same as `playOnce()`, but returns the sound's channel. Since a sound channel is reference-counted, the sound will play as long as the channel is referenced. Capturing a channel allows you, for example, to control the sound's volume, fade, playback speed, panning and looping afterwards.
 
 ## Inaudible Behavior
 
@@ -40,7 +40,7 @@ The `SoundInaudibleBehavior` enum defines what should happen with a channel in s
 
 ## Music
 
-`playSoundOnce()` is typically used to play fire-and-forget sounds such as explosions or UI navigation.
+`playOnce()` is typically used to play fire-and-forget sounds such as explosions or UI navigation.
 
 To play a continuous sound, such as music, a convenience method `AudioDevice::playSoundInBackground()` is provided.
 

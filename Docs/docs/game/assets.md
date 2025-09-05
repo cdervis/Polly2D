@@ -4,9 +4,28 @@ Content management in the context of games relates to how a game loads, manages 
 
 Polly makes this process as easy as possible while being efficient. Therefore, there is no special asset loading function in Polly.
 
+The folder structure of a game is as follows:
+
+```
+MyGame/
+├── Assets/
+│   ├── MyImage.png
+│   ├── MyFont.ttf
+│   └── MySound.wav
+├── Misc/
+│   └── ...
+├── Src/
+│   ├── Game.hpp
+│   ├── Game.cpp
+│   └── ...
+└── CMakeLists.txt
+```
+
+All assets reside within the `Assets` folder and are automatically processed during build time.
+
 Any asset type such as `Image`, `Font` and `Sound` is loadable directly using its constructor that takes a single string argument.
 
-When the asset failed to load, for example due to a non-existent file or system error, an `Error` is thrown.
+When an asset fails to load, for example due to a non-existent file or system error, an `Error` is thrown.
 
 ```cpp
 auto image = Image("MyImage.png");

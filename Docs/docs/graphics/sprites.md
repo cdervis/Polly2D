@@ -72,7 +72,7 @@ This means that its right border will be at X-coordinate `200 + 128 = 328`, whil
 The destination rectangle is often used to stretch or shrink (scale) a sprite, disregarding its image size. For example, when you draw a sprite using `drawSprite(image, Vec2(200, 200))`, the function calculates a destination rectangle for you, which ultimately is `{pos.x, pos.y, imageWidth, imageHeight}`.
 
 The source rectangle on the other hand refers to coordinates within the sprite's image. To illustrate this, let's take a look at the following image:
-![img](/assets/images/sprite_src_rect.webp)
+![img](/assets/images/sprite-src-rect.webp){.align-center}
 
 The green rectangle represents the source rectangle.
 In this case, `{75, 75, 150, 150}`.

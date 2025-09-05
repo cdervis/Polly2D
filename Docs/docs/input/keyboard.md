@@ -1,6 +1,6 @@
 # Keyboard
 
-## Query key states
+## Query Key States
 
 Querying key states is done using `isKeyDown()` and `isKeyUp()`.
 
@@ -9,12 +9,12 @@ Example:
 ```cpp
 auto movement = time.elapsed() * 200.0f;
 
-if (isKeyDown(Key::Up))
+if (isKeyDown(Scancode::Up))
 {
     spritePosition.y -= movement;
 }
 
-if (isKeyDown(Key::Down))
+if (isKeyDown(Scancode::Down))
 {
     spritePosition.y += movement;
 }

@@ -41,7 +41,7 @@ void draw(Painter painter) override
 ```
 
 You should now expect a fully green rectangle:
-![img](/assets/images/custom_shaders1.webp){.align-center}
+![img](/assets/images/custom_shaders1.webp){.align-center width=300}
 
 ## Built-in Variables
 
@@ -65,7 +65,7 @@ Vec4 main()
 ```
 
 This gives you the following image:
-![img](/assets/images/custom_shaders2.webp){.align-center}
+![img](/assets/images/custom_shaders2.webp){.align-center width=300}
 
 As you can see, the upper-left corner is black, meaning that a `Vec2(0, 0)` was the result.
 As we continue along the X-axis, the X component (red) increases.
@@ -141,7 +141,7 @@ struct MyGame : Game
 
 We should now see a yellow rectangle:
 
-![img](/assets/images/custom_shaders3.webp){.align-center}
+![img](/assets/images/custom_shaders3.webp){.align-center width=300}
 
 Let's make it more interactive and update these values when the player presses certain keys.
 Change the `update()` method as follows:
@@ -190,7 +190,7 @@ A safer approach would be to use `.valueOr(0.0f)`. In our case, we know that thi
 Using `set()` doesn't have this problem.
 
 If a parameter name was incorrect or the parameter doesn't exist, the method simply won't do anything.
-In other words, it's safe to use `SetValue()` even if you're unsure about the parameter's existence.
+In other words, it's safe to use `set()` even if you're unsure about the parameter's existence.
 
 So now, depending on which key was pressed, we increment / decrement the corresponding intensity by the delta time. Additionally, we clamp the result to the range `[0.0 .. 1.0]`.
 

@@ -14,15 +14,14 @@ You can apply a transformation using `Painter::setTransformation()`:
 ```cpp
 painter.setTransformation(scale(Vec2(1.5f)));
 
-painter.drawSprite(myImage, Vce2(200, 200));
-painter.drawSprite(myImage, Vce2(400, 300));
-painter.drawSprite(myImage, Vce2(600, 400));
+painter.drawSprite(myImage, Vec2(200, 200));
+painter.drawSprite(myImage, Vec2(400, 300));
+painter.drawSprite(myImage, Vec2(600, 400));
 ```
 
 This will scale everything by a factor of 1.5 across both the X and Y axis.
 
-As an example, `Vec2(-1.5f, 2.0f)` will mirror the objects along the Y-axis, and also scale them by a factor of 2.0 along the Y-axis.
-In other words, negative factors allow mirroring effects.
+As an example, `Vec2(-1.5f, 2.0f)` will mirror the objects along the Y-axis, and also scale them by a factor of 2.0 along the Y-axis. In other words, negative factors allow mirroring effects.
 
 Another example would be if you wanted to first rotate the objects, then scale them, and finally offset their positions by a specific amount.
 This is done by multiplying such matrices in a specific order:

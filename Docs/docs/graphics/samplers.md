@@ -3,7 +3,7 @@
 [Drawing sprites](/graphics/sprites) shows how the destination rectangle is able to scale a sprite, disregarding its image size.
 This is thanks to image interpolation, which is controllable via `Painter::setSampler()`.
 
-To illustrate this, let's add a low-resolution image, for example this 32×32 example image:
+To illustrate this, let's add a low-resolution image, for example this small 32×32 image:
 ![img](/assets/images/test32x32.png){.align-center}
 
 A `Sampler` describes how an image is interpolated and repeated across image coordinate boundaries.
@@ -40,7 +40,7 @@ painter.drawSprite(Sprite {
 ```
 
 This will result in a pixelated sprite:
-![img](img/samplers_pixelated.webp){.align-center}
+![img](/assets/images/samplers-pixelated.webp){.align-center}
 
 `filter` refers to the interpolation mode. Point uses nearest neighbor filtering. The `addressU` and `addressV` fields refer to how
 the image is sampled when coordinates fall outside the image bounds. `ClampToEdgeTexels`, for example, specifies that every pixel that
@@ -64,7 +64,7 @@ painter.drawSprite(Sprite {
 ```
 
 We can now see that the image is repeated across the X-axis and mirrored across the Y-axis:
-![img](img/samplers_repeat_mirror.webp){.align-center}
+![img](/assets/images/samplers-repeat-mirror.webp){.align-center}
 
 The image repeats four times, since we specified a source rectangle size of 128×128 pixels, while the image is 32×32. Remember that you could use the source rectangle to implement texture scrolling. If you are curious, try using the game's total running time ([`GameTime::totalTime`](/docs/api/Core/GameTime#fields)) as the X or Y value for the source rectangle's position.
 

@@ -1,18 +1,12 @@
 ---
-title: Introduction
+toc: none
 ---
 
-<h1 style="text-align: center">Polly</h1>
+<h1 class="main-title" style="text-align: center">Polly</h1>
 
-<p class="center-text">
-<strong style="font-size: 120%">2D C++ Game Framework for Minimalists</strong>
-</p>
+<p class="sub-title center-text" style="font-size: 120%">2D C++ Game Framework for Minimalists</p>
 
 ![cover](/assets/images/logo256.png){width=150 .align-center}
-
-<p class="center-text">
-<strong >Welcome to Polly!</strong>
-</p>
 
 <p class="center-text">
 Polly is a framework that makes it easy to get started with C++ 2D game development using a clean, modern API, for beginners and experts alike. It provides every audiovisual aspect necessary to comfortably make a 2D game using a code-only approach.
@@ -24,9 +18,7 @@ Polly is a framework that makes it easy to get started with C++ 2D game developm
 </div>
 -->
 
-![Polly Demo Browser](/assets/images/cover-1.webp){.align-center}
-
-## Example
+![Polly Demo Browser](/assets/images/cover-1.webp){.align-center width=1000}
 
 ```cpp
 #include "Polly.hpp"
@@ -158,8 +150,6 @@ C++ idiomatic <a href="https://github.com/ocornut/imgui" target="_blank">Dear Im
 ## Getting Started
 
 This introduction will guide you through how to get started with Polly and get your first game running. Although some knowledge of modern C++ is recommended, Polly can also be a great framework for intermediate C++ learners to hop in.
-
-**Note** that the entire build process is CMake-based, your IDE therefore requires proper CMake support.
 
 If you're on Windows, [Visual Studio](https://visualstudio.com/) or [CLion](https://www.jetbrains.com/clion/) is recommended, whichever you prefer. Visual Studio Community is free for individual developers and can be used to develop free or paid games. CLion is free for non-commercial projects.
 

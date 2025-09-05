@@ -1,6 +1,6 @@
 # Mouse
 
-## Query button states
+## Query Button States
 
 Querying button states is done using `isMouseButtonDown()` and `isMouseButtonUp()`.
 
@@ -18,7 +18,7 @@ if (isMouseButtonDown(MouseButton::Right))
 }
 ```
 
-## Query mouse position
+## Query Mouse Position
 
 Obtaining the mouse cursor's current position is done via `currentMousePosition()`.
 
@@ -41,7 +41,7 @@ else if (mousePosition.x < 100)
 }
 ```
 
-## Lock the mouse cursor
+## Lock the Mouse Cursor
 
 To lock the mouse cursor into the game's window, call the `Window::setMouseGrab()` method:
 
@@ -57,7 +57,7 @@ To release the mouse cursor again, pass `false` to the method:
 window().setMouseGrab(false);
 ```
 
-## Change the mouse cursor style
+## Change the Mouse Cursor Style
 
 The style of the mouse cursor is represented by a `MouseCursor` object.
 
