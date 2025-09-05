@@ -132,6 +132,11 @@ module.exports = {
                     icon: 'frame'
                 },
                 {
+                    title: 'Particles',
+                    icon: 'sparkles',
+                    path: 'graphics/particles',
+                },
+                {
                     title: 'Polygons',
                     path: 'graphics/polygons',
                     icon: 'shapes'
@@ -177,6 +182,28 @@ module.exports = {
                     title: 'Text',
                     icon: 'text-cursor-input',
                     path: 'input/text'
+                }
+            ]
+        },
+        {
+            title: 'Math',
+            icon: 'radical',
+            collapsible: true,
+            children: [
+                {
+                    title: 'Basics',
+                    icon: 'plus',
+                    path: 'math/basics'
+                },
+                {
+                    title: 'Algorithms',
+                    icon: 'route',
+                    path: 'math/algorithms',
+                },
+                {
+                    title: 'Random',
+                    icon: 'badge-question-mark',
+                    path: 'math/random'
                 }
             ]
         },

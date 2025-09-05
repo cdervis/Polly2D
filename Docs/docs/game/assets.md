@@ -21,7 +21,7 @@ MyGame/
 └── CMakeLists.txt
 ```
 
-All assets reside within the `Assets` folder and are automatically processed during build time.
+All assets reside within the `Assets` folder and are automatically processed at build time.
 
 Any asset type such as `Image`, `Font` and `Sound` is loadable directly using its constructor that takes a single string argument.
 
