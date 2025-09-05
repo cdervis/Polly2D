@@ -102,13 +102,17 @@ jobs:
         run: >
           cmake -B ${{github.workspace}}/${{env.build-dir}} -G "Visual Studio 17 2022" -A ${{matrix.arch}}
           -DBUILD_TESTING=ON
-          -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          -DCMAKE_BUILD_TYPE=${{matrix.config}}
 
       - name: Build CMake
         run: cmake --build ${{github.workspace}}/${{env.build-dir}} --parallel --config ${{matrix.config}}
 
       - name: Run Tests
-        run: ctest --test-dir ${{github.workspace}}/${{env.build-dir}}/Testing --output-on-failure
+        run: >
+          ctest
+          --test-dir ${{github.workspace}}/${{env.build-dir}}/Testing
+          --output-on-failure
+          -C ${{matrix.config}}
 
   build_linux:
     name: Build Linux
