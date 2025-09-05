@@ -8,5 +8,5 @@
 
 namespace Polly::Details
 {
-extern const StringView asset_decryption_key;
+extern const StringView assetDecryptionKey;
 }
