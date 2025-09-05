@@ -30,7 +30,7 @@ struct Drawable
     Color color;
 };
 
-struct MyGame final : Game
+struct MyGame : Game
 {
     entt::registry registry;
 
