@@ -65,6 +65,11 @@ bool Window::Impl::hasMouseFocus() const
     return SDL_GetMouseFocus() == _sdlWindow;
 }
 
+void Window::Impl::onResized([[maybe_unused]] u32 width, [[maybe_unused]] u32 height)
+{
+    // Nothing to do.
+}
+
 void Window::Impl::createSDLWindow(
     int           additionalFlags,
     Maybe<Vec2>   initialWindowSize,

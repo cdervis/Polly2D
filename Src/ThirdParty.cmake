@@ -28,7 +28,7 @@ CPMAddPackage(
     "SDL_DISABLE_INSTALL ON"
     "SDL_DISABLE_UNINSTALL ON"
     "SDL_DIALOG OFF"
-    "SDL_OPENGL OFF"
+    "SDL_OPENGL ${polly_have_gfx_opengl}"
     "SDL_VULKAN ${polly_have_gfx_vulkan}"
     "SDL_METAL ${polly_have_gfx_metal}"
     "SDL_OFFSCREEN OFF"

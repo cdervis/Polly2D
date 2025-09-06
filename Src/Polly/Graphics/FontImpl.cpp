@@ -316,6 +316,8 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
         d3d11Painter.id3d11Context()
             ->UpdateSubresource(id3d11Texture, 0, nullptr, page.atlasData.data(), rowPitch, slicePitch);
 
+#elif polly_have_gfx_opengl
+        notImplemented();
 #elif polly_have_gfx_vulkan
         auto& deviceImpl   = *Game::Impl::instance().painter().impl();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);
