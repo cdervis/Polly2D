@@ -130,6 +130,9 @@ void OpenGLPainter::onFrameStarted()
     // auto& openGLWindow = static_cast<OpenGLWindow&>(window());
 
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, _globalUBO.handleGL());
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glEnable(GL_BLEND);
+    glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     _spriteVertexCounter = 0;
     _spriteIndexCounter  = 0;
@@ -137,7 +140,10 @@ void OpenGLPainter::onFrameStarted()
     _meshVertexCounter   = 0;
     _meshIndexCounter    = 0;
 
-    _lastBoundOpenGLImage = nullptr;
+    _lastBoundOpenGLImage   = nullptr;
+    _lastSetBlendingEnabled = true;
+    _lastSetColorMask       = Array{GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
+    _lastSetBlendColor      = white;
 }
 
 void OpenGLPainter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc)
@@ -181,7 +187,8 @@ void OpenGLPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    auto clearFlags = GLbitfield(0);
+    auto clearFlags             = GLbitfield(0);
+    auto haveToRestoreColorMask = false;
 
     if (clearColor)
     {
@@ -189,13 +196,25 @@ void OpenGLPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
         const auto color = *clearColor;
         glClearColor(color.r, color.g, color.b, color.a);
 
-        // TODO:
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        if (!areContainersEqual(_lastSetColorMask, Array{GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE}))
+        {
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+            haveToRestoreColorMask = true;
+        }
     }
 
     if (clearFlags != 0)
     {
         glClear(clearFlags);
+    }
+
+    if (haveToRestoreColorMask)
+    {
+        glColorMask(
+            GLboolean(_lastSetColorMask[0]),
+            GLboolean(_lastSetColorMask[1]),
+            GLboolean(_lastSetColorMask[2]),
+            GLboolean(_lastSetColorMask[3]));
     }
 
     glViewport(GLint(viewport.x), GLint(viewport.y), GLsizei(viewport.width), GLsizei(viewport.height));
@@ -327,13 +346,29 @@ int OpenGLPainter::prepareDrawCall()
         {
             const auto blendState = currentBlendState();
 
-            blendState.isBlendingEnabled ? glEnable(GL_BLEND) : glDisable(GL_BLEND);
+            if (_lastSetBlendingEnabled != blendState.isBlendingEnabled)
+            {
+                blendState.isBlendingEnabled ? glEnable(GL_BLEND) : glDisable(GL_BLEND);
+                _lastSetBlendingEnabled = blendState.isBlendingEnabled;
+            }
 
-            glColorMask(
+            const auto desiredColorMask = Array<int, 4>{
                 hasFlag(blendState.colorWriteMask, ColorWriteMask::Red),
                 hasFlag(blendState.colorWriteMask, ColorWriteMask::Green),
                 hasFlag(blendState.colorWriteMask, ColorWriteMask::Blue),
-                hasFlag(blendState.colorWriteMask, ColorWriteMask::Alpha));
+                hasFlag(blendState.colorWriteMask, ColorWriteMask::Alpha),
+            };
+
+            if (!areContainersEqual(desiredColorMask, _lastSetColorMask))
+            {
+                glColorMask(
+                    GLboolean(desiredColorMask[0]),
+                    GLboolean(desiredColorMask[1]),
+                    GLboolean(desiredColorMask[2]),
+                    GLboolean(desiredColorMask[3]));
+
+                _lastSetColorMask = desiredColorMask;
+            }
 
             glBlendEquationSeparate(
                 *convertBlendFunction(blendState.colorBlendFunction),
@@ -344,6 +379,17 @@ int OpenGLPainter::prepareDrawCall()
                 *convertBlend(blendState.colorDstBlend),
                 *convertBlend(blendState.alphaSrcBlend),
                 *convertBlend(blendState.alphaDstBlend));
+
+            if (_lastSetBlendColor != blendState.blendFactor)
+            {
+                glBlendColor(
+                    blendState.blendFactor.r,
+                    blendState.blendFactor.g,
+                    blendState.blendFactor.b,
+                    blendState.blendFactor.a);
+
+                _lastSetBlendColor = blendState.blendFactor;
+            }
         }
 
         df &= ~DF_PipelineState;
@@ -413,8 +459,14 @@ int OpenGLPainter::prepareDrawCall()
         {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, image->textureHandleGL());
-            _lastBoundOpenGLImage = image;
+
+            if (!_lastBoundOpenGLImage)
+            {
+                image->applySampler(currentSampler(), false);
+            }
         }
+
+        _lastBoundOpenGLImage = image;
 
         ++perfStats.textureChangeCount;
 
@@ -424,8 +476,10 @@ int OpenGLPainter::prepareDrawCall()
 
     if (df & DF_Sampler)
     {
-        assume(_lastBoundOpenGLImage);
-        _lastBoundOpenGLImage->applySampler(currentSampler(), false);
+        if (_lastBoundOpenGLImage)
+        {
+            _lastBoundOpenGLImage->applySampler(currentSampler(), false);
+        }
         df &= ~DF_Sampler;
     }
 

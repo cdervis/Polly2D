@@ -137,6 +137,9 @@ class OpenGLPainter final : public Painter::Impl
     u32 _meshVertexCounter   = 0;
     u32 _meshIndexCounter    = 0;
 
-    OpenGLImage* _lastBoundOpenGLImage = nullptr;
+    OpenGLImage*  _lastBoundOpenGLImage   = nullptr;
+    bool          _lastSetBlendingEnabled = false;
+    Array<int, 4> _lastSetColorMask{};
+    Color         _lastSetBlendColor = transparent;
 };
 } // namespace Polly
