@@ -68,7 +68,6 @@ static void openGLDebugMessageCallback(
                 "OpenGL has reported an issue of type {}: {}",
                 openGLDebugTypeToString(type),
                 message));
-            break;
     }
 }
 #endif
@@ -350,19 +349,36 @@ int OpenGLPainter::prepareDrawCall()
 
     if ((df & DF_VertexBuffers) || (df & DF_IndexBuffer))
     {
-        const auto& vao = [&]() -> const OpenGLVAO&
+        auto vaoHandleGL          = GLuint(0);
+        auto vertexBufferHandleGL = GLuint(0);
+        auto indexBufferHandleGL  = GLuint(0);
+
+        switch (currentBatchMode)
         {
-            switch (currentBatchMode)
-            {
-                case BatchMode::Sprites: return _spriteVAO;
-                case BatchMode::Polygons: return _polyVAO;
-                case BatchMode::Mesh: return _meshVAO;
-            }
+            case BatchMode::Sprites:
+                vaoHandleGL          = _spriteVAO.handleGL();
+                vertexBufferHandleGL = _spriteVertexBuffer.handleGL();
+                indexBufferHandleGL  = _spriteIndexBuffer.handleGL();
+                break;
+            case BatchMode::Polygons:
+                vaoHandleGL          = _polyVAO.handleGL();
+                vertexBufferHandleGL = _polyVertexBuffer.handleGL();
+                break;
+            case BatchMode::Mesh:
+                vaoHandleGL          = _meshVAO.handleGL();
+                vertexBufferHandleGL = _meshVertexBuffer.handleGL();
+                indexBufferHandleGL  = _meshIndexBuffer.handleGL();
+                break;
+        }
 
-            throw Error("Invalid batch mode");
-        }();
+        glBindVertexArray(vaoHandleGL);
 
-        glBindVertexArray(vao.handleGL());
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferHandleGL);
+
+        if (indexBufferHandleGL != 0)
+        {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferHandleGL);
+        }
 
         df &= ~DF_VertexBuffers;
         df &= ~DF_IndexBuffer;
@@ -434,6 +450,31 @@ void OpenGLPainter::flushSprites(
     GamePerformanceStats& stats,
     Rectangle             imageSizeAndInverse)
 {
+    auto* dstVertices =
+        static_cast<SpriteVertex*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY)) + _spriteVertexCounter;
+
+    if (!dstVertices)
+    {
+        throw Error("Failed to map the sprite vertex buffer.");
+    }
+
+    fillSpriteVertices(dstVertices, sprites, imageSizeAndInverse, /*flipImageUpDown:*/ false);
+
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    const auto vertexCount = sprites.size() * verticesPerSprite;
+    const auto indexCount  = sprites.size() * indicesPerSprite;
+
+    glDrawElements(
+        GL_TRIANGLES,
+        indexCount,
+        GL_UNSIGNED_SHORT,
+        reinterpret_cast<const void*>(uintptr_t(_spriteIndexCounter) * sizeof(u16)));
+
+    ++stats.drawCallCount;
+    stats.vertexCount += vertexCount;
+    _spriteVertexCounter += vertexCount;
+    _spriteIndexCounter += indexCount;
 }
 
 void OpenGLPainter::flushPolys(
@@ -442,10 +483,53 @@ void OpenGLPainter::flushPolys(
     u32                           numberOfVerticesToDraw,
     GamePerformanceStats&         stats)
 {
+    auto* dstVertices = static_cast<Tessellation2D::PolyVertex*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY))
+                        + _polyVertexCounter;
+
+    if (!dstVertices)
+    {
+        throw Error("Failed to map the polygon vertex buffer.");
+    }
+
+    Tessellation2D::processPolyQueue(polys, dstVertices, polyCmdVertexCounts);
+
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glDrawArrays(GL_TRIANGLE_STRIP, _polyVertexCounter, numberOfVerticesToDraw);
+
+    ++stats.drawCallCount;
+    stats.vertexCount += numberOfVerticesToDraw;
+    _polyVertexCounter += numberOfVerticesToDraw;
 }
 
 void OpenGLPainter::flushMeshes(Span<MeshEntry> meshes, GamePerformanceStats& stats)
 {
+    auto* dstVertices =
+        static_cast<MeshVertex*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY)) + _meshVertexCounter;
+
+    if (!dstVertices)
+    {
+        throw Error("Failed to map the mesh vertex buffer.");
+    }
+
+    auto* dstIndices =
+        static_cast<u16*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY)) + _meshIndexCounter;
+
+    const auto [totalVertexCount, totalIndexCount] =
+        fillMeshVertices(meshes, dstVertices, dstIndices, _meshVertexCounter);
+
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+    glDrawElements(
+        GL_TRIANGLES,
+        totalIndexCount,
+        GL_UNSIGNED_SHORT,
+        reinterpret_cast<const void*>(uintptr_t(_meshIndexCounter) * sizeof(u16)));
+
+    _meshVertexCounter += totalVertexCount;
+    _meshIndexCounter += totalIndexCount;
+    ++stats.drawCallCount;
+    stats.vertexCount += totalVertexCount;
 }
 
 void OpenGLPainter::spriteQueueLimitReached()
