@@ -81,8 +81,8 @@ String HLSLShaderGenerator::doGeneration(
         else if (_ast->isMeshShader())
         {
             w << "float4 position : SV_Position;" << wnewline;
-            w << "noperspective float4 color : TEXCOORD0;" << wnewline;
-            w << "float2 uv : TEXCOORD1;" << wnewline;
+            w << "noperspective float2 uv : TEXCOORD0;" << wnewline;
+            w << "float4 color : TEXCOORD1;" << wnewline;
         }
 
         w.closeBrace(true);
