@@ -34,6 +34,13 @@ Sound::Sound(SfxrSoundPreset sfxrPreset, i32 seed)
     setImpl(*this, makeUnique<Impl>(audioDeviceImpl, sfxrPreset, seed).release());
 }
 
+Sound::Sound(SoundSpeech speechParams, StringView speechText)
+    : Sound()
+{
+    auto& audioDeviceImpl = *Game::Impl::instance().audioDevice().impl();
+    setImpl(*this, makeUnique<Impl>(audioDeviceImpl, speechParams, speechText).release());
+}
+
 void Sound::stop()
 {
     PollyDeclareThisImpl;
@@ -47,5 +54,17 @@ u32 Sound::voiceCount() const
     const auto& audioSource     = impl->soloudAudioSource();
 
     return audioDeviceImpl.soloudDevice().countAudioSource(audioSource);
+}
+
+void Sound::setSpeechText(StringView value)
+{
+    PollyDeclareThisImpl;
+    impl->setSpeechText(value);
+}
+
+void Sound::setSpeechParams(SoundSpeech params)
+{
+    PollyDeclareThisImpl;
+    impl->setSpeechParams(params);
 }
 } // namespace Polly

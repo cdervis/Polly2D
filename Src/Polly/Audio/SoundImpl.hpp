@@ -27,6 +27,8 @@ class Sound::Impl final : public Object,
 
     explicit Impl(AudioDevice::Impl& audioDevice, SfxrSoundPreset sfxrPreset, int seed);
 
+    explicit Impl(AudioDevice::Impl& audioDevice, SoundSpeech speechParams, StringView speechText);
+
     // Overload for creating null-sound objects for null-audio devices.
     // In this case, impl is very lightweight and has no operations.
     // It merely exists to provide a non-null value for Sound.
@@ -34,16 +36,23 @@ class Sound::Impl final : public Object,
 
     ~Impl() noexcept override;
 
+    SoundType type() const;
+
     void stop();
 
     SoLoud::AudioSource& soloudAudioSource();
 
     const SoLoud::AudioSource& soloudAudioSource() const;
 
+    void setSpeechText(StringView value);
+
+    void setSpeechParams(SoundSpeech params);
+
   private:
     void initSoloudWavAudioSource();
 
     AudioDevice::Impl&             _audioDeviceImpl;
+    SoundType                      _type;
     List<u8>                       _data;
     UniquePtr<SoLoud::AudioSource> _soloudAudioSource;
 };
