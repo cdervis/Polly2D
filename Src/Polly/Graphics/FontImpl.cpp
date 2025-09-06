@@ -316,7 +316,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
             bitmapHeight,
             formatTriplet.baseFormat,
             formatTriplet.type,
-            bufferRGBA.data());
+            _glyphBufferRGBA.data());
 
 #elif polly_have_gfx_vulkan
 
