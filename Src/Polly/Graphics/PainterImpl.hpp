@@ -243,14 +243,6 @@ class Painter::Impl : public Object
 
     Vec2 currentCanvasSize() const;
 
-    virtual void readCanvasDataInto(
-        const Image& canvas,
-        u32          x,
-        u32          y,
-        u32          width,
-        u32          height,
-        void*        destination) = 0;
-
     virtual void requestFrameCapture() = 0;
 
     PainterCapabilities capabilities() const;
