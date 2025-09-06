@@ -458,7 +458,7 @@ void OpenGLPainter::flushSprites(
         throw Error("Failed to map the sprite vertex buffer.");
     }
 
-    fillSpriteVertices(dstVertices, sprites, imageSizeAndInverse, /*flipImageUpDown:*/ false);
+    fillSpriteVertices<true>(dstVertices, sprites, imageSizeAndInverse);
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
 

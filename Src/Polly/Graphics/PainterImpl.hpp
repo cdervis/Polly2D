@@ -11,6 +11,7 @@
 #include "Polly/Core/Object.hpp"
 #include "Polly/Function.hpp"
 #include "Polly/GamePerformanceStats.hpp"
+#include "Polly/Graphics/ImageImpl.hpp"
 #include "Polly/Graphics/InternalSharedShaderStructs.hpp"
 #include "Polly/Graphics/PolyDrawCommands.hpp"
 #include "Polly/Graphics/ShaderImpl.hpp"
@@ -44,7 +45,7 @@ class SemaContext;
 class ShaderParamDecl;
 } // namespace ShaderCompiler
 
-enum class BatchMode
+enum class BatchMode : u8
 {
     Sprites  = 0,
     Polygons = 1,
@@ -59,6 +60,7 @@ struct InternalSprite
     Vec2       origin;
     Radians    rotation;
     SpriteFlip flip = SpriteFlip::None;
+    bool       isCanvas;
 };
 
 struct MeshEntry
@@ -89,14 +91,6 @@ class Painter::Impl : public Object
                  bitor DF_UserShaderParams
                  bitor DF_VertexBuffers
                  bitor DF_IndexBuffer,
-    };
-
-    enum class PipelinePart
-    {
-        BatchShader,
-        Sampler,
-        BlendState,
-        GlobalCBufferParams,
     };
 
     struct FrameData
@@ -316,12 +310,8 @@ class Painter::Impl : public Object
 
     void preBackendDtor();
 
-    template<typename T>
-    void fillSpriteVertices(
-        T*                   dst,
-        Span<InternalSprite> sprites,
-        const Rectangle&     imageSizeAndInverse,
-        bool                 flipImageUpDown) const;
+    template<bool FlipCanvasUpsideDown, typename T>
+    void fillSpriteVertices(T* dst, Span<InternalSprite> sprites, const Rectangle& imageSizeAndInverse) const;
 
     struct MeshFillResult
     {
@@ -392,12 +382,11 @@ class Painter::Impl : public Object
 
     void doResourceLeakCheck();
 
-    template<typename T>
-    static void renderSprite(
+    template<bool FlipCanvasUpsideDown, typename T>
+    static void fillSprite(
         const InternalSprite& sprite,
         T*                    dstVertices,
-        const Rectangle&      imageSizeAndInverse,
-        bool                  flipImageUpDown);
+        const Rectangle&      imageSizeAndInverse);
 
     static void resetShaderState(auto& shader)
     {
@@ -451,16 +440,15 @@ class Painter::Impl : public Object
 
 // Inline function implementations
 
-template<typename T>
+template<bool FlipCanvasUpsideDown, typename T>
 void Painter::Impl::fillSpriteVertices(
     T*                   dst,
     Span<InternalSprite> sprites,
-    const Rectangle&     imageSizeAndInverse,
-    bool                 flipImageUpDown) const
+    const Rectangle&     imageSizeAndInverse) const
 {
     for (const auto& sprite : sprites)
     {
-        renderSprite(sprite, dst, imageSizeAndInverse, flipImageUpDown);
+        fillSprite<FlipCanvasUpsideDown>(sprite, dst, imageSizeAndInverse);
         dst += verticesPerSprite;
     }
 }
@@ -511,12 +499,11 @@ Painter::Impl::MeshFillResult Painter::Impl::fillMeshVertices(
     };
 }
 
-template<typename T>
-void Painter::Impl::renderSprite(
+template<bool FlipCanvasUpsideDown, typename T>
+void Painter::Impl::fillSprite(
     const InternalSprite& sprite,
     T*                    dstVertices,
-    const Rectangle&      imageSizeAndInverse,
-    bool                  flipImageUpDown)
+    const Rectangle&      imageSizeAndInverse)
 {
     const auto destination = sprite.dst;
     const auto source      = sprite.src.scaled(imageSizeAndInverse.size());
@@ -565,11 +552,14 @@ void Painter::Impl::renderSprite(
         Vec2(1, 1),
     };
 
-    auto flipFlags = static_cast<int>(sprite.flip);
+    auto flipFlags = u8(sprite.flip);
 
-    if (flipImageUpDown)
+    if constexpr (FlipCanvasUpsideDown)
     {
-        flipFlags |= static_cast<int>(SpriteFlip::Vertically);
+        if (sprite.isCanvas)
+        {
+            flipFlags |= static_cast<int>(SpriteFlip::Vertically);
+        }
     }
 
     const auto mirrorBits = static_cast<u32>(flipFlags bitand 3);
@@ -604,9 +594,11 @@ void Painter::Impl::drawSprite(const Sprite& sprite)
     auto* imageImpl = sprite.image.impl();
     assume(imageImpl);
 
+    const auto isCanvas = imageImpl->isCanvas();
+
     if constexpr (PerformCanvasCheck)
     {
-        if (sprite.image == _currentCanvas)
+        if (imageImpl == _currentCanvas.impl())
         {
             throw Error(
                 "An image can't be drawn while it's bound as a canvas. Please unset the canvas first (using "
@@ -632,6 +624,7 @@ void Painter::Impl::drawSprite(const Sprite& sprite)
             .origin   = sprite.origin,
             .rotation = sprite.rotation,
             .flip     = sprite.flip,
+            .isCanvas = isCanvas,
         });
 
     if (frameData.spriteBatchImage != imageImpl)
