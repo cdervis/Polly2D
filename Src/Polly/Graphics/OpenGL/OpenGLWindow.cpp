@@ -16,6 +16,10 @@ OpenGLWindow::OpenGLWindow(
     Span<Display>   displays)
     : Impl(title)
 {
+#ifndef NDEBUG
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
+
     createSDLWindow(SDL_WINDOW_OPENGL, initialWindowSize, fullScreenDisplayIndex, displays);
 
     _openGLContext = SDL_GL_CreateContext(sdlWindow());

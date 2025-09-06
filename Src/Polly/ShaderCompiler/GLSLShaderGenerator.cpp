@@ -24,21 +24,27 @@ namespace Polly::ShaderCompiler
 {
 static constexpr auto fragmentShaderOutputVariableName = "outColor";
 
-GLSLShaderGenerator::GLSLShaderGenerator()
+GLSLShaderGenerator::GLSLShaderGenerator(bool shouldGenerateForVulkan)
+    : _shouldGenerateForVulkan(shouldGenerateForVulkan)
 {
     _isSwappingMatrixVectorMults = true;
 
     _builtInTypeDict = {
-        {IntType::instance(), "int"},
-        {BoolType::instance(), "bool"},
-        {FloatType::instance(), "float"},
-        {Vec2Type::instance(), "vec2"},
-        {Vec3Type::instance(), "vec3"},
-        {Vec4Type::instance(), "vec4"},
-        {MatrixType::instance(), "mat4"},
+        {IntType::instance(), "int"_sv},
+        {BoolType::instance(), "bool"_sv},
+        {FloatType::instance(), "float"_sv},
+        {Vec2Type::instance(), "vec2"_sv},
+        {Vec3Type::instance(), "vec3"_sv},
+        {Vec4Type::instance(), "vec4"_sv},
+        {MatrixType::instance(), "mat4"_sv},
     };
 
     _needsFloatLiteralSuffix = false;
+
+    _v2fColor         = Naming::forbiddenIdentifierPrefix + "v2f_color"_sv;
+    _v2fUV            = Naming::forbiddenIdentifierPrefix + "v2f_uv"_sv;
+    _imageName        = Naming::forbiddenIdentifierPrefix + "image"_sv;
+    _imageSamplerName = Naming::forbiddenIdentifierPrefix + "imageSampler"_sv;
 }
 
 String GLSLShaderGenerator::doGeneration(
@@ -48,7 +54,7 @@ String GLSLShaderGenerator::doGeneration(
 {
     const auto shaderName = FileSystem::pathFilename(_ast->filename().data(), false);
 
-    auto w = Writer{};
+    auto w = Writer();
 
     // Must be the same as in SpriteBatchPs...frag.
     constexpr auto spriteImageBindingSet         = 0;
@@ -56,36 +62,50 @@ String GLSLShaderGenerator::doGeneration(
     constexpr auto spriteImageSamplerBindingSet  = 1;
     constexpr auto spriteImageSamplerBindingSlot = 0;
 
-    // Vulkan spec
-    w << "#version 450" << wnewline;
+    if (_shouldGenerateForVulkan)
+    {
+        // Vulkan spec
+        w << "#version 450" << wnewline;
+    }
+    else
+    {
+        w << "#version 330" << wnewline;
+    }
 
     w << "precision highp float;" << wnewline;
     w << "precision highp sampler2D;" << wnewline;
 
     w << wnewline;
 
-    if (_ast->shaderType() == ShaderType::Sprite)
+    if (_ast->shaderType() == ShaderType::Sprite or _ast->shaderType() == ShaderType::Mesh)
     {
         // Emit uniforms that are always available/implicit, depending on shader domain.
-        w
-            << "layout(set = "
-            << spriteImageBindingSet
-            << ", binding = "
-            << spriteImageBindingSlot
-            << ") uniform texture2D SpriteImage;"
-            << wnewline;
+        if (_shouldGenerateForVulkan)
+        {
+            w
+                << "layout(set = "
+                << spriteImageBindingSet
+                << ", binding = "
+                << spriteImageBindingSlot
+                << ") uniform texture2D "
+                << _imageName
+                << ";"
+                << wnewline;
 
-        w
-            << "layout(set = "
-            << spriteImageSamplerBindingSet
-            << ", binding = "
-            << spriteImageSamplerBindingSlot
-            << ") uniform sampler SpriteImageSampler;"
-            << wnewline;
-    }
-    else if (_ast->shaderType() == ShaderType::Polygon)
-    {
-        w << "TODO(shader type built ins)" << wnewline;
+            w
+                << "layout(set = "
+                << spriteImageSamplerBindingSet
+                << ", binding = "
+                << spriteImageSamplerBindingSlot
+                << ") uniform sampler "
+                << _imageSamplerName
+                << ";"
+                << wnewline;
+        }
+        else
+        {
+            w << "uniform sampler2D " << _imageName << ';' << wnewline;
+        }
     }
 
     w << wnewline;
@@ -153,16 +173,17 @@ void GLSLShaderGenerator::generateFunctionDecl(
 
     if (function->isShader())
     {
-        if (_ast->shaderType() == ShaderType::Sprite)
+        // Sprite and Mesh shaders share the same inputs and names.
+        if (_ast->shaderType() == ShaderType::Sprite or _ast->shaderType() == ShaderType::Mesh)
         {
-            // Keep this in sync with the output of SpriteBatchVs.vert!
-            w << "layout(location = 0) in vec4 " << Naming::forbiddenIdentifierPrefix << "color;" << wnewline;
-            w << "layout(location = 1) in vec2 " << Naming::forbiddenIdentifierPrefix << "uv;" << wnewline;
+            // Keep this in sync with the output of SpriteBatchOpenGL.vert/SpriteBatchVulkan.vert!
+            w << "in vec4 " << _v2fColor << ';' << wnewline;
+            w << "in vec2 " << _v2fUV << ';' << wnewline;
         }
-        else if (_ast->shaderType() == ShaderType::Sprite)
+        else if (_ast->shaderType() == ShaderType::Polygon)
         {
-            // Keep this in sync with the output of PolyVs.vert!
-            w << "TODO(outputs poly)";
+            // Keep this in sync with the output of PolyOpenGL.vert/PolyVulkan.vert!
+            w << "in vec4 " << _v2fColor << ';' << wnewline;
         }
 
         w << wnewline;
@@ -269,9 +290,17 @@ void GLSLShaderGenerator::generateFunctionCallExpr(
 
     if (isImageSamplingFunc)
     {
-        w << "sampler2D(";
-        generateExpr(w, args.first().get(), context);
-        w << ", SpriteImageSampler), ";
+        if (_shouldGenerateForVulkan)
+        {
+            w << "sampler2D(";
+            generateExpr(w, args.first().get(), context);
+            w << ", " << _imageSamplerName << "), ";
+        }
+        else
+        {
+            generateExpr(w, args.first().get(), context);
+            w << ", ";
+        }
     }
     else
     {
@@ -314,17 +343,24 @@ void GLSLShaderGenerator::generateSymAccessExpr(
     {
         w << name;
     }
-    else if (symbol == builtIns.svSpriteImage.get())
+    else if (is<VectorSwizzlingDecl>(symbol))
     {
-        w << "SpriteImage";
+        w << expr->identifier();
     }
-    else if (symbol == builtIns.svSpriteColor.get())
+    else if (symbol == builtIns.svSpriteImage.get() or symbol == builtIns.svMeshImage.get())
     {
-        w << Naming::forbiddenIdentifierPrefix << "color";
+        w << _imageName;
     }
-    else if (symbol == builtIns.svSpriteUV.get())
+    else if (
+        symbol == builtIns.svSpriteColor.get()
+        or symbol == builtIns.svPolygonColor.get()
+        or symbol == builtIns.svMeshColor.get())
     {
-        w << Naming::forbiddenIdentifierPrefix << "uv";
+        w << _v2fColor;
+    }
+    else if (symbol == builtIns.svSpriteUV.get() or symbol == builtIns.svMeshUV.get())
+    {
+        w << _v2fUV;
     }
     else if (builtIns.is_lerp_function(symbol))
     {
@@ -356,9 +392,15 @@ void GLSLShaderGenerator::emitUniformBufferForUserParams(
 {
     if (not params.scalars.isEmpty())
     {
-        w << "layout(std140, ";
-        w << "set = " << CommonVulkanInfo::userShaderDescriptorSetIndex << ", ";
-        w << "binding = " << CommonVulkanInfo::userShaderParamsCBufferBinding;
+        w << "layout(std140";
+
+        if (_shouldGenerateForVulkan)
+        {
+            w << ", ";
+            w << "set = " << CommonVulkanInfo::userShaderDescriptorSetIndex << ", ";
+            w << "binding = " << CommonVulkanInfo::userShaderParamsCBufferBinding;
+        }
+
         w << ") uniform UBO ";
         w.openBrace();
 
@@ -382,12 +424,11 @@ void GLSLShaderGenerator::emitUniformBufferForUserParams(
         w << wnewline;
     }
 
+// TODO:
+#if 0
     // Image parameters
     for (const auto param : params.resources)
     {
-        // Not always supported. Have to check support first before using
-        // layout(binding=...). w << "layout(binding = " << i << ") ";
-
         w << "uniform ";
 
         if (param->type() == ImageType::instance())
@@ -401,5 +442,6 @@ void GLSLShaderGenerator::emitUniformBufferForUserParams(
 
         w << " " << param->name() << ";" << wnewline;
     }
+#endif
 }
 } // namespace Polly::ShaderCompiler

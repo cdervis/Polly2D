@@ -14,23 +14,68 @@
 #include "Polly/ImGui.hpp"
 #include "Polly/List.hpp"
 #include "Polly/Logging.hpp"
+#include "Polly/ShaderCompiler/Ast.hpp"
 #include "Polly/Util.hpp"
 
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl3.h>
 
-#include "MeshPs.frag.hpp"
-#include "MeshVs.vert.hpp"
-#include "PolyPs.frag.hpp"
-#include "PolyVs.vert.hpp"
-#include "SpriteBatchPsDefault.frag.hpp"
-#include "SpriteBatchPsMonochromatic.frag.hpp"
-#include "SpriteBatchVs.vert.hpp"
+#include "MeshOpenGL.vert.hpp"
+#include "PolyOpenGL.vert.hpp"
+#include "SpriteBatchOpenGL.vert.hpp"
 
 namespace Polly
 {
+#ifndef NDEBUG
+static StringView openGLDebugTypeToString(GLenum type)
+{
+    switch (type)
+    {
+        case GL_DEBUG_TYPE_ERROR: return "Error"_sv;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "DeprecatedBehavior"_sv;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: return "UndefinedBehavior"_sv;
+        case GL_DEBUG_TYPE_PORTABILITY: return "PortabilityIssue"_sv;
+        case GL_DEBUG_TYPE_PERFORMANCE: return "PerformanceIssue"_sv;
+        case GL_DEBUG_TYPE_MARKER: return "Marker"_sv;
+        case GL_DEBUG_TYPE_PUSH_GROUP: return "PushGroup"_sv;
+        case GL_DEBUG_TYPE_POP_GROUP: return "PopGroup"_sv;
+        case GL_DEBUG_TYPE_OTHER: return "Other"_sv;
+    }
+
+    return "Unknown"_sv;
+}
+
+static void openGLDebugMessageCallback(
+    GLenum        source,
+    GLenum        type,
+    GLuint        id,
+    GLenum        severity,
+    GLsizei       length,
+    const GLchar* message,
+    const void*   userParam)
+{
+    logVerbose("[OpenGLDebugLayer] {}", message);
+
+    // We don't want any surprises when dealing with cross-platform OpenGL development.
+    // Therefore, catch all possible issues related to that.
+    switch (type)
+    {
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+        case GL_DEBUG_TYPE_PORTABILITY:
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+        case GL_DEBUG_TYPE_ERROR:
+            throw Error(formatString(
+                "OpenGL has reported an issue of type {}: {}",
+                openGLDebugTypeToString(type),
+                message));
+            break;
+    }
+}
+#endif
+
 OpenGLPainter::OpenGLPainter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
     : Impl(windowImpl, performanceStats)
+    , _glslShaderGenerator(/*shouldGenerateForVulkan:*/ false)
 {
     auto& openGLWindow = static_cast<OpenGLWindow&>(windowImpl);
     openGLWindow.makeContextCurrent();
@@ -55,6 +100,7 @@ OpenGLPainter::OpenGLPainter(Window::Impl& windowImpl, GamePerformanceStats& per
 
     verifyOpenGLState();
 
+    setupOpenGLDebugCallback();
     createUniformBuffers();
     createSpriteRenderingResources();
     createPolyRenderingResources();
@@ -82,7 +128,7 @@ OpenGLPainter::~OpenGLPainter() noexcept
 
 void OpenGLPainter::onFrameStarted()
 {
-     //auto& openGLWindow = static_cast<OpenGLWindow&>(window());
+    // auto& openGLWindow = static_cast<OpenGLWindow&>(window());
 
     _spriteVertexCounter = 0;
     _spriteIndexCounter  = 0;
@@ -117,7 +163,7 @@ void OpenGLPainter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGu
 
 void OpenGLPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rectangle oldViewport)
 {
-    notImplemented();
+    // Nothing to do.
 }
 
 void OpenGLPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport)
@@ -125,9 +171,51 @@ void OpenGLPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
     notImplemented();
 }
 
-void OpenGLPainter::setScissorRects([[maybe_unused]] Span<Rectangle> scissorRects)
+void OpenGLPainter::onSetScissorRects([[maybe_unused]] Span<Rectangle> scissorRects)
 {
-    notImplemented();
+    flush();
+
+    if (scissorRects.isEmpty())
+    {
+        glDisable(GL_SCISSOR_TEST);
+    }
+    else
+    {
+        glEnable(GL_SCISSOR_TEST);
+
+        if (scissorRects.size() > 1)
+        {
+            assume(glScissorArrayv);
+
+            struct RectangleGL
+            {
+                GLint x, y, width, height;
+            };
+
+            auto list = List<GLint, 4 * 16>();
+            list.reserve(capabilities().maxScissorRects);
+
+            for (const auto& rect : scissorRects)
+            {
+                list.add(static_cast<GLint>(rect.x));
+                list.add(static_cast<GLint>(rect.y));
+                list.add(static_cast<GLint>(rect.width));
+                list.add(static_cast<GLint>(rect.height));
+            }
+
+            glScissorArrayv(0, static_cast<GLsizei>(scissorRects.size()), list.data());
+        }
+        else
+        {
+            const auto rect = scissorRects.first();
+
+            glScissor(
+                static_cast<GLint>(rect.x),
+                static_cast<GLint>(rect.y),
+                static_cast<GLsizei>(rect.width),
+                static_cast<GLsizei>(rect.height));
+        }
+    }
 }
 
 UniquePtr<Image::Impl> OpenGLPainter::createCanvas(u32 width, u32 height, ImageFormat format)
@@ -154,7 +242,16 @@ UniquePtr<Shader::Impl> OpenGLPainter::onCreateNativeUserShader(
     UserShaderFlags                     flags,
     u16                                 cbufferSize)
 {
-    notImplemented();
+    const auto glslSourceCode = _glslShaderGenerator.generate(context, ast, entryPoint, false);
+
+    return makeUnique<OpenGLUserShader>(
+        *this,
+        ast.shaderType(),
+        sourceCode,
+        glslSourceCode,
+        std::move(params),
+        flags,
+        cbufferSize);
 }
 
 void OpenGLPainter::notifyResourceDestroyed(GraphicsResource& resource)
@@ -192,6 +289,17 @@ void OpenGLPainter::spriteQueueLimitReached()
     throw Error("Sprite queue limit reached.");
 }
 
+void OpenGLPainter::setupOpenGLDebugCallback()
+{
+#ifndef NDEBUG
+    if (glDebugMessageCallback)
+    {
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(openGLDebugMessageCallback, this);
+    }
+#endif
+}
+
 void OpenGLPainter::createUniformBuffers()
 {
     _globalUBO = OpenGLBuffer(
@@ -213,15 +321,7 @@ void OpenGLPainter::createUniformBuffers()
 void OpenGLPainter::createSpriteRenderingResources()
 {
     // Shaders
-    _spriteVs = OpenGLShader(SpriteBatchVs_vertStringView(), GL_VERTEX_SHADER);
-
-    _defaultSpriteProgram = OpenGLShaderProgram(
-        _spriteVs.handleGL(),
-        OpenGLShader(SpriteBatchPsDefault_fragStringView(), GL_FRAGMENT_SHADER).handleGL());
-
-    _monochromaticSpriteProgram = OpenGLShaderProgram(
-        _spriteVs.handleGL(),
-        OpenGLShader(SpriteBatchPsMonochromatic_fragStringView(), GL_FRAGMENT_SHADER).handleGL());
+    _spriteVs = OpenGLShader(SpriteBatchOpenGL_vertStringView(), GL_VERTEX_SHADER);
 
     // Vertex buffer
     _spriteVertexBuffer = OpenGLBuffer(
@@ -258,11 +358,7 @@ void OpenGLPainter::createSpriteRenderingResources()
 void OpenGLPainter::createPolyRenderingResources()
 {
     // Shaders
-    _polyVs = OpenGLShader(PolyVs_vertStringView(), GL_VERTEX_SHADER);
-
-    _defaultPolyProgram = OpenGLShaderProgram(
-        _polyVs.handleGL(),
-        OpenGLShader(PolyPs_fragStringView(), GL_FRAGMENT_SHADER).handleGL());
+    _polyVs = OpenGLShader(PolyOpenGL_vertStringView(), GL_VERTEX_SHADER);
 
     // Vertex buffer
     _polyVertexBuffer = OpenGLBuffer(
@@ -285,11 +381,7 @@ void OpenGLPainter::createPolyRenderingResources()
 void OpenGLPainter::createMeshRenderingResources()
 {
     // Shaders
-    _meshVs = OpenGLShader(MeshVs_vertStringView(), GL_VERTEX_SHADER);
-
-    _defaultMeshProgram = OpenGLShaderProgram(
-        _meshVs.handleGL(),
-        OpenGLShader(MeshPs_fragStringView(), GL_FRAGMENT_SHADER).handleGL());
+    _meshVs = OpenGLShader(MeshOpenGL_vertStringView(), GL_VERTEX_SHADER);
 
     // Buffers
     _meshVertexBuffer = OpenGLBuffer(
@@ -328,6 +420,12 @@ PainterCapabilities OpenGLPainter::determineCapabilities() const
 
     caps.maxCanvasWidth  = caps.maxImageExtent;
     caps.maxCanvasHeight = caps.maxImageExtent;
+
+    {
+        auto value = GLint();
+        glGetIntegerv(GL_MAX_VIEWPORTS, &value);
+        caps.maxScissorRects = static_cast<u32>(value);
+    }
 
     return caps;
 }

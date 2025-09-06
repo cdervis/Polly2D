@@ -1,0 +1,8 @@
+#type sprite
+
+Vec4 main()
+{
+    auto texValue = sample(pl_spriteImage, pl_spriteUV).x;
+
+    return Vec4(1, 1, 1, texValue) * pl_spriteColor;
+}

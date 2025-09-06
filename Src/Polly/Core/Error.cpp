@@ -19,21 +19,21 @@ Error::Error(const char* message)
     : _impl(new Impl())
 {
     _impl->message = message;
-    logError("Error: {}", message);
+    logError("Exception: {}", message);
 }
 
 Error::Error(String message)
     : _impl(new Impl())
 {
     _impl->message = std::move(message);
-    logError("Error: {}", message);
+    logError("Exception: {}", _impl->message);
 }
 
 Error::Error(StringView message)
     : _impl(new Impl())
 {
     _impl->message = message;
-    logError("Error: {}", message);
+    logError("Exception: {}", message);
 }
 
 Error::Error(const Error& copyFrom)

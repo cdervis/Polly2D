@@ -8,6 +8,7 @@
 #include "Polly/Game/GameImpl.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/Narrow.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 
 #if polly_have_gfx_d3d11
 #include "Polly/Graphics/D3D11/D3D11Image.hpp"
@@ -258,7 +259,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(
 
 void Font::Impl::appendNewPage()
 {
-    const auto caps = Game::Impl::instance().painter().capabilities();
+    const auto caps = Painter::Impl::instance()->capabilities();
 
     const auto width  = min(2048u, caps.maxImageExtent);
     const auto height = width;
@@ -304,7 +305,7 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
         mtlTexture
             ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), rowPitch);
 #elif polly_have_gfx_d3d11
-        auto& painterImpl  = *Game::Impl::instance().painter().impl();
+        auto& painterImpl  = *Painter::Impl::instance();
         auto& d3d11Painter = static_cast<D3D11Painter&>(painterImpl);
 
         auto& d3d11Image    = static_cast<const Polly::D3D11Image&>(*page.atlas.impl());
@@ -319,7 +320,7 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
 #elif polly_have_gfx_opengl
         notImplemented();
 #elif polly_have_gfx_vulkan
-        auto& deviceImpl   = *Game::Impl::instance().painter().impl();
+        auto& deviceImpl   = *Painter::Impl::instance();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);
         auto  vmaAllocator = vulkanDevice.vmaAllocator();
         auto& vulkanImage  = static_cast<VulkanImage&>(*page.atlas.impl());

@@ -15,7 +15,7 @@ class GLSLShaderGenerator final : public TextBasedShaderGenerator
   public:
     static constexpr auto uboName = "cer_Params"_sv;
 
-    explicit GLSLShaderGenerator();
+    explicit GLSLShaderGenerator(bool shouldGenerateForVulkan);
 
     String doGeneration(
         const SemaContext&  context,
@@ -38,5 +38,11 @@ class GLSLShaderGenerator final : public TextBasedShaderGenerator
 
     void emitUniformBufferForUserParams(Writer& w, const FunctionDecl* shader, const AccessedParams& params)
         const;
+
+    bool   _shouldGenerateForVulkan;
+    String _v2fColor;
+    String _v2fUV;
+    String _imageName;
+    String _imageSamplerName;
 };
 } // namespace Polly::ShaderCompiler

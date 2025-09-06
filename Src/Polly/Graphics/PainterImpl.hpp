@@ -124,6 +124,8 @@ class Painter::Impl : public Object
     static constexpr auto verticesPerSprite = 4u;
     static constexpr auto indicesPerSprite  = 6u;
 
+    static Impl* instance();
+
     DeleteCopyAndMove(Impl);
 
     ~Impl() noexcept override;
@@ -178,7 +180,9 @@ class Painter::Impl : public Object
 
     virtual void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) = 0;
 
-    virtual void setScissorRects(Span<Rectangle> scissorRects) = 0;
+    void setScissorRects(Span<Rectangle> scissorRects);
+
+    virtual void onSetScissorRects(Span<Rectangle> scissorRects) = 0;
 
     const Matrix& transformation() const;
     void          setTransformation(const Matrix& transformation);
@@ -388,6 +392,8 @@ class Painter::Impl : public Object
 
     static Matrix computeViewportTransformation(const Rectangle& viewport);
 
+    void createDefaultShaders();
+
     void computeCombinedTransformation();
 
     void doResourceLeakCheck();
@@ -422,15 +428,22 @@ class Painter::Impl : public Object
     u32                     _maxSpriteBatchSize = 0;
     u32                     _maxPolyVertices    = 0;
     u32                     _maxMeshVertices    = 0;
-    Rectangle               _viewport;
-    Matrix                  _viewportTransformation;
-    Matrix                  _combinedTransformation;
-    float                   _pixelRatio = 1.0f;
 
-    Image      _currentCanvas;
-    Matrix     _currentTransformation;
-    BlendState _currentBlendState;
-    Sampler    _currentSampler;
+    Shader _defaultSpriteShader;
+    Shader _defaultSpriteShaderMonochromatic;
+    Shader _defaultPolyShader;
+    Shader _defaultMeshShader;
+
+    Rectangle _viewport;
+    Matrix    _viewportTransformation;
+    Matrix    _combinedTransformation;
+    float     _pixelRatio = 1.0f;
+
+    Image              _currentCanvas;
+    Matrix             _currentTransformation;
+    BlendState         _currentBlendState;
+    Sampler            _currentSampler;
+    List<Rectangle, 4> _currentScissorRects;
 
     // Currently bound shaders. Slots correspond to BatchMode enum values.
     Array<Shader, 3> _currentShaders;

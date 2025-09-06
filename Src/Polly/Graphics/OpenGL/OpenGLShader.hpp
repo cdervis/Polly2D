@@ -24,7 +24,9 @@ class OpenGLShader final
 
     ~OpenGLShader() noexcept;
 
-    GLuint handleGL() const;
+    GLuint handleGL() const&;
+
+    GLuint handleGL() &&;
 
   private:
     void destroy();

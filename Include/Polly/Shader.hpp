@@ -17,9 +17,12 @@ enum class ShaderType
     /// A shader that acts on sprites
     Sprite,
 
-    /// A shader that acts on polygons produced by methods such as
+    /// A shader that acts on primitives produced by methods such as
     /// drawLine() and fillRectangle().
     Polygon,
+
+    /// A shader that acts on primitives produced by drawMesh().
+    Mesh,
 };
 
 /// Represents a user-programmable pixel shader.
@@ -41,6 +44,14 @@ class Shader
     ///
     /// @throw Error If the asset does not exist or could not be read or loaded.
     explicit Shader(StringView assetName);
+
+    /// Creates a Shader from a source code string.
+    ///
+    /// @param name The name of the shader, used to tag the shader. Can be anything.
+    /// @param sourceCode The source code.
+    ///
+    /// @throw Error If the shader source code is invalid.
+    static Shader fromSource(StringView name, StringView sourceCode);
 
     StringView assetName() const;
 

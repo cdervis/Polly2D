@@ -18,5 +18,11 @@ if (polly_have_gfx_vulkan)
     add_subdirectory(Vulkan)
 endif ()
 
-target_sources(Polly PRIVATE Resources/Noto.ttf)
+target_sources(Polly PRIVATE
+    Resources/Noto.ttf
+    Resources/SpriteShaderDefault.shd
+    Resources/SpriteShaderMonochromatic.shd
+    Resources/PolyShaderDefault.shd
+    Resources/MeshShaderDefault.shd
+)
 

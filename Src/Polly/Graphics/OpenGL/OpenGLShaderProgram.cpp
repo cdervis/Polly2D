@@ -4,6 +4,9 @@
 
 #include "Polly/Graphics/OpenGL/OpenGLShaderProgram.hpp"
 
+#include "Polly/Error.hpp"
+#include "Polly/Format.hpp"
+
 namespace Polly
 {
 OpenGLShaderProgram::OpenGLShaderProgram() = default;
@@ -11,7 +14,7 @@ OpenGLShaderProgram::OpenGLShaderProgram() = default;
 OpenGLShaderProgram::OpenGLShaderProgram(GLuint vertexShaderHandleGL, GLuint fragmentShaderHandleGL)
 {
     _handleGL = glCreateProgram();
-    
+
     if (_handleGL == 0)
     {
         throw Error("Failed to create an OpenGL shader program handle.");
@@ -21,6 +24,23 @@ OpenGLShaderProgram::OpenGLShaderProgram(GLuint vertexShaderHandleGL, GLuint fra
     glAttachShader(_handleGL, fragmentShaderHandleGL);
 
     glLinkProgram(_handleGL);
+
+    auto success = GLint();
+    glGetProgramiv(_handleGL, GL_LINK_STATUS, &success);
+
+    if (not success)
+    {
+        auto logLength = GLint();
+        glGetProgramiv(_handleGL, GL_INFO_LOG_LENGTH, &logLength);
+
+        auto errorBuffer = List<GLchar>(static_cast<u32>(logLength) + 1);
+        glGetProgramInfoLog(_handleGL, static_cast<GLsizei>(logLength), nullptr, errorBuffer.data());
+
+        const auto errorMessage =
+            StringView(reinterpret_cast<const char*>(errorBuffer.data()), errorBuffer.size(), true);
+
+        throw Error(formatString("Failed to link an OpenGL shader program. Reason: {}", errorMessage));
+    }
 
     verifyOpenGLState();
 }

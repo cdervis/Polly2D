@@ -1,0 +1,6 @@
+#type mesh
+
+Vec4 main()
+{
+    return sample(pl_meshImage, pl_meshUV) * pl_meshColor;
+}

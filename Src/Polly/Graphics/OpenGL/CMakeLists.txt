@@ -11,13 +11,9 @@ target_sources(Polly PRIVATE
 )
 
 target_sources(Polly PRIVATE
-    Resources/SpriteBatchVs.vert
-    Resources/SpriteBatchPsDefault.frag
-    Resources/SpriteBatchPsMonochromatic.frag
-    Resources/PolyVs.vert
-    Resources/PolyPs.frag
-    Resources/MeshVs.vert
-    Resources/MeshPs.frag
+    Resources/SpriteBatchOpenGL.vert
+    Resources/PolyOpenGL.vert
+    Resources/MeshOpenGL.vert
 )
 
 target_compile_definitions(Polly PRIVATE -Dpolly_have_gfx_opengl=1)

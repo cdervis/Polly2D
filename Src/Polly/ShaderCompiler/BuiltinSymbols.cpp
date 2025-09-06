@@ -270,6 +270,9 @@ BuiltinSymbols::BuiltinSymbols()
     addSystemValue(svSpriteColor, Naming::spriteBatchColorAttrib, vec4Type);
     addSystemValue(svSpriteUV, Naming::spriteBatchUVAttrib, vec2Type);
     addSystemValue(svPolygonColor, Naming::polyBatchColorAttrib, vec4Type);
+    addSystemValue(svMeshImage, Naming::meshImageParam, imageT);
+    addSystemValue(svMeshColor, Naming::meshColorAttrib, vec4Type);
+    addSystemValue(svMeshUV, Naming::meshUVAttrib, vec2Type);
 
     arraySizeMember    = makeUnique<ArraySizeDecl>();
     vectorSwizzlingSym = makeUnique<VectorSwizzlingDecl>();

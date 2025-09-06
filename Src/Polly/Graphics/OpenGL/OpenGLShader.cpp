@@ -4,6 +4,10 @@
 
 #include "Polly/Graphics/OpenGL/OpenGLShader.hpp"
 
+#include "Polly/Array.hpp"
+#include "Polly/Narrow.hpp"
+#include "Polly/Format.hpp"
+
 namespace Polly
 {
 OpenGLShader::OpenGLShader() = default;
@@ -15,6 +19,45 @@ OpenGLShader::OpenGLShader(StringView glslCode, GLenum type)
 #endif
 {
     _handleGL = glCreateShader(type);
+
+    if (_handleGL == 0)
+    {
+        throw Error("Failed to create an OpenGL shader handle.");
+    }
+
+    const auto shaderSources = Array{
+        reinterpret_cast<const GLchar*>(glslCode.data()),
+    };
+
+    const auto shaderSourceLengths = Array{
+        narrow<GLint>(glslCode.size()),
+    };
+
+    glShaderSource(
+        _handleGL,
+        static_cast<GLsizei>(shaderSources.size()),
+        shaderSources.data(),
+        shaderSourceLengths.data());
+
+    glCompileShader(_handleGL);
+
+    auto success = GLint();
+    glGetShaderiv(_handleGL, GL_COMPILE_STATUS, &success);
+
+    if (not success)
+    {
+        auto logLength = GLint();
+        glGetShaderiv(_handleGL, GL_INFO_LOG_LENGTH, &logLength);
+
+        auto errorBuffer = List<GLchar>(static_cast<u32>(logLength) + 1);
+        glGetShaderInfoLog(_handleGL, static_cast<GLsizei>(logLength), nullptr, errorBuffer.data());
+
+        const auto errorMessage =
+            StringView(reinterpret_cast<const char*>(errorBuffer.data()), errorBuffer.size(), true);
+
+        throw Error(formatString("Failed to compile an OpenGL shader. Reason: {}", errorMessage));
+    }
+
     verifyOpenGLState();
 }
 
@@ -49,9 +92,14 @@ OpenGLShader::~OpenGLShader() noexcept
     destroy();
 }
 
-GLuint OpenGLShader::handleGL() const
+GLuint OpenGLShader::handleGL() const&
 {
     return _handleGL;
+}
+
+GLuint OpenGLShader::handleGL() &&
+{
+    return std::exchange(_handleGL, 0);
 }
 
 void OpenGLShader::destroy()

@@ -4,6 +4,7 @@
 
 #include <Polly/Graphics/OpenGL/OpenGLUserShader.hpp>
 
+#include "Polly/Graphics/OpenGL/OpenGLShader.hpp"
 #include <Polly/Graphics/OpenGL/OpenGLPainter.hpp>
 
 namespace Polly
@@ -17,8 +18,8 @@ OpenGLUserShader::OpenGLUserShader(
     UserShaderFlags flags,
     u16             cbufferSize)
     : Impl(painter, shaderType, sourceCode, std::move(parameters), flags, cbufferSize)
+    , _fragmentShaderHandleGL(OpenGLShader(glslSourceCode, GL_FRAGMENT_SHADER).handleGL())
 {
-    notImplemented();
 }
 
 GLuint OpenGLUserShader::fragmentShaderHandleGL() const
@@ -29,6 +30,6 @@ GLuint OpenGLUserShader::fragmentShaderHandleGL() const
 void OpenGLUserShader::setDebuggingLabel(StringView name)
 {
     GraphicsResource::setDebuggingLabel(name);
-    notImplemented();
+    setOpenGLObjectLabel(_fragmentShaderHandleGL, name);
 }
 } // namespace Polly

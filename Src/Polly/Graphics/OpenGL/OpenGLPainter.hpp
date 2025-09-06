@@ -4,16 +4,18 @@
 
 #pragma once
 
+#include "Polly/Array.hpp"
+#include "Polly/Graphics/OpenGL/OpenGLBuffer.hpp"
+#include "Polly/Graphics/OpenGL/OpenGLImage.hpp"
 #include "Polly/Graphics/OpenGL/OpenGLShader.hpp"
 #include "Polly/Graphics/OpenGL/OpenGLShaderProgram.hpp"
+#include "Polly/Graphics/OpenGL/OpenGLShaderProgramCache.hpp"
+#include "Polly/Graphics/OpenGL/OpenGLUserShader.hpp"
 #include "Polly/Graphics/OpenGL/OpenGLVAO.hpp"
-#include <Polly/Array.hpp>
-#include <Polly/Graphics/OpenGL/OpenGLBuffer.hpp>
-#include <Polly/Graphics/OpenGL/OpenGLImage.hpp>
-#include <Polly/Graphics/OpenGL/OpenGLUserShader.hpp>
-#include <Polly/Graphics/PainterImpl.hpp>
-#include <Polly/Graphics/Tessellation2D.hpp>
-#include <Polly/List.hpp>
+#include "Polly/Graphics/PainterImpl.hpp"
+#include "Polly/Graphics/Tessellation2D.hpp"
+#include "Polly/List.hpp"
+#include "Polly/ShaderCompiler/GLSLShaderGenerator.hpp"
 
 namespace Polly
 {
@@ -34,7 +36,7 @@ class OpenGLPainter final : public Painter::Impl
 
     void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) override;
 
-    void setScissorRects(Span<Rectangle> scissorRects) override;
+    void onSetScissorRects(Span<Rectangle> scissorRects) override;
 
     void requestFrameCapture() override;
 
@@ -92,6 +94,8 @@ class OpenGLPainter final : public Painter::Impl
 
     void spriteQueueLimitReached() override;
 
+    void setupOpenGLDebugCallback();
+
     void createUniformBuffers();
 
     void createSpriteRenderingResources();
@@ -103,16 +107,16 @@ class OpenGLPainter final : public Painter::Impl
     [[nodiscard]]
     PainterCapabilities determineCapabilities() const;
 
-    OpenGLBuffer           _globalUBO;
+    ShaderCompiler::GLSLShaderGenerator _glslShaderGenerator;
+
+    OpenGLBuffer                                         _globalUBO;
     Array<OpenGLBuffer, userShaderParamsUBOSizes.size()> _userParamsUBOs;
 
-    OpenGLShader        _spriteVs;
-    OpenGLShaderProgram _defaultSpriteProgram;
-    OpenGLShaderProgram _monochromaticSpriteProgram;
-    OpenGLShader        _polyVs;
-    OpenGLShaderProgram _defaultPolyProgram;
-    OpenGLShader        _meshVs;
-    OpenGLShaderProgram _defaultMeshProgram;
+    OpenGLShaderProgramCache _shaderProgramCache;
+
+    OpenGLShader _spriteVs;
+    OpenGLShader _polyVs;
+    OpenGLShader _meshVs;
 
     OpenGLBuffer _spriteVertexBuffer;
     OpenGLBuffer _spriteIndexBuffer;

@@ -30,9 +30,9 @@ Image::Image(u32 width, u32 height, ImageFormat format, const void* data, bool i
             formatString("No image data specified (width={}; height={}; format={}).", width, height, format));
     }
 
-    auto& deviceImpl = *Game::Impl::instance().painter().impl();
+    auto& painterImpl = *Painter::Impl::instance();
 
-    const auto caps = deviceImpl.capabilities();
+    const auto caps = painterImpl.capabilities();
 
     if (width > caps.maxImageExtent or height > caps.maxImageExtent)
     {
@@ -43,15 +43,13 @@ Image::Image(u32 width, u32 height, ImageFormat format, const void* data, bool i
             caps.maxImageExtent));
     }
 
-    setImpl(*this, deviceImpl.createImage(width, height, format, data, isStatic).release());
+    setImpl(*this, painterImpl.createImage(width, height, format, data, isStatic).release());
 }
 
 Image::Image(Span<u8> memory)
     : Image()
 {
-    auto& deviceImpl = *Game::Impl::instance().painter().impl();
-
-    setImpl(*this, ImageIO().loadImageFromMemory(deviceImpl, memory).release());
+    setImpl(*this, ImageIO().loadImageFromMemory(*Painter::Impl::instance(), memory).release());
 }
 
 Image::Image(StringView assetName)
@@ -64,9 +62,9 @@ Image::Image(StringView assetName)
 Image::Image(u32 width, u32 height, ImageFormat format)
     : Image()
 {
-    auto& deviceImpl = *Game::Impl::instance().painter().impl();
+    auto& painterImpl = *Painter::Impl::instance();
 
-    const auto caps = deviceImpl.capabilities();
+    const auto caps = painterImpl.capabilities();
 
     if (width > caps.maxCanvasWidth)
     {
@@ -84,7 +82,7 @@ Image::Image(u32 width, u32 height, ImageFormat format)
             caps.maxCanvasHeight));
     }
 
-    auto imageImpl = deviceImpl.createCanvas(width, height, format);
+    auto imageImpl = painterImpl.createCanvas(width, height, format);
 
     if (not imageImpl)
     {

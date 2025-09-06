@@ -50,6 +50,7 @@ struct PainterCapabilities
     u32 maxImageExtent  = 0;
     u32 maxCanvasWidth  = 0;
     u32 maxCanvasHeight = 0;
+    u32 maxScissorRects = 0;
 };
 
 /// Represents the system's graphics device.

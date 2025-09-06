@@ -1,0 +1,7 @@
+#type polygon
+
+Vec4 main()
+{
+    return pl_polygonColor;
+}
+

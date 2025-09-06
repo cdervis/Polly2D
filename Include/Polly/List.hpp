@@ -278,6 +278,12 @@ class List : Details::ListBase<T, InlineCapacity>
         }
     }
 
+    void assign(Span<T> span)
+    requires(copyInsertable and copyAssignable)
+    {
+        base::assignWithRange(span);
+    }
+
     void swap(List& other) noexcept
     requires(moveInsertable and moveAssignable and swappable) or (InlineCapacity == 0)
     {

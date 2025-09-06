@@ -33,6 +33,11 @@
 #include "Polly/Spine/SpineImpl.hpp"
 #include "Polly/Text.hpp"
 
+#include "MeshShaderDefault.shd.hpp"
+#include "PolyShaderDefault.shd.hpp"
+#include "SpriteShaderDefault.shd.hpp"
+#include "SpriteShaderMonochromatic.shd.hpp"
+
 namespace Polly
 {
 static constexpr auto sSpineBlendStateTable = Array{
@@ -70,11 +75,19 @@ static constexpr auto sSpineBlendStateTable = Array{
     },
 };
 
+static Painter::Impl* sPainterInstance;
+
+Painter::Impl* Painter::Impl::instance()
+{
+    return sPainterInstance;
+}
+
 Painter::Impl::Impl(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
     : _windowImpl(windowImpl)
     , _performanceStats(performanceStats)
     , _currentSampler(linearClamp)
 {
+    sPainterInstance = this;
     resetCurrentStates();
     ShaderCompiler::Type::createPrimitiveTypes();
 }
@@ -356,6 +369,26 @@ void Painter::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool force)
             computeCombinedTransformation();
         }
     }
+}
+
+void Painter::Impl::setScissorRects(Span<Rectangle> scissorRects)
+{
+    if (scissorRects.size() > _capabilities.maxScissorRects)
+    {
+        throw Error(formatString(
+            "Attempting to set {} scissor rectangles, but the system reports a maximum of {} supported "
+            "rectangles.",
+            scissorRects.size(),
+            _capabilities.maxScissorRects));
+    }
+
+    if (areContainersEqual(scissorRects, _currentScissorRects))
+    {
+        return;
+    }
+
+    onSetScissorRects(scissorRects);
+    _currentScissorRects.assign(scissorRects);
 }
 
 const Matrix& Painter::Impl::transformation() const
@@ -994,6 +1027,15 @@ Matrix Painter::Impl::computeViewportTransformation(const Rectangle& viewport)
 #endif
 }
 
+void Painter::Impl::createDefaultShaders()
+{
+    _defaultSpriteShader = Shader::fromSource("DefaultSpriteShader", SpriteShaderDefault_shdStringView());
+    _defaultSpriteShaderMonochromatic =
+        Shader::fromSource("DefaultSpriteShaderMonochromatic", SpriteShaderMonochromatic_shdStringView());
+    _defaultPolyShader = Shader::fromSource("DefaultPolyShader", PolyShaderDefault_shdStringView());
+    _defaultMeshShader = Shader::fromSource("DefaultMeshShader", MeshShaderDefault_shdStringView());
+}
+
 void Painter::Impl::computeCombinedTransformation()
 {
     _combinedTransformation = _currentTransformation * _viewportTransformation;
@@ -1070,6 +1112,8 @@ void Painter::Impl::postInit(
     _maxSpriteBatchSize = maxSpriteBatchSize;
     _maxPolyVertices    = maxPolyVertices;
     _maxMeshVertices    = maxMeshVertices;
+
+    createDefaultShaders();
 
     Font::Impl::createBuiltInFonts();
 

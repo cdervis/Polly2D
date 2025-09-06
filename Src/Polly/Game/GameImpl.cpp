@@ -88,6 +88,8 @@ Game::Impl::Impl(const GameInitArgs& args)
     , _title(args.title)
     , _companyName(args.companyName)
 {
+    sGameInstance = this;
+
 #ifdef polly_have_gfx_metal
     _gameAutoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 #endif
@@ -127,8 +129,6 @@ Game::Impl::Impl(const GameInitArgs& args)
     createAudioDevice(not args.enableAudio);
 
     _contentManager = makeUnique<ContentManager>();
-
-    sGameInstance = this;
 }
 
 Game::Impl::~Impl() noexcept

@@ -12,12 +12,47 @@ namespace Polly
 {
 struct VertexElementInfo
 {
-    u32    sizeInBytes = 0;
-    GLenum type        = 0;
+    u32    componentCount = 0;
+    u32    sizeInBytes    = 0;
+    GLenum type           = 0;
 };
 
 static Maybe<VertexElementInfo> vertexElementInfo(VertexElement element)
 {
+    switch (element)
+    {
+        case VertexElement::Int:
+            return VertexElementInfo{
+                .componentCount = 1,
+                .sizeInBytes    = sizeof(i32),
+                .type           = GL_INT,
+            };
+        case VertexElement::Float:
+            return VertexElementInfo{
+                .componentCount = 1,
+                .sizeInBytes    = sizeof(float),
+                .type           = GL_FLOAT,
+            };
+        case VertexElement::Vec2:
+            return VertexElementInfo{
+                .componentCount = 2,
+                .sizeInBytes    = sizeof(float) * 2,
+                .type           = GL_FLOAT,
+            };
+        case VertexElement::Vec3:
+            return VertexElementInfo{
+                .componentCount = 3,
+                .sizeInBytes    = sizeof(float) * 3,
+                .type           = GL_FLOAT,
+            };
+        case VertexElement::Vec4:
+            return VertexElementInfo{
+                .componentCount = 4,
+                .sizeInBytes    = sizeof(float) * 4,
+                .type           = GL_FLOAT,
+            };
+    }
+
     return none;
 }
 
@@ -43,7 +78,7 @@ OpenGLVAO::OpenGLVAO(
     }
 
     auto previousVAO = GLint();
-    glGetIntegerv(GL_VERTEX_ARRAY_BUFFER_BINDING, &previousVAO);
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &previousVAO);
 
     auto previousVertexBuffer = GLint();
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &previousVertexBuffer);
@@ -81,7 +116,7 @@ OpenGLVAO::OpenGLVAO(
 
         glVertexAttribPointer(
             index,
-            narrow<GLint>(elementInfo.sizeInBytes),
+            narrow<GLint>(elementInfo.componentCount),
             elementInfo.type,
             GL_FALSE,
             vertexStride,
