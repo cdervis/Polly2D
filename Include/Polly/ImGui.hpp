@@ -482,54 +482,51 @@ class ImGui
         StringView      format = "%d",
         ImGuiSliderOpts flags  = ImGuiSliderOpts::None);
 
-    bool inputText(
-        StringView            label,
-        String&               value,
-        ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
+    bool inputText(StringView label, String& value, ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
     bool inputTextMultiline(
-        StringView            label,
-        String&               value,
-        Maybe<Vec2>           size  = {},
+        StringView         label,
+        String&            value,
+        Maybe<Vec2>        size  = {},
         ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
     bool inputTextWithHint(
-        StringView            label,
-        StringView            hint,
-        String&               value,
+        StringView         label,
+        StringView         hint,
+        String&            value,
         ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
     bool input(
-        StringView            label,
-        float&                value,
-        float                 step     = 0.0f,
-        float                 stepFast = 0.0f,
-        StringView            format   = "%.3f",
+        StringView         label,
+        float&             value,
+        float              step     = 0.0f,
+        float              stepFast = 0.0f,
+        StringView         format   = "%.3f",
         ImGuiInputTextOpts flags    = ImGuiInputTextOpts::None);
 
     bool input(
-        StringView            label,
-        Vec2&                 value,
-        StringView            format = "%.3f",
+        StringView         label,
+        Vec2&              value,
+        StringView         format = "%.3f",
         ImGuiInputTextOpts flags  = ImGuiInputTextOpts::None);
 
     bool input(
-        StringView            label,
-        Vec3&                 value,
-        StringView            format = "%.3f",
+        StringView         label,
+        Vec3&              value,
+        StringView         format = "%.3f",
         ImGuiInputTextOpts flags  = ImGuiInputTextOpts::None);
 
     bool input(
-        StringView            label,
-        Vec4&                 value,
-        StringView            format = "%.3f",
+        StringView         label,
+        Vec4&              value,
+        StringView         format = "%.3f",
         ImGuiInputTextOpts flags  = ImGuiInputTextOpts::None);
 
     bool input(
-        StringView            label,
-        int&                  value,
-        int                   step     = 1,
-        int                   stepFast = 100,
+        StringView         label,
+        int&               value,
+        int                step     = 1,
+        int                stepFast = 100,
         ImGuiInputTextOpts flags    = ImGuiInputTextOpts::None);
 
     bool input(StringView label, Vec2i& value, ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
