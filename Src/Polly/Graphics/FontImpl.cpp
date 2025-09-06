@@ -215,16 +215,17 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
 
     if (bitmapWidth > 0 && bitmapHeight > 0)
     {
-        auto&      page    = _pages[*_currentPageIndex];
-        const auto xInPage = insertedRect.x;
-        const auto yInPage = insertedRect.y;
+        auto&      page       = _pages[*_currentPageIndex];
+        const auto xInPage    = insertedRect.x;
+        const auto yInPage    = insertedRect.y;
+        const auto pixelCount = bitmapWidth * bitmapHeight;
 
-        auto buffer = List<u8>();
-        buffer.resize(bitmapWidth * bitmapHeight);
+        _glyphBufferU8.resizeIfGreater(pixelCount);
+        _glyphBufferRGBA.resizeIfGreater(pixelCount);
 
         stbtt_MakeCodepointBitmap(
             &_fontInfo,
-            buffer.data(),
+            _glyphBufferU8.data(),
             bitmapWidth,
             bitmapHeight,
             bitmapWidth,
@@ -232,121 +233,59 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
             scale,
             narrow<int>(key.codepoint));
 
-        auto bufferRGBA = List<R8G8B8A8>();
-        for (const auto c : buffer)
+        _glyphBufferRGBA.clear();
+
+        // Update the RGBA buffer.
         {
-            bufferRGBA.add(R8G8B8A8{255, 255, 255, c});
-        }
+            const auto* src = _glyphBufferU8.data();
 
-        {
-            auto& openGLImage     = static_cast<const Polly::OpenGLImage&>(*page.atlas.impl());
-            auto  textureHandleGL = openGLImage.textureHandleGL();
-
-            auto previousTexture = GLint();
-            glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTexture);
-
-            if (GLuint(previousTexture) != textureHandleGL)
+            for (auto i = 0; i < pixelCount; ++i)
             {
-                glBindTexture(GL_TEXTURE_2D, textureHandleGL);
+                _glyphBufferRGBA.add(R8G8B8A8{255, 255, 255, *src});
+                ++src;
             }
-
-            defer
-            {
-                if (GLuint(previousTexture) != textureHandleGL)
-                {
-                    glBindTexture(GL_TEXTURE_2D, GLuint(previousTexture));
-                }
-            };
-
-            const auto formatTriplet = openGLImage.formatTriplet();
-
-            glTexSubImage2D(
-                GL_TEXTURE_2D,
-                0,
-                xInPage,
-                yInPage,
-                bitmapWidth,
-                bitmapHeight,
-                formatTriplet.baseFormat,
-                formatTriplet.type,
-                bufferRGBA.data());
         }
-    }
-
-    auto insertedPtr = _rasterizedGlyphs.add(
-        key,
-        RasterizedGlyph{
-            .uvRect    = insertedRect.toRectf(),
-            .pageIndex = *_currentPageIndex,
-        });
-
-    assume(insertedPtr);
-
-    return insertedPtr->second;
-}
-
-void Font::Impl::appendNewPage()
-{
-    const auto caps = Painter::Impl::instance()->capabilities();
-
-    const auto width  = min(512u, caps.maxImageExtent);
-    const auto height = width;
-
-    auto page = FontPage{
-        .width  = width,
-        .height = height,
-        .pack   = BinPack(width, height),
-        .atlas  = Image(width, height, ImageFormat::R8G8B8A8UNorm, nullptr),
-    };
-
-    const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());
-    page.atlas.setDebuggingLabel(imageLabel);
-
-    _pages.add(std::move(page));
-
-    _currentPageIndex = _pages.size() - 1;
-}
-
-
-#if 0
-void Font::Impl::updatePageAtlasImage(FontPage& page)
-{
-    logVerbose("Updating font page image of size {}x{}", page.width, page.height);
-
-    if (not page.atlas)
-    {
-    }
-    else
-    {
-        logVerbose("  Writing directly to page image");
-
-        // We currently update the entire texture slice, when we could get away with
-        // just updating the regions that have received new rasterized glyphs.
-        // Since font rasterization mostly happens right after the first texts have been
-        // drawn, this is not a big issue.
 
 #ifdef polly_have_gfx_metal
+
         const auto& metalImage = static_cast<const Polly::MetalImage&>(*page.atlas.impl());
         auto*       mtlTexture = metalImage.mtlTexture();
 
         const auto rowPitch = imageRowPitch(metalImage.width(), metalImage.format());
 
-        mtlTexture
-            ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), rowPitch);
+        mtlTexture->replaceRegion(
+            MTL::Region(xInPage, yInPage, bitmapWidth, bitmapHeight),
+            0,
+            _glyphBufferRGBA.data(),
+            rowPitch);
+
 #elif polly_have_gfx_d3d11
+
         auto& painterImpl  = *Painter::Impl::instance();
         auto& d3d11Painter = static_cast<D3D11Painter&>(painterImpl);
 
-        auto& d3d11Image    = static_cast<const Polly::D3D11Image&>(*page.atlas.impl());
+        auto& d3d11Image    = static_cast<const D3D11Image&>(*page.atlas.impl());
         auto* id3d11Texture = d3d11Image.id3d11Texture2D();
 
-        const auto rowPitch   = imageRowPitch(d3d11Image.width(), d3d11Image.format());
-        const auto slicePitch = imageSlicePitch(d3d11Image.width(), d3d11Image.height(), d3d11Image.format());
+        const auto updateBox = D3D11_BOX{
+            .left   = UINT(xInPage),
+            .top    = UINT(yInPage),
+            .front  = 0,
+            .right  = UINT(xInPage + bitmapWidth),
+            .bottom = UINT(yInPage + bitmapHeight),
+            .back   = 1,
+        };
 
-        d3d11Painter.id3d11Context()
-            ->UpdateSubresource(id3d11Texture, 0, nullptr, page.atlasData.data(), rowPitch, slicePitch);
+        d3d11Painter.id3d11Context()->UpdateSubresource(
+            id3d11Texture,
+            0,
+            &updateBox,
+            _glyphBufferRGBA.data(),
+            bitmapWidth * sizeof(R8G8B8A8),
+            bitmapWidth * bitmapHeight * sizeof(R8G8B8A8));
 
 #elif polly_have_gfx_opengl
+
         auto& openGLImage     = static_cast<const Polly::OpenGLImage&>(*page.atlas.impl());
         auto  textureHandleGL = openGLImage.textureHandleGL();
 
@@ -371,14 +310,16 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
         glTexSubImage2D(
             GL_TEXTURE_2D,
             0,
-            0,
-            0,
-            GLsizei(openGLImage.width()),
-            GLsizei(openGLImage.height()),
+            xInPage,
+            yInPage,
+            bitmapWidth,
+            bitmapHeight,
             formatTriplet.baseFormat,
             formatTriplet.type,
-            page.atlasData.data());
+            bufferRGBA.data());
+
 #elif polly_have_gfx_vulkan
+
         auto& deviceImpl   = *Painter::Impl::instance();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);
         auto  vmaAllocator = vulkanDevice.vmaAllocator();
@@ -487,10 +428,43 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
                     1,
                     &imageBarrierToReadable);
             });
+
 #else
 #error "Unsupported"
 #endif
     }
+
+    auto insertedPtr = _rasterizedGlyphs.add(
+        key,
+        RasterizedGlyph{
+            .uvRect    = insertedRect.toRectf(),
+            .pageIndex = *_currentPageIndex,
+        });
+
+    assume(insertedPtr);
+
+    return insertedPtr->second;
 }
-#endif
+
+void Font::Impl::appendNewPage()
+{
+    const auto caps = Painter::Impl::instance()->capabilities();
+
+    const auto width  = min(512u, caps.maxImageExtent);
+    const auto height = width;
+
+    auto page = FontPage{
+        .width  = width,
+        .height = height,
+        .pack   = BinPack(width, height),
+        .atlas  = Image(width, height, ImageFormat::R8G8B8A8UNorm, nullptr, false),
+    };
+
+    const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());
+    page.atlas.setDebuggingLabel(imageLabel);
+
+    _pages.add(std::move(page));
+
+    _currentPageIndex = _pages.size() - 1;
+}
 } // namespace Polly

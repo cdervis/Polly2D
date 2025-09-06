@@ -639,6 +639,24 @@ class List : Details::ListBase<T, InlineCapacity>
         base::resizeWith(count, value);
     }
 
+    void resizeIfGreater(u32 count)
+    requires(moveInsertable and defaultInsertable)
+    {
+        if (count > capacity())
+        {
+            base::resizeWith(count);
+        }
+    }
+
+    void resizeIfGreater(u32 count, const T& value)
+    requires(copyInsertable)
+    {
+        if (count > capacity())
+        {
+            base::resizeWith(count, value);
+        }
+    }
+
     [[nodiscard]]
     bool isSmall() const
     {

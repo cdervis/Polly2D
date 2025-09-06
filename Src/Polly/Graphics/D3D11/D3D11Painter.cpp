@@ -25,8 +25,6 @@
 
 namespace Polly
 {
-static constexpr auto spriteImageSlot            = 0;
-static constexpr auto meshImageSlot              = 1;
 static constexpr auto maxUsedShaderResourceSlots = 2;
 
 D3D11Painter::D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
@@ -101,7 +99,6 @@ void D3D11Painter::onFrameStarted()
     {
         const auto constantBuffers = Array{
             _globalCBuffer.Get(),
-            _systemValuesCBuffer.Get(),
         };
 
         _id3d11Context->VSSetConstantBuffers(0, constantBuffers.size(), constantBuffers.data());
@@ -265,16 +262,15 @@ void D3D11Painter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
 
     setDirtyFlags(
         dirtyFlags()
-        bitor DF_GlobalCBufferParams
-        bitor DF_SystemValueCBufferParams
-        bitor DF_SpriteImage
-        bitor DF_MeshImage
-        bitor DF_Sampler
-        bitor DF_VertexBuffers
-        bitor DF_PipelineState);
+        | DF_GlobalCBufferParams
+        | DF_SpriteImage
+        | DF_MeshImage
+        | DF_Sampler
+        | DF_VertexBuffers
+        | DF_PipelineState);
 }
 
-void D3D11Painter::setScissorRects(Span<Rectangle> scissorRects)
+void D3D11Painter::onSetScissorRects(Span<Rectangle> scissorRects)
 {
     flush();
 
@@ -303,17 +299,6 @@ void D3D11Painter::setScissorRects(Span<Rectangle> scissorRects)
     }
 }
 
-void D3D11Painter::readCanvasDataInto(
-    const Image& canvas,
-    u32          x,
-    u32          y,
-    u32          width,
-    u32          height,
-    void*        destination)
-{
-    notImplemented();
-}
-
 void D3D11Painter::requestFrameCapture()
 {
     notImplemented();
@@ -325,51 +310,20 @@ int D3D11Painter::prepareDrawCall()
     auto&      perfStats        = performanceStats();
     const auto currentBatchMode = *batchMode();
 
-    if ((df bitand DF_PipelineState) == DF_PipelineState)
+    if (df & DF_PipelineState)
     {
-        ID3D11VertexShader* vertexShader      = nullptr;
-        ID3D11PixelShader*  fragmentShader    = nullptr;
-        auto&               currentUserShader = currentShader(currentBatchMode);
+        auto& currentUserShader = currentShader(currentBatchMode);
+
+        ID3D11VertexShader* vertexShader = nullptr;
+
+        ID3D11PixelShader* fragmentShader =
+            static_cast<const D3D11UserShader&>(*currentUserShader.impl()).id3d11PixelShader();
 
         switch (currentBatchMode)
         {
-            case BatchMode::Sprites: {
-                vertexShader = _spriteVertexShader.Get();
-
-                if (currentUserShader)
-                {
-                    fragmentShader =
-                        static_cast<D3D11UserShader&>(*currentUserShader.impl()).id3d11PixelShader();
-                }
-                else
-                {
-                    fragmentShader = spriteShaderKind() == SpriteShaderKind::Default
-                                         ? _spritePixelShaderDefault.Get()
-                                         : _spritePixelShaderMonochromatic.Get();
-                }
-
-                break;
-            }
-            case BatchMode::Polygons: {
-                vertexShader = _polyVertexShader.Get();
-
-                if (currentUserShader)
-                {
-                    fragmentShader =
-                        static_cast<D3D11UserShader&>(*currentUserShader.impl()).id3d11PixelShader();
-                }
-                else
-                {
-                    fragmentShader = _polyPixelShader.Get();
-                }
-
-                break;
-            }
-            case BatchMode::Mesh: {
-                vertexShader   = _meshVertexShader.Get();
-                fragmentShader = _meshPixelShader.Get();
-                break;
-            }
+            case BatchMode::Sprites: vertexShader = _spriteVertexShader.Get(); break;
+            case BatchMode::Polygons: vertexShader = _polyVertexShader.Get(); break;
+            case BatchMode::Mesh: vertexShader = _meshVertexShader.Get(); break;
         }
 
         if (_lastBoundVertexShader != vertexShader)
@@ -386,7 +340,7 @@ int D3D11Painter::prepareDrawCall()
 
         // Blend state
         if (const auto blendState = currentBlendState();
-            not _lastBoundBlendState or *_lastBoundBlendState != blendState)
+            not _lastBoundBlendState || *_lastBoundBlendState != blendState)
         {
             const auto blendFactorD3D = Array<FLOAT, 4>{
                 blendState.blendFactor.r,
@@ -408,7 +362,7 @@ int D3D11Painter::prepareDrawCall()
     // We've already bound our vertex buffers for the entire frame in onFrameStarted().
     df &= ~DF_VertexBuffers;
 
-    if ((df bitand DF_IndexBuffer) == DF_IndexBuffer)
+    if (df & DF_IndexBuffer)
     {
         ID3D11Buffer* indexBuffer = nullptr;
 
@@ -433,7 +387,7 @@ int D3D11Painter::prepareDrawCall()
         df &= ~DF_IndexBuffer;
     }
 
-    if ((df bitand DF_Sampler) == DF_Sampler)
+    if (df & DF_Sampler)
     {
         auto* id3d11SamplerState = _d3d11PipelineObjectCache.getSamplerState(currentSampler());
 
@@ -446,8 +400,10 @@ int D3D11Painter::prepareDrawCall()
         df &= ~DF_Sampler;
     }
 
-    if ((df bitand DF_GlobalCBufferParams) == DF_GlobalCBufferParams)
+    if (df & DF_GlobalCBufferParams)
     {
+        const auto viewport = currentViewport();
+
         auto mappedSubresource = D3D11_MAPPED_SUBRESOURCE();
 
         checkHResult(
@@ -455,38 +411,14 @@ int D3D11Painter::prepareDrawCall()
             "Failed to map the global constant buffer.");
 
         *static_cast<GlobalCBufferParams*>(mappedSubresource.pData) = GlobalCBufferParams{
-            .transformation = combinedTransformation(),
+            .transformation  = combinedTransformation(),
+            .viewportSize    = viewport.size(),
+            .viewportSizeInv = Vec2(1.0f) / viewport.size(),
         };
 
         _id3d11Context->Unmap(_globalCBuffer.Get(), 0);
 
         df &= ~DF_GlobalCBufferParams;
-    }
-
-    if ((df bitand DF_SystemValueCBufferParams) == DF_SystemValueCBufferParams)
-    {
-        const auto viewport = currentViewport();
-
-        if (not _lastAppliedViewportToSystemValues or _lastAppliedViewportToSystemValues != viewport)
-        {
-            auto mappedSubresource = D3D11_MAPPED_SUBRESOURCE();
-
-            checkHResult(
-                _id3d11Context
-                    ->Map(_systemValuesCBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource),
-                "Failed to map the system values constant buffer.");
-
-            *static_cast<SystemValueCBufferParams*>(mappedSubresource.pData) = SystemValueCBufferParams{
-                .viewportSize    = viewport.size(),
-                .viewportSizeInv = Vec2(1.0f) / viewport.size(),
-            };
-
-            _id3d11Context->Unmap(_systemValuesCBuffer.Get(), 0);
-
-            _lastAppliedViewportToSystemValues = viewport;
-        }
-
-        df &= ~DF_SystemValueCBufferParams;
     }
 
     auto shaderResourcesToBind = Array<ID3D11ShaderResourceView*, maxUsedShaderResourceSlots>();
@@ -501,13 +433,13 @@ int D3D11Painter::prepareDrawCall()
 
     auto shouldBindShaderResources = false;
 
-    if ((df bitand DF_SpriteImage) == DF_SpriteImage)
+    if (df & DF_SpriteImage)
     {
         shouldBindShaderResources = true;
         df &= ~DF_SpriteImage;
     }
 
-    if ((df bitand DF_MeshImage) == DF_MeshImage)
+    if (df & DF_MeshImage)
     {
         shouldBindShaderResources = true;
         df &= ~DF_MeshImage;
@@ -519,7 +451,7 @@ int D3D11Painter::prepareDrawCall()
         ++perfStats.textureChangeCount;
     }
 
-    if ((df bitand DF_UserShaderParams) == DF_UserShaderParams)
+    if (df & DF_UserShaderParams)
     {
         if (auto& userShader = currentShader(currentBatchMode))
         {
@@ -568,18 +500,7 @@ void D3D11Painter::flushSprites(
 
     auto* dstVertices = static_cast<SpriteVertex*>(mappedVertices.pData) + _spriteVertexCounter;
 
-    fillSpriteVertices(
-        dstVertices,
-        sprites,
-        imageSizeAndInverse,
-        /*flipImageUpDown:*/ false,
-        [](Vec2 position, Color color, Vec2 uv)
-        {
-            return SpriteVertex{
-                .positionAndUV = Vec4(position, uv),
-                .color         = color,
-            };
-        });
+    fillSpriteVertices<false>(dstVertices, sprites, imageSizeAndInverse);
 
     _id3d11Context->Unmap(_spriteVertexBuffer.Get(), 0);
 
@@ -727,7 +648,7 @@ void D3D11Painter::createID3D11Device()
 
     auto result = createDevice();
 
-    if (FAILED(result) and (flags bitand D3D11_CREATE_DEVICE_DEBUG))
+    if (FAILED(result) && (flags & D3D11_CREATE_DEVICE_DEBUG))
     {
         // This failure is fine, because the D3D11 debug layers might not be installed.
         // Warn the user and create the device without debug features.
@@ -830,12 +751,6 @@ void D3D11Painter::createConstantBuffers()
         _id3d11Device->CreateBuffer(&desc, nullptr, &_globalCBuffer),
         "Failed to create the global constant buffer.");
 
-    desc.ByteWidth = sizeof(SystemValueCBufferParams);
-
-    checkHResult(
-        _id3d11Device->CreateBuffer(&desc, nullptr, &_systemValuesCBuffer),
-        "Failed to create the system values constant buffer.");
-
     for (auto index = 0u; const auto size : userShaderParamsCBufferSizes)
     {
         desc.ByteWidth = size;
@@ -860,16 +775,6 @@ void D3D11Painter::createSpriteRenderingResources()
 
     _spriteVertexShader = spriteVertexShader;
     _spriteInputLayout  = spriteInputLayout;
-
-    _spritePixelShaderDefault = _d3d11ShaderCompiler.compilePixelShader(
-        AllShaders_hlslStringView(),
-        "spritesDefaultPS"_sv,
-        "SpritePixelShaderDefault"_sv);
-
-    _spritePixelShaderMonochromatic = _d3d11ShaderCompiler.compilePixelShader(
-        AllShaders_hlslStringView(),
-        "spritesMonochromaticPS"_sv,
-        "SpritePixelShaderMonochromatic"_sv);
 
     // Vertex buffer
     {
@@ -921,11 +826,6 @@ void D3D11Painter::createPolyRenderingResources()
     _polyVertexShader = polyVertexShader;
     _polyInputLayout  = polyInputLayout;
 
-    _polyPixelShader = _d3d11ShaderCompiler.compilePixelShader(
-        AllShaders_hlslStringView(),
-        "polyPS"_sv,
-        "PolyPixelShader"_sv);
-
     // Vertex buffer
     {
         auto desc           = D3D11_BUFFER_DESC();
@@ -954,11 +854,6 @@ void D3D11Painter::createMeshRenderingResources()
 
     _meshVertexShader = meshVertexShader;
     _meshInputLayout  = meshInputLayout;
-
-    _meshPixelShader = _d3d11ShaderCompiler.compilePixelShader(
-        AllShaders_hlslStringView(),
-        "meshPS"_sv,
-        "MeshPixelShader"_sv);
 
     // Buffers
     auto desc           = D3D11_BUFFER_DESC();

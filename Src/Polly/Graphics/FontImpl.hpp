@@ -226,6 +226,8 @@ class Font::Impl final : public Object,
     List<FontPage, 2>   _pages;
     Maybe<u32>          _currentPageIndex;
     SortedSet<float>    _initializedSizes;
+    List<u8>            _glyphBufferU8;
+    List<R8G8B8A8>      _glyphBufferRGBA;
 
 #ifndef NDEBUG
     bool _isBuiltin = false;

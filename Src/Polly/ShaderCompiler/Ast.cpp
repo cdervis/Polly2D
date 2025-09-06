@@ -159,6 +159,11 @@ bool Ast::isPolygonShader() const
     return _shaderType == ShaderType::Polygon;
 }
 
+bool Ast::isMeshShader() const
+{
+    return _shaderType == ShaderType::Mesh;
+}
+
 AccessedParams Ast::paramsAccessedByFunction(const FunctionDecl* function) const
 {
     auto params = AccessedParams();
