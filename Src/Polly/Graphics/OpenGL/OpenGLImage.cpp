@@ -63,7 +63,14 @@ OpenGLImage::OpenGLImage(Painter::Impl& painter, uint32_t width, uint32_t height
         glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(previousFramebuffer));
     };
 
-    glFramebufferTexture2D(GL_TEXTURE_2D, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureHandleGL, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureHandleGL, 0);
+
+    const auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        throw Error("Failed to create an OpenGL framebuffer (it remained incomplete).");
+    }
 
     verifyOpenGLState();
 }
@@ -110,8 +117,8 @@ void OpenGLImage::createOpenGLTexture([[maybe_unused]] const void* data, [[maybe
         GL_TEXTURE_2D,
         0,
         _formatTriplet.internalFormat,
-        static_cast<GLsizei>(width()),
-        static_cast<GLsizei>(height()),
+        GLsizei(width()),
+        GLsizei(height()),
         0,
         _formatTriplet.baseFormat,
         _formatTriplet.type,

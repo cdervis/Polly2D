@@ -118,18 +118,10 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
                 RasterizedGlyphKey{
                     .codepoint = c,
                     .fontSize  = fontSize,
-                },
-                false);
+                });
         }
 
         _initializedSizes.add(fontSize);
-
-        for (const auto pageIndex : _pageImagesToUpdate)
-        {
-            updatePageAtlasImage(_pages[pageIndex]);
-        }
-
-        _pageImagesToUpdate.clear();
     }
 
     const auto key = RasterizedGlyphKey{
@@ -142,7 +134,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
         return *glyph;
     }
 
-    return rasterizeGlyph(key, true);
+    return rasterizeGlyph(key);
 }
 
 float Font::Impl::lineHeight(float fontSize) const
@@ -167,9 +159,7 @@ void Font::Impl::initialize()
     stbtt_GetFontVMetrics(&_fontInfo, &_ascent, &_descent, &_lineGap);
 }
 
-const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(
-    const RasterizedGlyphKey& key,
-    bool                      updatePageImageImmediately)
+const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGlyphKey& key)
 {
     if (_pages.isEmpty())
     {
@@ -219,34 +209,68 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(
             fontSize));
     }
 
-    BinPack::Rect insertedRect = *maybeInsertedRect;
+    auto insertedRect = *maybeInsertedRect;
     insertedRect.width -= padding;
     insertedRect.height -= padding;
 
-    const auto xInPage    = insertedRect.x;
-    const auto yInPage    = insertedRect.y;
-    const auto pageWidth  = _pages[*_currentPageIndex].width;
-    const auto dstDataIdx = (yInPage * pageWidth) + xInPage;
-
-    auto* dstData = _pages[*_currentPageIndex].atlasData.data() + dstDataIdx;
-
-    stbtt_MakeCodepointBitmap(
-        &_fontInfo,
-        dstData,
-        bitmapWidth,
-        bitmapHeight,
-        static_cast<int>(pageWidth),
-        scale,
-        scale,
-        static_cast<int>(key.codepoint));
-
-    if (updatePageImageImmediately)
+    if (bitmapWidth > 0 && bitmapHeight > 0)
     {
-        updatePageAtlasImage(_pages[*_currentPageIndex]);
-    }
-    else
-    {
-        _pageImagesToUpdate.add(*_currentPageIndex);
+        auto&      page    = _pages[*_currentPageIndex];
+        const auto xInPage = insertedRect.x;
+        const auto yInPage = insertedRect.y;
+
+        auto buffer = List<u8>();
+        buffer.resize(bitmapWidth * bitmapHeight);
+
+        stbtt_MakeCodepointBitmap(
+            &_fontInfo,
+            buffer.data(),
+            bitmapWidth,
+            bitmapHeight,
+            bitmapWidth,
+            scale,
+            scale,
+            narrow<int>(key.codepoint));
+
+        auto bufferRGBA = List<R8G8B8A8>();
+        for (const auto c : buffer)
+        {
+            bufferRGBA.add(R8G8B8A8{255, 255, 255, c});
+        }
+
+        {
+            auto& openGLImage     = static_cast<const Polly::OpenGLImage&>(*page.atlas.impl());
+            auto  textureHandleGL = openGLImage.textureHandleGL();
+
+            auto previousTexture = GLint();
+            glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTexture);
+
+            if (GLuint(previousTexture) != textureHandleGL)
+            {
+                glBindTexture(GL_TEXTURE_2D, textureHandleGL);
+            }
+
+            defer
+            {
+                if (GLuint(previousTexture) != textureHandleGL)
+                {
+                    glBindTexture(GL_TEXTURE_2D, GLuint(previousTexture));
+                }
+            };
+
+            const auto formatTriplet = openGLImage.formatTriplet();
+
+            glTexSubImage2D(
+                GL_TEXTURE_2D,
+                0,
+                xInPage,
+                yInPage,
+                bitmapWidth,
+                bitmapHeight,
+                formatTriplet.baseFormat,
+                formatTriplet.type,
+                bufferRGBA.data());
+        }
     }
 
     auto insertedPtr = _rasterizedGlyphs.add(
@@ -265,18 +289,18 @@ void Font::Impl::appendNewPage()
 {
     const auto caps = Painter::Impl::instance()->capabilities();
 
-    const auto width  = min(2048u, caps.maxImageExtent);
+    const auto width  = min(512u, caps.maxImageExtent);
     const auto height = width;
 
     auto page = FontPage{
-        .width     = width,
-        .height    = height,
-        .pack      = BinPack(width, height),
-        .atlasData = {},
-        .atlas     = Image(),
+        .width  = width,
+        .height = height,
+        .pack   = BinPack(width, height),
+        .atlas  = Image(width, height, ImageFormat::R8G8B8A8UNorm, nullptr),
     };
 
-    page.atlasData.resize(narrow<u32>(static_cast<size_t>(width) * static_cast<size_t>(height)));
+    const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());
+    page.atlas.setDebuggingLabel(imageLabel);
 
     _pages.add(std::move(page));
 
@@ -284,17 +308,13 @@ void Font::Impl::appendNewPage()
 }
 
 
+#if 0
 void Font::Impl::updatePageAtlasImage(FontPage& page)
 {
     logVerbose("Updating font page image of size {}x{}", page.width, page.height);
 
     if (not page.atlas)
     {
-        logVerbose("  Reallocating page image");
-        page.atlas = Image(page.width, page.height, ImageFormat::R8Unorm, page.atlasData.data());
-
-        const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());
-        page.atlas.setDebuggingLabel(imageLabel);
     }
     else
     {
@@ -472,4 +492,5 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
 #endif
     }
 }
+#endif
 } // namespace Polly

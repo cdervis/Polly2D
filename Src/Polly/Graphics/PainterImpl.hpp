@@ -10,6 +10,8 @@
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/Core/Object.hpp"
 #include "Polly/Function.hpp"
+#include "Polly/GamePerformanceStats.hpp"
+#include "Polly/Graphics/InternalSharedShaderStructs.hpp"
 #include "Polly/Graphics/PolyDrawCommands.hpp"
 #include "Polly/Graphics/ShaderImpl.hpp"
 #include "Polly/Graphics/TextImpl.hpp"
@@ -47,12 +49,6 @@ enum class BatchMode
     Sprites  = 0,
     Polygons = 1,
     Mesh     = 2,
-};
-
-enum class SpriteShaderKind
-{
-    Default       = 1, // default rgba sprite shader
-    Monochromatic = 2, // splats .r to .rrrr (e.g. for monochromatic bitmap fonts)
 };
 
 struct InternalSprite
@@ -108,8 +104,7 @@ class Painter::Impl : public Object
         int                           dirtyFlags = DF_None;
         Maybe<BatchMode>              batchMode;
         List<InternalSprite>          spriteQueue;
-        const Image::Impl*            spriteBatchImage      = nullptr;
-        SpriteShaderKind              spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
+        const Image::Impl*            spriteBatchImage = nullptr;
         List<Tessellation2D::Command> polyQueue;
         List<u32>                     polyCmdVertexCounts;
         List<MeshEntry>               meshQueue;
@@ -195,8 +190,10 @@ class Painter::Impl : public Object
     const BlendState& currentBlendState() const;
     void              setBlendState(const BlendState& blendState);
 
-    void drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind);
+    template<bool PerformCanvasCheck, bool PrepareBatchMode, bool IncrementDrawnSpriteCount>
+    void drawSprite(const Sprite& sprite);
 
+    template<bool PrepareBatchMode>
     void fillRectangleUsingSprite(
         const Rectangle& rectangle,
         const Color&     color,
@@ -305,6 +302,8 @@ class Painter::Impl : public Object
         const Vec2&              offset,
         const Color&             color);
 
+    void prepareForMultipleSprites();
+
   protected:
     Window::Impl& window() const;
 
@@ -317,13 +316,12 @@ class Painter::Impl : public Object
 
     void preBackendDtor();
 
-    template<typename T, typename Action>
+    template<typename T>
     void fillSpriteVertices(
         T*                   dst,
         Span<InternalSprite> sprites,
         const Rectangle&     imageSizeAndInverse,
-        bool                 flipImageUpDown,
-        const Action&        action) const;
+        bool                 flipImageUpDown) const;
 
     struct MeshFillResult
     {
@@ -354,8 +352,6 @@ class Painter::Impl : public Object
     Maybe<BatchMode> batchMode() const;
 
     Span<InternalSprite> currentFrameSpriteQueue() const;
-
-    SpriteShaderKind spriteShaderKind() const;
 
     const Image::Impl* spriteBatchImage() const;
 
@@ -396,13 +392,12 @@ class Painter::Impl : public Object
 
     void doResourceLeakCheck();
 
-    template<typename T, typename Action>
+    template<typename T>
     static void renderSprite(
         const InternalSprite& sprite,
         T*                    dstVertices,
         const Rectangle&      imageSizeAndInverse,
-        bool                  flipImageUpDown,
-        const Action&         action);
+        bool                  flipImageUpDown);
 
     static void resetShaderState(auto& shader)
     {
@@ -428,7 +423,6 @@ class Painter::Impl : public Object
     u32                     _maxMeshVertices    = 0;
 
     Shader _defaultSpriteShader;
-    Shader _defaultSpriteShaderMonochromatic;
     Shader _defaultPolyShader;
     Shader _defaultMeshShader;
 
@@ -457,17 +451,16 @@ class Painter::Impl : public Object
 
 // Inline function implementations
 
-template<typename T, typename Action>
+template<typename T>
 void Painter::Impl::fillSpriteVertices(
     T*                   dst,
     Span<InternalSprite> sprites,
     const Rectangle&     imageSizeAndInverse,
-    bool                 flipImageUpDown,
-    const Action&        action) const
+    bool                 flipImageUpDown) const
 {
     for (const auto& sprite : sprites)
     {
-        renderSprite(sprite, dst, imageSizeAndInverse, flipImageUpDown, action);
+        renderSprite(sprite, dst, imageSizeAndInverse, flipImageUpDown);
         dst += verticesPerSprite;
     }
 }
@@ -518,13 +511,12 @@ Painter::Impl::MeshFillResult Painter::Impl::fillMeshVertices(
     };
 }
 
-template<typename T, typename Action>
+template<typename T>
 void Painter::Impl::renderSprite(
     const InternalSprite& sprite,
     T*                    dstVertices,
     const Rectangle&      imageSizeAndInverse,
-    bool                  flipImageUpDown,
-    const Action&         action)
+    bool                  flipImageUpDown)
 {
     const auto destination = sprite.dst;
     const auto source      = sprite.src.scaled(imageSizeAndInverse.size());
@@ -592,7 +584,66 @@ void Painter::Impl::renderSprite(
         const auto position2    = Vec2(cornerOffset.y) * rot_matrix_row2 + position1;
         const auto uv           = cornerOffsets[i xor mirrorBits] * srcSize + srcPos;
 
-        dstVertices[i] = action(position2, color, uv);
+        dstVertices[i] = SpriteVertex{
+            .positionAndUV = Vec4(position2, uv),
+            .color         = color,
+        };
+    }
+}
+
+template<bool PerformCanvasCheck, bool PrepareBatchMode, bool IncrementDrawnSpriteCount>
+void Painter::Impl::drawSprite(const Sprite& sprite)
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    if (frameData.spriteQueue.size() == _maxSpriteBatchSize)
+    {
+        spriteQueueLimitReached();
+    }
+
+    auto* imageImpl = sprite.image.impl();
+    assume(imageImpl);
+
+    if constexpr (PerformCanvasCheck)
+    {
+        if (sprite.image == _currentCanvas)
+        {
+            throw Error(
+                "An image can't be drawn while it's bound as a canvas. Please unset the canvas first (using "
+                "setCanvas()) before drawing it.");
+        }
+    }
+
+    if constexpr (PrepareBatchMode)
+    {
+        prepareForBatchMode(frameData, BatchMode::Sprites);
+    }
+
+    if (frameData.spriteBatchImage && frameData.spriteBatchImage != imageImpl)
+    {
+        flush();
+    }
+
+    frameData.spriteQueue.add(
+        InternalSprite{
+            .dst      = sprite.dstRect,
+            .src      = sprite.srcRect.valueOr(Rectangle(0, 0, sprite.image.size())),
+            .color    = sprite.color,
+            .origin   = sprite.origin,
+            .rotation = sprite.rotation,
+            .flip     = sprite.flip,
+        });
+
+    if (frameData.spriteBatchImage != imageImpl)
+    {
+        frameData.dirtyFlags |= DF_SpriteImage;
+    }
+
+    frameData.spriteBatchImage = imageImpl;
+
+    if constexpr (IncrementDrawnSpriteCount)
+    {
+        ++_performanceStats.spriteCount;
     }
 }
 } // namespace Polly

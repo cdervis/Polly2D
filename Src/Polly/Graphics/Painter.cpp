@@ -133,13 +133,11 @@ void Painter::drawSprite(const Image& image, const Vec2 position, const Color co
 
     PollyDeclareThisImpl;
 
-    impl->drawSprite(
-        Sprite{
-            .image   = image,
-            .dstRect = Rectangle(position, image.size()),
-            .color   = color,
-        },
-        SpriteShaderKind::Default);
+    impl->drawSprite<true, true, true>(Sprite{
+        .image   = image,
+        .dstRect = Rectangle(position, image.size()),
+        .color   = color,
+    });
 }
 
 void Painter::drawSprite(const Sprite& sprite)
@@ -150,18 +148,20 @@ void Painter::drawSprite(const Sprite& sprite)
     }
 
     PollyDeclareThisImpl;
-    impl->drawSprite(sprite, SpriteShaderKind::Default);
+    impl->drawSprite<true, true, true>(sprite);
 }
 
 void Painter::drawSprites(Span<Sprite> sprites)
 {
     PollyDeclareThisImpl;
 
+    impl->prepareForMultipleSprites();
+
     for (const auto& sprite : sprites)
     {
         if (sprite.image)
         {
-            impl->drawSprite(sprite, SpriteShaderKind::Default);
+            impl->drawSprite<true, false, true>(sprite);
         }
     }
 }
@@ -175,15 +175,6 @@ void Painter::drawString(
     Maybe<TextDecoration> decoration)
 {
     PollyDeclareThisImpl;
-
-    const auto& shader = impl->currentShader(BatchMode::Sprites);
-    impl->setShader(BatchMode::Sprites, none);
-
-    defer
-    {
-        impl->setShader(BatchMode::Sprites, shader);
-    };
-
     impl->pushStringToQueue(text, font, fontSize, position, color, decoration);
 }
 

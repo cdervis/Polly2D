@@ -11,12 +11,6 @@
 #include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/ToString.hpp"
 
-// NOLINTBEGIN
-#define DECLARE_IMAGE_IMPL                                                                                   \
-    const auto impl = static_cast<Details::Image::Impl*>(this->impl());                                      \
-    VERIFY_IMPL_ACCESS
-// NOLINTEND
-
 namespace Polly
 {
 PollyImplementObject(Image);
@@ -24,12 +18,6 @@ PollyImplementObject(Image);
 Image::Image(u32 width, u32 height, ImageFormat format, const void* data, bool isStatic)
     : Image()
 {
-    if (not data)
-    {
-        throw Error(
-            formatString("No image data specified (width={}; height={}; format={}).", width, height, format));
-    }
-
     auto& painterImpl = *Painter::Impl::instance();
 
     const auto caps = painterImpl.capabilities();

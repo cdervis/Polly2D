@@ -299,10 +299,10 @@ void Painter::Impl::startFrame()
 
     onFrameStarted();
 
-    auto& frameData                 = _frameData[_currentFrameIndex];
-    frameData.batchMode             = none;
-    frameData.spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
-    frameData.spriteBatchImage      = nullptr;
+    auto& frameData     = _frameData[_currentFrameIndex];
+    frameData.batchMode = none;
+    // frameData.spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
+    frameData.spriteBatchImage = nullptr;
     frameData.spriteQueue.clear();
     frameData.meshBatchImage = nullptr;
 
@@ -433,6 +433,11 @@ void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
         shaderImpl->_isInUse = false;
     }
 
+    // Accumulate the flags that we have to mark as dirty.
+    // Because the shader will be changed, the pipeline state is
+    // dirty either way.
+    int dirtyFlags = DF_PipelineState;
+
     if (!shader)
     {
         switch (mode)
@@ -445,6 +450,7 @@ void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
     else
     {
         shaderFieldRef = shader;
+        dirtyFlags |= DF_UserShaderParams;
     }
 
     if (auto* shaderImpl = shaderFieldRef.impl())
@@ -452,7 +458,7 @@ void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
         shaderImpl->_isInUse = true;
     }
 
-    _frameData[_currentFrameIndex].dirtyFlags |= DF_PipelineState | DF_UserShaderParams;
+    _frameData[_currentFrameIndex].dirtyFlags |= dirtyFlags;
 }
 
 const Sampler& Painter::Impl::currentSampler() const
@@ -485,57 +491,6 @@ void Painter::Impl::setBlendState(const BlendState& blendState)
     }
 }
 
-void Painter::Impl::drawSprite(const Sprite& sprite, SpriteShaderKind spriteShaderKind)
-{
-    auto& frameData = _frameData[_currentFrameIndex];
-
-    if (frameData.spriteQueue.size() == _maxSpriteBatchSize)
-    {
-        spriteQueueLimitReached();
-    }
-
-    auto* imageImpl = sprite.image.impl();
-    assume(imageImpl);
-
-    if (sprite.image == _currentCanvas)
-    {
-        throw Error(
-            "An image can't be drawn while it's bound as a canvas. Please unset the canvas first (using "
-            "setCanvas()) before drawing it.");
-    }
-
-    prepareForBatchMode(frameData, BatchMode::Sprites);
-
-    if (frameData.spriteBatchShaderKind != spriteShaderKind or frameData.spriteBatchImage != imageImpl)
-    {
-        flush();
-    }
-
-    frameData.spriteQueue.add(
-        InternalSprite{
-            .dst      = sprite.dstRect,
-            .src      = sprite.srcRect.valueOr(Rectangle(0, 0, sprite.image.size())),
-            .color    = sprite.color,
-            .origin   = sprite.origin,
-            .rotation = sprite.rotation,
-            .flip     = sprite.flip,
-        });
-
-    if (frameData.spriteBatchShaderKind != spriteShaderKind)
-    {
-        frameData.dirtyFlags |= DF_PipelineState;
-    }
-
-    if (frameData.spriteBatchImage != imageImpl)
-    {
-        frameData.dirtyFlags |= DF_SpriteImage;
-    }
-
-    frameData.spriteBatchShaderKind = spriteShaderKind;
-    frameData.spriteBatchImage      = imageImpl;
-
-    ++_performanceStats.spriteCount;
-}
 
 void Painter::Impl::pushStringToQueue(
     StringView            text,
@@ -570,6 +525,9 @@ void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
         setBlendState(previousBlendState);
     };
 
+    auto& frameData = _frameData[_currentFrameIndex];
+    prepareForBatchMode(frameData, BatchMode::Sprites);
+
     for (u32 i = 0; i < emitterCount; ++i)
     {
         const auto& emitter = emitters[i];
@@ -594,28 +552,29 @@ void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
             sprite.color    = particle.color;
             sprite.rotation = particle.rotation;
 
-            drawSprite(sprite, SpriteShaderKind::Default);
+            drawSprite<false, false, false>(sprite);
         }
+
+        _performanceStats.spriteCount += particlesSpan.size();
     }
 }
 
+template<bool PrepareBatchMode>
 void Painter::Impl::fillRectangleUsingSprite(
     const Rectangle& rectangle,
     const Color&     color,
     Radians          rotation,
     const Vec2&      origin)
 {
-    drawSprite(
-        Sprite{
-            .image    = _whiteImage,
-            .dstRect  = rectangle,
-            .srcRect  = {},
-            .color    = color,
-            .rotation = rotation,
-            .origin   = origin,
-            .flip     = SpriteFlip::None,
-        },
-        SpriteShaderKind::Default);
+    drawSprite<false, PrepareBatchMode, true>(Sprite{
+        .image    = _whiteImage,
+        .dstRect  = rectangle,
+        .srcRect  = {},
+        .color    = color,
+        .rotation = rotation,
+        .origin   = origin,
+        .flip     = SpriteFlip::None,
+    });
 }
 
 void Painter::Impl::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
@@ -782,6 +741,7 @@ void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
 
     setBlendState(prevBlendState);
 }
+
 void Painter::Impl::drawRoundedRectangle(
     const Rectangle& rectangle,
     float            cornerRadius,
@@ -864,6 +824,10 @@ void Painter::Impl::resetCurrentStates()
     {
         resetShaderState(shader);
     }
+
+    setShader(BatchMode::Sprites, _defaultSpriteShader);
+    setShader(BatchMode::Polygons, _defaultPolyShader);
+    setShader(BatchMode::Mesh, _defaultMeshShader);
 }
 
 const Rectangle& Painter::Impl::currentViewport() const
@@ -899,11 +863,6 @@ Maybe<BatchMode> Painter::Impl::batchMode() const
 Span<InternalSprite> Painter::Impl::currentFrameSpriteQueue() const
 {
     return _frameData[_currentFrameIndex].spriteQueue;
-}
-
-SpriteShaderKind Painter::Impl::spriteShaderKind() const
-{
-    return _frameData[_currentFrameIndex].spriteBatchShaderKind;
 }
 
 const Image::Impl* Painter::Impl::spriteBatchImage() const
@@ -1029,23 +988,14 @@ Matrix Painter::Impl::computeViewportTransformation(const Rectangle& viewport)
     const auto xScale = viewport.width > 0 ? 2.0f / viewport.width : 0.0f;
     const auto yScale = viewport.height > 0 ? 2.0f / viewport.height : 0.0f;
 
-    const auto mat =
-        Matrix(Vec4(xScale, 0, 0, 0), Vec4(0, -yScale, 0, 0), Vec4(0, 0, 1, 0), Vec4(-1, 1, 0, 1));
-
-#if defined(polly_have_gfx_metal) or defined(polly_have_gfx_d3d11)
-    return mat;
-#else
-    return mat * scale(Vec2(1, -1));
-#endif
+    return Matrix(Vec4(xScale, 0, 0, 0), Vec4(0, -yScale, 0, 0), Vec4(0, 0, 1, 0), Vec4(-1, 1, 0, 1));
 }
 
 void Painter::Impl::createDefaultShaders()
 {
     _defaultSpriteShader = Shader::fromSource("DefaultSpriteShader", SpriteShaderDefault_shdStringView());
-    _defaultSpriteShaderMonochromatic =
-        Shader::fromSource("DefaultSpriteShaderMonochromatic", SpriteShaderMonochromatic_shdStringView());
-    _defaultPolyShader = Shader::fromSource("DefaultPolyShader", PolyShaderDefault_shdStringView());
-    _defaultMeshShader = Shader::fromSource("DefaultMeshShader", MeshShaderDefault_shdStringView());
+    _defaultPolyShader   = Shader::fromSource("DefaultPolyShader", PolyShaderDefault_shdStringView());
+    _defaultMeshShader   = Shader::fromSource("DefaultMeshShader", MeshShaderDefault_shdStringView());
 }
 
 void Painter::Impl::computeCombinedTransformation()
@@ -1077,22 +1027,35 @@ void Painter::Impl::doInternalPushTextToQueue(
     const Vec2&              offset,
     const Color&             color)
 {
+    prepareForMultipleSprites();
+
     for (const auto& glyph : glyphs)
     {
-        drawSprite(
-            Sprite{
-                .image   = glyph.image,
-                .dstRect = glyph.dstRect.offsetBy(offset),
-                .srcRect = glyph.srcRect,
-                .color   = color,
-            },
-            SpriteShaderKind::Monochromatic);
+        drawSprite<false, false, false>(Sprite{
+            .image   = glyph.image,
+            .dstRect = glyph.dstRect.offsetBy(offset),
+            .srcRect = glyph.srcRect,
+            .color   = color,
+        });
     }
+
+    _performanceStats.spriteCount += glyphs.size();
 
     for (const auto& deco : decorationRects)
     {
-        fillRectangleUsingSprite(deco.rect.offsetBy(offset), deco.color.valueOr(color), Radians(0.0f), {});
+        fillRectangleUsingSprite<false>(
+            deco.rect.offsetBy(offset),
+            deco.color.valueOr(color),
+            Radians(0.0f),
+            {});
     }
+}
+
+void Painter::Impl::prepareForMultipleSprites()
+{
+    auto& frameData = _frameData[_currentFrameIndex];
+
+    prepareForBatchMode(frameData, BatchMode::Sprites);
 }
 
 Vec2 Painter::Impl::currentCanvasSize() const
