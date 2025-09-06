@@ -162,7 +162,7 @@ void Shader::Impl::setDefaultParameterValues()
         switch (param.type)
         {
             case ShaderParameterType::Float:
-                updateScalarParameter(param.name, param.type, param.defaultValue.getOr(0.0f));
+                updateScalarParameter(param.name, param.type, float(param.defaultValue.getOr(0.0)));
                 break;
             case ShaderParameterType::Int:
                 updateScalarParameter(param.name, param.type, param.defaultValue.getOr(0));
