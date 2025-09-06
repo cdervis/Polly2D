@@ -130,6 +130,11 @@ void Shader::Impl::clearDirtyScalarParameters()
     _dirtyScalarParameters.clear();
 }
 
+bool Shader::Impl::hasCBufferData() const
+{
+    return !_cbufferData.isEmpty();
+}
+
 const u8* Shader::Impl::cbufferData() const
 {
     return _cbufferData.data();

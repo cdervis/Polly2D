@@ -13,7 +13,7 @@ class AccessedParams;
 class GLSLShaderGenerator final : public TextBasedShaderGenerator
 {
   public:
-    static constexpr auto uboName = "cer_Params"_sv;
+    static constexpr auto uboName = "UBO"_sv;
 
     explicit GLSLShaderGenerator(bool shouldGenerateForVulkan);
 

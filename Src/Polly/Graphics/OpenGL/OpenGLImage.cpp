@@ -27,7 +27,7 @@ OpenGLImage::OpenGLImage(
     {
         glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(previousTextureHandle));
     };
-    
+
     createOpenGLTexture(data, isStatic);
 
     verifyOpenGLState();
@@ -78,6 +78,11 @@ GLuint OpenGLImage::framebufferHandleGL() const
     return _framebufferHandleGL;
 }
 
+OpenGLFormatTriplet OpenGLImage::formatTriplet() const
+{
+    return _formatTriplet;
+}
+
 void OpenGLImage::setDebuggingLabel(StringView value)
 {
     GraphicsResource::setDebuggingLabel(value);
@@ -92,19 +97,19 @@ void OpenGLImage::createOpenGLTexture([[maybe_unused]] const void* data, [[maybe
         throw Error("Failed to create an OpenGL texture handle.");
     }
 
-    const auto formatGL = *convertImageFormat(format());
+    _formatTriplet = *convertImageFormat(format());
 
     glBindTexture(GL_TEXTURE_2D, _textureHandleGL);
 
     glTexImage2D(
         GL_TEXTURE_2D,
         0,
-        formatGL.internalFormat,
+        _formatTriplet.internalFormat,
         static_cast<GLsizei>(width()),
         static_cast<GLsizei>(height()),
         0,
-        formatGL.baseFormat,
-        formatGL.type,
+        _formatTriplet.baseFormat,
+        _formatTriplet.type,
         data);
 }
 } // namespace Polly

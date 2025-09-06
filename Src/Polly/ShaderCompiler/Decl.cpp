@@ -86,7 +86,9 @@ StringView ShaderTypeDecl::id() const
 
 void ShaderTypeDecl::onVerify([[maybe_unused]] SemaContext& context, [[maybe_unused]] Scope& scope)
 {
-    if (_id != Naming::shaderTypeSprite and _id != Naming::shaderTypePolygon and _id != Naming::shaderTypeMesh)
+    if (_id != Naming::shaderTypeSprite
+        and _id != Naming::shaderTypePolygon
+        and _id != Naming::shaderTypeMesh)
     {
         throw ShaderCompileError(
             location(),

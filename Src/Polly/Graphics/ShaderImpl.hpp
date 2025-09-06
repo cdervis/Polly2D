@@ -173,6 +173,8 @@ class Shader::Impl : public GraphicsResource
 
     void clearDirtyScalarParameters();
 
+    bool hasCBufferData() const;
+
     const u8* cbufferData() const;
 
     u32 cbufferSize() const;

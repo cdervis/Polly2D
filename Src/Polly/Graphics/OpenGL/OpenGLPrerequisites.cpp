@@ -1,6 +1,7 @@
 #include "Polly/Graphics/OpenGL/OpenGLPrerequisites.hpp"
 
 #include "Polly/Algorithm.hpp"
+#include "Polly/BlendState.hpp"
 #include "Polly/Error.hpp"
 #include "Polly/Format.hpp"
 #include "Polly/Image.hpp"
@@ -70,5 +71,41 @@ Maybe<OpenGLFormatTriplet> convertImageFormat(ImageFormat format)
 void setOpenGLObjectLabel([[maybe_unused]] GLuint handleGL, [[maybe_unused]] StringView name)
 {
     // TODO
+}
+
+Maybe<GLenum> convertBlend(Blend blend)
+{
+    switch (blend)
+    {
+        case Blend::One: return GL_ONE;
+        case Blend::Zero: return GL_ZERO;
+        case Blend::SrcColor: return GL_SRC_COLOR;
+        case Blend::InvSrcColor: return GL_ONE_MINUS_SRC_COLOR;
+        case Blend::SrcAlpha: return GL_SRC_ALPHA;
+        case Blend::InvSrcAlpha: return GL_ONE_MINUS_SRC_ALPHA;
+        case Blend::DstColor: return GL_DST_COLOR;
+        case Blend::InvDstColor: return GL_ONE_MINUS_DST_COLOR;
+        case Blend::DstAlpha: return GL_DST_ALPHA;
+        case Blend::InvDstAlpha: return GL_ONE_MINUS_DST_ALPHA;
+        case Blend::BlendFactor: return GL_CONSTANT_COLOR;
+        case Blend::InvBlendFactor: return GL_ONE_MINUS_CONSTANT_COLOR;
+        case Blend::SrcAlphaSaturation: return GL_SRC_ALPHA_SATURATE;
+    }
+
+    return none;
+}
+
+Maybe<GLenum> convertBlendFunction(BlendFunction blendFunction)
+{
+    switch (blendFunction)
+    {
+        case BlendFunction::Add: return GL_FUNC_ADD;
+        case BlendFunction::Subtract: return GL_FUNC_SUBTRACT;
+        case BlendFunction::ReverseSubtract: return GL_FUNC_REVERSE_SUBTRACT;
+        case BlendFunction::Min: return GL_MIN;
+        case BlendFunction::Max: return GL_MAX;
+    }
+
+    return none;
 }
 } // namespace Polly

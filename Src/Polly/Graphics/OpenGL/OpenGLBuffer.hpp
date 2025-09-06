@@ -32,6 +32,6 @@ class OpenGLBuffer
     void destroy();
 
     GLuint _handleGL    = 0;
-    u32 _sizeInBytes = 0;
+    u32    _sizeInBytes = 0;
 };
 } // namespace Polly

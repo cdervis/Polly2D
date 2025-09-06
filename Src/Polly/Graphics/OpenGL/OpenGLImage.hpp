@@ -29,12 +29,15 @@ class OpenGLImage final : public Image::Impl
 
     GLuint framebufferHandleGL() const;
 
+    OpenGLFormatTriplet formatTriplet() const;
+
     void setDebuggingLabel(StringView value) override;
 
   private:
     void createOpenGLTexture(const void* data, bool isStatic);
 
-    GLuint _textureHandleGL     = 0;
-    GLuint _framebufferHandleGL = 0;
+    GLuint              _textureHandleGL     = 0;
+    GLuint              _framebufferHandleGL = 0;
+    OpenGLFormatTriplet _formatTriplet;
 };
 } // namespace Polly

@@ -25,6 +25,8 @@ static constexpr auto minimumRequiredOpenGLVersionMajor = 3;
 static constexpr auto minimumRequiredOpenGLVersionMinor = 3;
 
 enum class ImageFormat;
+enum class Blend;
+enum class BlendFunction;
 
 void verifyOpenGLState();
 
@@ -38,4 +40,8 @@ struct OpenGLFormatTriplet
 Maybe<OpenGLFormatTriplet> convertImageFormat(ImageFormat format);
 
 void setOpenGLObjectLabel(GLuint handleGL, StringView name);
+
+Maybe<GLenum> convertBlend(Blend blend);
+
+Maybe<GLenum> convertBlendFunction(BlendFunction blendFunction);
 } // namespace Polly

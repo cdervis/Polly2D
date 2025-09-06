@@ -433,7 +433,19 @@ void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
         shaderImpl->_isInUse = false;
     }
 
-    shaderFieldRef = shader;
+    if (!shader)
+    {
+        switch (mode)
+        {
+            case BatchMode::Sprites: shaderFieldRef = _defaultSpriteShader; break;
+            case BatchMode::Polygons: shaderFieldRef = _defaultPolyShader; break;
+            case BatchMode::Mesh: shaderFieldRef = _defaultMeshShader; break;
+        }
+    }
+    else
+    {
+        shaderFieldRef = shader;
+    }
 
     if (auto* shaderImpl = shaderFieldRef.impl())
     {

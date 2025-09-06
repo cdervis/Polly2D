@@ -4,8 +4,10 @@
 
 #include "Polly/Graphics/OpenGL/OpenGLShaderProgram.hpp"
 
+#include "Polly/Array.hpp"
 #include "Polly/Error.hpp"
 #include "Polly/Format.hpp"
+#include "Polly/ShaderCompiler/GLSLShaderGenerator.hpp"
 
 namespace Polly
 {
@@ -40,6 +42,26 @@ OpenGLShaderProgram::OpenGLShaderProgram(GLuint vertexShaderHandleGL, GLuint fra
             StringView(reinterpret_cast<const char*>(errorBuffer.data()), errorBuffer.size(), true);
 
         throw Error(formatString("Failed to link an OpenGL shader program. Reason: {}", errorMessage));
+    }
+
+    constexpr auto uboNames = Array{
+        // Our built-in shaders all use "Constants" as the UBO name.
+        "Constants"_sv,
+
+        // The GLSLShaderGenerator dictates the name of user-shader parameters.
+        ShaderCompiler::GLSLShaderGenerator::uboName,
+    };
+
+    for (auto index = 0u; const auto uboName : uboNames)
+    {
+        const auto blockID = glGetUniformBlockIndex(_handleGL, uboName.cstring());
+
+        if (blockID != GL_INVALID_INDEX)
+        {
+            glUniformBlockBinding(_handleGL, blockID, index);
+        }
+
+        ++index;
     }
 
     verifyOpenGLState();

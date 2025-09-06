@@ -130,6 +130,8 @@ void OpenGLPainter::onFrameStarted()
 {
     // auto& openGLWindow = static_cast<OpenGLWindow&>(window());
 
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, _globalUBO.handleGL());
+
     _spriteVertexCounter = 0;
     _spriteIndexCounter  = 0;
     _polyVertexCounter   = 0;
@@ -168,7 +170,43 @@ void OpenGLPainter::onBeforeCanvasChanged(Image oldCanvas, [[maybe_unused]] Rect
 
 void OpenGLPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport)
 {
-    notImplemented();
+    if (newCanvas)
+    {
+        const auto& openGLImage = static_cast<OpenGLImage&>(*newCanvas.impl());
+        glBindFramebuffer(GL_FRAMEBUFFER, openGLImage.framebufferHandleGL());
+    }
+    else
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    auto clearFlags = GLbitfield(0);
+
+    if (clearColor)
+    {
+        clearFlags |= GL_COLOR_BUFFER_BIT;
+        const auto color = *clearColor;
+        glClearColor(color.r, color.g, color.b, color.a);
+
+        // TODO:
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    }
+
+    if (clearFlags != 0)
+    {
+        glClear(clearFlags);
+    }
+
+    glViewport(GLint(viewport.x), GLint(viewport.y), GLsizei(viewport.width), GLsizei(viewport.height));
+
+    setDirtyFlags(
+        dirtyFlags()
+        | DF_GlobalCBufferParams
+        | DF_SpriteImage
+        | DF_MeshImage
+        | DF_Sampler
+        | DF_VertexBuffers
+        | DF_PipelineState);
 }
 
 void OpenGLPainter::onSetScissorRects([[maybe_unused]] Span<Rectangle> scissorRects)
@@ -257,12 +295,138 @@ UniquePtr<Shader::Impl> OpenGLPainter::onCreateNativeUserShader(
 void OpenGLPainter::notifyResourceDestroyed(GraphicsResource& resource)
 {
     Impl::notifyResourceDestroyed(resource);
-    notImplemented();
 }
 
 int OpenGLPainter::prepareDrawCall()
 {
-    notImplemented();
+    auto       df               = dirtyFlags();
+    auto&      perfStats        = performanceStats();
+    const auto currentBatchMode = *batchMode();
+
+    if (df & DF_PipelineState)
+    {
+        auto  vertexShaderHandleGL = GLuint(0);
+        auto& currentUserShader    = currentShader(currentBatchMode);
+
+        auto fragmentShaderHandleGL =
+            static_cast<const OpenGLUserShader&>(*currentUserShader.impl()).fragmentShaderHandleGL();
+
+        switch (currentBatchMode)
+        {
+            case BatchMode::Sprites: vertexShaderHandleGL = _spriteVs.handleGL(); break;
+            case BatchMode::Polygons: vertexShaderHandleGL = _polyVs.handleGL(); break;
+            case BatchMode::Mesh: vertexShaderHandleGL = _meshVs.handleGL(); break;
+        }
+
+        const auto& shaderProgram = _shaderProgramCache.get(vertexShaderHandleGL, fragmentShaderHandleGL);
+
+        glUseProgram(shaderProgram.handleGL());
+
+        // Blend state
+        {
+            const auto blendState = currentBlendState();
+
+            blendState.isBlendingEnabled ? glEnable(GL_BLEND) : glDisable(GL_BLEND);
+
+            glColorMask(
+                hasFlag(blendState.colorWriteMask, ColorWriteMask::Red),
+                hasFlag(blendState.colorWriteMask, ColorWriteMask::Green),
+                hasFlag(blendState.colorWriteMask, ColorWriteMask::Blue),
+                hasFlag(blendState.colorWriteMask, ColorWriteMask::Alpha));
+
+            glBlendEquationSeparate(
+                *convertBlendFunction(blendState.colorBlendFunction),
+                *convertBlendFunction(blendState.alphaBlendFunction));
+
+            glBlendFuncSeparate(
+                *convertBlend(blendState.colorSrcBlend),
+                *convertBlend(blendState.colorDstBlend),
+                *convertBlend(blendState.alphaSrcBlend),
+                *convertBlend(blendState.alphaDstBlend));
+        }
+
+        df &= ~DF_PipelineState;
+    }
+
+    if ((df & DF_VertexBuffers) || (df & DF_IndexBuffer))
+    {
+        const auto& vao = [&]() -> const OpenGLVAO&
+        {
+            switch (currentBatchMode)
+            {
+                case BatchMode::Sprites: return _spriteVAO;
+                case BatchMode::Polygons: return _polyVAO;
+                case BatchMode::Mesh: return _meshVAO;
+            }
+
+            throw Error("Invalid batch mode");
+        }();
+
+        glBindVertexArray(vao.handleGL());
+
+        df &= ~DF_VertexBuffers;
+        df &= ~DF_IndexBuffer;
+    }
+
+    if (df & DF_Sampler)
+    {
+        df &= ~DF_Sampler;
+    }
+
+    if (df & DF_GlobalCBufferParams)
+    {
+        const auto viewport = currentViewport();
+
+        const auto data = GlobalCBufferParams{
+            .transformation  = combinedTransformation(),
+            .viewportSize    = viewport.size(),
+            .viewportSizeInv = Vec2(1.0f) / viewport.size(),
+        };
+
+        glBindBuffer(GL_UNIFORM_BUFFER, _globalUBO.handleGL());
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(data), &data);
+
+        df &= ~DF_GlobalCBufferParams;
+    }
+
+    if ((df & DF_SpriteImage) || (df & DF_MeshImage))
+    {
+        const auto* image = static_cast<const OpenGLImage*>(
+            currentBatchMode == BatchMode::Sprites ? spriteBatchImage()
+            : currentBatchMode == BatchMode::Mesh  ? meshBatchImage()
+                                                   : nullptr);
+
+        if (image)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, image->textureHandleGL());
+        }
+
+        ++perfStats.textureChangeCount;
+
+        df &= ~DF_SpriteImage;
+        df &= ~DF_MeshImage;
+    }
+
+    if (df & DF_UserShaderParams)
+    {
+        if (auto& userShader = currentShader(currentBatchMode))
+        {
+            auto& shaderImpl = *userShader.impl();
+            if (shaderImpl.hasCBufferData())
+            {
+                auto uboHandleGL = selectUserShaderParamsCBuffer(shaderImpl.cbufferSize());
+
+                glBindBuffer(GL_UNIFORM_BUFFER, uboHandleGL);
+                glBindBufferBase(GL_UNIFORM_BUFFER, 1, uboHandleGL);
+                glBufferSubData(GL_UNIFORM_BUFFER, 0, shaderImpl.cbufferSize(), shaderImpl.cbufferData());
+            }
+        }
+
+        df &= ~DF_UserShaderParams;
+    }
+
+    return df;
 }
 
 void OpenGLPainter::flushSprites(
@@ -428,6 +592,19 @@ PainterCapabilities OpenGLPainter::determineCapabilities() const
     }
 
     return caps;
+}
+
+GLuint OpenGLPainter::selectUserShaderParamsCBuffer(u32 size) const
+{
+    for (auto i = 0u; i < userShaderParamsUBOSizes.size(); ++i)
+    {
+        if (userShaderParamsUBOSizes[i] >= size)
+        {
+            return _userParamsUBOs[i].handleGL();
+        }
+    }
+
+    throw Error("Failed to select a user shader UBO for the specified size.");
 }
 
 void OpenGLPainter::requestFrameCapture()

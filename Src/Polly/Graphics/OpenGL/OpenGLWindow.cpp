@@ -55,4 +55,10 @@ SDL_GLContext OpenGLWindow::openGLContext() const
 {
     return _openGLContext;
 }
+
+void OpenGLWindow::setIsDisplaySyncEnabled(bool value)
+{
+    Impl::setIsDisplaySyncEnabled(value);
+    SDL_GL_SetSwapInterval(value ? 1 : 0);
+}
 } // namespace Polly

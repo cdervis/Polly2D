@@ -107,6 +107,8 @@ class OpenGLPainter final : public Painter::Impl
     [[nodiscard]]
     PainterCapabilities determineCapabilities() const;
 
+    GLuint selectUserShaderParamsCBuffer(u32 size) const;
+
     ShaderCompiler::GLSLShaderGenerator _glslShaderGenerator;
 
     OpenGLBuffer                                         _globalUBO;

@@ -5,8 +5,8 @@
 #include "Polly/Graphics/OpenGL/OpenGLShader.hpp"
 
 #include "Polly/Array.hpp"
-#include "Polly/Narrow.hpp"
 #include "Polly/Format.hpp"
+#include "Polly/Narrow.hpp"
 
 namespace Polly
 {

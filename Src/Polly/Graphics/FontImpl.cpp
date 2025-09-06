@@ -6,9 +6,9 @@
 
 #include "Polly/Defer.hpp"
 #include "Polly/Game/GameImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/Narrow.hpp"
-#include "Polly/Graphics/PainterImpl.hpp"
 
 #if polly_have_gfx_d3d11
 #include "Polly/Graphics/D3D11/D3D11Image.hpp"
@@ -17,6 +17,10 @@
 
 #if polly_have_gfx_metal
 #include "Polly/Graphics/Metal/MetalImage.hpp"
+#endif
+
+#if polly_have_gfx_opengl
+#include "Polly/Graphics/OpenGL/OpenGLImage.hpp"
 #endif
 
 #if polly_have_gfx_vulkan
@@ -296,6 +300,11 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
     {
         logVerbose("  Writing directly to page image");
 
+        // We currently update the entire texture slice, when we could get away with
+        // just updating the regions that have received new rasterized glyphs.
+        // Since font rasterization mostly happens right after the first texts have been
+        // drawn, this is not a big issue.
+
 #ifdef polly_have_gfx_metal
         const auto& metalImage = static_cast<const Polly::MetalImage&>(*page.atlas.impl());
         auto*       mtlTexture = metalImage.mtlTexture();
@@ -318,7 +327,37 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
             ->UpdateSubresource(id3d11Texture, 0, nullptr, page.atlasData.data(), rowPitch, slicePitch);
 
 #elif polly_have_gfx_opengl
-        notImplemented();
+        auto& openGLImage     = static_cast<const Polly::OpenGLImage&>(*page.atlas.impl());
+        auto  textureHandleGL = openGLImage.textureHandleGL();
+
+        auto previousTexture = GLint();
+        glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTexture);
+
+        if (GLuint(previousTexture) != textureHandleGL)
+        {
+            glBindTexture(GL_TEXTURE_2D, textureHandleGL);
+        }
+
+        defer
+        {
+            if (GLuint(previousTexture) != textureHandleGL)
+            {
+                glBindTexture(GL_TEXTURE_2D, GLuint(previousTexture));
+            }
+        };
+
+        const auto formatTriplet = openGLImage.formatTriplet();
+
+        glTexSubImage2D(
+            GL_TEXTURE_2D,
+            0,
+            0,
+            0,
+            GLsizei(openGLImage.width()),
+            GLsizei(openGLImage.height()),
+            formatTriplet.baseFormat,
+            formatTriplet.type,
+            page.atlasData.data());
 #elif polly_have_gfx_vulkan
         auto& deviceImpl   = *Painter::Impl::instance();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);

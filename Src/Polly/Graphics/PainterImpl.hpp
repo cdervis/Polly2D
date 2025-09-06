@@ -76,23 +76,21 @@ class Painter::Impl : public Object
   protected:
     enum DirtyFlags
     {
-        DF_None                     = 0,
-        DF_PipelineState            = 1 << 0,
-        DF_Sampler                  = 1 << 1,
-        DF_GlobalCBufferParams      = 1 << 2,
-        DF_SpriteImage              = 1 << 3,
-        DF_MeshImage                = 1 << 4,
-        DF_UserShaderParams         = 1 << 5,
-        DF_SystemValueCBufferParams = 1 << 6,
-        DF_VertexBuffers            = 1 << 7,
-        DF_IndexBuffer              = 1 << 8,
-        DF_All                      = DF_PipelineState
+        DF_None                = 0,
+        DF_PipelineState       = 1 << 0,
+        DF_Sampler             = 1 << 1,
+        DF_GlobalCBufferParams = 1 << 2,
+        DF_SpriteImage         = 1 << 3,
+        DF_MeshImage           = 1 << 4,
+        DF_UserShaderParams    = 1 << 5,
+        DF_VertexBuffers       = 1 << 6,
+        DF_IndexBuffer         = 1 << 7,
+        DF_All                 = DF_PipelineState
                  bitor DF_Sampler
                  bitor DF_GlobalCBufferParams
                  bitor DF_SpriteImage
                  bitor DF_MeshImage
                  bitor DF_UserShaderParams
-                 bitor DF_SystemValueCBufferParams
                  bitor DF_VertexBuffers
                  bitor DF_IndexBuffer,
     };

@@ -401,7 +401,7 @@ void GLSLShaderGenerator::emitUniformBufferForUserParams(
             w << "binding = " << CommonVulkanInfo::userShaderParamsCBufferBinding;
         }
 
-        w << ") uniform UBO ";
+        w << ") uniform " << uboName << " ";
         w.openBrace();
 
         for (const auto* param : params.scalars)

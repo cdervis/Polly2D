@@ -28,6 +28,8 @@ class OpenGLWindow : public Window::Impl
 
     SDL_GLContext openGLContext() const;
 
+    virtual void setIsDisplaySyncEnabled(bool value) override;
+
   private:
     Painter::Impl* _painter       = nullptr;
     SDL_GLContext  _openGLContext = nullptr;
