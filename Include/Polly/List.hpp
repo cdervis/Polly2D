@@ -348,13 +348,13 @@ class List : Details::ListBase<T, InlineCapacity>
 
     T* data()
     {
-        checkEmptyAccess();
+        checkEmptyCapacityAccess();
         return base::beginPtr();
     }
 
     const T* data() const
     {
-        checkEmptyAccess();
+        checkEmptyCapacityAccess();
         return base::beginPtr();
     }
 
@@ -711,6 +711,16 @@ class List : Details::ListBase<T, InlineCapacity>
         if (isEmpty())
         {
             throw Error("Attempting to access an empty List.");
+        }
+#endif
+    }
+
+    void checkEmptyCapacityAccess() const
+    {
+#ifndef polly_no_hardening
+        if (capacity() == 0)
+        {
+            throw Error("Attempting to access a List with no capacity.");
         }
 #endif
     }
