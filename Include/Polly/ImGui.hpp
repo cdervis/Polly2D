@@ -116,9 +116,9 @@ enum class ImGuiSliderOpts
     None = 0,
 };
 
-enum class imgui_input_text_opts
+enum class ImGuiInputTextOpts
 {
-    none = 0,
+    None = 0,
 };
 
 enum class ImGuiPopupOpts
@@ -485,19 +485,19 @@ class ImGui
     bool inputText(
         StringView            label,
         String&               value,
-        imgui_input_text_opts flags = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
     bool inputTextMultiline(
         StringView            label,
         String&               value,
         Maybe<Vec2>           size  = {},
-        imgui_input_text_opts flags = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
     bool inputTextWithHint(
         StringView            label,
         StringView            hint,
         String&               value,
-        imgui_input_text_opts flags = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
     bool input(
         StringView            label,
@@ -505,38 +505,38 @@ class ImGui
         float                 step     = 0.0f,
         float                 stepFast = 0.0f,
         StringView            format   = "%.3f",
-        imgui_input_text_opts flags    = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags    = ImGuiInputTextOpts::None);
 
     bool input(
         StringView            label,
         Vec2&                 value,
         StringView            format = "%.3f",
-        imgui_input_text_opts flags  = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags  = ImGuiInputTextOpts::None);
 
     bool input(
         StringView            label,
         Vec3&                 value,
         StringView            format = "%.3f",
-        imgui_input_text_opts flags  = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags  = ImGuiInputTextOpts::None);
 
     bool input(
         StringView            label,
         Vec4&                 value,
         StringView            format = "%.3f",
-        imgui_input_text_opts flags  = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags  = ImGuiInputTextOpts::None);
 
     bool input(
         StringView            label,
         int&                  value,
         int                   step     = 1,
         int                   stepFast = 100,
-        imgui_input_text_opts flags    = imgui_input_text_opts::none);
+        ImGuiInputTextOpts flags    = ImGuiInputTextOpts::None);
 
-    bool input(StringView label, Vec2i& value, imgui_input_text_opts flags = imgui_input_text_opts::none);
+    bool input(StringView label, Vec2i& value, ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
-    bool input(StringView label, Vec3i& value, imgui_input_text_opts flags = imgui_input_text_opts::none);
+    bool input(StringView label, Vec3i& value, ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
-    bool input(StringView label, Vec4i& value, imgui_input_text_opts flags = imgui_input_text_opts::none);
+    bool input(StringView label, Vec4i& value, ImGuiInputTextOpts flags = ImGuiInputTextOpts::None);
 
     bool colorEdit(StringView label, Color& value, ImGuiColorEditOpts flags = ImGuiColorEditOpts::None);
 
@@ -742,5 +742,5 @@ defineEnumFlagOperations(ImGuiChildOpts);
 defineEnumFlagOperations(ImGuiFocusedOpts);
 defineEnumFlagOperations(ImGuiHoveredOpts);
 defineEnumFlagOperations(ImGuiSliderOpts);
-defineEnumFlagOperations(imgui_input_text_opts);
+defineEnumFlagOperations(ImGuiInputTextOpts);
 } // namespace Polly

@@ -51,7 +51,7 @@ static ImGuiSliderFlags convert(ImGuiSliderOpts value)
     return static_cast<int>(value);
 }
 
-static ImGuiInputTextFlags convert(imgui_input_text_opts value)
+static ImGuiInputTextFlags convert(ImGuiInputTextOpts value)
 {
     return static_cast<int>(value);
 }
@@ -759,13 +759,13 @@ bool ImGui::sliderVertical(
     return ::ImGui::VSliderInt(label.data(), convert(size), &value, min, max, format.data(), convert(flags));
 }
 
-bool ImGui::inputText(StringView label, String& value, imgui_input_text_opts flags)
+bool ImGui::inputText(StringView label, String& value, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
-    return ::ImGui::InputText(label.data(), value.data(), value.size(), convert(flags));
+    return ::ImGui::InputText(label.data(), value.data(), value.capacity(), convert(flags));
 }
 
-bool ImGui::inputTextMultiline(StringView label, String& value, Maybe<Vec2> size, imgui_input_text_opts flags)
+bool ImGui::inputTextMultiline(StringView label, String& value, Maybe<Vec2> size, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputTextMultiline(
@@ -776,61 +776,61 @@ bool ImGui::inputTextMultiline(StringView label, String& value, Maybe<Vec2> size
         convert(flags));
 }
 
-bool ImGui::inputTextWithHint(StringView label, StringView hint, String& value, imgui_input_text_opts flags)
+bool ImGui::inputTextWithHint(StringView label, StringView hint, String& value, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputTextWithHint(label.data(), hint.data(), value.data(), value.size(), convert(flags));
 }
 
 bool ImGui::input(
-    StringView            label,
-    float&                value,
-    float                 step,
-    float                 stepFast,
-    StringView            format,
-    imgui_input_text_opts flags)
+    StringView         label,
+    float&             value,
+    float              step,
+    float              stepFast,
+    StringView         format,
+    ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputFloat(label.data(), &value, step, stepFast, format.data(), convert(flags));
 }
 
-bool ImGui::input(StringView label, Vec2& value, StringView format, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, Vec2& value, StringView format, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputFloat2(label.data(), &value.x, format.data(), convert(flags));
 }
 
-bool ImGui::input(StringView label, Vec3& value, StringView format, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, Vec3& value, StringView format, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputFloat3(label.data(), &value.x, format.data(), convert(flags));
 }
 
-bool ImGui::input(StringView label, Vec4& value, StringView format, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, Vec4& value, StringView format, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputFloat4(label.data(), &value.x, format.data(), convert(flags));
 }
 
-bool ImGui::input(StringView label, int& value, int step, int stepFast, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, int& value, int step, int stepFast, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputInt(label.data(), &value, step, stepFast, convert(flags));
 }
 
-bool ImGui::input(StringView label, Vec2i& value, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, Vec2i& value, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputInt2(label.data(), &value.x, convert(flags));
 }
 
-bool ImGui::input(StringView label, Vec3i& value, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, Vec3i& value, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputInt3(label.data(), &value.x, convert(flags));
 }
 
-bool ImGui::input(StringView label, Vec4i& value, imgui_input_text_opts flags)
+bool ImGui::input(StringView label, Vec4i& value, ImGuiInputTextOpts flags)
 {
     PollyVerifyHaveImpl;
     return ::ImGui::InputInt4(label.data(), &value.x, convert(flags));
