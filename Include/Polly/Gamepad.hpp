@@ -220,12 +220,6 @@ class Gamepad final
     /// Starts the rumble motors on the gamepad, if supported by the gamepad, for
     /// a specific duration.
     ///
-    /// Example:
-    ///
-    /// @code
-    /// myGamepad.startRumble( 0.5f, 1.0f, 0.5f );
-    /// @endcode
-    ///
     /// @param leftMotorIntensity The intensity of the left motor, in the range `[0.0 .. 1.0]`
     /// @param rightMotorIntensity The intensity of the right motor, in the range `[0.0 .. 1.0]`
     /// @param duration The duration of the rumble

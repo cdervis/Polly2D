@@ -78,17 +78,6 @@ class Painter final
     /// @param canvas The canvas to draw into in subsequent calls. To render to the current
     /// window, set an empty canvas object.
     /// @param clearColor The clear color.
-    ///
-    /// @code
-    /// auto canvas = Image(256, 256, ImageFormat::R8G8B8A8_UNorm);
-    ///
-    /// painter.setCanvas(canvas);                // Set canvas as active.
-    /// painter.drawSprite(mySprite, {0, 0});     // Draws the sprite into the canvas.
-    ///
-    /// painter.setCanvas(none, none);                    // Set current window as render target.
-    /// painter.drawSprite(canvas, {0, 0});       // Draws the canvas into the window.
-    /// painter.drawSprite(mySprite, {100, 100}); // Draws the sprite on top.
-    /// @endcode
     void setCanvas(Image canvas, Maybe<Color> clearColor);
 
     /// Gets the active transformation matrix to apply to all subsequent 2D objects.
@@ -115,31 +104,6 @@ class Painter final
     /// Sets the active custom shader for polygons.
     ///
     /// Declaring a polygon shader is done by using the #type notation inside the shader code.
-    ///
-    /// Example:
-    ///
-    /// @code
-    /// #type polygon
-    ///
-    /// Vec4 main()
-    /// {
-    ///   return Vec4(1, 0, 0, 1); // Paints all polygons red
-    /// }
-    /// @endcode
-    ///
-    /// The following functions produce polygons and are therefore
-    /// affected by this shader:
-    ///
-    /// - drawRectangle()
-    /// - fillRectangle()
-    /// - drawLine()
-    /// - drawRoundedRectangle()
-    /// - fillRoundedRectangle()
-    /// - drawEllipse()
-    /// - fillEllipse()
-    ///
-    /// @param shader The polygon shader to use for subsequent drawing.
-    ///
     void setPolygonShader(Shader shader);
 
     /// Gets the currently active sampler.

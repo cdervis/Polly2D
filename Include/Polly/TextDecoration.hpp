@@ -41,19 +41,6 @@ enum class TextDecorationType
 /// Painter::drawString() and Painter::drawText().
 ///
 /// When drawing text, you may specify a decoration.
-///
-/// Example:
-///
-/// @code
-/// // Strikethrough with default values:
-/// painter.drawString(..., TextDecoration::Strikethrough());
-///
-/// // Underline with explicit values:
-/// painter.drawString(..., TextDecoration::Underline {
-///    .thickness = 2.0f,
-///    .color = red,
-/// });
-/// @endcode
 class TextDecoration
 {
   public:

@@ -88,19 +88,6 @@ struct Rectangle
 
     /// Calculates the signed depth of intersection between two rectangles.
     ///
-    /// Example:
-    ///
-    /// @code
-    /// const auto r1    = Rectangle( 0, 0, 100, 100 );
-    /// const auto r2    = Rectangle( 50, 50, 100, 100 );
-    /// const auto depth = Rectangle::intersectionDepth( r1, r2 );
-    ///
-    /// if ( depth )
-    /// {
-    ///     logDebug( "We have an intersection: {}", *depth );
-    /// }
-    /// @endcode
-    ///
     /// @param lhs The first rectangle to test.
     /// @param rhs The second rectangle to test.
     ///

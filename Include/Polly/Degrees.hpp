@@ -16,12 +16,6 @@ struct Radians;
 /// show intent in functions where degrees are expected, instead of radians.
 ///
 /// A degree value can be created via the constructor or by using the user-defined literal.
-///
-/// Example:
-///
-/// @code
-/// auto someDegrees = 45.0_deg; // Same as Degrees(45.0f)
-/// @endcode
 struct Degrees
 {
     float value = 0.0f;

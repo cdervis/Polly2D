@@ -111,12 +111,6 @@ constexpr T clamp(T value, T min, T max);
 
 /// Linearly interpolates a value depending on a factor.
 ///
-/// Example:
-///
-/// @code
-/// const auto value = Lerp( 100.0f, 300.0f, 0.5f ); // 200.0f
-/// @endcode
-///
 /// @tparam T The type of value to interpolate
 /// @param start The start value of the range
 /// @param end The end value of the range
@@ -126,12 +120,6 @@ template<std::floating_point T>
 constexpr T lerp(T start, T end, T t);
 
 /// Reverses a linear interpolation, producing an interpolation factor.
-///
-/// Example:
-///
-/// @code
-/// const auto factor = InverseLerp( 100.0f, 300.0f, 200.0f ); // 0.5f
-/// @endcode
 ///
 /// @tparam T The type of value to interpolate
 /// @param start The start value of the range
@@ -167,23 +155,6 @@ template<Concepts::Number T>
 constexpr T squared(const T& value);
 
 /// Proportionally maps a value from one range to another.
-///
-/// Example:
-///
-/// @code
-/// // Map value 50 from range [0.0 .. 100.0] to range [500.0 .. 1000.0].
-/// auto value = remap(
-///     /*inputMin: */  0.0f,
-///     /*inputMax: */  100.0f,
-///
-///     /*outputMin: */ 500.0f,
-///     /*outputMax: */ 1000.0f,
-///
-///     /*value: */     50.0f );
-/// @endcode
-///
-/// In the above example, the value 50 is halfway between 0 and 100 (50%).
-/// Therefore, the result would be the halfway value between 500 and 1000, which is 750.
 ///
 /// @tparam T The type of value to remap.
 /// @param inputMin The start of the input range.

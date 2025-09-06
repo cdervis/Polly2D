@@ -328,11 +328,6 @@ constexpr bool isZero(const Vec4i& vector);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// Vec2 smallerVector = Min( Vec2( 1, -2 ), Vec2( -2, 3 ) );
-/// // => Vec2( -2, -2 )
-/// @endcode
 constexpr Vec2 min(const Vec2& lhs, const Vec2& rhs);
 
 /// Calculates the smaller of two 2D vectors.
@@ -340,11 +335,6 @@ constexpr Vec2 min(const Vec2& lhs, const Vec2& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto smallerVector = Min( Vec2i( 1, -2 ), Vec2i( -2, 3 ) );
-/// // => Vec2i( -2, -2 )
-/// @endcode
 constexpr Vec2i min(const Vec2i& lhs, const Vec2i& rhs);
 
 /// Calculates the smaller of two 3D vectors.
@@ -352,11 +342,6 @@ constexpr Vec2i min(const Vec2i& lhs, const Vec2i& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto smallerVector = Min( Vec3( 1, -2, 3 ), Vec3( -2, 3, 4 ) );
-/// // => Vec3( -2, -2, 3 )
-/// @endcode
 constexpr Vec3 min(const Vec3& lhs, const Vec3& rhs);
 
 /// Calculates the smaller of two 3D vectors.
@@ -364,11 +349,6 @@ constexpr Vec3 min(const Vec3& lhs, const Vec3& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto smallerVector = Min( Vec3i( 1, -2, 3 ), Vec3i( -2, 3, 4 ) );
-/// // => Vec3i( -2, -2, 3 )
-/// @endcode
 constexpr Vec3i min(const Vec3i& lhs, const Vec3i& rhs);
 
 /// Calculates the smaller of two 4D vectors.
@@ -376,11 +356,6 @@ constexpr Vec3i min(const Vec3i& lhs, const Vec3i& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto smallerVector = Min( Vec4( 1, -2, 3, -1 ), Vec4( -2, 3, 4, 5 ) );
-/// // => Vec4( -2, -2, 3, -1 )
-/// @endcode
 constexpr Vec4 min(const Vec4& lhs, const Vec4& rhs);
 
 /// Calculates the smaller of two 4D vectors.
@@ -388,11 +363,6 @@ constexpr Vec4 min(const Vec4& lhs, const Vec4& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto smallerVector = Min( Vec4i( 1, -2, 3, -1 ), Vec4i( -2, 3, 4, 5 ) );
-/// // => Vec4i( -2, -2, 3, -1 )
-/// @endcode
 constexpr Vec4i min(const Vec4i& lhs, const Vec4i& rhs);
 
 /// Calculates the larger of two 2D vectors.
@@ -400,11 +370,6 @@ constexpr Vec4i min(const Vec4i& lhs, const Vec4i& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto largerVector = Max( Vec2( 1, -2 ), Vec2( -2, 3 ) );
-/// // => Vec2( 1, 3 )
-/// @endcode
 constexpr Vec2 max(const Vec2& lhs, const Vec2& rhs);
 
 /// Calculates the larger of two 2D vectors.
@@ -412,11 +377,6 @@ constexpr Vec2 max(const Vec2& lhs, const Vec2& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto largerVector = Max( Vec2i( 1, -2 ), Vec2i( -2, 3 ) );
-/// // => Vec2i( 1, 3 )
-/// @endcode
 constexpr Vec2i max(const Vec2i& lhs, const Vec2i& rhs);
 
 /// Calculates the larger of two 3D vectors.
@@ -424,11 +384,6 @@ constexpr Vec2i max(const Vec2i& lhs, const Vec2i& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto largerVector = Max( Vec3( 1, -2, 3 ), Vec3( -2, 3, 4 ) );
-/// // => Vec3(1, 3, 4)
-/// @endcode
 constexpr Vec3 max(const Vec3& lhs, const Vec3& rhs);
 
 /// Calculates the larger of two 3D vectors.
@@ -436,11 +391,6 @@ constexpr Vec3 max(const Vec3& lhs, const Vec3& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto largerVector = Max( Vec3i( 1, -2, 3 ), Vec3i( -2, 3, 4 ) );
-/// // => Vec3i( 1, 3, 4 ).
-/// @endcode
 constexpr Vec3i max(const Vec3i& lhs, const Vec3i& rhs);
 
 /// Calculates the larger of two 4D vectors.
@@ -448,11 +398,6 @@ constexpr Vec3i max(const Vec3i& lhs, const Vec3i& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto largerVector = Max( Vec4( 1, -2, 3, -1 ), Vec4( -2, 3, 4, 5 ) );
-/// // => Vec4( 1, 3, 4, 5 )
-/// @endcode
 constexpr Vec4 max(const Vec4& lhs, const Vec4& rhs);
 
 /// Calculates the larger of two 4D vectors.
@@ -460,11 +405,6 @@ constexpr Vec4 max(const Vec4& lhs, const Vec4& rhs);
 ///
 /// @param lhs The first vector to compare
 /// @param rhs The second vector to compare
-///
-/// @code
-/// auto largerVector = Max( Vec4i( 1, -2, 3, -1 ), Vec4i( -2, 3, 4, 5 ) );
-/// // => Vec4i( 1, 3, 4, 5 )
-/// @endcode
 constexpr Vec4i max(const Vec4i& lhs, const Vec4i& rhs);
 
 /// Calculates the normal of a 2D line.
