@@ -11,6 +11,30 @@
 
 namespace Polly
 {
+static Maybe<GLenum> convert(ImageAddressMode mode)
+{
+    switch (mode)
+    {
+        case ImageAddressMode::Repeat: return GL_REPEAT;
+        case ImageAddressMode::ClampToEdgeTexels: return GL_CLAMP_TO_EDGE;
+        case ImageAddressMode::ClampToSamplerBorderColor: return GL_CLAMP_TO_BORDER;
+        case ImageAddressMode::Mirror: return GL_MIRRORED_REPEAT;
+    }
+
+    return none;
+}
+
+static Maybe<GLenum> convert(ImageFilter filter)
+{
+    switch (filter)
+    {
+        case ImageFilter::Linear: return GL_LINEAR;
+        case ImageFilter::Point: return GL_NEAREST;
+    }
+
+    return none;
+}
+
 OpenGLImage::OpenGLImage(
     Painter::Impl& painter,
     u32            width,
@@ -95,6 +119,24 @@ void OpenGLImage::setDebuggingLabel(StringView value)
     GraphicsResource::setDebuggingLabel(value);
 }
 
+void OpenGLImage::applySampler(Sampler sampler, bool force)
+{
+    // This method assumes that the texture is already bound in target TEXTURE_2D.
+    // It's typically done by the OpenGLPainter as part of prepareDrawCall().
+
+    if (!force && sampler == _lastAppliedSampler)
+    {
+        return;
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, *convert(sampler.addressU));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, *convert(sampler.addressV));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, *convert(sampler.filter));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, *convert(sampler.filter));
+
+    _lastAppliedSampler = sampler;
+}
+
 void OpenGLImage::createOpenGLTexture([[maybe_unused]] const void* data, [[maybe_unused]] bool isStatic)
 {
     glGenTextures(1, &_textureHandleGL);
@@ -108,10 +150,7 @@ void OpenGLImage::createOpenGLTexture([[maybe_unused]] const void* data, [[maybe
 
     glBindTexture(GL_TEXTURE_2D, _textureHandleGL);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    applySampler(Sampler(), true);
 
     glTexImage2D(
         GL_TEXTURE_2D,

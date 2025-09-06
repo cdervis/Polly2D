@@ -98,7 +98,7 @@ class Painter::Impl : public Object
         int                           dirtyFlags = DF_None;
         Maybe<BatchMode>              batchMode;
         List<InternalSprite>          spriteQueue;
-        const Image::Impl*            spriteBatchImage = nullptr;
+        Image::Impl*                  spriteBatchImage = nullptr;
         List<Tessellation2D::Command> polyQueue;
         List<u32>                     polyCmdVertexCounts;
         List<MeshEntry>               meshQueue;
@@ -185,7 +185,7 @@ class Painter::Impl : public Object
     void              setBlendState(const BlendState& blendState);
 
     template<bool PerformCanvasCheck, bool PrepareBatchMode, bool IncrementDrawnSpriteCount>
-    void drawSprite(const Sprite& sprite);
+    void drawSprite(Sprite sprite);
 
     template<bool PrepareBatchMode>
     void fillRectangleUsingSprite(
@@ -343,13 +343,13 @@ class Painter::Impl : public Object
 
     Span<InternalSprite> currentFrameSpriteQueue() const;
 
-    const Image::Impl* spriteBatchImage() const;
+    Image::Impl* spriteBatchImage();
 
     Span<Tessellation2D::Command> currentFramePolyQueue() const;
 
     Span<MeshEntry> currentFrameMeshQueue() const;
 
-    const Image::Impl* meshBatchImage() const;
+    Image::Impl* meshBatchImage();
 
     void flush();
 
@@ -582,7 +582,7 @@ void Painter::Impl::fillSprite(
 }
 
 template<bool PerformCanvasCheck, bool PrepareBatchMode, bool IncrementDrawnSpriteCount>
-void Painter::Impl::drawSprite(const Sprite& sprite)
+void Painter::Impl::drawSprite(Sprite sprite)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 

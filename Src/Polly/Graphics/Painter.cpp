@@ -140,7 +140,7 @@ void Painter::drawSprite(const Image& image, const Vec2 position, const Color co
     });
 }
 
-void Painter::drawSprite(const Sprite& sprite)
+void Painter::drawSprite(Sprite sprite)
 {
     if (not sprite.image)
     {
@@ -148,7 +148,7 @@ void Painter::drawSprite(const Sprite& sprite)
     }
 
     PollyDeclareThisImpl;
-    impl->drawSprite<true, true, true>(sprite);
+    impl->drawSprite<true, true, true>(std::move(sprite));
 }
 
 void Painter::drawSprites(Span<Sprite> sprites)

@@ -865,7 +865,7 @@ Span<InternalSprite> Painter::Impl::currentFrameSpriteQueue() const
     return _frameData[_currentFrameIndex].spriteQueue;
 }
 
-const Image::Impl* Painter::Impl::spriteBatchImage() const
+Image::Impl* Painter::Impl::spriteBatchImage() 
 {
     return _frameData[_currentFrameIndex].spriteBatchImage;
 }
@@ -880,7 +880,7 @@ Span<MeshEntry> Painter::Impl::currentFrameMeshQueue() const
     return _frameData[_currentFrameIndex].meshQueue;
 }
 
-const Image::Impl* Painter::Impl::meshBatchImage() const
+Image::Impl* Painter::Impl::meshBatchImage() 
 {
     return _frameData[_currentFrameIndex].meshBatchImage;
 }

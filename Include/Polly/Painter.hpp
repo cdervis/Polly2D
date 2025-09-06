@@ -139,7 +139,7 @@ class Painter final
     /// Draws a 2D sprite.
     ///
     /// @param sprite The sprite to draw.
-    void drawSprite(const Sprite& sprite);
+    void drawSprite(Sprite sprite);
 
     /// Draws multiple 2D sprites at once.
     ///

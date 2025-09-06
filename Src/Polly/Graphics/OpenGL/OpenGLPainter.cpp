@@ -136,6 +136,8 @@ void OpenGLPainter::onFrameStarted()
     _polyVertexCounter   = 0;
     _meshVertexCounter   = 0;
     _meshIndexCounter    = 0;
+
+    _lastBoundOpenGLImage = nullptr;
 }
 
 void OpenGLPainter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc)
@@ -384,11 +386,6 @@ int OpenGLPainter::prepareDrawCall()
         df &= ~DF_IndexBuffer;
     }
 
-    if (df & DF_Sampler)
-    {
-        df &= ~DF_Sampler;
-    }
-
     if (df & DF_GlobalCBufferParams)
     {
         const auto viewport = currentViewport();
@@ -407,7 +404,7 @@ int OpenGLPainter::prepareDrawCall()
 
     if ((df & DF_SpriteImage) || (df & DF_MeshImage))
     {
-        const auto* image = static_cast<const OpenGLImage*>(
+        auto* image = static_cast<OpenGLImage*>(
             currentBatchMode == BatchMode::Sprites ? spriteBatchImage()
             : currentBatchMode == BatchMode::Mesh  ? meshBatchImage()
                                                    : nullptr);
@@ -416,12 +413,20 @@ int OpenGLPainter::prepareDrawCall()
         {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, image->textureHandleGL());
+            _lastBoundOpenGLImage = image;
         }
 
         ++perfStats.textureChangeCount;
 
         df &= ~DF_SpriteImage;
         df &= ~DF_MeshImage;
+    }
+
+    if (df & DF_Sampler)
+    {
+        assume(_lastBoundOpenGLImage);
+        _lastBoundOpenGLImage->applySampler(currentSampler(), false);
+        df &= ~DF_Sampler;
     }
 
     if (df & DF_UserShaderParams)

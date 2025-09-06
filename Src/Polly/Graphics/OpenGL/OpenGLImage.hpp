@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Polly/Sampler.hpp"
 #include <Polly/Graphics/ImageImpl.hpp>
 #include <Polly/Graphics/OpenGL/OpenGLPrerequisites.hpp>
 
@@ -33,11 +34,14 @@ class OpenGLImage final : public Image::Impl
 
     void setDebuggingLabel(StringView value) override;
 
+    void applySampler(Sampler sampler, bool force);
+
   private:
     void createOpenGLTexture(const void* data, bool isStatic);
 
     GLuint              _textureHandleGL     = 0;
     GLuint              _framebufferHandleGL = 0;
     OpenGLFormatTriplet _formatTriplet;
+    Sampler             _lastAppliedSampler;
 };
 } // namespace Polly
