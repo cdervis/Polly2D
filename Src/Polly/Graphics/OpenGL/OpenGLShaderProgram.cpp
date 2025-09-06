@@ -11,10 +11,16 @@ OpenGLShaderProgram::OpenGLShaderProgram() = default;
 OpenGLShaderProgram::OpenGLShaderProgram(GLuint vertexShaderHandleGL, GLuint fragmentShaderHandleGL)
 {
     _handleGL = glCreateProgram();
-    verifyOpenGLState();
+    
+    if (_handleGL == 0)
+    {
+        throw Error("Failed to create an OpenGL shader program handle.");
+    }
 
     glAttachShader(_handleGL, vertexShaderHandleGL);
     glAttachShader(_handleGL, fragmentShaderHandleGL);
+
+    glLinkProgram(_handleGL);
 
     verifyOpenGLState();
 }
@@ -28,6 +34,7 @@ OpenGLShaderProgram& OpenGLShaderProgram::operator=(OpenGLShaderProgram&& moveFr
 {
     if (&moveFrom != this)
     {
+        destroy();
         _handleGL = std::exchange(moveFrom._handleGL, 0);
     }
 
@@ -36,15 +43,20 @@ OpenGLShaderProgram& OpenGLShaderProgram::operator=(OpenGLShaderProgram&& moveFr
 
 OpenGLShaderProgram::~OpenGLShaderProgram() noexcept
 {
-    if (_handleGL != 0)
-    {
-        glDeleteProgram(_handleGL);
-        _handleGL = 0;
-    }
+    destroy();
 }
 
 GLuint OpenGLShaderProgram::handleGL() const
 {
     return _handleGL;
+}
+
+void OpenGLShaderProgram::destroy()
+{
+    if (_handleGL != 0)
+    {
+        glDeleteProgram(_handleGL);
+        _handleGL = 0;
+    }
 }
 } // namespace Polly

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Polly/Maybe.hpp"
 #include "Polly/Pair.hpp"
 #include "Polly/PlatformInfo.hpp"
 #include "Polly/StringView.hpp"
@@ -23,5 +24,18 @@ namespace Polly
 static constexpr auto minimumRequiredOpenGLVersionMajor = 3;
 static constexpr auto minimumRequiredOpenGLVersionMinor = 3;
 
+enum class ImageFormat;
+
 void verifyOpenGLState();
+
+struct OpenGLFormatTriplet
+{
+    GLint  internalFormat = 0;
+    GLenum baseFormat     = 0;
+    GLenum type           = 0;
+};
+
+Maybe<OpenGLFormatTriplet> convertImageFormat(ImageFormat format);
+
+void setOpenGLObjectLabel(GLuint handleGL, StringView name);
 } // namespace Polly

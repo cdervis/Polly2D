@@ -4,13 +4,50 @@
 
 #include <Polly/Graphics/OpenGL/OpenGLBuffer.hpp>
 
+#include "Polly/Defer.hpp"
+#include "Polly/Error.hpp"
+#include "Polly/Logging.hpp"
+
 namespace Polly
 {
-OpenGLBuffer::OpenGLBuffer(size_t sizeInBytes, GLenum type, const void* data, StringView debugName)
+static Maybe<GLenum> convertBufferTypeToBindingSlotType(GLenum type)
+{
+    switch (type)
+    {
+        case GL_ARRAY_BUFFER: return GL_ARRAY_BUFFER_BINDING;
+        case GL_ELEMENT_ARRAY_BUFFER: return GL_ELEMENT_ARRAY_BUFFER_BINDING;
+        case GL_UNIFORM_BUFFER: return GL_UNIFORM_BUFFER_BINDING;
+    }
+
+    return none;
+}
+
+OpenGLBuffer::OpenGLBuffer(u32 sizeInBytes, GLenum type, GLenum usage, const void* data, StringView debugName)
     : _handleGL(0)
     , _sizeInBytes(sizeInBytes)
 {
     assume(sizeInBytes > 0);
+
+    glGenBuffers(1, &_handleGL);
+
+    if (_handleGL == 0)
+    {
+        throw Error("Failed to generate an OpenGL buffer handle.");
+    }
+
+    const auto bindingSlot    = *convertBufferTypeToBindingSlotType(type);
+    auto       previousBuffer = GLint();
+    glGetIntegerv(bindingSlot, &previousBuffer);
+
+    defer
+    {
+        glBindBuffer(type, static_cast<GLuint>(previousBuffer));
+    };
+
+    glBindBuffer(type, _handleGL);
+    glBufferData(type, static_cast<GLsizeiptr>(sizeInBytes), data, usage);
+
+    setOpenGLObjectLabel(_handleGL, debugName);
 }
 
 OpenGLBuffer::OpenGLBuffer(OpenGLBuffer&& moveFrom) noexcept
@@ -36,7 +73,12 @@ OpenGLBuffer::~OpenGLBuffer() noexcept
     destroy();
 }
 
-size_t OpenGLBuffer::sizeInBytes() const
+GLuint OpenGLBuffer::handleGL() const
+{
+    return _handleGL;
+}
+
+u32 OpenGLBuffer::sizeInBytes() const
 {
     return _sizeInBytes;
 }

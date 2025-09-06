@@ -14,7 +14,7 @@ class OpenGLBuffer
   public:
     OpenGLBuffer() = default;
 
-    explicit OpenGLBuffer(size_t sizeInBytes, GLenum type, const void* data, StringView debugName);
+    explicit OpenGLBuffer(u32 sizeInBytes, GLenum type, GLenum usage, const void* data, StringView debugName);
 
     DeleteCopy(OpenGLBuffer);
 
@@ -26,12 +26,12 @@ class OpenGLBuffer
 
     GLuint handleGL() const;
 
-    size_t sizeInBytes() const;
+    u32 sizeInBytes() const;
 
   private:
     void destroy();
 
     GLuint _handleGL    = 0;
-    size_t _sizeInBytes = 0;
+    u32 _sizeInBytes = 0;
 };
 } // namespace Polly

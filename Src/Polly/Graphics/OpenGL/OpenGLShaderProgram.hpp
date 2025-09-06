@@ -27,6 +27,8 @@ class OpenGLShaderProgram final
     GLuint handleGL() const;
 
   private:
+    void destroy();
+
     GLuint _handleGL = 0;
 };
 } // namespace Polly

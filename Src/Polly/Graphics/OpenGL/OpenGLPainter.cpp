@@ -8,6 +8,7 @@
 #include "Polly/Array.hpp"
 #include "Polly/Defer.hpp"
 #include "Polly/GamePerformanceStats.hpp"
+#include "Polly/Graphics/InternalSharedShaderStructs.hpp"
 #include "Polly/Graphics/OpenGL/OpenGLWindow.hpp"
 #include "Polly/Graphics/VertexElement.hpp"
 #include "Polly/ImGui.hpp"
@@ -28,23 +29,6 @@
 
 namespace Polly
 {
-struct alignas(16) GlobalCBufferParams
-{
-    Matrix transformation;
-};
-
-struct alignas(16) SystemValueCBufferParams
-{
-    Vec2 viewportSize;
-    Vec2 viewportSizeInv;
-};
-
-struct alignas(16) SpriteVertex
-{
-    Vec4  positionAndUV;
-    Color color;
-};
-
 OpenGLPainter::OpenGLPainter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats)
     : Impl(windowImpl, performanceStats)
 {
@@ -71,6 +55,7 @@ OpenGLPainter::OpenGLPainter(Window::Impl& windowImpl, GamePerformanceStats& per
 
     verifyOpenGLState();
 
+    createUniformBuffers();
     createSpriteRenderingResources();
     createPolyRenderingResources();
     createMeshRenderingResources();
@@ -97,7 +82,7 @@ OpenGLPainter::~OpenGLPainter() noexcept
 
 void OpenGLPainter::onFrameStarted()
 {
-    // auto& openGLWindow = static_cast<OpenGLWindow&>(window());
+     //auto& openGLWindow = static_cast<OpenGLWindow&>(window());
 
     _spriteVertexCounter = 0;
     _spriteIndexCounter  = 0;
@@ -172,17 +157,6 @@ UniquePtr<Shader::Impl> OpenGLPainter::onCreateNativeUserShader(
     notImplemented();
 }
 
-void OpenGLPainter::readCanvasDataInto(
-    [[maybe_unused]] const Image& canvas,
-    [[maybe_unused]] uint32_t     x,
-    [[maybe_unused]] uint32_t     y,
-    [[maybe_unused]] uint32_t     width,
-    [[maybe_unused]] uint32_t     height,
-    [[maybe_unused]] void*        destination)
-{
-    notImplemented();
-}
-
 void OpenGLPainter::notifyResourceDestroyed(GraphicsResource& resource)
 {
     Impl::notifyResourceDestroyed(resource);
@@ -218,6 +192,24 @@ void OpenGLPainter::spriteQueueLimitReached()
     throw Error("Sprite queue limit reached.");
 }
 
+void OpenGLPainter::createUniformBuffers()
+{
+    _globalUBO = OpenGLBuffer(
+        sizeof(GlobalCBufferParams),
+        GL_UNIFORM_BUFFER,
+        GL_DYNAMIC_DRAW,
+        nullptr,
+        "GlobalUBO"_sv);
+
+    for (auto index = 0u; const auto size : userShaderParamsUBOSizes)
+    {
+        _userParamsUBOs[index] =
+            OpenGLBuffer(size, GL_UNIFORM_BUFFER, GL_DYNAMIC_DRAW, nullptr, "UserShaderUBO"_sv);
+
+        ++index;
+    }
+}
+
 void OpenGLPainter::createSpriteRenderingResources()
 {
     // Shaders
@@ -232,21 +224,96 @@ void OpenGLPainter::createSpriteRenderingResources()
         OpenGLShader(SpriteBatchPsMonochromatic_fragStringView(), GL_FRAGMENT_SHADER).handleGL());
 
     // Vertex buffer
+    _spriteVertexBuffer = OpenGLBuffer(
+        maxSpriteBatchSize * verticesPerSprite * sizeof(SpriteVertex),
+        GL_ARRAY_BUFFER,
+        GL_DYNAMIC_DRAW,
+        nullptr,
+        "SpriteVertexBuffer"_sv);
+
+    // Index buffer
     {
-        _spriteVertexBuffer = OpenGLBuffer(
-            maxSpriteBatchSize * verticesPerSprite * sizeof(SpriteVertex),
-            GL_VERTEX_ARRAY,
-            nullptr,
-            "SpriteVertexBuffer");
+        const auto indices = createSpriteIndicesList<maxSpriteBatchSize>();
+
+        _spriteIndexBuffer = OpenGLBuffer(
+            indices.size() * static_cast<u32>(sizeof(u16)),
+            GL_ELEMENT_ARRAY_BUFFER,
+            GL_STATIC_DRAW,
+            indices.data(),
+            "SpriteIndexBuffer"_sv);
     }
+
+    _spriteVAO = OpenGLVAO(
+        _spriteVertexBuffer.handleGL(),
+        _spriteIndexBuffer.handleGL(),
+        Array{
+            VertexElement::Vec4,
+            VertexElement::Vec4,
+        },
+        "SpriteVAO"_sv);
+
+    verifyOpenGLState();
 }
 
 void OpenGLPainter::createPolyRenderingResources()
 {
+    // Shaders
+    _polyVs = OpenGLShader(PolyVs_vertStringView(), GL_VERTEX_SHADER);
+
+    _defaultPolyProgram = OpenGLShaderProgram(
+        _polyVs.handleGL(),
+        OpenGLShader(PolyPs_fragStringView(), GL_FRAGMENT_SHADER).handleGL());
+
+    // Vertex buffer
+    _polyVertexBuffer = OpenGLBuffer(
+        sizeof(Tessellation2D::PolyVertex) * maxPolyVertices,
+        GL_ARRAY_BUFFER,
+        GL_DYNAMIC_DRAW,
+        nullptr,
+        "PolyVertexBuffer"_sv);
+
+    _polyVAO = OpenGLVAO(
+        _polyVertexBuffer.handleGL(),
+        0,
+        Array{
+            VertexElement::Vec4,
+            VertexElement::Vec4,
+        },
+        "PolyVAO"_sv);
 }
 
 void OpenGLPainter::createMeshRenderingResources()
 {
+    // Shaders
+    _meshVs = OpenGLShader(MeshVs_vertStringView(), GL_VERTEX_SHADER);
+
+    _defaultMeshProgram = OpenGLShaderProgram(
+        _meshVs.handleGL(),
+        OpenGLShader(MeshPs_fragStringView(), GL_FRAGMENT_SHADER).handleGL());
+
+    // Buffers
+    _meshVertexBuffer = OpenGLBuffer(
+        sizeof(MeshVertex) * maxMeshVertices,
+        GL_ARRAY_BUFFER,
+        GL_DYNAMIC_DRAW,
+        nullptr,
+        "MeshVertexBuffer"_sv);
+
+    _meshIndexBuffer = OpenGLBuffer(
+        sizeof(u16) * maxMeshVertices * 3,
+        GL_ELEMENT_ARRAY_BUFFER,
+        GL_DYNAMIC_DRAW,
+        nullptr,
+        "MeshIndexBuffer"_sv);
+
+    _meshVAO = OpenGLVAO(
+        _meshVertexBuffer.handleGL(),
+        _meshIndexBuffer.handleGL(),
+        Array{
+            VertexElement::Vec4,
+            VertexElement::Vec4,
+        },
+        "MeshVAO"_sv);
 }
 
 PainterCapabilities OpenGLPainter::determineCapabilities() const

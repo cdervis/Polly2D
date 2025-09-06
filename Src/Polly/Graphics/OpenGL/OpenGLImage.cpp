@@ -2,11 +2,12 @@
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
-#include <Polly/Graphics/OpenGL/OpenGLImage.hpp>
+#include "Polly/Graphics/OpenGL/OpenGLImage.hpp"
 
-#include <Polly/Defer.hpp>
-#include <Polly/Logging.hpp>
-#include <Polly/Util.hpp>
+#include "Polly/Defer.hpp"
+#include "Polly/Error.hpp"
+#include "Polly/Logging.hpp"
+#include "Polly/Util.hpp"
 
 namespace Polly
 {
@@ -19,13 +20,52 @@ OpenGLImage::OpenGLImage(
     bool           isStatic)
     : Impl(painter, false, width, height, format)
 {
+    auto previousTextureHandle = GLint();
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTextureHandle);
+
+    defer
+    {
+        glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(previousTextureHandle));
+    };
+    
     createOpenGLTexture(data, isStatic);
+
+    verifyOpenGLState();
 }
 
 OpenGLImage::OpenGLImage(Painter::Impl& painter, uint32_t width, uint32_t height, ImageFormat format)
     : Impl(painter, true, width, height, format)
 {
+    auto previousTextureHandle = GLint();
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTextureHandle);
+
+    defer
+    {
+        glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(previousTextureHandle));
+    };
+
     createOpenGLTexture(nullptr, false);
+
+    glGenFramebuffers(1, &_framebufferHandleGL);
+
+    if (_framebufferHandleGL == 0)
+    {
+        throw Error("Failed to create an OpenGL framebuffer handle.");
+    }
+
+    auto previousFramebuffer = GLint();
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebufferHandleGL);
+
+    defer
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(previousFramebuffer));
+    };
+
+    glFramebufferTexture2D(GL_TEXTURE_2D, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureHandleGL, 0);
+
+    verifyOpenGLState();
 }
 
 GLuint OpenGLImage::textureHandleGL() const
@@ -45,6 +85,26 @@ void OpenGLImage::setDebuggingLabel(StringView value)
 
 void OpenGLImage::createOpenGLTexture([[maybe_unused]] const void* data, [[maybe_unused]] bool isStatic)
 {
-    notImplemented();
+    glGenTextures(1, &_textureHandleGL);
+
+    if (_textureHandleGL == 0)
+    {
+        throw Error("Failed to create an OpenGL texture handle.");
+    }
+
+    const auto formatGL = *convertImageFormat(format());
+
+    glBindTexture(GL_TEXTURE_2D, _textureHandleGL);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        formatGL.internalFormat,
+        static_cast<GLsizei>(width()),
+        static_cast<GLsizei>(height()),
+        0,
+        formatGL.baseFormat,
+        formatGL.type,
+        data);
 }
 } // namespace Polly

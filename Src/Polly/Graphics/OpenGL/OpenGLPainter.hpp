@@ -6,6 +6,7 @@
 
 #include "Polly/Graphics/OpenGL/OpenGLShader.hpp"
 #include "Polly/Graphics/OpenGL/OpenGLShaderProgram.hpp"
+#include "Polly/Graphics/OpenGL/OpenGLVAO.hpp"
 #include <Polly/Array.hpp>
 #include <Polly/Graphics/OpenGL/OpenGLBuffer.hpp>
 #include <Polly/Graphics/OpenGL/OpenGLImage.hpp>
@@ -37,9 +38,6 @@ class OpenGLPainter final : public Painter::Impl
 
     void requestFrameCapture() override;
 
-    void readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination)
-        override;
-
     UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
 
     UniquePtr<Image::Impl> createImage(
@@ -64,6 +62,17 @@ class OpenGLPainter final : public Painter::Impl
     static constexpr auto maxPolyVertices    = std::numeric_limits<uint16_t>::max();
     static constexpr auto maxMeshVertices    = std::numeric_limits<uint16_t>::max();
 
+    // Same strategy as in D3D11.
+    static constexpr auto userShaderParamsUBOSizes = Array{
+        32u,
+        64u,
+        128u,
+        256u,
+        512u,
+        1024u,
+        static_cast<u32>(std::numeric_limits<u16>::max()),
+    };
+
     void notifyResourceDestroyed(GraphicsResource& resource) override;
 
     int prepareDrawCall() override;
@@ -83,6 +92,8 @@ class OpenGLPainter final : public Painter::Impl
 
     void spriteQueueLimitReached() override;
 
+    void createUniformBuffers();
+
     void createSpriteRenderingResources();
 
     void createPolyRenderingResources();
@@ -91,6 +102,9 @@ class OpenGLPainter final : public Painter::Impl
 
     [[nodiscard]]
     PainterCapabilities determineCapabilities() const;
+
+    OpenGLBuffer           _globalUBO;
+    Array<OpenGLBuffer, userShaderParamsUBOSizes.size()> _userParamsUBOs;
 
     OpenGLShader        _spriteVs;
     OpenGLShaderProgram _defaultSpriteProgram;
@@ -101,16 +115,20 @@ class OpenGLPainter final : public Painter::Impl
     OpenGLShaderProgram _defaultMeshProgram;
 
     OpenGLBuffer _spriteVertexBuffer;
+    OpenGLBuffer _spriteIndexBuffer;
+    OpenGLVAO    _spriteVAO;
+
     OpenGLBuffer _polyVertexBuffer;
+    OpenGLVAO    _polyVAO;
+
     OpenGLBuffer _meshVertexBuffer;
     OpenGLBuffer _meshIndexBuffer;
+    OpenGLVAO    _meshVAO;
 
     u32 _spriteVertexCounter = 0;
     u32 _spriteIndexCounter  = 0;
     u32 _polyVertexCounter   = 0;
     u32 _meshVertexCounter   = 0;
     u32 _meshIndexCounter    = 0;
-
-    OpenGLBuffer _spriteIndexBuffer;
 };
 } // namespace Polly
