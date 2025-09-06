@@ -11,6 +11,13 @@
 
 namespace Polly
 {
+enum class SoundType
+{
+    Normal,
+    Sfxr,
+    Speech,
+};
+
 enum class SfxrSoundPreset
 {
     Coin,
@@ -20,6 +27,25 @@ enum class SfxrSoundPreset
     Hurt,
     Jump,
     Blip,
+};
+
+enum class SpeechWaveform
+{
+    Saw,
+    Triangle,
+    Sin,
+    Square,
+    Pulse,
+    Noise,
+    Warble,
+};
+
+struct SoundSpeech
+{
+    u32            baseFrequency    = 1330;
+    float          aBaseSpeed       = 10.0f;
+    float          aBaseDeclination = 0.5f;
+    SpeechWaveform aBaseWaveform    = SpeechWaveform::Square;
 };
 
 /// Represents a sound, ready for playback.
@@ -51,10 +77,18 @@ class Sound
 
     explicit Sound(SfxrSoundPreset sfxrPreset, i32 seed);
 
+    explicit Sound(SoundSpeech speechParams, StringView speechText = StringView());
+
+    SoundType type() const;
+
     /// Stops playing the sound and all of its derived channels.
     void stop();
 
     /// Gets the number of actively playing voices based on this sound.
     u32 voiceCount() const;
+
+    void setSpeechText(StringView value);
+
+    void setSpeechParams(SoundSpeech params);
 };
 } // namespace Polly

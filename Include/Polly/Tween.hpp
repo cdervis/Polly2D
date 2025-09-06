@@ -28,19 +28,6 @@ using TweeningFunction = float(float elapsed, float from, float change, float du
 /// A tweener is typically created as part of an object, such as a Player class.
 /// The player is then able to obtain the updated (animated) property value.
 ///
-/// Example:
-///
-/// @code
-/// // Create a tweener that linearly goes from 0 to 100 during 2 seconds.
-/// auto tweener = Tweener(0.0f, 100.0f, 2.0f, Tweener::Linear);
-///
-/// const auto valueBefore = tweener.value();
-///
-/// tweener.update(dt);
-///
-/// const auto valueAfter = tweener.value();
-/// @endcode
-///
 /// @tip For more details, see https://en.wikipedia.org/wiki/Inbetweening
 class Tweener
 {

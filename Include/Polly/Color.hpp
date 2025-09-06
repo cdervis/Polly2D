@@ -45,23 +45,11 @@ struct Color
     /// Creates a color from an unsigned 32-bit integer representing a hexadecimal number.
     ///
     /// The bit pattern is interpreted in RGBA order.
-    ///
-    /// Example:
-    ///
-    /// @code
-    /// auto color = Color::FromHexRgba( 0xaabbccdd );
-    /// @endcode
     static constexpr Color fromHexRgba(u32 value);
 
     /// Creates a color from an unsigned 32-bit integer representing a hexadecimal number.
     ///
     /// The bit pattern is interpreted in ARGB order.
-    ///
-    /// Example:
-    ///
-    /// @code
-    /// auto color = Color::FromHexArgb( 0xaabbccdd );
-    /// @endcode
     static constexpr Color fromHexArgb(u32 value);
 
     /// Calculates an unsigned 32-bit integer representing the RGB values of the color.
