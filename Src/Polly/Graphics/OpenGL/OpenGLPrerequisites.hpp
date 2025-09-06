@@ -9,7 +9,16 @@
 #include "Polly/PlatformInfo.hpp"
 #include "Polly/StringView.hpp"
 
+#if defined(__GNUC__) or defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 #include "Polly/Graphics/OpenGL/glad.h"
+
+#if defined(__GNUC__) or defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef min
 #undef min

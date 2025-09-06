@@ -36,7 +36,6 @@
 #include "MeshShaderDefault.shd.hpp"
 #include "PolyShaderDefault.shd.hpp"
 #include "SpriteShaderDefault.shd.hpp"
-#include "SpriteShaderMonochromatic.shd.hpp"
 
 namespace Polly
 {
