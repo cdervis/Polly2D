@@ -53,7 +53,7 @@ Every sprite shader automatically has access to the sprite's properties:
 | `pl_spriteColor` | The sprite's color, which corresponds to `Sprite::color` |
 | `pl_spriteUV` | The sprite's image (UV) coordinates, which corresponds to `Sprite::srcRect` |
 
-_For the list of all available variables, see [Shading Language](/graphics/shading-language)._
+_For the list of all available variables, see [Shading Language](/graphics/shading-language#built-in-variables)._
 
 As a test, modify the shader so that it outputs the sprite's UV coordinates as a color, where red is the X and green is the Y component:
 

@@ -128,6 +128,10 @@ code, pre {
     opacity: 0;
 }
 
+.sidebar nav li.active-parent > a {
+    font-weight: 600;
+}
+
 .sidebar nav .collapse-icon {
     transition: none;
 }

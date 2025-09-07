@@ -149,56 +149,55 @@ C++ idiomatic <a href="https://github.com/ocornut/imgui" target="_blank">Dear Im
 
 ## Getting Started
 
-This introduction will guide you through how to get started with Polly and get your first game running. Although some knowledge of modern C++ is recommended, Polly can also be a great framework for intermediate C++ learners to hop in.
-
-If you're on Windows, [Visual Studio](https://visualstudio.com/) or [CLion](https://www.jetbrains.com/clion/) is recommended, whichever you prefer. Visual Studio Community is free for individual developers and can be used to develop free or paid games. CLion is free for non-commercial projects.
+If you're on Windows, [Visual Studio](https://visualstudio.com/) or [CLion](https://www.jetbrains.com/clion/) is recommended, whichever you prefer.
+Visual Studio Community is free for individual developers and can be used to develop free or paid games. CLion is free for non-commercial projects.
 
 ### Install Dependencies
 
 ::: tabs
 
 == tab "Windows"
-Please ensure that [Git](https://git-scm.com/downloads/win) and [Python 3](https://www.python.org/downloads/windows/) are installed.
+   Please ensure that [Git](https://git-scm.com/downloads/win) and [Python 3](https://www.python.org/downloads/windows/) are installed.
 
 == tab "macOS"
-Please ensure that [Homebrew](https://github.com/Homebrew/brew/releases) is installed. Then install [Xcode](https://developer.apple.com/xcode/):
-
-```sh
-xcode-select --install
-```
-
-Then install Git and CMake:
-
-```sh
-brew install git cmake
-```
+   Please ensure that [Homebrew](https://github.com/Homebrew/brew/releases) is installed. Then install [Xcode](https://developer.apple.com/xcode/):
+   
+   ```sh
+   xcode-select --install
+   ```
+   
+   Then install Git and CMake:
+   
+   ```sh
+   brew install git cmake
+   ```
 
 == tab "Linux"
-On Linux, development libraries are required, including for X11, Wayland and ALSA.
-
-#### Ubuntu and similar (apt)
-
-```sh
-sudo apt install build-essential git make binutils pkg-config cmake ninja-build clang-format \
-                 gnome-desktop-testing libasound2-dev libpulse-dev \
-                 libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
-                 libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
-                 libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
-                 libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
-```
-
-#### Fedora and similar (dnf)
-
-```sh
-sudo dnf install gcc git-core make cmake ninja-build gcc-c++ pkg-config clang-tools-extra \
-                 alsa-lib-devel pulseaudio-libs-devel nas-devel pipewire-devel \
-                 libX11-devel libXext-devel libXrandr-devel libXcursor-devel libXfixes-devel \
-                 libXi-devel libXScrnSaver-devel dbus-devel ibus-devel \
-                 systemd-devel mesa-libGL-devel libxkbcommon-devel mesa-libGLES-devel \
-                 mesa-libEGL-devel vulkan-devel wayland-devel wayland-protocols-devel \
-                 libdrm-devel mesa-libgbm-devel libdecor-devel \
-                 pipewire-jack-audio-connection-kit-devel
-```
+   On Linux, development libraries are required, including for X11, Wayland and ALSA.
+   
+   #### Ubuntu and similar (apt)
+   
+   ```sh
+   sudo apt install build-essential git make binutils pkg-config cmake ninja-build clang-format \
+                    gnome-desktop-testing libasound2-dev libpulse-dev \
+                    libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+                    libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+                    libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+                    libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
+   ```
+   
+   #### Fedora and similar (dnf)
+   
+   ```sh
+   sudo dnf install gcc git-core make cmake ninja-build gcc-c++ pkg-config clang-tools-extra \
+                    alsa-lib-devel pulseaudio-libs-devel nas-devel pipewire-devel \
+                    libX11-devel libXext-devel libXrandr-devel libXcursor-devel libXfixes-devel \
+                    libXi-devel libXScrnSaver-devel dbus-devel ibus-devel \
+                    systemd-devel mesa-libGL-devel libxkbcommon-devel mesa-libGLES-devel \
+                    mesa-libEGL-devel vulkan-devel wayland-devel wayland-protocols-devel \
+                    libdrm-devel mesa-libgbm-devel libdecor-devel \
+                    pipewire-jack-audio-connection-kit-devel
+   ```
 
 :::
 

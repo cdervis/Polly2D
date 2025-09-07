@@ -104,7 +104,7 @@ for i in 1 .. 4    // i will be 1, 2, 3
 
 Just like in C++, you can use the `continue` keyword to skip a loop iteration, and `break` to stop the loop altogether.
 
-## The Main Function 
+## The Main Function
 
 The `main()` function is the entry point in a shader.
 
@@ -199,28 +199,28 @@ myShader.set("someFloats", Array{0.5f, 1.0f, 1.25f, 5.0f});
 
 The following table describes the syntax of the shading language.
 
-| Construct | Form | Example |
-|-----------|------|---------|
-| Function parameter | `<type> <name>` | `int a` |
-| Function signature | `<type> <name> '(' <parameter> (',' <parameter)* ')'` | `int add( int a, int b )` |
-| Function body | `'{' stmt* return_stmt '}'` | `{ return a + b; }` |
-| Function | `<signature> <body>` | `float pow( int x ) { return x * x; }` |
-| Shader parameter | `<type> <name>` | `float someParameter` |
-| Array type | `<type>[<size>]` | `Vec2[10]` |
+| Construct          | Form                                                  | Example                                |
+|--------------------|-------------------------------------------------------|----------------------------------------|
+| Function parameter | `<type> <name>`                                       | `int a`                                |
+| Function signature | `<type> <name> '(' <parameter> (',' <parameter)* ')'` | `int add( int a, int b )`              |
+| Function body      | `'{' stmt* return_stmt '}'`                           | `{ return a + b; }`                    |
+| Function           | `<signature> <body>`                                  | `float pow( int x ) { return x * x; }` |
+| Shader parameter   | `<type> <name>`                                       | `float someParameter`                  |
+| Array type         | `<type>[<size>]`                                      | `Vec2[10]`                             |
 
 ## Types
 
-| Type | Description | C++ equivalent | Can be array |
-|------|-------------|----------------|--------------|
-| bool | Boolean true / false value	| `i32` | ✅ |
-| int | Signed 32-bit integer | `i32` | ✅ |
-| uint | Unsigned 32-bit integer | `u32` | ✅ |
-| float | 32-bit floating point number | `float` | ✅ |
-| Vec2 | 2D floating point vector | `Vec2` | ✅ |
-| Vec3 | 3D floating point vector | `Vec3` | ✅ |
-| Vec4 | 4D floating point vector | `Vec4` | ✅ |
-| Matrix | 4×4 row-major matrix | `Matrix` | ✅ |
-| Image | 2D texture | `Image` | ❌ |
+| Type   | Description                  | C++ equivalent | Can be array |
+|--------|------------------------------|----------------|--------------|
+| bool   | Boolean true / false value	  | `i32`          | ✅            |
+| int    | Signed 32-bit integer        | `i32`          | ✅            |
+| uint   | Unsigned 32-bit integer      | `u32`          | ✅            |
+| float  | 32-bit floating point number | `float`        | ✅            |
+| Vec2   | 2D floating point vector     | `Vec2`         | ✅            |
+| Vec3   | 3D floating point vector     | `Vec3`         | ✅            |
+| Vec4   | 4D floating point vector     | `Vec4`         | ✅            |
+| Matrix | 4×4 row-major matrix         | `Matrix`       | ✅            |
+| Image  | 2D texture                   | `Image`        | ❌            |
 
 ## Vector Swizzling
 
@@ -249,16 +249,37 @@ auto f4 = v3.yxz; // Same as Vec3(2, 1, 3)
 
 The following lists all variables that are always available within a shader.
 
-| Variable | Description | Type |
-|----------|-------------|------|
-| `pl_spriteImage` | The image of the sprite that's drawn (only valid in sprite shaders). | `Image` |
-| `pl_spriteColor` | The color of the sprite that's drawn (only valid in sprite shaders). | `Vec4` |
-| `pl_spriteUV` | The texture coordinate of the sprite that's drawn (only valid in sprite shaders). | `Vec2` |
-| `pl_polygonColor` | The color of the polygon that's drawn (only valid in polygon shaders). | `Vec2` |
-| `pl_pixelPos` | The position of the pixel, in pixel coordinates within the current canvas. | `Vec2` |
-| `pl_pixelPosNormalized` | The position of the pixel, normalized to range `[0.0 .. 1.0]`. | `Vec2` |
-| `pl_viewportSize` | The size of the current canvas, in pixels. | `Vec2` |
-| `pl_viewportSizeInv` | The reciprocal size of the current canvas, in pixels. | `Vec2` |
+### General
+
+| Variable                | Description                                                                | Type   |
+|-------------------------|----------------------------------------------------------------------------|--------|
+| `pl_pixelPos`           | The position of the pixel, in pixel coordinates within the current canvas. | `Vec2` |
+| `pl_pixelPosNormalized` | The position of the pixel, normalized to range `[0.0 .. 1.0]`.             | `Vec2` |
+| `pl_viewportSize`       | The size of the current canvas, in pixels.                                 | `Vec2` |
+| `pl_viewportSizeInv`    | The reciprocal size of the current canvas, in pixels.                      | `Vec2` |
+
+### #type sprite
+
+| Variable          | Description                                        | Type    |
+|-------------------|----------------------------------------------------|---------|
+| `pl_spriteImage`  | The image of the sprite that's drawn.              | `Image` |
+| `pl_spriteColor`  | The color of the sprite that's drawn.              | `Vec4`  |
+| `pl_spriteUV`     | The texture coordinate of the sprite that's drawn. | `Vec2`  |
+| `pl_polygonColor` | The color of the polygon that's drawn.             | `Vec2`  |
+
+### #type polygon
+
+| Variable          | Description                            | Type   |
+|-------------------|----------------------------------------|--------|
+| `pl_polygonColor` | The color of the polygon that's drawn. | `Vec2` |
+
+### #type mesh
+
+| Variable       | Description                                        | Type    |
+|----------------|----------------------------------------------------|---------|
+| `pl_meshImage` | The image of the sprite that's drawn.              | `Image` |
+| `pl_meshColor` | The color of the sprite that's drawn.              | `Vec4`  |
+| `pl_meshUV`    | The texture coordinate of the sprite that's drawn. | `Vec2`  |
 
 ## Functions
 
@@ -270,64 +291,64 @@ Within this table the following names are defined as groups of types:
 - Fto4: `float`, `Vec2`, `Vec3`, `Vec4`
 - FtoM: `float`, `Vec2`, `Vec3`, `Vec4`, `Matrix`
 
-| Name | Parameters → Return Type |
-|------|--------------------------|
-| abs | Fto4 → Fto4 |
-| acos | Fto4 → Fto4 |
-| all | FtoM → FtoM |
-| any | FtoM → FtoM |
-| asin | Fto4 → Fto4 |
-| atan | Fto4 → Fto4 |
-| atan2 | Fto4 → Fto4 |
-| ceil | FtoM → FtoM |
-| clamp | Fto4 → Fto4 |
-| cos | Fto4 → Fto4 |
-| degrees | Fto4 → Fto4 |
-| distance | Fto4 → Vec |
-| dot | Vec → Vec |
-| exp | Vec → Fto4 |
-| exp2 | Fto4 → Fto4 |
-| floor | Fto4 → Fto4 |
-| fmod | Fto4 → Fto4 |
-| frac | Fto4 → Fto4 |
-| length | Vec → Vec |
-| lerp | Fto4 → Fto4 |
-| log | Fto4 → Fto4 |
-| log2 | Fto4 → Fto4 |
-| max | Fto4 → Fto4 |
-| min | Fto4 → Fto4 |
-| normalize | Vec → Vec |
-| pow | Fto4 → Fto4 |
-| radians | Fto4 → Fto4 |
-| round | Fto4 → Fto4 |
-| sample | (Image, Vec2) → Vec4 |
-| saturate | Fto4 → Fto4 |
-| sign | Fto4 → Fto4 |
-| sin | Fto4 → Fto4 |
-| smoothstep | Fto4 → Fto4 |
-| sqrt | Fto4 → Fto4 |
-| tan | Fto4 → Fto4 |
-| transpose | Matrix → Matrix |
-| trunc | Fto4 → Fto4 |
+| Name       | Parameters → Return Type |
+|------------|--------------------------|
+| abs        | Fto4 → Fto4              |
+| acos       | Fto4 → Fto4              |
+| all        | FtoM → FtoM              |
+| any        | FtoM → FtoM              |
+| asin       | Fto4 → Fto4              |
+| atan       | Fto4 → Fto4              |
+| atan2      | Fto4 → Fto4              |
+| ceil       | FtoM → FtoM              |
+| clamp      | Fto4 → Fto4              |
+| cos        | Fto4 → Fto4              |
+| degrees    | Fto4 → Fto4              |
+| distance   | Fto4 → Vec               |
+| dot        | Vec → Vec                |
+| exp        | Vec → Fto4               |
+| exp2       | Fto4 → Fto4              |
+| floor      | Fto4 → Fto4              |
+| fmod       | Fto4 → Fto4              |
+| frac       | Fto4 → Fto4              |
+| length     | Vec → Vec                |
+| lerp       | Fto4 → Fto4              |
+| log        | Fto4 → Fto4              |
+| log2       | Fto4 → Fto4              |
+| max        | Fto4 → Fto4              |
+| min        | Fto4 → Fto4              |
+| normalize  | Vec → Vec                |
+| pow        | Fto4 → Fto4              |
+| radians    | Fto4 → Fto4              |
+| round      | Fto4 → Fto4              |
+| sample     | (Image, Vec2) → Vec4     |
+| saturate   | Fto4 → Fto4              |
+| sign       | Fto4 → Fto4              |
+| sin        | Fto4 → Fto4              |
+| smoothstep | Fto4 → Fto4              |
+| sqrt       | Fto4 → Fto4              |
+| tan        | Fto4 → Fto4              |
+| transpose  | Matrix → Matrix          |
+| trunc      | Fto4 → Fto4              |
 
 ## Constructors
 
 The following lists all available type constructors.
 
-| Type | Parameters | Effect |
-|------|------------|--------|
-| `float` | int x | Cast x to float |
-| `float` | uint x |Cast x to float |
-| `int` | float x | Cast x to int |
-| `int` | uint x | Cast x to int |
-| `uint` | int x | Cast x to uint |
-| `uint` | float x | Cast x to uint |
-| `Vec2` | float x, float y | x=x, y=y |
-| `Vec2` | float xy | x=xy, y=xy |
-| `Vec3` | float x, float y, float z | x=x, y=y, z=z |
-| `Vec3` | float xyz | x=xyz, y=xyz, z=xyz |
-| `Vec4` | float x, float y, float z, float w | x=x, y=y, z=z, w=w |
-| `Vec4` | Vec2 xy, Vec2 zw | x=xy.x, y=xy.y, z=zw.x, w=zw.y |
-| `Vec4` | Vec2 xy, float z, float w | x=xy.x, y=xy.y, z=z, w=w |
-| `Vec4` | Vec3 xyz, float w | x=xyz.x, y=xyz.y, z=xyz.z, w=w |
-| `Vec4` | float xyzw | x=xyzw, y=xyzw, z=xyzw, w=xyzw |
+| Type    | Parameters                         | Effect                         |
+|---------|------------------------------------|--------------------------------|
+| `float` | int x                              | Cast x to float                |
+| `float` | uint x                             | Cast x to float                |
+| `int`   | float x                            | Cast x to int                  |
+| `int`   | uint x                             | Cast x to int                  |
+| `uint`  | int x                              | Cast x to uint                 |
+| `uint`  | float x                            | Cast x to uint                 |
+| `Vec2`  | float x, float y                   | x=x, y=y                       |
+| `Vec2`  | float xy                           | x=xy, y=xy                     |
+| `Vec3`  | float x, float y, float z          | x=x, y=y, z=z                  |
+| `Vec3`  | float xyz                          | x=xyz, y=xyz, z=xyz            |
+| `Vec4`  | float x, float y, float z, float w | x=x, y=y, z=z, w=w             |
+| `Vec4`  | Vec2 xy, Vec2 zw                   | x=xy.x, y=xy.y, z=zw.x, w=zw.y |
+| `Vec4`  | Vec2 xy, float z, float w          | x=xy.x, y=xy.y, z=z, w=w       |
+| `Vec4`  | Vec3 xyz, float w                  | x=xyz.x, y=xyz.y, z=xyz.z, w=w |
+| `Vec4`  | float xyzw                         | x=xyzw, y=xyzw, z=xyzw, w=xyzw |
