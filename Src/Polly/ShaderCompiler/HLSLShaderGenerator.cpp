@@ -20,7 +20,6 @@
 #include "Polly/ShaderCompiler/Stmt.hpp"
 #include "Polly/ShaderCompiler/Type.hpp"
 #include "Polly/ShaderCompiler/Writer.hpp"
-#include <CommonMetalInfo.hpp>
 
 namespace Polly::ShaderCompiler
 {
