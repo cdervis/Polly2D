@@ -33,5 +33,5 @@ enum class KeyModifier
     AnyGuiKey     = LeftGui bitor RightGui,
 };
 
-defineEnumFlagOperations(KeyModifier);
+PollyDefineEnumFlagOperations(KeyModifier);
 } // namespace Polly

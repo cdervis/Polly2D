@@ -729,15 +729,15 @@ class ImGui
     Rectangle itemRect() const;
 };
 
-defineEnumFlagOperations(ImGuiWindowOpts);
-defineEnumFlagOperations(ImGuiTableRowOpts);
-defineEnumFlagOperations(ImGuiColorEditOpts);
-defineEnumFlagOperations(ImGuiComboOpts);
-defineEnumFlagOperations(ImGuiButtonOpts);
-defineEnumFlagOperations(ImGuiTreeNodeOpts);
-defineEnumFlagOperations(ImGuiChildOpts);
-defineEnumFlagOperations(ImGuiFocusedOpts);
-defineEnumFlagOperations(ImGuiHoveredOpts);
-defineEnumFlagOperations(ImGuiSliderOpts);
-defineEnumFlagOperations(ImGuiInputTextOpts);
+PollyDefineEnumFlagOperations(ImGuiWindowOpts);
+PollyDefineEnumFlagOperations(ImGuiTableRowOpts);
+PollyDefineEnumFlagOperations(ImGuiColorEditOpts);
+PollyDefineEnumFlagOperations(ImGuiComboOpts);
+PollyDefineEnumFlagOperations(ImGuiButtonOpts);
+PollyDefineEnumFlagOperations(ImGuiTreeNodeOpts);
+PollyDefineEnumFlagOperations(ImGuiChildOpts);
+PollyDefineEnumFlagOperations(ImGuiFocusedOpts);
+PollyDefineEnumFlagOperations(ImGuiHoveredOpts);
+PollyDefineEnumFlagOperations(ImGuiSliderOpts);
+PollyDefineEnumFlagOperations(ImGuiInputTextOpts);
 } // namespace Polly

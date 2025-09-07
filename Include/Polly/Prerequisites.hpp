@@ -147,7 +147,7 @@ static_assert(sizeof(i64) == 8);
   private:                                                                                                   \
     void* _impl
 
-#define defineEnumFlagOperations(enumName)                                                                   \
+#define PollyDefineEnumFlagOperations(enumName)                                                              \
     static constexpr enumName operator&(enumName lhs, enumName rhs)                                          \
     {                                                                                                        \
         return static_cast<enumName>(static_cast<int>(lhs) & static_cast<int>(rhs));                         \
@@ -156,10 +156,9 @@ static_assert(sizeof(i64) == 8);
     {                                                                                                        \
         return static_cast<enumName>(static_cast<int>(lhs) | static_cast<int>(rhs));                         \
     }                                                                                                        \
-    static constexpr enumName& operator|=(enumName& lhs, enumName rhs)                                       \
+    static constexpr void operator|=(enumName& lhs, enumName rhs)                                            \
     {                                                                                                        \
         lhs = lhs bitor rhs;                                                                                 \
-        return lhs;                                                                                          \
     }                                                                                                        \
     static constexpr bool hasFlag(enumName value, enumName toTest)                                           \
     {                                                                                                        \
