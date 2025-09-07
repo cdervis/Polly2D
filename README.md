@@ -102,7 +102,7 @@ Polly is able to run on the following platforms:
 - Linux RISC-V (StarFive VisionFive board, Debian)
 - macOS 13 Ventura (released in 2022)
 - iOS 16 (released in 2022)
-- Android (all ABIs)
+- Android (all ABIs) [Porting WIP]
 
 Porting Polly to the web is trivial, but will only be done if there's enough interest.
 
