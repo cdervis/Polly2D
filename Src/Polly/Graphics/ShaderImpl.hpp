@@ -24,7 +24,7 @@ enum class UserShaderFlags
     UsesSystemValues = 1,
 };
 
-defineEnumFlagOperations(UserShaderFlags);
+PollyDefineEnumFlagOperations(UserShaderFlags);
 
 class Shader::Impl : public GraphicsResource
 {

@@ -22,7 +22,7 @@ enum class ColorWriteMask
     All   = Red bitor Green bitor Blue bitor Alpha, /// Allow writes to all RGBA channels.
 };
 
-defineEnumFlagOperations(ColorWriteMask);
+PollyDefineEnumFlagOperations(ColorWriteMask);
 
 /// Defines how a source color is combined with a destination color.
 /// The source color is the resulting color of a pixel shader.

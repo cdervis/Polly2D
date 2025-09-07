@@ -4,13 +4,13 @@
 
 #pragma once
 
+#include "Polly/Audio/soloud.hpp"
 #include "Polly/AudioDevice.hpp"
 #include "Polly/ContentManagement/Asset.hpp"
 #include "Polly/Core/Object.hpp"
 #include "Polly/List.hpp"
 #include "Polly/Sound.hpp"
 #include "Polly/UniquePtr.hpp"
-#include <soloud.hpp>
 
 namespace Polly
 {

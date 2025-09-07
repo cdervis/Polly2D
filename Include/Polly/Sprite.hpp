@@ -28,7 +28,7 @@ enum class SpriteFlip : u8
     Both = Horizontally bitor Vertically,
 };
 
-defineEnumFlagOperations(SpriteFlip);
+PollyDefineEnumFlagOperations(SpriteFlip);
 
 /// Represents a drawable 2D sprite.
 struct Sprite
