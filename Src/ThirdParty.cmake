@@ -1,9 +1,7 @@
 # stb
 CPMAddPackage(
     NAME stb
-    GIT_REPOSITORY https://github.com/cdervis/stb
-    GIT_TAG v1.0
-    GIT_SHALLOW
+    URL https://github.com/cdervis/stb/archive/refs/tags/v1.1.zip
 )
 
 target_link_libraries(Polly PRIVATE stb)
