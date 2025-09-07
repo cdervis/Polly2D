@@ -36,6 +36,16 @@ CPMAddPackage(
 
 target_link_libraries(Polly PRIVATE SDL3-static)
 
+if (APPLE)
+    # On Apple systems, compilers might complain, because SDL uses deprecated APIs.
+    # This is okay and we're not interested in those warnings, because SDL is an external library from our
+    # point of view.
+    target_compile_options(SDL3-static PRIVATE
+        -Wno-deprecated-declarations
+        -Wno-unguarded-availability-new
+    )
+endif()
+
 if (TARGET SDL3-shared)
     list(APPEND targets_in_polly_group SDL3-shared)
 endif ()
