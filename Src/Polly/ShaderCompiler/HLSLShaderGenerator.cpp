@@ -20,7 +20,6 @@
 #include "Polly/ShaderCompiler/Stmt.hpp"
 #include "Polly/ShaderCompiler/Type.hpp"
 #include "Polly/ShaderCompiler/Writer.hpp"
-#include <CommonMetalInfo.hpp>
 
 namespace Polly::ShaderCompiler
 {
@@ -38,8 +37,8 @@ HLSLShaderGenerator::HLSLShaderGenerator()
         {MatrixType::instance(), "float4x4"},
     };
 
-    _vsOutputStructName = Naming::forbiddenIdentifierPrefix;
-    _vsOutputStructName += "VSOutput";
+    _vsOutputStructName = Naming::forbiddenIdentifierPrefix + "VSOutput"_sv;
+    _imageSamplerName   = Naming::forbiddenIdentifierPrefix + "sampler"_sv;
 }
 
 String HLSLShaderGenerator::doGeneration(
@@ -48,16 +47,6 @@ String HLSLShaderGenerator::doGeneration(
     Span<const Decl*>   declsToGenerate)
 {
     Writer w;
-
-    // System values struct
-    {
-        w << "cbuffer CBuffer1 : register(b" << D3D11Painter::systemValuesCBufferSlot << ")" << wnewline;
-        w.openBrace();
-        w << "float2 " << Naming::svViewportSize << ";" << wnewline;
-        w << "float2 " << Naming::svViewportSizeInv << ";" << wnewline;
-        w.closeBrace(true);
-        w << wnewline;
-    }
 
     w << wnewline;
 
@@ -75,6 +64,8 @@ String HLSLShaderGenerator::doGeneration(
         w << "struct " << _vsOutputStructName << wnewline;
         w.openBrace();
 
+        // Replicate the VS outputs from the built-in D3D11 shaders here, depending on the shader's type.
+        // See D3D11/Resources/AllShaders.hlsl.
         if (_ast->isSpriteShader())
         {
             w << "float4 position : SV_Position;" << wnewline;
@@ -83,7 +74,14 @@ String HLSLShaderGenerator::doGeneration(
         }
         else if (_ast->isPolygonShader())
         {
-            w << "TODO(VSOutput poly)\n";
+            w << "float4 position : SV_Position;" << wnewline;
+            w << "float4 color : TEXCOORD0;" << wnewline;
+        }
+        else if (_ast->isMeshShader())
+        {
+            w << "float4 position : SV_Position;" << wnewline;
+            w << "noperspective float2 uv : TEXCOORD0;" << wnewline;
+            w << "float4 color : TEXCOORD1;" << wnewline;
         }
 
         w.closeBrace(true);
@@ -92,15 +90,19 @@ String HLSLShaderGenerator::doGeneration(
 
     w << wnewline;
 
+    // Make a distinction between shader types for the texture, because we bind sprite and mesh images
+    // separately.
     if (_ast->isSpriteShader())
     {
         w << "Texture2D " << Naming::spriteBatchImageParam << " : register(t0);" << wnewline;
-        w << "SamplerState " << Naming::forbiddenIdentifierPrefix << "sampler : register(s0);" << wnewline;
     }
-    else if (_ast->isPolygonShader())
+    else if (_ast->isMeshShader())
     {
-        w << "TODO(poly param)\n";
+        w << "Texture2D " << Naming::meshImageParam << " : register(t1);" << wnewline;
     }
+
+    // Sampler for all images is always bound to s0, because Polly only provides a single, shared Sampler.
+    w << "SamplerState " << _imageSamplerName << " : register(s0);" << wnewline;
 
     w << wnewline;
 
@@ -237,6 +239,7 @@ void HLSLShaderGenerator::generateFunctionDecl(
                 << wnewline;
         }
 
+#if 0
         if (_ast->isSpriteShader())
         {
             if (_ast->isSymbolAccessedAnywhere(builtins.svSpriteColor.get()))
@@ -271,6 +274,7 @@ void HLSLShaderGenerator::generateFunctionDecl(
                     << wnewline;
             }
         }
+#endif
     }
 
     generateCodeBlock(w, function->body(), context);
@@ -319,8 +323,9 @@ void HLSLShaderGenerator::generateSymAccessExpr(
     const SymAccessExpr* expr,
     const SemaContext&   context)
 {
-    const auto& symbol = expr->symbol();
-    const auto  name   = expr->name();
+    const auto& builtIns = context.builtInSymbols();
+    const auto& symbol   = expr->symbol();
+    const auto  name     = expr->name();
 
     if (const auto* param = as<ShaderParamDecl>(symbol))
     {
@@ -329,6 +334,17 @@ void HLSLShaderGenerator::generateSymAccessExpr(
     else if (is<VectorSwizzlingDecl>(symbol))
     {
         w << expr->identifier();
+    }
+    else if (
+        symbol == builtIns.svSpriteColor.get()
+        or symbol == builtIns.svPolygonColor.get()
+        or symbol == builtIns.svMeshColor.get())
+    {
+        w << Naming::shaderInputParam << ".color";
+    }
+    else if (symbol == builtIns.svSpriteUV.get() or symbol == builtIns.svMeshUV.get())
+    {
+        w << Naming::shaderInputParam << ".uv";
     }
     else
     {
@@ -360,7 +376,7 @@ void HLSLShaderGenerator::generateFunctionCallExpr(
 
         generateExpr(w, textureArg.get(), context);
         w << ".Sample(";
-        w << Naming::forbiddenIdentifierPrefix << "sampler";
+        w << _imageSamplerName;
         w << ", ";
         generateExpr(w, uvArg.get(), context);
         w << ")";
@@ -426,7 +442,7 @@ void HLSLShaderGenerator::generateFunctionCallExpr(
 
         if (not accessedParams.resources.isEmpty())
         {
-            w << ", " << Naming::forbiddenIdentifierPrefix << "sampler";
+            w << ", " << _imageSamplerName;
         }
     }
 

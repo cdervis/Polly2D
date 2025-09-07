@@ -278,6 +278,12 @@ class List : Details::ListBase<T, InlineCapacity>
         }
     }
 
+    void assign(Span<T> span)
+    requires(copyInsertable and copyAssignable)
+    {
+        base::assignWithRange(span);
+    }
+
     void swap(List& other) noexcept
     requires(moveInsertable and moveAssignable and swappable) or (InlineCapacity == 0)
     {
@@ -342,13 +348,13 @@ class List : Details::ListBase<T, InlineCapacity>
 
     T* data()
     {
-        checkEmptyAccess();
+        checkEmptyCapacityAccess();
         return base::beginPtr();
     }
 
     const T* data() const
     {
-        checkEmptyAccess();
+        checkEmptyCapacityAccess();
         return base::beginPtr();
     }
 
@@ -633,6 +639,24 @@ class List : Details::ListBase<T, InlineCapacity>
         base::resizeWith(count, value);
     }
 
+    void resizeIfGreater(u32 count)
+    requires(moveInsertable and defaultInsertable)
+    {
+        if (count > capacity())
+        {
+            base::resizeWith(count);
+        }
+    }
+
+    void resizeIfGreater(u32 count, const T& value)
+    requires(copyInsertable)
+    {
+        if (count > capacity())
+        {
+            base::resizeWith(count, value);
+        }
+    }
+
     [[nodiscard]]
     bool isSmall() const
     {
@@ -705,6 +729,16 @@ class List : Details::ListBase<T, InlineCapacity>
         if (isEmpty())
         {
             throw Error("Attempting to access an empty List.");
+        }
+#endif
+    }
+
+    void checkEmptyCapacityAccess() const
+    {
+#ifndef polly_no_hardening
+        if (capacity() == 0)
+        {
+            throw Error("Attempting to access a List with no capacity.");
         }
 #endif
     }

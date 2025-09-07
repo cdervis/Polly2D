@@ -86,15 +86,18 @@ StringView ShaderTypeDecl::id() const
 
 void ShaderTypeDecl::onVerify([[maybe_unused]] SemaContext& context, [[maybe_unused]] Scope& scope)
 {
-    if (_id != Naming::shaderTypeSprite and _id != Naming::shaderTypePolygon)
+    if (_id != Naming::shaderTypeSprite
+        and _id != Naming::shaderTypePolygon
+        and _id != Naming::shaderTypeMesh)
     {
         throw ShaderCompileError(
             location(),
             formatString(
-                "Invalid shader type '{}' specified; valid types are: '{}', '{}'.",
+                "Invalid shader type '{}' specified; valid types are: '{}', '{}', '{}'.",
                 _id,
                 Naming::shaderTypeSprite,
-                Naming::shaderTypePolygon));
+                Naming::shaderTypePolygon,
+                Naming::shaderTypeMesh));
     }
 }
 
@@ -254,6 +257,12 @@ void FunctionDecl::onVerify(SemaContext& context, Scope& scope)
         else if (shaderType == ShaderType::Polygon)
         {
             extraSymbols.emplace(builtIns.svPolygonColor.get());
+        }
+        else if (shaderType == ShaderType::Mesh)
+        {
+            extraSymbols.emplace(builtIns.svMeshImage.get());
+            extraSymbols.emplace(builtIns.svMeshColor.get());
+            extraSymbols.emplace(builtIns.svMeshUV.get());
         }
     }
 

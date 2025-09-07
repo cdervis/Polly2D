@@ -8,10 +8,20 @@ if (polly_have_gfx_d3d11)
     add_subdirectory(D3D11)
 endif()
 
+if (polly_have_gfx_opengl)
+    polly_log("Enabling OpenGL support")
+    add_subdirectory(OpenGL)
+endif()
+
 if (polly_have_gfx_vulkan)
     polly_log("Enabling Vulkan support")
     add_subdirectory(Vulkan)
 endif ()
 
-target_sources(Polly PRIVATE Resources/Noto.ttf)
+target_sources(Polly PRIVATE
+    Resources/Noto.ttf
+    Resources/SpriteShaderDefault.shd
+    Resources/PolyShaderDefault.shd
+    Resources/MeshShaderDefault.shd
+)
 

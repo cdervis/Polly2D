@@ -3,8 +3,10 @@
 // For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
 #include "Polly/Shader.hpp"
+
 #include "Polly/ContentManagement/ContentManager.hpp"
 #include "Polly/Game/GameImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 
 namespace Polly
 {
@@ -16,6 +18,19 @@ Shader::Shader(const StringView assetName)
     auto& content = Game::Impl::instance().contentManager();
 
     *this = content.loadShader(assetName);
+}
+
+Shader Shader::fromSource(StringView name, StringView sourceCode)
+{
+    auto& painterImpl = *Painter::Impl::instance();
+
+    auto shaderImpl = painterImpl.createUserShader(sourceCode, name);
+    shaderImpl->setAssetName(name);
+
+    auto shader = Shader(shaderImpl.release());
+    shader.setDebuggingLabel(name);
+
+    return shader;
 }
 
 StringView Shader::assetName() const

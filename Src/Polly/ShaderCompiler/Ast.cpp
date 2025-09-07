@@ -38,10 +38,13 @@ Ast::Ast(const StringView filename, DeclList decls)
                 {
                     return ShaderType::Sprite;
                 }
-
-                if (id == Naming::shaderTypePolygon)
+                else if (id == Naming::shaderTypePolygon)
                 {
                     return ShaderType::Polygon;
+                }
+                else if (id == Naming::shaderTypeMesh)
+                {
+                    return ShaderType::Mesh;
                 }
 
                 throw ShaderCompileError(decl->location(), formatString("Invalid shader type specified."));
@@ -154,6 +157,11 @@ bool Ast::isSpriteShader() const
 bool Ast::isPolygonShader() const
 {
     return _shaderType == ShaderType::Polygon;
+}
+
+bool Ast::isMeshShader() const
+{
+    return _shaderType == ShaderType::Mesh;
 }
 
 AccessedParams Ast::paramsAccessedByFunction(const FunctionDecl* function) const

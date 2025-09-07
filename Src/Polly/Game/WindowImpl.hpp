@@ -91,7 +91,7 @@ class Window::Impl : public Object
 
     bool hasMouseFocus() const;
 
-    virtual void onResized(u32 width, u32 height) = 0;
+    virtual void onResized(u32 width, u32 height);
 
   protected:
     void createSDLWindow(

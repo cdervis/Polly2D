@@ -50,6 +50,7 @@ struct PainterCapabilities
     u32 maxImageExtent  = 0;
     u32 maxCanvasWidth  = 0;
     u32 maxCanvasHeight = 0;
+    u32 maxScissorRects = 0;
 };
 
 /// Represents the system's graphics device.
@@ -138,7 +139,7 @@ class Painter final
     /// Draws a 2D sprite.
     ///
     /// @param sprite The sprite to draw.
-    void drawSprite(const Sprite& sprite);
+    void drawSprite(Sprite sprite);
 
     /// Draws multiple 2D sprites at once.
     ///
@@ -375,55 +376,6 @@ class Painter final
     /// If no canvas is set, the pixel ratio of the game's window is returned,
     /// which is the same as calling Window::pixelRatio().
     float pixelRatio() const;
-
-    /// Gets the pixel data that is currently stored in a canvas.
-    ///
-    /// The data is written directly to a user-specified data pointer.
-    /// The caller therefore has to ensure that the destination buffer is large enough
-    /// to store the data of the canvas.
-    ///
-    /// @note A convenience version of this function is readCanvasData().
-    ///
-    /// @param canvas The canvas image to read data from
-    /// @param x The x-coordinate within the canvas to start reading from
-    /// @param y The y-coordinate within the canvas to start reading from
-    /// @param width The width of the area within the canvas to read, in pixels
-    /// @param height The height of the area within the canvas to read, in pixels
-    /// @param destination A pointer to the buffer that receives the canvas data
-    void readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination);
-
-    /// Gets the pixel data that is currently stored in a canvas.
-    ///
-    /// @note This is a convenience version of readCanvasDataInto().
-    ///
-    /// @param canvas The canvas image to read data from
-    /// @param x The x-coordinate within the canvas to start reading from
-    /// @param y The y-coordinate within the canvas to start reading from
-    /// @param width The width of the area within the canvas to read, in pixels
-    /// @param height The height of the area within the canvas to read, in pixels
-    ///
-    /// @return A buffer that contains the pixel data of the canvas.
-    [[nodiscard]]
-    List<u8> readCanvasData(const Image& canvas, u32 x, u32 y, u32 width, u32 height);
-
-    /// Saves the pixel data of a canvas to a file.
-    ///
-    /// @param canvas The canvas image to save to a file
-    /// @param filename The destination filename
-    /// @param format The format to which to convert and save the canvas data
-    void saveCanvasToFile(
-        const Image&    canvas,
-        StringView      filename,
-        ImageFileFormat format = ImageFileFormat::PNG);
-
-    /// Saves the pixel data of a canvas to a buffer in memory.
-    ///
-    /// @param canvas The canvas image to save to a buffer
-    /// @param format The format to which to convert and save the canvas data
-    ///
-    /// @return The converted pixel data of the canvas.
-    [[nodiscard]]
-    Maybe<List<u8>> saveCanvasToMemory(const Image& canvas, ImageFileFormat format = ImageFileFormat::PNG);
 
     /// Gets the device's capabilities.
     PainterCapabilities capabilities() const;

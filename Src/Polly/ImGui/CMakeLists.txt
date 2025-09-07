@@ -45,6 +45,13 @@ if (polly_have_gfx_metal)
     target_compile_options(Polly PRIVATE -Wno-arc-bridge-casts-disallowed-in-nonarc)
 endif ()
 
+if (polly_have_gfx_opengl)
+    list(APPEND imgui_files
+        ${base_dir}/backends/imgui_impl_opengl3.h
+        ${base_dir}/backends/imgui_impl_opengl3.cpp
+    )
+endif ()
+
 if (polly_have_gfx_vulkan)
     list(APPEND imgui_files
         ${base_dir}/backends/imgui_impl_vulkan.h

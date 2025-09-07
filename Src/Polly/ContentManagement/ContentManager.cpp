@@ -126,9 +126,7 @@ Image ContentManager::loadImage(StringView name)
             const auto [type, unpacked_data] = _archive.unpackAsset(assetName);
             verifyAssetType(assetName, type, 'i', "an image");
 
-            auto& painterImpl = *Game::Impl::instance().painter().impl();
-
-            auto img = _imageIO.loadImageFromMemory(painterImpl, unpacked_data);
+            auto img = _imageIO.loadImageFromMemory(*Painter::Impl::instance(), unpacked_data);
             img->setAssetName(assetName);
             img->setDebuggingLabel(assetName);
 
@@ -149,17 +147,7 @@ Shader ContentManager::loadShader(StringView name)
 
             verifyAssetType(assetName, type, 's', "a shader");
 
-            auto& painterImpl = *Game::Impl::instance().painter().impl();
-
-            const auto sourceCode = reader.readEncryptedString();
-
-            auto shaderImpl = painterImpl.createUserShader(sourceCode, assetName);
-            shaderImpl->setAssetName(assetName);
-
-            auto shader = Shader(shaderImpl.release());
-            shader.setDebuggingLabel(assetName);
-
-            return shader;
+            return Shader::fromSource(assetName, reader.readEncryptedString());
         });
 }
 

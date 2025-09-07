@@ -76,6 +76,8 @@ class Ast final
 
     bool isPolygonShader() const;
 
+    bool isMeshShader() const;
+
     AccessedParams paramsAccessedByFunction(const FunctionDecl* function) const;
 
   private:

@@ -42,12 +42,12 @@ class MetalShaderGenerator final : public TextBasedShaderGenerator
 
     static String shaderInputOutputTypeName(const Type* type);
 
-    String _svCBufferStructName;
-    String _svCBufferParamName;
-    String _globalCBufferStructName;
-    String _globalCBufferParamName;
-    String _vsOutputStructName;
-    String _outStructName;
+    String _systemValuesCBufferTypeName;
+    String _systemValuesCBufferParamName;
+    String _userParamsCBufferTypeName;
+    String _userParamsCBufferParamName;
+    String _vsOutputTypeName;
+    String _outStructVariableName;
 };
 } // namespace Polly::ShaderCompiler
 

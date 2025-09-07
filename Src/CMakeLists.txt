@@ -7,7 +7,7 @@ if (APPLE)
 elseif (WIN32)
     set(polly_have_gfx_d3d11 TRUE)
 else()
-    set(polly_have_gfx_vulkan TRUE)
+    set(polly_have_gfx_opengl TRUE)
 endif ()
 
 add_library(Polly STATIC)

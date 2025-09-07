@@ -39,7 +39,7 @@ static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
 
     auto subresourceData = D3D11_SUBRESOURCE_DATA();
 
-    if (not isCanvas)
+    if (isStatic)
     {
         assume(data);
         subresourceData.pSysMem     = data;

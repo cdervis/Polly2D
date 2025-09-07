@@ -181,6 +181,9 @@ class BuiltinSymbols final
     UniquePtr<Decl> svSpriteColor;
     UniquePtr<Decl> svSpriteUV;
     UniquePtr<Decl> svPolygonColor;
+    UniquePtr<Decl> svMeshImage;
+    UniquePtr<Decl> svMeshColor;
+    UniquePtr<Decl> svMeshUV;
 
     UniquePtr<VectorSwizzlingDecl> vectorSwizzlingSym;
 

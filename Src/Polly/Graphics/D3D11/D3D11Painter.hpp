@@ -16,8 +16,9 @@ namespace Polly
 class D3D11Painter final : public Painter::Impl
 {
   public:
-    static constexpr auto systemValuesCBufferSlot     = 1u;
-    static constexpr auto userShaderParamsCBufferSlot = 2u;
+    static constexpr auto spriteImageSlot             = 0;
+    static constexpr auto meshImageSlot               = 1;
+    static constexpr auto userShaderParamsCBufferSlot = 1;
 
     explicit D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats);
 
@@ -49,10 +50,7 @@ class D3D11Painter final : public Painter::Impl
 
     void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) override;
 
-    void setScissorRects(Span<Rectangle> scissorRects) override;
-
-    void readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination)
-        override;
+    void onSetScissorRects(Span<Rectangle> scissorRects) override;
 
     void requestFrameCapture() override;
 
@@ -130,7 +128,6 @@ class D3D11Painter final : public Painter::Impl
     ComPtr<ID3D11RasterizerState>   _rasterizerStateWithScissorRects;
 
     ComPtr<ID3D11Buffer> _globalCBuffer;
-    ComPtr<ID3D11Buffer> _systemValuesCBuffer;
 
     Array<ComPtr<ID3D11Buffer>, userShaderParamsCBufferSizes.size()> _userShaderParamsCBuffers;
 
@@ -139,17 +136,13 @@ class D3D11Painter final : public Painter::Impl
     ComPtr<ID3D11InputLayout> _meshInputLayout;
 
     ComPtr<ID3D11VertexShader> _spriteVertexShader;
-    ComPtr<ID3D11PixelShader>  _spritePixelShaderDefault;
-    ComPtr<ID3D11PixelShader>  _spritePixelShaderMonochromatic;
     ComPtr<ID3D11Buffer>       _spriteVertexBuffer;
     ComPtr<ID3D11Buffer>       _spriteIndexBuffer;
 
     ComPtr<ID3D11VertexShader> _polyVertexShader;
-    ComPtr<ID3D11PixelShader>  _polyPixelShader;
     ComPtr<ID3D11Buffer>       _polyVertexBuffer;
 
     ComPtr<ID3D11VertexShader> _meshVertexShader;
-    ComPtr<ID3D11PixelShader>  _meshPixelShader;
     ComPtr<ID3D11Buffer>       _meshVertexBuffer;
     ComPtr<ID3D11Buffer>       _meshIndexBuffer;
 
@@ -172,7 +165,6 @@ class D3D11Painter final : public Painter::Impl
     Maybe<BlendState>   _lastBoundBlendState;
     ID3D11SamplerState* _lastBoundSamplerState = nullptr;
 
-    Maybe<Rectangle>         _lastAppliedViewportToSystemValues;
     D3D11_PRIMITIVE_TOPOLOGY _lastAppliedPrimitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
 
 #ifndef NDEBUG

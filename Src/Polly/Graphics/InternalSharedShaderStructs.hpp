@@ -12,12 +12,8 @@ namespace Polly
 struct alignas(16) GlobalCBufferParams
 {
     Matrix transformation;
-};
-
-struct alignas(16) SystemValueCBufferParams
-{
-    Vec2 viewportSize;
-    Vec2 viewportSizeInv;
+    Vec2   viewportSize;
+    Vec2   viewportSizeInv;
 };
 
 struct alignas(16) SpriteVertex

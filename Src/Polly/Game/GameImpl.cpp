@@ -47,6 +47,11 @@ int Polly::Details::runGame(int a, char* b[], MainFunction c, [[maybe_unused]] v
 #include "Polly/Graphics/D3D11/D3DWindow.hpp"
 #endif
 
+#ifdef polly_have_gfx_opengl
+#include "Polly/Graphics/OpenGL/OpenGLPainter.hpp"
+#include "Polly/Graphics/OpenGL/OpenGLWindow.hpp"
+#endif
+
 #ifdef polly_have_gfx_vulkan
 #include <Polly/Graphics/Vulkan/VulkanPainter.hpp>
 #include <Polly/Graphics/Vulkan/VulkanWindow.hpp>
@@ -83,6 +88,8 @@ Game::Impl::Impl(const GameInitArgs& args)
     , _title(args.title)
     , _companyName(args.companyName)
 {
+    sGameInstance = this;
+
 #ifdef polly_have_gfx_metal
     _gameAutoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 #endif
@@ -122,8 +129,6 @@ Game::Impl::Impl(const GameInitArgs& args)
     createAudioDevice(not args.enableAudio);
 
     _contentManager = makeUnique<ContentManager>();
-
-    sGameInstance = this;
 }
 
 Game::Impl::~Impl() noexcept
@@ -380,6 +385,9 @@ void Game::Impl::createWindow(
         fullScreenDisplayIndex,
         _connectedDisplays,
         _idxgiFactory);
+#elif defined(polly_have_gfx_opengl)
+    auto impl =
+        makeUnique<OpenGLWindow>(title, initialWindowSize, fullScreenDisplayIndex, _connectedDisplays);
 #elif defined(polly_have_gfx_vulkan)
     auto impl = makeUnique<VulkanWindow>(
         title,
@@ -462,6 +470,8 @@ void Game::Impl::createPainter()
     impl = makeUnique<MetalPainter>(*_window.impl(), _performanceStats);
 #elif defined(polly_have_gfx_d3d11)
     impl = makeUnique<D3D11Painter>(*_window.impl(), _performanceStats);
+#elif defined(polly_have_gfx_opengl)
+    impl = makeUnique<OpenGLPainter>(*_window.impl(), _performanceStats);
 #elif defined(polly_have_gfx_vulkan)
     assume(_vkInstance != VK_NULL_HANDLE);
     assume(_vkApiVersion != 0);

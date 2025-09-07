@@ -1,0 +1,6 @@
+#type sprite
+
+Vec4 main()
+{
+    return sample(pl_spriteImage, pl_spriteUV) * pl_spriteColor;
+}

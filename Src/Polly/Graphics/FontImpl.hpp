@@ -10,6 +10,7 @@
 #include "Polly/Core/Object.hpp"
 #include "Polly/Core/utf8.hpp"
 #include "Polly/Font.hpp"
+#include "Polly/Graphics/BitColors.hpp"
 #include "Polly/Image.hpp"
 #include "Polly/List.hpp"
 #include "Polly/SortedMap.hpp"
@@ -29,11 +30,10 @@ class Font::Impl final : public Object,
 
     struct FontPage
     {
-        u32      width;
-        u32      height;
-        BinPack  pack;
-        List<u8> atlasData;
-        Image    atlas;
+        u32     width;
+        u32     height;
+        BinPack pack;
+        Image   atlas;
     };
 
     struct GlyphIterationExtras
@@ -206,27 +206,28 @@ class Font::Impl final : public Object,
         auto operator<=>(const RasterizedGlyphKey&) const = default;
     };
 
-    using rasterized_glyphs_map = SortedMap<RasterizedGlyphKey, RasterizedGlyph>;
+    using RasterizedGlyphsMap = SortedMap<RasterizedGlyphKey, RasterizedGlyph>;
 
     void initialize();
 
-    const RasterizedGlyph& rasterizeGlyph(const RasterizedGlyphKey& key, bool updatePageImageImmediately);
+    const RasterizedGlyph& rasterizeGlyph(const RasterizedGlyphKey& key);
 
     void appendNewPage();
 
-    void updatePageAtlasImage(FontPage& page);
+    void updatePageTexture();
 
-    const u8*             _foreignFontData = nullptr;
-    List<u8>              _ownedFontData;
-    stbtt_fontinfo        _fontInfo = {};
-    int                   _ascent   = 0;
-    int                   _descent  = 0;
-    int                   _lineGap  = 0;
-    rasterized_glyphs_map _rasterizedGlyphs;
-    List<FontPage, 2>     _pages;
-    Maybe<u32>            _currentPageIndex;
-    SortedSet<float>      _initializedSizes;
-    SortedSet<u32>        _pageImagesToUpdate;
+    const u8*           _foreignFontData = nullptr;
+    List<u8>            _ownedFontData;
+    stbtt_fontinfo      _fontInfo = {};
+    int                 _ascent   = 0;
+    int                 _descent  = 0;
+    int                 _lineGap  = 0;
+    RasterizedGlyphsMap _rasterizedGlyphs;
+    List<FontPage, 2>   _pages;
+    Maybe<u32>          _currentPageIndex;
+    SortedSet<float>    _initializedSizes;
+    List<u8>            _glyphBufferU8;
+    List<R8G8B8A8>      _glyphBufferRGBA;
 
 #ifndef NDEBUG
     bool _isBuiltin = false;

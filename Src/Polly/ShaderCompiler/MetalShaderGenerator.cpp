@@ -8,6 +8,7 @@
 
 #include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
+#include "Polly/Graphics/Metal/MetalPainter.hpp"
 #include "Polly/ShaderCompiler/Ast.hpp"
 #include "Polly/ShaderCompiler/BuiltinSymbols.hpp"
 #include "Polly/ShaderCompiler/CodeBlock.hpp"
@@ -19,7 +20,6 @@
 #include "Polly/ShaderCompiler/Stmt.hpp"
 #include "Polly/ShaderCompiler/Type.hpp"
 #include "Polly/ShaderCompiler/Writer.hpp"
-#include <CommonMetalInfo.hpp>
 
 namespace Polly::ShaderCompiler
 {
@@ -27,20 +27,13 @@ MetalShaderGenerator::MetalShaderGenerator()
 {
     _isSwappingMatrixVectorMults = true;
 
-    _svCBufferStructName = Naming::forbiddenIdentifierPrefix;
-    _svCBufferStructName += "SV";
+    _systemValuesCBufferTypeName  = Naming::forbiddenIdentifierPrefix + "SystemValues"_sv;
+    _systemValuesCBufferParamName = Naming::forbiddenIdentifierPrefix + "sv"_sv;
 
-    _svCBufferParamName = Naming::forbiddenIdentifierPrefix;
-    _svCBufferParamName += "sv";
-
-    _globalCBufferStructName = Naming::forbiddenIdentifierPrefix;
-    _globalCBufferStructName += "Params";
-
-    _globalCBufferParamName = Naming::forbiddenIdentifierPrefix;
-    _globalCBufferParamName += "params";
-
-    _outStructName = Naming::forbiddenIdentifierPrefix;
-    _outStructName += "out";
+    _userParamsCBufferTypeName  = Naming::forbiddenIdentifierPrefix + "Params"_sv;
+    _userParamsCBufferParamName = Naming::forbiddenIdentifierPrefix + "params"_sv;
+    _vsOutputTypeName           = Naming::forbiddenIdentifierPrefix + "VSOutput"_sv;
+    _outStructVariableName      = Naming::forbiddenIdentifierPrefix + "out"_sv;
 
     _builtInTypeDict = {
         {IntType::instance(), "int"},
@@ -51,9 +44,6 @@ MetalShaderGenerator::MetalShaderGenerator()
         {Vec4Type::instance(), "float4"},
         {MatrixType::instance(), "float4x4"},
     };
-
-    _vsOutputStructName = Naming::forbiddenIdentifierPrefix;
-    _vsOutputStructName += "VSOutput";
 }
 
 String MetalShaderGenerator::doGeneration(
@@ -62,6 +52,11 @@ String MetalShaderGenerator::doGeneration(
     Span<const Decl*>   declsToGenerate)
 {
     Writer w;
+
+#ifndef NDEBUG
+    w << "// Shader generated from: " << _ast->filename() << wnewline;
+#endif
+
     w << "#include <metal_stdlib>" << wnewline;
     w << "#include <simd/simd.h>" << wnewline;
     w << wnewline;
@@ -70,17 +65,19 @@ String MetalShaderGenerator::doGeneration(
 
     // System values struct
     {
-        w << "struct " << _svCBufferStructName << " ";
+        w << "struct " << _systemValuesCBufferTypeName << ' ';
         w.openBrace();
-        w << "float2 " << Naming::svViewportSize << ";" << wnewline;
-        w << "float2 " << Naming::svViewportSizeInv << ";" << wnewline;
+        w << "float4x4 " << Naming::svTransformation << ';' << wnewline;
+        w << "float2 " << Naming::svViewportSize << ';' << wnewline;
+        w << "float2 " << Naming::svViewportSizeInv << ';' << wnewline;
         w.closeBrace(true);
         w << wnewline;
     }
 
     // VSOutput depending on shader type
+    // These must match the structs declared in Graphics/Metal/Resources/AllShaders.metal.
     {
-        w << "struct " << _vsOutputStructName << " ";
+        w << "struct " << _vsOutputTypeName << ' ';
         w.openBrace();
 
         if (_ast->isSpriteShader())
@@ -91,7 +88,14 @@ String MetalShaderGenerator::doGeneration(
         }
         else if (_ast->isPolygonShader())
         {
-            w << "TODO(VSOutput poly)\n";
+            w << "float4 position [[position]];" << wnewline;
+            w << "float4 color;" << wnewline;
+        }
+        else if (_ast->isMeshShader())
+        {
+            w << "float4 position [[position]];" << wnewline;
+            w << "float2 uv [[center_no_perspective]];" << wnewline;
+            w << "float4 color;" << wnewline;
         }
 
         w.closeBrace(true);
@@ -174,20 +178,8 @@ void MetalShaderGenerator::generateFunctionDecl(
         return;
     }
 
-    const auto& builtins       = context.builtInSymbols();
-    const auto  accessedParams = _ast->paramsAccessedByFunction(function);
-
-    const auto usesPixelPosNormalized = _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get());
-
-    const auto usesPixelPos = usesPixelPosNormalized
-                              or _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get())
-                              or _ast->isSymbolAccessedAnywhere(builtins.svPixelPos.get());
-
-    const auto usesViewportSize = _ast->isSymbolAccessedAnywhere(builtins.svViewportSize.get());
-    const auto usesViewportSizeInv =
-        usesPixelPosNormalized or _ast->isSymbolAccessedAnywhere(builtins.svViewportSizeInv.get());
-
-    const auto usesSystemValues = usesViewportSize or usesViewportSizeInv;
+    // const auto& builtins       = context.builtInSymbols();
+    const auto accessedParams = _ast->paramsAccessedByFunction(function);
 
     _callStack.add(function);
 
@@ -223,32 +215,58 @@ void MetalShaderGenerator::generateFunctionDecl(
     {
         w << "fragment float4 ps_main(" << wnewline;
         w.pad(4);
-        w << _vsOutputStructName << " " << Naming::shaderInputParam << " [[stage_in]]," << wnewline;
+        w << _vsOutputTypeName << " " << Naming::shaderInputParam << " [[stage_in]]," << wnewline;
 
-        if (usesSystemValues)
-        {
-            w.pad(4);
-            w
-                << formatString(
-                       "constant {}& {} [[buffer({})]],",
-                       _svCBufferStructName,
-                       _svCBufferParamName,
-                       CommonMetalInfo::userShaderSvCBufferIndex)
-                << wnewline;
-        }
+        w.pad(4);
+        w
+            << "constant "
+            << _systemValuesCBufferTypeName
+            << "& "
+            << _systemValuesCBufferParamName
+            << " [[buffer("
+            << MetalPainter::systemValuesCBufferSlot
+            << ")]]";
+
+        auto needSampler = false;
 
         if (_ast->isSpriteShader())
         {
+            w << ", " << wnewline;
             w.pad(4);
-            w << "texture2d<float> " << Naming::spriteBatchImageParam << " [[texture(0)]]," << wnewline;
+            w
+                << "texture2d<float> "
+                << Naming::spriteBatchImageParam
+                << " [[texture("
+                << MetalPainter::spriteImageTextureSlot
+                << ")]],"
+                << wnewline;
 
-            w.pad(4);
-            w << "sampler " << Naming::forbiddenIdentifierPrefix << "sampler [[sampler(0)]]";
+            needSampler = true;
         }
-        else if (_ast->isPolygonShader())
+        else if (_ast->isMeshShader())
+        {
+            w << ", " << wnewline;
+            w.pad(4);
+            w
+                << "texture2d<float> "
+                << Naming::meshImageParam
+                << " [[texture("
+                << MetalPainter::meshImageTextureSlot
+                << ")]],"
+                << wnewline;
+
+            needSampler = true;
+        }
+
+        if (needSampler)
         {
             w.pad(4);
-            w << "TODO(poly param)\n";
+            w
+                << "sampler "
+                << Naming::imageSamplerParam
+                << " [[sampler("
+                << MetalPainter::imageSamplerSlot
+                << ")]]";
         }
     }
 
@@ -257,10 +275,12 @@ void MetalShaderGenerator::generateFunctionDecl(
     {
         w << "," << wnewline;
         w.pad(4);
-        w << "constant " << _globalCBufferStructName << "& " << _globalCBufferParamName;
-        w << ' ' << "[[buffer(" << CommonMetalInfo::userShaderParamsCBufferIndex << ")]]";
+        w << "constant " << _userParamsCBufferTypeName << "& " << _userParamsCBufferParamName;
+        w << ' ' << "[[buffer(" << MetalPainter::userShaderParamsCBufferSlot << ")]]";
     }
 
+    // TODO:
+#if 0
     // Emit resource-based parameters in the function parameter list.
     if (not accessedParams.resources.isEmpty())
     {
@@ -299,12 +319,14 @@ void MetalShaderGenerator::generateFunctionDecl(
             w << "sampler " << Naming::forbiddenIdentifierPrefix << "sampler [[sampler(0)]]" << wnewline;
         }
     }
+#endif
 
     w << ") ";
     w.openBrace();
 
     if (function->isShader())
     {
+#if 0
         if (usesViewportSize)
         {
             w
@@ -347,7 +369,9 @@ void MetalShaderGenerator::generateFunctionDecl(
                        Naming::svViewportSizeInv)
                 << wnewline;
         }
+#endif
 
+#if 0
         if (_ast->isSpriteShader())
         {
             if (_ast->isSymbolAccessedAnywhere(builtins.svSpriteColor.get()))
@@ -382,6 +406,7 @@ void MetalShaderGenerator::generateFunctionDecl(
                     << wnewline;
             }
         }
+#endif
     }
 
     generateCodeBlock(w, function->body(), context);
@@ -438,7 +463,7 @@ void MetalShaderGenerator::generateSymAccessExpr(
     {
         if (const auto& type = param->type(); type->canBeInCbuffer())
         {
-            w << _globalCBufferParamName << '.' << name;
+            w << _userParamsCBufferParamName << '.' << name;
         }
         else
         {
@@ -448,6 +473,17 @@ void MetalShaderGenerator::generateSymAccessExpr(
     else if (is<VectorSwizzlingDecl>(symbol))
     {
         w << expr->identifier();
+    }
+    else if (
+        symbol == builtIns.svSpriteColor.get()
+        or symbol == builtIns.svPolygonColor.get()
+        or symbol == builtIns.svMeshColor.get())
+    {
+        w << Naming::shaderInputParam << ".color";
+    }
+    else if (symbol == builtIns.svSpriteUV.get() or symbol == builtIns.svMeshUV.get())
+    {
+        w << Naming::shaderInputParam << ".uv";
     }
     else if (builtIns.is_lerp_function(symbol))
     {
@@ -475,9 +511,6 @@ void MetalShaderGenerator::generateFunctionCallExpr(
         // In Metal, texture sampling is a method on the texture object.
         const auto& textureArg = args[0];
         const auto& uvArg      = args[1];
-
-        // const auto* textureSymbol = textureArg->symbol();
-        // assume(textureSymbol != nullptr);
 
         prepareExpr(w, functionCall, context);
 
@@ -525,7 +558,7 @@ void MetalShaderGenerator::generateFunctionCallExpr(
                 w << ", ";
             }
 
-            w << _globalCBufferParamName;
+            w << _userParamsCBufferParamName;
             hasAnyArgs = true;
         }
 
@@ -557,7 +590,7 @@ void MetalShaderGenerator::emitUniformBuffer(Writer& w, const AccessedParams& pa
         return;
     }
 
-    w << "struct " << _globalCBufferStructName << ' ';
+    w << "struct " << _userParamsCBufferTypeName << ' ';
     w.openBrace();
 
     for (const auto& param : params.scalars)

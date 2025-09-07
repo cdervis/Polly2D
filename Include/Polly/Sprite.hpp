@@ -13,7 +13,7 @@
 namespace Polly
 {
 /// Defines various flip factors for 2D sprites that are drawn using Painter::drawSprite().
-enum class SpriteFlip
+enum class SpriteFlip : u8
 {
     /// The sprite is drawn normally, without any flipping.
     None = 0,

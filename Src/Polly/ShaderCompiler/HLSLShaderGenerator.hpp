@@ -43,6 +43,7 @@ class HLSLShaderGenerator final : public TextBasedShaderGenerator
     static String shaderInputOutputTypeName(const Type* type);
 
     String _vsOutputStructName;
+    String _imageSamplerName;
 };
 } // namespace Polly::ShaderCompiler
 

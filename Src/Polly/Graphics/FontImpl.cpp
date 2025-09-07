@@ -6,6 +6,7 @@
 
 #include "Polly/Defer.hpp"
 #include "Polly/Game/GameImpl.hpp"
+#include "Polly/Graphics/PainterImpl.hpp"
 #include "Polly/Logging.hpp"
 #include "Polly/Narrow.hpp"
 
@@ -16,6 +17,10 @@
 
 #if polly_have_gfx_metal
 #include "Polly/Graphics/Metal/MetalImage.hpp"
+#endif
+
+#if polly_have_gfx_opengl
+#include "Polly/Graphics/OpenGL/OpenGLImage.hpp"
 #endif
 
 #if polly_have_gfx_vulkan
@@ -113,18 +118,10 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
                 RasterizedGlyphKey{
                     .codepoint = c,
                     .fontSize  = fontSize,
-                },
-                false);
+                });
         }
 
         _initializedSizes.add(fontSize);
-
-        for (const auto pageIndex : _pageImagesToUpdate)
-        {
-            updatePageAtlasImage(_pages[pageIndex]);
-        }
-
-        _pageImagesToUpdate.clear();
     }
 
     const auto key = RasterizedGlyphKey{
@@ -137,7 +134,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
         return *glyph;
     }
 
-    return rasterizeGlyph(key, true);
+    return rasterizeGlyph(key);
 }
 
 float Font::Impl::lineHeight(float fontSize) const
@@ -162,9 +159,7 @@ void Font::Impl::initialize()
     stbtt_GetFontVMetrics(&_fontInfo, &_ascent, &_descent, &_lineGap);
 }
 
-const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(
-    const RasterizedGlyphKey& key,
-    bool                      updatePageImageImmediately)
+const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGlyphKey& key)
 {
     if (_pages.isEmpty())
     {
@@ -214,110 +209,116 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(
             fontSize));
     }
 
-    BinPack::Rect insertedRect = *maybeInsertedRect;
+    auto insertedRect = *maybeInsertedRect;
     insertedRect.width -= padding;
     insertedRect.height -= padding;
 
-    const auto xInPage    = insertedRect.x;
-    const auto yInPage    = insertedRect.y;
-    const auto pageWidth  = _pages[*_currentPageIndex].width;
-    const auto dstDataIdx = (yInPage * pageWidth) + xInPage;
-
-    auto* dstData = _pages[*_currentPageIndex].atlasData.data() + dstDataIdx;
-
-    stbtt_MakeCodepointBitmap(
-        &_fontInfo,
-        dstData,
-        bitmapWidth,
-        bitmapHeight,
-        static_cast<int>(pageWidth),
-        scale,
-        scale,
-        static_cast<int>(key.codepoint));
-
-    if (updatePageImageImmediately)
+    if (bitmapWidth > 0 && bitmapHeight > 0)
     {
-        updatePageAtlasImage(_pages[*_currentPageIndex]);
-    }
-    else
-    {
-        _pageImagesToUpdate.add(*_currentPageIndex);
-    }
+        auto&      page       = _pages[*_currentPageIndex];
+        const auto xInPage    = insertedRect.x;
+        const auto yInPage    = insertedRect.y;
+        const auto pixelCount = bitmapWidth * bitmapHeight;
 
-    auto insertedPtr = _rasterizedGlyphs.add(
-        key,
-        RasterizedGlyph{
-            .uvRect    = insertedRect.toRectf(),
-            .pageIndex = *_currentPageIndex,
-        });
+        _glyphBufferU8.resizeIfGreater(pixelCount);
+        _glyphBufferRGBA.resizeIfGreater(pixelCount);
 
-    assume(insertedPtr);
+        stbtt_MakeCodepointBitmap(
+            &_fontInfo,
+            _glyphBufferU8.data(),
+            bitmapWidth,
+            bitmapHeight,
+            bitmapWidth,
+            scale,
+            scale,
+            narrow<int>(key.codepoint));
 
-    return insertedPtr->second;
-}
+        _glyphBufferRGBA.clear();
 
-void Font::Impl::appendNewPage()
-{
-    const auto caps = Game::Impl::instance().painter().capabilities();
+        // Update the RGBA buffer.
+        {
+            const auto* src = _glyphBufferU8.data();
 
-    const auto width  = min(2048u, caps.maxImageExtent);
-    const auto height = width;
-
-    auto page = FontPage{
-        .width     = width,
-        .height    = height,
-        .pack      = BinPack(width, height),
-        .atlasData = {},
-        .atlas     = Image(),
-    };
-
-    page.atlasData.resize(narrow<u32>(static_cast<size_t>(width) * static_cast<size_t>(height)));
-
-    _pages.add(std::move(page));
-
-    _currentPageIndex = _pages.size() - 1;
-}
-
-
-void Font::Impl::updatePageAtlasImage(FontPage& page)
-{
-    logVerbose("Updating font page image of size {}x{}", page.width, page.height);
-
-    if (not page.atlas)
-    {
-        logVerbose("  Reallocating page image");
-        page.atlas = Image(page.width, page.height, ImageFormat::R8Unorm, page.atlasData.data(), false);
-
-        const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());
-        page.atlas.setDebuggingLabel(imageLabel);
-    }
-    else
-    {
-        logVerbose("  Writing directly to page image");
+            for (auto i = 0; i < pixelCount; ++i)
+            {
+                _glyphBufferRGBA.add(R8G8B8A8{255, 255, 255, *src});
+                ++src;
+            }
+        }
 
 #ifdef polly_have_gfx_metal
-        const auto& metalImage = static_cast<const Polly::MetalImage&>(*page.atlas.impl());
+
+        const auto& metalImage = static_cast<const MetalImage&>(*page.atlas.impl());
         auto*       mtlTexture = metalImage.mtlTexture();
 
-        const auto rowPitch = imageRowPitch(metalImage.width(), metalImage.format());
+        mtlTexture->replaceRegion(
+            MTL::Region(xInPage, yInPage, bitmapWidth, bitmapHeight),
+            0,
+            _glyphBufferRGBA.data(),
+            imageRowPitch(bitmapWidth, metalImage.format()));
 
-        mtlTexture
-            ->replaceRegion(MTL::Region(0, 0, page.width, page.height), 0, page.atlasData.data(), rowPitch);
 #elif polly_have_gfx_d3d11
-        auto& painterImpl  = *Game::Impl::instance().painter().impl();
+
+        auto& painterImpl  = *Painter::Impl::instance();
         auto& d3d11Painter = static_cast<D3D11Painter&>(painterImpl);
 
-        auto& d3d11Image    = static_cast<const Polly::D3D11Image&>(*page.atlas.impl());
+        auto& d3d11Image    = static_cast<const D3D11Image&>(*page.atlas.impl());
         auto* id3d11Texture = d3d11Image.id3d11Texture2D();
 
-        const auto rowPitch   = imageRowPitch(d3d11Image.width(), d3d11Image.format());
-        const auto slicePitch = imageSlicePitch(d3d11Image.width(), d3d11Image.height(), d3d11Image.format());
+        const auto updateBox = D3D11_BOX{
+            .left   = UINT(xInPage),
+            .top    = UINT(yInPage),
+            .front  = 0,
+            .right  = UINT(xInPage + bitmapWidth),
+            .bottom = UINT(yInPage + bitmapHeight),
+            .back   = 1,
+        };
 
-        d3d11Painter.id3d11Context()
-            ->UpdateSubresource(id3d11Texture, 0, nullptr, page.atlasData.data(), rowPitch, slicePitch);
+        d3d11Painter.id3d11Context()->UpdateSubresource(
+            id3d11Texture,
+            0,
+            &updateBox,
+            _glyphBufferRGBA.data(),
+            bitmapWidth * sizeof(R8G8B8A8),
+            bitmapWidth * bitmapHeight * sizeof(R8G8B8A8));
+
+#elif polly_have_gfx_opengl
+
+        auto& openGLImage     = static_cast<const Polly::OpenGLImage&>(*page.atlas.impl());
+        auto  textureHandleGL = openGLImage.textureHandleGL();
+
+        auto previousTexture = GLint();
+        glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTexture);
+
+        if (GLuint(previousTexture) != textureHandleGL)
+        {
+            glBindTexture(GL_TEXTURE_2D, textureHandleGL);
+        }
+
+        defer
+        {
+            if (GLuint(previousTexture) != textureHandleGL)
+            {
+                glBindTexture(GL_TEXTURE_2D, GLuint(previousTexture));
+            }
+        };
+
+        const auto formatTriplet = openGLImage.formatTriplet();
+
+        glTexSubImage2D(
+            GL_TEXTURE_2D,
+            0,
+            xInPage,
+            yInPage,
+            bitmapWidth,
+            bitmapHeight,
+            formatTriplet.baseFormat,
+            formatTriplet.type,
+            _glyphBufferRGBA.data());
 
 #elif polly_have_gfx_vulkan
-        auto& deviceImpl   = *Game::Impl::instance().painter().impl();
+
+        auto& deviceImpl   = *Painter::Impl::instance();
         auto& vulkanDevice = static_cast<VulkanPainter&>(deviceImpl);
         auto  vmaAllocator = vulkanDevice.vmaAllocator();
         auto& vulkanImage  = static_cast<VulkanImage&>(*page.atlas.impl());
@@ -425,9 +426,43 @@ void Font::Impl::updatePageAtlasImage(FontPage& page)
                     1,
                     &imageBarrierToReadable);
             });
+
 #else
 #error "Unsupported"
 #endif
     }
+
+    auto insertedPtr = _rasterizedGlyphs.add(
+        key,
+        RasterizedGlyph{
+            .uvRect    = insertedRect.toRectf(),
+            .pageIndex = *_currentPageIndex,
+        });
+
+    assume(insertedPtr);
+
+    return insertedPtr->second;
+}
+
+void Font::Impl::appendNewPage()
+{
+    const auto caps = Painter::Impl::instance()->capabilities();
+
+    const auto width  = min(512u, caps.maxImageExtent);
+    const auto height = width;
+
+    auto page = FontPage{
+        .width  = width,
+        .height = height,
+        .pack   = BinPack(width, height),
+        .atlas  = Image(width, height, ImageFormat::R8G8B8A8UNorm, nullptr, false),
+    };
+
+    const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());
+    page.atlas.setDebuggingLabel(imageLabel);
+
+    _pages.add(std::move(page));
+
+    _currentPageIndex = _pages.size() - 1;
 }
 } // namespace Polly
