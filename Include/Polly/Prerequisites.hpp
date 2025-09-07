@@ -163,7 +163,8 @@ static_assert(sizeof(i64) == 8);
     static constexpr bool hasFlag(enumName value, enumName toTest)                                           \
     {                                                                                                        \
         return (value & toTest) == toTest;                                                                   \
-    }
+    }                                                                                                        \
+    static_assert(true, "")
 
 #ifndef __has_cpp_attribute
 #define PollyLifetimeBound
