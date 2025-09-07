@@ -28,7 +28,7 @@ struct MyGame final : Game
     }
 
     // Perform ImGui stuff.
-    void onImGui(ImGui& imgui) override
+    void onImGui(ImGui imgui) override
     {
         if (imgui.button("Click me!"))
         {
