@@ -41,11 +41,9 @@ foreach (dir ${src_sub_dirs})
     file(GLOB module_header_files CONFIGURE_DEPENDS "${module_dir}/*.hpp")
     file(GLOB module_source_files CONFIGURE_DEPENDS "${module_dir}/*.cpp")
 
-    target_sources(Polly
-        PRIVATE FILE_SET HEADERS
-        BASE_DIRS ${module_dir}
-        FILES ${module_header_files}
-        PRIVATE ${module_header_files} ${module_source_files}
+    target_sources(Polly PRIVATE
+        ${module_header_files}
+        ${module_source_files}
     )
 
     if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${module_dir}/CMakeLists.txt")

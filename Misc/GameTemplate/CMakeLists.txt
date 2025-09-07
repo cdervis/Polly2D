@@ -1,5 +1,5 @@
 # CMake script for the game
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.18)
 
 # CMake options for the game:
 option(GAME_STRICT_WARNINGS "Enable strict compiler warnings?" ON)

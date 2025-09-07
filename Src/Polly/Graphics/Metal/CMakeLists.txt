@@ -3,9 +3,9 @@ file(GLOB metal_source_files CONFIGURE_DEPENDS "*.cpp")
 file(GLOB metal_objc_files CONFIGURE_DEPENDS "*.mm")
 
 target_sources(Polly PRIVATE
-        FILE_SET HEADERS
-        FILES ${metal_header_files}
-        PRIVATE ${metal_source_files} ${metal_objc_files}
+    ${metal_header_files}
+    ${metal_source_files}
+    ${metal_objc_files}
 )
 
 set_source_files_properties(

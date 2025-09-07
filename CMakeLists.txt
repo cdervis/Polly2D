@@ -2,7 +2,7 @@
 # This file is part of Polly, a lightweight 2D Game Framework for C++.
 # For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.18)
 
 include(Misc/Version.cmake)
 
