@@ -6,15 +6,15 @@ endif ()
 if (polly_have_gfx_d3d11)
     polly_log("Enabling D3D11 support")
     add_subdirectory(D3D11)
-endif()
+endif ()
 
 if (polly_have_gfx_opengl)
     polly_log("Enabling OpenGL support")
     add_subdirectory(OpenGL)
-endif()
+endif ()
 
 if (polly_have_gfx_vulkan)
-    polly_log("Enabling Vulkan support")
+    polly_warn("Vulkan support is experimental and incomplete. The currently recommended backend is OpenGL.")
     add_subdirectory(Vulkan)
 endif ()
 

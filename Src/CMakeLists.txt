@@ -2,13 +2,7 @@
 # This file is part of Polly, a 2D C++ game framework for minimalists.
 # For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
-if (APPLE)
-    set(polly_have_gfx_metal TRUE)
-elseif (WIN32)
-    set(polly_have_gfx_d3d11 TRUE)
-else()
-    set(polly_have_gfx_opengl TRUE)
-endif ()
+include(GraphicsAPISelection.cmake)
 
 add_library(Polly STATIC)
 target_compile_features(Polly PUBLIC cxx_std_20)
