@@ -34,7 +34,7 @@ ReadableFile::Impl::Impl(StringView filename)
 
     auto* prefPath = SDL_GetPrefPath(companyName.data(), gameTitle.data());
 
-    if (not prefPath)
+    if (!prefPath)
     {
         throw Error(formatString("Failed to open readable file '{}'.", filename));
     }
@@ -51,7 +51,7 @@ ReadableFile::Impl::Impl(StringView filename)
     {
         auto* ifs = SDL_IOFromFile(_fullFilename.cstring(), "rb");
 
-        if (not ifs)
+        if (!ifs)
         {
             throw Error(formatString("Failed to open file '{}' for reading.", _fullFilename));
         }
@@ -61,7 +61,7 @@ ReadableFile::Impl::Impl(StringView filename)
             SDL_CloseIO(ifs);
         };
 
-        _bufferSize = static_cast<u32>(SDL_GetIOSize(ifs));
+        _bufferSize = u32(SDL_GetIOSize(ifs));
         _buffer.resize(_bufferSize);
 
         SDL_ReadIO(ifs, _buffer.data(), _bufferSize);

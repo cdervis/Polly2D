@@ -169,7 +169,7 @@ UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, S
         {
             const auto maybeEntryPointDecl = ast.findDeclByName(ShaderCompiler::Naming::shaderEntryPoint);
 
-            if (not maybeEntryPointDecl)
+            if (!maybeEntryPointDecl)
             {
                 throw Error("Entry point not found.");
             }
@@ -177,7 +177,7 @@ UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, S
             const auto* entryPointDecl = maybeEntryPointDecl->get();
             const auto* entryPointFunc = as<ShaderCompiler::FunctionDecl>(entryPointDecl);
 
-            if (not entryPointFunc)
+            if (!entryPointFunc)
             {
                 throw Error("The entry point must be a function.");
             }
@@ -246,7 +246,7 @@ void Painter::Impl::notifyShaderParamHasChangedWhileBound(const Shader::Impl& sh
 
 void Painter::Impl::notifyResourceCreated(GraphicsResource& resource)
 {
-    assume(not containsWhere(_resources, [&resource](const auto& e) { return e == &resource; }));
+    assume(!containsWhere(_resources, [&resource](const auto& e) { return e == &resource; }));
 
     _resources.add(&resource);
 }
@@ -334,7 +334,7 @@ Image Painter::Impl::currentCanvas() const
 
 void Painter::Impl::setCanvas(Image canvas, Maybe<Color> clearColor, bool force)
 {
-    if (_currentCanvas != canvas or force)
+    if (_currentCanvas != canvas || force)
     {
         flush();
         onBeforeCanvasChanged(_currentCanvas, _viewport);
@@ -407,12 +407,12 @@ void Painter::Impl::setTransformation(const Matrix& transformation)
 
 Shader& Painter::Impl::currentShader(BatchMode mode)
 {
-    return _currentShaders[static_cast<int>(mode)];
+    return _currentShaders[int(mode)];
 }
 
 const Shader& Painter::Impl::currentShader(BatchMode mode) const
 {
-    return _currentShaders[static_cast<int>(mode)];
+    return _currentShaders[int(mode)];
 }
 
 void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
@@ -729,7 +729,7 @@ void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
                 });
         }
 
-        setBlendState(sSpineBlendStateTable[static_cast<int>(command->blendMode)]);
+        setBlendState(sSpineBlendStateTable[int(command->blendMode)]);
         drawMesh(vertices, Span(command->indices, command->numIndices), texture);
 
         command = command->next;
@@ -885,7 +885,7 @@ void Painter::Impl::flush()
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
-    if (not frameData.batchMode)
+    if (!frameData.batchMode)
     {
         return;
     }
@@ -912,8 +912,8 @@ void Painter::Impl::flush()
 
             const auto& imageImpl = static_cast<const Image::Impl&>(*frameData.spriteBatchImage);
 
-            const auto imageWidthf  = static_cast<float>(imageImpl.width());
-            const auto imageHeightf = static_cast<float>(imageImpl.height());
+            const auto imageWidthf  = float(imageImpl.width());
+            const auto imageHeightf = float(imageImpl.height());
 
             flushSprites(
                 frameData.spriteQueue,
@@ -976,7 +976,7 @@ void Painter::Impl::flush()
 }
 bool Painter::Impl::mustIndirectlyFlush(const FrameData& frameData) const
 {
-    return (frameData.dirtyFlags bitand DF_UserShaderParams) == DF_UserShaderParams;
+    return (frameData.dirtyFlags & DF_UserShaderParams) == DF_UserShaderParams;
 }
 
 Matrix Painter::Impl::computeViewportTransformation(const Rectangle& viewport)

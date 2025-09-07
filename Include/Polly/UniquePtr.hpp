@@ -25,13 +25,11 @@ class UniquePtr
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     UniquePtr(std::nullptr_t)
         : UniquePtr()
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     UniquePtr(Details::NoObjectTag)
         : UniquePtr()
     {
@@ -53,7 +51,6 @@ class UniquePtr
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<typename U>
     requires(std::convertible_to<U*, T*>)
     UniquePtr(UniquePtr<U>&& moveFrom) noexcept

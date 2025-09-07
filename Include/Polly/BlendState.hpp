@@ -19,7 +19,7 @@ enum class ColorWriteMask
     Green = 2, /// Allow writes to the green channel.
     Blue  = 4, /// Allow writes to the blue channel.
     Alpha = 8, /// Allow writes to the alpha channel.
-    All   = Red bitor Green bitor Blue bitor Alpha, /// Allow writes to all RGBA channels.
+    All   = Red | Green | Blue | Alpha, /// Allow writes to all RGBA channels.
 };
 
 PollyDefineEnumFlagOperations(ColorWriteMask);
@@ -82,7 +82,7 @@ enum class Blend
     BlendFactor,
 
     /// Each component is multiplied by the inverse of the color specified by
-    /// `BlendState::blendFactor`.
+    /// BlendState::blendFactor.
     InvBlendFactor,
 
     /// Each component is multiplied by the greater value between the alpha value of the

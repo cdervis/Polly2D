@@ -47,7 +47,6 @@ class Image
     ///                 Images should be static in order to improve access performance, unless
     ///                 there's a need to update them after creation.
     ///
-    /// @throw ArgumentError If invalid extents or an invalid format was specified.
     /// @throw Error If the image couldn't be created due to a backend error.
     explicit Image(u32 width, u32 height, ImageFormat format, const void* data, bool isStatic = true);
 

@@ -30,12 +30,12 @@ OpenGLShaderProgram::OpenGLShaderProgram(GLuint vertexShaderHandleGL, GLuint fra
     auto success = GLint();
     glGetProgramiv(_handleGL, GL_LINK_STATUS, &success);
 
-    if (not success)
+    if (!success)
     {
         auto logLength = GLint();
         glGetProgramiv(_handleGL, GL_INFO_LOG_LENGTH, &logLength);
 
-        auto errorBuffer = List<GLchar>(static_cast<u32>(logLength) + 1);
+        auto errorBuffer = List<GLchar>(u32(logLength) + 1);
         glGetProgramInfoLog(_handleGL, static_cast<GLsizei>(logLength), nullptr, errorBuffer.data());
 
         const auto errorMessage =

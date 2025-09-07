@@ -130,7 +130,7 @@ void Sound::Impl::setSpeechParams(SoundSpeech params)
 
     auto* speech = static_cast<SoLoud::Speech*>(_soloudAudioSource.get());
 
-    const auto waveform = [value = params.aBaseWaveform]() -> Maybe<int>
+    const auto waveform = [value = params.baseWaveform]() -> Maybe<int>
     {
         switch (value)
         {
@@ -148,8 +148,8 @@ void Sound::Impl::setSpeechParams(SoundSpeech params)
 
     speech->setParams(
         params.baseFrequency,
-        params.aBaseSpeed,
-        params.aBaseDeclination,
+        params.baseSpeed,
+        params.baseDeclination,
         waveform.valueOr(KW_SQUARE));
 }
 

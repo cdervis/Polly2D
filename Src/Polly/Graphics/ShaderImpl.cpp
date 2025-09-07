@@ -117,7 +117,7 @@ const ShaderParameter* Shader::Impl::findParameter(const StringView name) const
 
 bool Shader::Impl::hasDirtyParameters() const
 {
-    return not _dirtyScalarParameters.isEmpty();
+    return !_dirtyScalarParameters.isEmpty();
 }
 
 const SortedSet<const ShaderParameter*>& Shader::Impl::dirtyScalarParameters() const

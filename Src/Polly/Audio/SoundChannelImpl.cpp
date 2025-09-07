@@ -17,7 +17,7 @@ SoundChannel::Impl::Impl(AudioDevice::Impl& audioDevice, SoLoud::handle handle)
 
 int SoundChannel::Impl::id() const
 {
-    return static_cast<int>(_soloudHandle);
+    return int(_soloudHandle);
 }
 
 bool SoundChannel::Impl::isPaused() const

@@ -41,6 +41,12 @@ Sound::Sound(SoundSpeech speechParams, StringView speechText)
     setImpl(*this, makeUnique<Impl>(audioDeviceImpl, speechParams, speechText).release());
 }
 
+SoundType Sound::type() const
+{
+    PollyDeclareThisImpl;
+    return impl->type();
+}
+
 void Sound::stop()
 {
     PollyDeclareThisImpl;

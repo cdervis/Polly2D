@@ -410,7 +410,7 @@ class ListBase
     template<typename Container>
     void assignWithRange(Container&& container)
     {
-        assignWithIterators(container.begin(), container.end(), static_cast<u32>(container.size()));
+        assignWithIterators(container.begin(), container.end(), u32(container.size()));
     }
 
     template<typename Iterator>
@@ -557,7 +557,7 @@ class ListBase
         if (uninitializedCount() < count)
         {
             // Reallocate.
-            const auto offset   = static_cast<u32>(pos - beginPtr());
+            const auto offset   = u32(pos - beginPtr());
             const auto new_size = size() + count;
 
             // The check is handled by the if-guard.
@@ -580,7 +580,7 @@ class ListBase
         // If we have fewer to insert than tailing elements after `pos`, we shift into
         // uninitialized and then copy over.
 
-        if (const auto tail_size = static_cast<u32>(endPtr() - pos); tail_size < count)
+        if (const auto tail_size = u32(endPtr() - pos); tail_size < count)
         {
             // The number inserted is larger than the number after `pos`,
             // so part of the input will be used to construct new elements,
@@ -628,7 +628,7 @@ class ListBase
         if (uninitializedCount() < num_insert)
         {
             // Reallocate.
-            const auto offset   = static_cast<u32>(pos - beginPtr());
+            const auto offset   = u32(pos - beginPtr());
             const auto new_size = size() + num_insert;
 
             // The check is handled by the if-guard.
@@ -650,7 +650,7 @@ class ListBase
 
         // if we have fewer to insert than tailing elements after
         // `pos` we shift into uninitialized and then copy over
-        if (const auto tail_size = static_cast<u32>(endPtr() - pos); tail_size < num_insert)
+        if (const auto tail_size = u32(endPtr() - pos); tail_size < num_insert)
         {
             // Use the same method as InsertCopies.
             auto* original_end = endPtr();
@@ -759,7 +759,7 @@ class ListBase
     template<typename... Args>
     T* emplaceIntoReallocation(T* pos, Args&&... args)
     {
-        const auto offset = static_cast<u32>(pos - beginPtr());
+        const auto offset = u32(pos - beginPtr());
 
         if (offset == size())
         {
@@ -793,7 +793,7 @@ class ListBase
 
         // The rest runs only if allocated.
 
-        auto newCapacity = static_cast<u32>(0);
+        auto newCapacity = u32(0);
         T*   newDataPtr  = nullptr;
 
         if (size() > InlineCapacity)
@@ -925,7 +925,7 @@ class ListBase
     {
         assumeWithMsg(0 <= endPtr() - pos, "`pos` was in the uninitialized range");
 
-        if (const auto change = static_cast<u32>(endPtr() - pos))
+        if (const auto change = u32(endPtr() - pos))
         {
             decreaseSize(change);
             destroyRange(pos, pos + change);

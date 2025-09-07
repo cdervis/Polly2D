@@ -17,7 +17,7 @@ AudioDevice::Impl::Impl(bool useNullDevice)
         SoLoud::Soloud::CLIP_ROUNDOFF,
         useNullDevice ? SoLoud::Soloud::NULLDRIVER : SoLoud::Soloud::AUTO);
 
-    if (result != 0 and not useNullDevice)
+    if (result != 0 && !useNullDevice)
     {
         logWarning("Failed to initialize the audio device; falling back to null-audio device.");
         result = _soloudDevice.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::NULLDRIVER);
@@ -44,7 +44,7 @@ SoundChannel AudioDevice::Impl::playSound(
     const bool       startPaused,
     Maybe<SoundTime> delay)
 {
-    if (not sound)
+    if (!sound)
     {
         throw Error("No sound specified.");
     }
@@ -70,7 +70,7 @@ SoundChannel AudioDevice::Impl::playSound(
 
 void AudioDevice::Impl::playSoundOnce(Sound sound, float volume, float pan, Maybe<SoundTime> delay)
 {
-    if (not sound)
+    if (!sound)
     {
         return;
     }
@@ -91,7 +91,7 @@ void AudioDevice::Impl::playSoundOnce(Sound sound, float volume, float pan, Mayb
 
 SoundChannel AudioDevice::Impl::playSoundInBackground(Sound sound, const float volume, const bool startPaused)
 {
-    if (not sound)
+    if (!sound)
     {
         return none;
     }

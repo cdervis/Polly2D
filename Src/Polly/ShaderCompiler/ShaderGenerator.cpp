@@ -55,7 +55,7 @@ List<const Decl*> ShaderGenerator::gatherASTDeclarationsToGenerate(
 
     // Remove non-top-level symbols
     accessedSymbols.removeAllWhere([&](const auto& symbol)
-                                   { return not ast.isTopLevelSymbol(context, symbol); });
+                                   { return !ast.isTopLevelSymbol(context, symbol); });
 
     auto declsToGenerate = List<const Decl*>();
     declsToGenerate.reserve(accessedSymbols.size() + 1);

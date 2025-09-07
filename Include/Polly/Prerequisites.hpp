@@ -38,7 +38,7 @@ static_assert(sizeof(i64) == 8);
 /// Every object stores at most a single pointer, which points to an instance of its
 /// implementation in the free store (heap).
 ///
-/// @attention The reference counting mechanism for Polly objects is **not** thread-safe.
+/// @attention The reference counting mechanism for Polly objects is not thread-safe.
 #define PollyObject(className)                                                                               \
   public:                                                                                                    \
     class Impl;                                                                                              \
@@ -150,15 +150,15 @@ static_assert(sizeof(i64) == 8);
 #define PollyDefineEnumFlagOperations(enumName)                                                              \
     static constexpr enumName operator&(enumName lhs, enumName rhs)                                          \
     {                                                                                                        \
-        return static_cast<enumName>(static_cast<int>(lhs) & static_cast<int>(rhs));                         \
+        return enumName(int(lhs) & int(rhs));                                                                \
     }                                                                                                        \
     static constexpr enumName operator|(enumName lhs, enumName rhs)                                          \
     {                                                                                                        \
-        return static_cast<enumName>(static_cast<int>(lhs) | static_cast<int>(rhs));                         \
+        return enumName(int(lhs) | int(rhs));                                                                \
     }                                                                                                        \
     static constexpr void operator|=(enumName& lhs, enumName rhs)                                            \
     {                                                                                                        \
-        lhs = lhs bitor rhs;                                                                                 \
+        lhs = lhs | rhs;                                                                                     \
     }                                                                                                        \
     static constexpr bool hasFlag(enumName value, enumName toTest)                                           \
     {                                                                                                        \

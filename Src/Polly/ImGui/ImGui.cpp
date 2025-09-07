@@ -13,82 +13,82 @@ namespace Polly
 {
 static ImGuiWindowFlags convert(ImGuiWindowOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiFocusedFlags convert(ImGuiFocusedOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiHoveredFlags convert(ImGuiHoveredOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiCond convert(ImGuiCondition value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiButtonFlags convert(ImGuiButtonOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiDir convert(Direction value)
 {
-    return static_cast<ImGuiDir>(static_cast<int>(value));
+    return static_cast<ImGuiDir>(int(value));
 }
 
 static ImGuiComboFlags convert(ImGuiComboOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiSliderFlags convert(ImGuiSliderOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiInputTextFlags convert(ImGuiInputTextOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiColorEditFlags convert(ImGuiColorEditOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiSelectableFlags convert(ImGuiSelectableOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiTableFlags convert(ImGuiTableOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiTreeNodeFlags convert(ImGuiTreeNodeOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiTableRowFlags convert(ImGuiTableRowOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiChildFlags convert(ImGuiChildOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiTableColumnFlags convert(ImGuiTableColumnOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static ImGuiMouseButton convert(const MouseButton value)
@@ -107,7 +107,7 @@ static ImGuiMouseButton convert(const MouseButton value)
 
 static ImGuiPopupFlags convert(ImGuiPopupOpts value)
 {
-    return static_cast<int>(value);
+    return int(value);
 }
 
 static Vec2 convert(ImVec2 value)
@@ -527,8 +527,8 @@ bool ImGui::combo(
         label.data(),
         &currentItem,
         impl->tmpStringPtrLists.last().ptrs.data(),
-        static_cast<int>(items.size()),
-        static_cast<int>(height));
+        int(items.size()),
+        int(height));
 }
 
 bool ImGui::drag(
@@ -981,8 +981,8 @@ bool ImGui::listBox(StringView label, int& currentItem, Span<StringView> items, 
         label.data(),
         &currentItem,
         impl->tmpStringPtrLists.last().ptrs.data(),
-        static_cast<int>(items.size()),
-        static_cast<int>(height));
+        int(items.size()),
+        int(height));
 }
 
 void ImGui::value(StringView prefix, bool value)
@@ -1166,7 +1166,7 @@ bool ImGui::beginTable(
 
     return ::ImGui::BeginTable(
         id.data(),
-        static_cast<int>(columns),
+        int(columns),
         convert(flags),
         convert(outerSize.valueOr(Vec2())),
         innerWidth.valueOr(0.0f));
@@ -1205,7 +1205,7 @@ void ImGui::tableSetupColumn(StringView label, ImGuiTableColumnOpts flags)
 void ImGui::tableSetupScrollFreeze(u32 cols, u32 rows)
 {
     PollyVerifyHaveImpl;
-    ::ImGui::TableSetupScrollFreeze(static_cast<int>(cols), static_cast<int>(rows));
+    ::ImGui::TableSetupScrollFreeze(int(cols), int(rows));
 }
 
 void ImGui::tableHeader(StringView label)

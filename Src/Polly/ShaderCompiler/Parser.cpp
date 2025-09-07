@@ -158,13 +158,13 @@ Ast::DeclList Parser::parse(MutableSpan<Token> tokens)
 
     auto decls = Ast::DeclList();
 
-    while (not isAtEnd())
+    while (!isAtEnd())
     {
         parser_push_tk;
 
         auto decl = parseDeclAtGlobalScope();
 
-        if (not decl)
+        if (!decl)
         {
             throw ShaderCompileError(_tokenStack.last()->location, "Invalid declaration at global scope.");
         }
@@ -172,8 +172,8 @@ Ast::DeclList Parser::parse(MutableSpan<Token> tokens)
         const auto [is_decl_allowed_at_global_scope, is_mutable_variable] = [&decl]
         {
             if (as<ShaderParamDecl>(decl.get())
-                or as<FunctionDecl>(decl.get())
-                or as<ShaderTypeDecl>(decl.get()))
+                || as<FunctionDecl>(decl.get())
+                || as<ShaderTypeDecl>(decl.get()))
             {
                 return Pair(true, false);
             }
@@ -186,7 +186,7 @@ Ast::DeclList Parser::parse(MutableSpan<Token> tokens)
             return Pair(false, false);
         }();
 
-        if (not is_decl_allowed_at_global_scope)
+        if (!is_decl_allowed_at_global_scope)
         {
             if (is_mutable_variable)
             {
@@ -291,7 +291,7 @@ UniquePtr<Statement> Parser::parseStmt()
     auto                 lhs  = UniquePtr<Expr>{};
     UniquePtr<Statement> stmt = parseCompoundAssignment(&lhs);
 
-    if (not stmt and not isAtEnd() and _token->is(TokenType::Equal))
+    if (!stmt && !isAtEnd() && _token->is(TokenType::Equal))
     {
         stmt = parseAssignment(std::move(lhs));
     }
@@ -305,7 +305,7 @@ UniquePtr<Expr> Parser::parseExpr(UniquePtr<Expr> lhs, int minPrecedence, String
 
     const auto fail = [this, &name]
     {
-        if (not name.isEmpty())
+        if (!name.isEmpty())
         {
             throw ShaderCompileError(_token->location, formatString("Expected a {}.", name));
         }
@@ -313,11 +313,11 @@ UniquePtr<Expr> Parser::parseExpr(UniquePtr<Expr> lhs, int minPrecedence, String
         return UniquePtr<Expr>{};
     };
 
-    if (not lhs)
+    if (!lhs)
     {
         lhs = parsePrimaryExpr();
 
-        if (not lhs)
+        if (!lhs)
         {
             return fail();
         }
@@ -327,7 +327,7 @@ UniquePtr<Expr> Parser::parseExpr(UniquePtr<Expr> lhs, int minPrecedence, String
     auto lookaheadLocation     = SourceLocation();
     auto lookaheadOpPrecedence = getBinOpPrecedence(lookahead);
 
-    while (lookaheadOpPrecedence and *lookaheadOpPrecedence >= minPrecedence)
+    while (lookaheadOpPrecedence && *lookaheadOpPrecedence >= minPrecedence)
     {
         const auto op           = *getTokenTypeToBinOpKind(lookahead);
         const auto opPrecedence = *lookaheadOpPrecedence;
@@ -336,7 +336,7 @@ UniquePtr<Expr> Parser::parseExpr(UniquePtr<Expr> lhs, int minPrecedence, String
 
         auto rhs = parsePrimaryExpr();
 
-        if (not rhs)
+        if (!rhs)
         {
             return fail();
         }
@@ -345,11 +345,11 @@ UniquePtr<Expr> Parser::parseExpr(UniquePtr<Expr> lhs, int minPrecedence, String
         lookaheadLocation     = _token->location;
         lookaheadOpPrecedence = getBinOpPrecedence(lookahead);
 
-        while (lookaheadOpPrecedence and *lookaheadOpPrecedence > opPrecedence)
+        while (lookaheadOpPrecedence && *lookaheadOpPrecedence > opPrecedence)
         {
             rhs = parseExpr(std::move(rhs), opPrecedence + 1, name);
 
-            if (not rhs)
+            if (!rhs)
             {
                 return fail();
             }
@@ -426,7 +426,7 @@ UniquePtr<Expr> Parser::parsePrimaryExpr()
 
             auto indexExpr = parseExpr({}, 0, {});
 
-            if (not indexExpr)
+            if (!indexExpr)
             {
                 return nullptr;
             }
@@ -475,11 +475,11 @@ UniquePtr<FunctionDecl> Parser::parseFunction(
 
     auto params = FunctionDecl::param_list();
 
-    while (not isAtEnd() and not _token->is(TokenType::RightParen))
+    while (!isAtEnd() && !_token->is(TokenType::RightParen))
     {
         params.add(parseFunctionParameter());
 
-        if (not _token->is(TokenType::Comma))
+        if (!_token->is(TokenType::Comma))
         {
             break;
         }
@@ -510,7 +510,7 @@ UniquePtr<CompoundAssignment> Parser::parseCompoundAssignment(UniquePtr<Expr>* p
 
     auto lhs = parseExpr({}, 0, {});
 
-    if (not lhs)
+    if (!lhs)
     {
         return nullptr;
     }
@@ -544,7 +544,7 @@ UniquePtr<CompoundAssignment> Parser::parseCompoundAssignment(UniquePtr<Expr>* p
         return none;
     }();
 
-    if (not kind)
+    if (!kind)
     {
         return nullptr;
     }
@@ -553,7 +553,7 @@ UniquePtr<CompoundAssignment> Parser::parseCompoundAssignment(UniquePtr<Expr>* p
 
     auto rhs = parseExpr({}, 0, {});
 
-    if (not rhs)
+    if (!rhs)
     {
         return nullptr;
     }
@@ -574,11 +574,11 @@ UniquePtr<Assignment> Parser::parseAssignment(UniquePtr<Expr> lhs)
 {
     parser_push_tk;
 
-    if (not lhs)
+    if (!lhs)
     {
         lhs = parseExpr({}, 0, {});
 
-        if (not lhs)
+        if (!lhs)
         {
             return nullptr;
         }
@@ -586,14 +586,14 @@ UniquePtr<Assignment> Parser::parseAssignment(UniquePtr<Expr> lhs)
 
     assume(lhs != nullptr);
 
-    if (not consume(TokenType::Equal, false))
+    if (!consume(TokenType::Equal, false))
     {
         return nullptr;
     }
 
     auto rhs = parseExpr(none, 0, none);
 
-    if (not rhs)
+    if (!rhs)
     {
         throw ShaderCompileError(
             (_token - 1)->location,
@@ -613,7 +613,7 @@ UniquePtr<ReturnStmt> Parser::parseReturnStatement()
 
     auto expr = parseExpr(none, 0, none);
 
-    if (not expr)
+    if (!expr)
     {
         return nullptr;
     }
@@ -640,7 +640,7 @@ UniquePtr<ForStmt> Parser::parseForStatement()
 
     auto range = parseRangeExpression();
 
-    if (not range)
+    if (!range)
     {
         throw ShaderCompileError(_token->location, "Expected a range expression.");
     }
@@ -670,7 +670,7 @@ UniquePtr<IfStmt> Parser::parseIfStatement(bool isIf)
 
         condition = parseExpr({}, 0, {});
 
-        if (not condition)
+        if (!condition)
         {
             throw ShaderCompileError(_token->location, "Expected a condition expression.");
         }
@@ -685,7 +685,7 @@ UniquePtr<IfStmt> Parser::parseIfStatement(bool isIf)
     {
         next = parseIfStatement(consumeKeyword(keyword::sIf, false));
 
-        if (not next)
+        if (!next)
         {
             throw ShaderCompileError(_token->location, "Expected a consecutive if-statement.");
         }
@@ -709,7 +709,7 @@ UniquePtr<VarStmt> Parser::parseVariableStatement()
 
     auto expr = parseExpr({}, 0, {});
 
-    if (not expr)
+    if (!expr)
     {
         throw ShaderCompileError(_token->location, "Expected a variable statement expression.");
     }
@@ -723,7 +723,7 @@ UniquePtr<ArrayExpr> Parser::parseArrayExpression()
 {
     parser_push_tk;
 
-    if (not consume(TokenType::LeftBracket, false))
+    if (!consume(TokenType::LeftBracket, false))
     {
         return nullptr;
     }
@@ -743,7 +743,7 @@ UniquePtr<RangeExpr> Parser::parseRangeExpression()
 
     auto start = parseExpr(none, 0, none);
 
-    if (not start)
+    if (!start)
     {
         return none;
     }
@@ -752,7 +752,7 @@ UniquePtr<RangeExpr> Parser::parseRangeExpression()
 
     auto end = parseExpr(none, 0, none);
 
-    if (not end)
+    if (!end)
     {
         throw ShaderCompileError(
             _token->location,
@@ -779,7 +779,7 @@ UniquePtr<IntLiteralExpr> Parser::parseIntLiteral()
 
 UniquePtr<BoolLiteralExpr> Parser::parseBoolLiteral()
 {
-    if (isKeyword(keyword::sTrue) or isKeyword(keyword::sFalse))
+    if (isKeyword(keyword::sTrue) || isKeyword(keyword::sFalse))
     {
         const auto value    = _token->value == keyword::sTrue;
         const auto location = _token->location;
@@ -822,7 +822,7 @@ UniquePtr<UnaryOpExpr> Parser::parseUnaryOperation()
         opKind = UnaryOpKind::Negate;
     }
 
-    if (not opKind)
+    if (!opKind)
     {
         return nullptr;
     }
@@ -831,7 +831,7 @@ UniquePtr<UnaryOpExpr> Parser::parseUnaryOperation()
 
     auto expr = parsePrimaryExpr();
 
-    if (not expr)
+    if (!expr)
     {
         throw ShaderCompileError(_token->location, "Expected an expression for the unary operation.");
     }
@@ -861,18 +861,18 @@ UniquePtr<FunctionCallExpr> Parser::parseFunctionCall(UniquePtr<Expr> callee)
 
     auto args = List<UniquePtr<Expr>>();
 
-    while (not isAtEnd() and not _token->is(TokenType::RightParen))
+    while (!isAtEnd() && !_token->is(TokenType::RightParen))
     {
         auto arg = parseExpr({}, 0, {});
 
-        if (not arg)
+        if (!arg)
         {
             throw ShaderCompileError(_token->location, "Expected a function call argument.");
         }
 
         args.add(std::move(arg));
 
-        if (not _token->is(TokenType::Comma))
+        if (!_token->is(TokenType::Comma))
         {
             break;
         }
@@ -922,14 +922,14 @@ UniquePtr<ParenExpr> Parser::parseParenthesizedExpression()
 {
     parser_push_tk;
 
-    if (not consume(TokenType::LeftParen, false))
+    if (!consume(TokenType::LeftParen, false))
     {
         return {};
     }
 
     auto expr = parseExpr({}, 0, {});
 
-    if (not expr)
+    if (!expr)
     {
         throw ShaderCompileError(_token->location, "Expected an expression inside parentheses.");
     }
@@ -943,7 +943,7 @@ UniquePtr<TernaryExpr> Parser::parseTernaryExpression(UniquePtr<Expr> conditionE
 {
     assume(conditionExpr);
 
-    if (not consume(TokenType::QuestionMark, false))
+    if (!consume(TokenType::QuestionMark, false))
     {
         return {};
     }
@@ -969,12 +969,12 @@ UniquePtr<CodeBlock> Parser::parseCodeBlock()
 
     auto stmts = CodeBlock::StmtsType();
 
-    while (not isAtEnd() and not _token->is(TokenType::RightBrace))
+    while (!isAtEnd() && !_token->is(TokenType::RightBrace))
     {
         const auto backupToken = _token;
         auto       stmt        = parseStmt();
 
-        if (not stmt)
+        if (!stmt)
         {
             const auto msg = formatString(
                 "\n    expected a statement, but found '{}' instead\n"
@@ -1005,7 +1005,7 @@ const Type* Parser::parseType()
         // Array type
         auto sizeExpr = parseExpr({}, 0, {});
 
-        if (not sizeExpr)
+        if (!sizeExpr)
         {
             throw ShaderCompileError(_token->location, "Expected a size expression for the array type.");
         }
@@ -1031,7 +1031,7 @@ void Parser::advance()
 
 void Parser::expectIdentifier() const
 {
-    if (not _token->is(TokenType::Identifier))
+    if (!_token->is(TokenType::Identifier))
     {
         if (_token->is(TokenType::EndOfFile))
         {
@@ -1053,7 +1053,7 @@ StringView Parser::consumeIdentifier()
 
 bool Parser::consumeKeyword(StringView str, bool mustExist)
 {
-    if (_token->is(TokenType::Keyword) and _token->value == str)
+    if (_token->is(TokenType::Keyword) && _token->value == str)
     {
         advance();
         return true;
@@ -1069,7 +1069,7 @@ bool Parser::consumeKeyword(StringView str, bool mustExist)
 
 bool Parser::consume(TokenType type, bool mustExist, StringView msg)
 {
-    if (not _token->is(type))
+    if (!_token->is(type))
     {
         if (mustExist)
         {
@@ -1096,12 +1096,12 @@ bool Parser::consume(TokenType type, bool mustExist, StringView msg)
 
 bool Parser::isKeyword(StringView str) const
 {
-    return _token->is(TokenType::Keyword) and _token->value == str;
+    return _token->is(TokenType::Keyword) && _token->value == str;
 }
 
 bool Parser::isAtEnd() const
 {
-    return _token->is(TokenType::EndOfFile) or _token >= _tokens.end();
+    return _token->is(TokenType::EndOfFile) || _token >= _tokens.end();
 }
 
 void Parser::verifyNotEndOfFile(const SourceLocation& startLocation) const

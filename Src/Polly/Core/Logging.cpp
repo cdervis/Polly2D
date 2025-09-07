@@ -22,7 +22,7 @@ void Details::logInternal(String message, LogMessageType type)
         return;
     }
 
-    if (not isLogToWindowEnabled())
+    if (!isLogToWindowEnabled())
     {
 #if polly_platform_windows
         auto fullMsg = String();

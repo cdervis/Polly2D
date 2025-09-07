@@ -96,9 +96,9 @@ Game::Impl::Impl(const GameInitArgs& args)
 
     logVerbose("Creating game with title='{}'; audio enabled={}", args.title, args.enableAudio);
 
-    constexpr auto initFlags = SDL_INIT_VIDEO bitor SDL_INIT_JOYSTICK bitor SDL_INIT_GAMEPAD;
+    constexpr auto initFlags = SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD;
 
-    if (not SDL_Init(initFlags))
+    if (!SDL_Init(initFlags))
     {
         throw Error(formatString("Failed to initialize the windowing system. Reason: {}", SDL_GetError()));
     }
@@ -126,7 +126,7 @@ Game::Impl::Impl(const GameInitArgs& args)
     openInitialGamepads();
     initializeImGui();
     createPainter();
-    createAudioDevice(not args.enableAudio);
+    createAudioDevice(!args.enableAudio);
 
     _contentManager = makeUnique<ContentManager>();
 }
@@ -140,7 +140,7 @@ Game::Impl::~Impl() noexcept
 
 Game::Impl& Game::Impl::instance()
 {
-    if (not sGameInstance)
+    if (!sGameInstance)
     {
         throw Error("The game is not initialized yet. Please create a Game object first.");
     }
@@ -180,9 +180,8 @@ void Game::Impl::run(NotNull<Game*> backLink)
         const auto currentTime   = SDL_GetPerformanceCounter();
         const auto timeFrequency = SDL_GetPerformanceFrequency();
 
-        const auto elapsedTime = _isFirstTick ? 0.0
-                                              : static_cast<double>(currentTime - _previousTime)
-                                                    / static_cast<double>(timeFrequency);
+        const auto elapsedTime =
+            _isFirstTick ? 0.0 : double(currentTime - _previousTime) / double(timeFrequency);
 
         _previousTime = currentTime;
         _gameTime     = GameTime(elapsedTime, _gameTime.total() + elapsedTime);
@@ -204,7 +203,7 @@ void Game::Impl::run(NotNull<Game*> backLink)
             _performanceStats.framesPerSecond = _previousPerformanceStats.framesPerSecond;
         }
 
-        if (not _window.isMinimized())
+        if (!_window.isMinimized())
         {
             auto& painterImpl = *_painter.impl();
 
@@ -311,21 +310,21 @@ static DisplayMode fromSDLDisplayMode(const SDL_DisplayMode& sdlMode)
 
     return DisplayMode{
         .format       = format,
-        .width        = static_cast<u32>(sdlMode.w),
-        .height       = static_cast<u32>(sdlMode.h),
-        .refreshRate  = static_cast<float>(sdlMode.refresh_rate),
+        .width        = u32(sdlMode.w),
+        .height       = u32(sdlMode.h),
+        .refreshRate  = float(sdlMode.refresh_rate),
         .pixelDensity = sdlMode.pixel_density,
     };
 }
 
 bool Game::Impl::isAudioDeviceInitialized() const
 {
-    return static_cast<bool>(_audioDevice);
+    return bool(_audioDevice);
 }
 
 Painter& Game::Impl::painter()
 {
-    if (not _painter)
+    if (!_painter)
     {
         throw Error(
             "Attempting to load graphics resources or draw something using a Painter while no Game instance "
@@ -429,7 +428,7 @@ void Game::Impl::initializeImGui()
 
     impl->imGuiContext = ::ImGui::CreateContext();
 
-    if (not impl->imGuiContext)
+    if (!impl->imGuiContext)
     {
         throw Error("Failed to initialize the ImGui context.");
     }
@@ -737,7 +736,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
             const auto sdlJoystickId   = event.gdevice.which;
             const auto existingGamepad = findGamepadBySDLJoystickId(sdlJoystickId);
 
-            if (not existingGamepad)
+            if (!existingGamepad)
             {
                 if (auto* sdlGamepad = SDL_OpenGamepad(sdlJoystickId))
                 {
@@ -858,7 +857,7 @@ void Game::Impl::processSingleEvent(const SDL_Event& event, InputImpl& inputImpl
         case SDL_EVENT_DISPLAY_REMOVED: {
             const auto displayId = event.display.displayID;
 
-            logDebug("Display {} removed", static_cast<int>(displayId));
+            logDebug("Display {} removed", int(displayId));
 
             // Remove from our connected displays list.
             _connectedDisplays.removeAllWhere([displayId](const auto& disp) { return disp.id == displayId; });
@@ -933,7 +932,7 @@ void Game::Impl::drawOnScreenLogMessages(Painter::Impl& painterImpl)
     const auto entries = loggedOnScreenMessages();
     const auto font    = Font::builtin();
 
-    if (not entries.isEmpty())
+    if (!entries.isEmpty())
     {
         painterImpl.setBlendState(nonPremultiplied);
 
@@ -1004,11 +1003,10 @@ Display Game::Impl::createDisplayInfoObjectFromSDL(SDL_DisplayID displayId)
     auto modeList  = List<DisplayMode>();
     auto modeCount = 0;
 
-    if (auto* modes = SDL_GetFullscreenDisplayModes(displayId, &modeCount); modeCount > 0 and modes)
+    if (auto* modes = SDL_GetFullscreenDisplayModes(displayId, &modeCount); modeCount > 0 && modes)
     {
         defer
         {
-            // ReSharper disable once CppRedundantCastExpression
             SDL_free(static_cast<void*>(modes));
         };
 
@@ -1051,7 +1049,6 @@ Maybe<const Display&> Game::Impl::findDisplayBySDLDisplayId(SDL_DisplayID displa
     return findWhere(_connectedDisplays, [displayId](const auto& disp) { return disp.id == displayId; });
 }
 
-// ReSharper disable once CppMemberFunctionMayBeStatic
 void Game::Impl::onFinalActionBeforeDeath()
 {
     logVerbose("Doing final cleanup before game death");
@@ -1097,7 +1094,7 @@ void Game::Impl::createVkInstance(StringView gameName, Version gameVersion)
         auto  instanceExtensionCount = Uint32();
         auto* instanceExtensions     = SDL_Vulkan_GetInstanceExtensions(&instanceExtensionCount);
 
-        if (not instanceExtensions)
+        if (!instanceExtensions)
         {
             throw Error("Failed to query Vulkan instance extensions.");
         }
@@ -1122,7 +1119,7 @@ void Game::Impl::createVkInstance(StringView gameName, Version gameVersion)
 
     auto layersToEnable = List<const char*>();
 
-    auto layerCount = static_cast<u32>(0);
+    auto layerCount = u32(0);
     checkVkResult(
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr),
         "Failed to obtain Vulkan instance layers. This is an indication for missing Vulkan support on the "
@@ -1151,7 +1148,7 @@ void Game::Impl::createVkInstance(StringView gameName, Version gameVersion)
     }
 #endif
 
-    if (not layersToEnable.isEmpty())
+    if (!layersToEnable.isEmpty())
     {
         instanceInfo.enabledLayerCount   = layersToEnable.size();
         instanceInfo.ppEnabledLayerNames = layersToEnable.data();
@@ -1170,8 +1167,7 @@ void Game::Impl::createVkInstance(StringView gameName, Version gameVersion)
 
     logInfo("Vulkan instance created");
 
-    if (const auto func = vkGetInstanceProcAddr(_vkInstance, "vkGetPhysicalDeviceSurfaceSupportKHR");
-        not func)
+    if (const auto func = vkGetInstanceProcAddr(_vkInstance, "vkGetPhysicalDeviceSurfaceSupportKHR"); !func)
     {
         throw Error(
             "Failed to enumerate Vulkan surface support. This may be due to the system not "
@@ -1211,7 +1207,7 @@ void Game::Impl::setTargetFramerate(Maybe<float> value)
     if (value)
     {
         _timer.init();
-        _timer.setTimeBetweenFrames(static_cast<u64>(1.0 / static_cast<double>(*value) * 1'000'000'000));
+        _timer.setTimeBetweenFrames(static_cast<u64>(1.0 / double(*value) * 1'000'000'000));
     }
 }
 

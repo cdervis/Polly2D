@@ -50,14 +50,14 @@ D3D11ShaderCompiler::D3D11ShaderCompiler()
     : _d3dCompilerDllHandle(::LoadLibrary(D3DCOMPILER_DLL_A))
     , _d3dCompileFunc(nullptr)
 {
-    if (not _d3dCompilerDllHandle)
+    if (!_d3dCompilerDllHandle)
     {
         throw Error(formatString("Failed to load the D3DCompiler DLL ({})", D3DCOMPILER_DLL_A));
     }
 
     _d3dCompileFunc = reinterpret_cast<D3DCompileFunc>(::GetProcAddress(_d3dCompilerDllHandle, "D3DCompile"));
 
-    if (not _d3dCompileFunc)
+    if (!_d3dCompileFunc)
     {
         throw Error("D3DCompiler DLL does not export D3DCompile().");
     }
@@ -137,7 +137,7 @@ ComPtr<ID3DBlob> D3D11ShaderCompiler::compileHLSLShader(
     StringView nameHint)
 {
     assume(_d3dCompileFunc);
-    assume(not nameHint.isEmpty());
+    assume(!nameHint.isEmpty());
 
     auto compileFlags = 0u;
 

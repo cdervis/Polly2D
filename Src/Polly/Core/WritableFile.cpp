@@ -155,7 +155,7 @@ bool WritableFile::remove(StringView filename)
 
     auto* prefPath = SDL_GetPrefPath(companyName.data(), gameTitle.data());
 
-    if (not prefPath)
+    if (!prefPath)
     {
         return false;
     }

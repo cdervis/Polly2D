@@ -35,7 +35,7 @@ Image Painter::currentCanvas() const
 
 void Painter::setCanvas(Image canvas, Maybe<Color> clearColor)
 {
-    if (canvas and not canvas.isCanvas())
+    if (canvas && !canvas.isCanvas())
     {
         throw Error("The specified image is not a canvas.");
     }
@@ -88,9 +88,7 @@ void Painter::setPolygonShader(Shader shader)
 {
     if (shader)
     {
-        const auto& shaderImpl = *shader.impl();
-
-        if (shaderImpl.shaderType() != ShaderType::Polygon)
+        if (const auto& shaderImpl = *shader.impl(); shaderImpl.shaderType() != ShaderType::Polygon)
         {
             throw Error("The specified shader is not a polygon shader.");
         }
@@ -106,7 +104,7 @@ Sampler Painter::currentSampler() const
     return impl->currentSampler();
 }
 
-void Painter::setSampler(const Sampler& sampler)
+void Painter::setSampler(Sampler sampler)
 {
     PollyDeclareThisImpl;
     impl->setSampler(sampler);
@@ -118,31 +116,33 @@ BlendState Painter::currentBlendState() const
     return impl->currentBlendState();
 }
 
-void Painter::setBlendState(const BlendState& blendState)
+void Painter::setBlendState(BlendState blendState)
 {
     PollyDeclareThisImpl;
     impl->setBlendState(blendState);
 }
 
-void Painter::drawSprite(const Image& image, const Vec2 position, const Color color)
+void Painter::drawSprite(Image image, Vec2 position, Color color)
 {
-    if (not image)
+    if (!image)
     {
         return;
     }
 
     PollyDeclareThisImpl;
 
+    const auto imageSize = image.size();
+
     impl->drawSprite<true, true, true>(Sprite{
-        .image   = image,
-        .dstRect = Rectangle(position, image.size()),
+        .image   = std::move(image),
+        .dstRect = Rectangle(position, imageSize),
         .color   = color,
     });
 }
 
 void Painter::drawSprite(Sprite sprite)
 {
-    if (not sprite.image)
+    if (!sprite.image)
     {
         return;
     }
@@ -215,7 +215,7 @@ void Painter::drawStringWithBasicShadow(
     impl->doInternalPushTextToQueue(tmpGlyphs, tmpDecorationRects, position, color);
 }
 
-void Painter::drawText(const Text& text, Vec2 position, Color color)
+void Painter::drawText(Text text, Vec2 position, Color color)
 {
     PollyDeclareThisImpl;
 
@@ -230,7 +230,7 @@ void Painter::drawText(const Text& text, Vec2 position, Color color)
     impl->pushTextToQueue(text, position, color);
 }
 
-void Painter::drawTextWithBasicShadow(const Text& text, Vec2 position, Color color)
+void Painter::drawTextWithBasicShadow(Text text, Vec2 position, Color color)
 {
     PollyDeclareThisImpl;
 
@@ -254,48 +254,48 @@ static float clampStrokeWidth(const float width)
     return clamp(width, 1.0f, 100.0f);
 }
 
-void Painter::drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth)
+void Painter::drawRectangle(Rectangle rectangle, Color color, float strokeWidth)
 {
     PollyDeclareThisImpl;
     impl->drawRectangle(rectangle, color, clampStrokeWidth(strokeWidth));
 }
 
-void Painter::fillRectangle(const Rectangle& rectangle, const Color& color)
+void Painter::fillRectangle(Rectangle rectangle, Color color)
 {
     PollyDeclareThisImpl;
     impl->fillRectangle(rectangle, color);
 }
 
-void Painter::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
+void Painter::drawPolygon(Span<Vec2> vertices, Color color, float strokeWidth)
 {
     PollyDeclareThisImpl;
     impl->drawPolygon(vertices, color, strokeWidth);
 }
 
-void Painter::fillPolygon(Span<Vec2> vertices, const Color& color)
+void Painter::fillPolygon(Span<Vec2> vertices, Color color)
 {
     PollyDeclareThisImpl;
     impl->fillPolygon(vertices, color);
 }
 
-void Painter::drawTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color, const float strokeWidth)
+void Painter::drawTriangle(Vec2 a, Vec2 b, Vec2 c, Color color, const float strokeWidth)
 {
     PollyDeclareThisImpl;
     impl->drawPolygon(SmallList<Vec2>{a, b, c}, color, strokeWidth);
 }
 
-void Painter::fillTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color)
+void Painter::fillTriangle(Vec2 a, Vec2 b, Vec2 c, Color color)
 {
     PollyDeclareThisImpl;
     impl->fillPolygon(SmallList<Vec2>{a, b, c}, color);
 }
 
 void Painter::drawDirectedTriangle(
-    Vec2         center,
-    float        radius,
-    Direction    direction,
-    const Color& color,
-    float        strokeWidth)
+    Vec2      center,
+    float     radius,
+    Direction direction,
+    Color     color,
+    float     strokeWidth)
 {
     switch (direction)
     {
@@ -334,7 +334,7 @@ void Painter::drawDirectedTriangle(
     }
 }
 
-void Painter::fillDirectedTriangle(Vec2 center, float radius, Direction direction, const Color& color)
+void Painter::fillDirectedTriangle(Vec2 center, float radius, Direction direction, Color color)
 {
     switch (direction)
     {
@@ -369,17 +369,13 @@ void Painter::fillDirectedTriangle(Vec2 center, float radius, Direction directio
     }
 }
 
-void Painter::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
+void Painter::drawLine(Vec2 start, Vec2 end, Color color, float strokeWidth)
 {
     PollyDeclareThisImpl;
     impl->drawLine(start, end, color, clampStrokeWidth(strokeWidth));
 }
 
-void Painter::drawRoundedRectangle(
-    const Rectangle& rectangle,
-    float            cornerRadius,
-    const Color&     color,
-    float            strokeWidth)
+void Painter::drawRoundedRectangle(Rectangle rectangle, float cornerRadius, Color color, float strokeWidth)
 {
     PollyDeclareThisImpl;
     impl->drawRoundedRectangle(
@@ -389,19 +385,19 @@ void Painter::drawRoundedRectangle(
         clampStrokeWidth(strokeWidth));
 }
 
-void Painter::fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color)
+void Painter::fillRoundedRectangle(Rectangle rectangle, float cornerRadius, Color color)
 {
     PollyDeclareThisImpl;
     impl->fillRoundedRectangle(rectangle, clamp(cornerRadius, 1.0f, 100.0f), color);
 }
 
-void Painter::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
+void Painter::drawEllipse(Vec2 center, Vec2 radius, Color color, float strokeWidth)
 {
     PollyDeclareThisImpl;
     impl->drawEllipse(center, radius, color, clampStrokeWidth(strokeWidth));
 }
 
-void Painter::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
+void Painter::fillEllipse(Vec2 center, Vec2 radius, Color color)
 {
     PollyDeclareThisImpl;
     impl->fillEllipse(center, radius, color);
@@ -409,7 +405,7 @@ void Painter::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
 
 void Painter::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image image)
 {
-    if (vertices.isEmpty() or indices.isEmpty())
+    if (vertices.isEmpty() || indices.isEmpty())
     {
         return;
     }
@@ -423,7 +419,7 @@ void Painter::drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image 
 
 void Painter::drawSpineSkeleton(SpineSkeleton skeleton)
 {
-    if (not skeleton)
+    if (!skeleton)
     {
         return;
     }
@@ -432,9 +428,9 @@ void Painter::drawSpineSkeleton(SpineSkeleton skeleton)
     impl->drawSpineSkeleton(skeleton);
 }
 
-void Painter::drawParticles(const ParticleSystem& particleSystem)
+void Painter::drawParticles(ParticleSystem particleSystem)
 {
-    if (not particleSystem or particleSystem.totalActiveParticles() == 0)
+    if (!particleSystem || particleSystem.totalActiveParticles() == 0)
     {
         return;
     }

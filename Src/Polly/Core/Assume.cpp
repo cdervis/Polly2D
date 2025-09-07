@@ -27,7 +27,7 @@ void Polly::Details::assumptionViolation(
 
     if (message)
     {
-        if (const auto messageStr = StringView(message); not messageStr.isEmpty())
+        if (const auto messageStr = StringView(message); !messageStr.isEmpty())
         {
             throw Error(formatString(
                 "Assumption violated in {}, function '{}', line {}\n    Condition: {}\n    Message: {}",

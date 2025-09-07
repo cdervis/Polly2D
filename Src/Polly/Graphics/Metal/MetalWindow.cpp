@@ -75,12 +75,9 @@ void MetalWindow::updateCaMetalLayerDrawableSizeToWindowPxSize() const
     const auto currentDrawableSize = _caMetalLayer->drawableSize();
     const auto windowSizePx        = sizePx();
 
-    if (currentDrawableSize.width != windowSizePx.x or currentDrawableSize.height != windowSizePx.y)
+    if (currentDrawableSize.width != windowSizePx.x || currentDrawableSize.height != windowSizePx.y)
     {
-        logVerbose(
-            "Resizing MetalWindow to {}x{}",
-            static_cast<int>(windowSizePx.x),
-            static_cast<int>(windowSizePx.y));
+        logVerbose("Resizing MetalWindow to {}x{}", int(windowSizePx.x), int(windowSizePx.y));
 
         _caMetalLayer->setDrawableSize(CGSizeMake(windowSizePx.x, windowSizePx.y));
     }

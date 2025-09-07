@@ -2,9 +2,6 @@
 // This file is part of Polly.
 // For conditions of distribution and use, see copyright notice in LICENSE, or https://polly2d.org.
 
-// ReSharper disable CppDFAUnreachableCode
-// ReSharper disable CppDFAConstantConditions
-
 #include "Polly/PlatformInfo.hpp"
 
 #include "Polly/Core/PlatformDetection.hpp"
@@ -37,11 +34,10 @@ bool Platform::isDesktop()
     const auto platform = current();
 
     return platform == TargetPlatform::Windows
-           or platform == TargetPlatform::macOS
-           or platform == TargetPlatform::Linux;
+           || platform == TargetPlatform::macOS
+           || platform == TargetPlatform::Linux;
 }
 
-// ReSharper disable once CppDFAConstantFunctionResult
 bool Platform::isMobile()
 {
     return current() == TargetPlatform::Android;

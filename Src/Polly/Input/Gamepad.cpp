@@ -27,7 +27,7 @@ Maybe<StringView> Gamepad::serialNumber() const
 float Gamepad::axisValue(GamepadAxis axis) const
 {
     PollyDeclareThisImpl;
-    return static_cast<float>(impl->axisValue(axis));
+    return float(impl->axisValue(axis));
 }
 
 bool Gamepad::isButtonDown(GamepadButton button) const
@@ -38,7 +38,7 @@ bool Gamepad::isButtonDown(GamepadButton button) const
 
 bool Gamepad::isButtonUp(GamepadButton button) const
 {
-    return not isButtonDown(button);
+    return !isButtonDown(button);
 }
 
 Maybe<Array<float, 8>> Gamepad::sensorData(GamepadSensorType sensor) const
@@ -52,7 +52,7 @@ Maybe<GamepadAccelerationSensorData> Gamepad::accelerationSensorData() const
     PollyDeclareThisImpl;
     const auto maybeData = impl->sensorData(GamepadSensorType::Acceleration);
 
-    if (not maybeData)
+    if (!maybeData)
     {
         return none;
     }
@@ -69,7 +69,7 @@ Maybe<GamepadGyroscopeData> Gamepad::gyroscopeData() const
     PollyDeclareThisImpl;
     const auto maybeData = impl->sensorData(GamepadSensorType::Acceleration);
 
-    if (not maybeData)
+    if (!maybeData)
     {
         return none;
     }

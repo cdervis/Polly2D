@@ -26,7 +26,7 @@ void shapeText(
     const auto lineHeight  = fontImpl.lineHeight(fontSize);
     const auto strokeWidth = lineHeight * 0.1f;
 
-    if (not decoration)
+    if (!decoration)
     {
         fontImpl.forEachGlyph<false>(
             text,
@@ -113,7 +113,7 @@ Text::Impl::Impl(
     const float                  fontSize,
     const Maybe<TextDecoration>& decoration)
 {
-    if (not font)
+    if (!font)
     {
         font = Font::builtin();
     }

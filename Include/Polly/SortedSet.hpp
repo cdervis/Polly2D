@@ -15,7 +15,7 @@ namespace Polly
 namespace Details
 {
 [[noreturn]]
-void throw_sorted_set_empty_exception();
+void throwSortedSetEmptyException();
 }
 
 /// Represents a set of unique objects that remain in order.
@@ -32,7 +32,6 @@ class SortedSet
 
     SortedSet() = default;
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     SortedSet(Span<T> values)
         : SortedSet()
     {
@@ -43,7 +42,7 @@ class SortedSet
     requires(std::convertible_to<U, T>)
     bool add(U&& value)
     {
-        return static_cast<bool>(_tree.add(std::forward<U>(value)));
+        return bool(_tree.add(std::forward<U>(value)));
     }
 
     template<typename Container>
@@ -127,7 +126,7 @@ class SortedSet
 #ifndef polly_no_hardening
         if (isEmpty())
         {
-            Details::throw_sorted_set_empty_exception();
+            Details::throwSortedSetEmptyException();
         }
 #endif
     }

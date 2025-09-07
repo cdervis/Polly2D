@@ -44,48 +44,36 @@ constexpr Color Color::fromInt(int r, int g, int b, int a)
     b = clamp(b, 0, 255);
     a = clamp(a, 0, 255);
 
-    return Color(
-        static_cast<float>(r) / 255.0f,
-        static_cast<float>(g) / 255.0f,
-        static_cast<float>(b) / 255.0f,
-        static_cast<float>(a) / 255.0f);
+    return Color(float(r) / 255.0f, float(g) / 255.0f, float(b) / 255.0f, float(a) / 255.0f);
 }
 
 constexpr Color Color::fromHexRgba(u32 value)
 {
-    const auto r = value >> 24 bitand 0xFF;
-    const auto g = value >> 16 bitand 0xFF;
-    const auto b = value >> 8 bitand 0xFF;
-    const auto a = value bitand 0xFF;
+    const auto r = value >> 24 & 0xFF;
+    const auto g = value >> 16 & 0xFF;
+    const auto b = value >> 8 & 0xFF;
+    const auto a = value & 0xFF;
 
-    return Color(
-        static_cast<float>(r) / 255.0f,
-        static_cast<float>(g) / 255.0f,
-        static_cast<float>(b) / 255.0f,
-        static_cast<float>(a) / 255.0f);
+    return Color(float(r) / 255.0f, float(g) / 255.0f, float(b) / 255.0f, float(a) / 255.0f);
 }
 
 constexpr Color Color::fromHexArgb(u32 value)
 {
-    const auto a = value >> 24 bitand 0xFF;
-    const auto r = value >> 16 bitand 0xFF;
-    const auto g = value >> 8 bitand 0xFF;
-    const auto b = value bitand 0xFF;
+    const auto a = value >> 24 & 0xFF;
+    const auto r = value >> 16 & 0xFF;
+    const auto g = value >> 8 & 0xFF;
+    const auto b = value & 0xFF;
 
-    return Color(
-        static_cast<float>(r) / 255.0f,
-        static_cast<float>(g) / 255.0f,
-        static_cast<float>(b) / 255.0f,
-        static_cast<float>(a) / 255.0f);
+    return Color(float(r) / 255.0f, float(g) / 255.0f, float(b) / 255.0f, float(a) / 255.0f);
 }
 
 constexpr u32 Color::rgbToHex() const
 {
-    const auto ri = static_cast<int>(clamp(r * 255.0f, 0.0f, 255.0f));
-    const auto gi = static_cast<int>(clamp(g * 255.0f, 0.0f, 255.0f));
-    const auto bi = static_cast<int>(clamp(b * 255.0f, 0.0f, 255.0f));
+    const auto ri = int(clamp(r * 255.0f, 0.0f, 255.0f));
+    const auto gi = int(clamp(g * 255.0f, 0.0f, 255.0f));
+    const auto bi = int(clamp(b * 255.0f, 0.0f, 255.0f));
 
-    return ((ri bitand 0xff) << 16) + ((gi bitand 0xff) << 8) + (bi bitand 0xff);
+    return ((ri & 0xff) << 16) + ((gi & 0xff) << 8) + (bi & 0xff);
 }
 
 inline Color lerp(const Color& start, const Color& end, float t)

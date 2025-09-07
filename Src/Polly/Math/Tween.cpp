@@ -20,7 +20,7 @@ void Tweener::resume()
 
 void Tweener::update(const float elapsedTime)
 {
-    if (not _isRunning or _elapsed == _duration)
+    if (!_isRunning || _elapsed == _duration)
     {
         return;
     }
@@ -396,7 +396,7 @@ void TweenerChain::update(float elapsedTime)
 
     const auto nextIndex = index + 1;
 
-    if (tweener.hasEnded() and nextIndex < _tweeners.size())
+    if (tweener.hasEnded() && nextIndex < _tweeners.size())
     {
         _currentTweenerIndex = nextIndex;
     }
@@ -424,14 +424,14 @@ float TweenerChain::value() const
 
 bool TweenerChain::hasEnded() const
 {
-    if (not _currentTweenerIndex)
+    if (!_currentTweenerIndex)
     {
         return false;
     }
 
     const auto idx = _currentTweenerIndex;
 
-    return idx == (_tweeners.size() - 1) and _tweeners[idx].hasEnded();
+    return idx == (_tweeners.size() - 1) && _tweeners[idx].hasEnded();
 }
 
 const Tweener& TweenerChain::currentTweener() const

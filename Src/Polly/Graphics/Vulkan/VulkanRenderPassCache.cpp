@@ -20,7 +20,7 @@ VkRenderPass VulkanRenderPassCache::get(const Key& key)
 {
     auto cacheEntry = _cache.find(key);
 
-    if (not cacheEntry)
+    if (!cacheEntry)
     {
         logVerbose("Creating VkRenderPass");
 
@@ -66,7 +66,7 @@ void VulkanRenderPassCache::clear()
 {
     logVerbose("Clearing VulkanRenderPassCache");
 
-    if (not _cache.isEmpty())
+    if (!_cache.isEmpty())
     {
         const auto vkDevice = _painter.vkDevice();
         assume(vkDevice != VK_NULL_HANDLE);

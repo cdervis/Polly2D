@@ -22,7 +22,7 @@ Image::Image(u32 width, u32 height, ImageFormat format, const void* data, bool i
 
     const auto caps = painterImpl.capabilities();
 
-    if (width > caps.maxImageExtent or height > caps.maxImageExtent)
+    if (width > caps.maxImageExtent || height > caps.maxImageExtent)
     {
         throw Error(formatString(
             "The specified width ({}) or height ({}) exceeds the graphics device's limit ({}).",
@@ -72,7 +72,7 @@ Image::Image(u32 width, u32 height, ImageFormat format)
 
     auto imageImpl = painterImpl.createCanvas(width, height, format);
 
-    if (not imageImpl)
+    if (!imageImpl)
     {
         return;
     }
@@ -118,23 +118,23 @@ u32 Image::height() const
 
 float Image::widthf() const
 {
-    return static_cast<float>(width());
+    return float(width());
 }
 
 float Image::heightf() const
 {
-    return static_cast<float>(height());
+    return float(height());
 }
 
 float Image::aspectRatio() const
 {
-    return static_cast<float>(static_cast<double>(width()) / static_cast<double>(height()));
+    return float(double(width()) / double(height()));
 }
 
 Vec2 Image::size() const
 {
     PollyDeclareThisImpl;
-    return Vec2(static_cast<float>(impl->width()), static_cast<float>(impl->height()));
+    return Vec2(float(impl->width()), float(impl->height()));
 }
 
 ImageFormat Image::format() const

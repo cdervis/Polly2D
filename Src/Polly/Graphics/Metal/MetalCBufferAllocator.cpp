@@ -43,14 +43,14 @@ MetalCBufferAllocator::Allocation MetalCBufferAllocator::allocate(u32 size)
 
     auto newPosition = _positionInBuffer + size;
 
-    if (not _currentBuffer or newPosition > _buffers[*_currentBuffer]->allocatedSize())
+    if (!_currentBuffer || newPosition > _buffers[*_currentBuffer]->allocatedSize())
     {
         logVerbose("MetalCBufferAllocator: Creating buffer of size {}", maxCBufferSize);
 
         const auto mtlDevice = _device.mtlDevice();
         auto*      mtlBuffer = mtlDevice->newBuffer(maxCBufferSize, MTL::ResourceStorageModeShared);
 
-        if (not mtlBuffer)
+        if (!mtlBuffer)
         {
             throw Error("Failed to allocate a Metal buffer.");
         }

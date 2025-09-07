@@ -79,14 +79,14 @@ OpenGLPainter::OpenGLPainter(Window::Impl& windowImpl, GamePerformanceStats& per
     auto& openGLWindow = static_cast<OpenGLWindow&>(windowImpl);
     openGLWindow.makeContextCurrent();
 
-    if (not gladLoadGL())
+    if (!gladLoadGL())
     {
         throw Error("Failed to load OpenGL functions. The system might not support OpenGL.");
     }
 
     if (GLVersion.major < minimumRequiredOpenGLVersionMajor
-        or (GLVersion.major == minimumRequiredOpenGLVersionMajor
-            and GLVersion.minor < minimumRequiredOpenGLVersionMinor))
+        || (GLVersion.major == minimumRequiredOpenGLVersionMajor
+            && GLVersion.minor < minimumRequiredOpenGLVersionMinor))
     {
         throw Error(formatString(
             "The system does not meet the OpenGL requirements. Required OpenGL version is {}.{}. However, "
@@ -107,12 +107,12 @@ OpenGLPainter::OpenGLPainter(Window::Impl& windowImpl, GamePerformanceStats& per
 
     postInit(determineCapabilities(), 1, maxSpriteBatchSize, maxPolyVertices, maxMeshVertices);
 
-    if (not ImGui_ImplSDL3_InitForOpenGL(openGLWindow.sdlWindow(), openGLWindow.openGLContext()))
+    if (!ImGui_ImplSDL3_InitForOpenGL(openGLWindow.sdlWindow(), openGLWindow.openGLContext()))
     {
         throw Error("Failed to initialize ImGui for SDL3 and OpenGL.");
     }
 
-    if (not ImGui_ImplOpenGL3_Init())
+    if (!ImGui_ImplOpenGL3_Init())
     {
         throw Error("Failed to initialize the OpenGL backend of ImGui.");
     }
@@ -643,7 +643,7 @@ void OpenGLPainter::createSpriteRenderingResources()
         const auto indices = createSpriteIndicesList<maxSpriteBatchSize>();
 
         _spriteIndexBuffer = OpenGLBuffer(
-            indices.size() * static_cast<u32>(sizeof(u16)),
+            indices.size() * u32(sizeof(u16)),
             GL_ELEMENT_ARRAY_BUFFER,
             GL_STATIC_DRAW,
             indices.data(),
@@ -722,7 +722,7 @@ PainterCapabilities OpenGLPainter::determineCapabilities() const
     {
         auto value = GLint();
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
-        caps.maxImageExtent = static_cast<u32>(value);
+        caps.maxImageExtent = u32(value);
     }
 
     caps.maxCanvasWidth  = caps.maxImageExtent;
@@ -731,7 +731,7 @@ PainterCapabilities OpenGLPainter::determineCapabilities() const
     {
         auto value = GLint();
         glGetIntegerv(GL_MAX_VIEWPORTS, &value);
-        caps.maxScissorRects = static_cast<u32>(value);
+        caps.maxScissorRects = u32(value);
     }
 
     return caps;

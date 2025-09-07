@@ -265,7 +265,7 @@ static constexpr void drawRoundedRectImpl(
     action(outerTopLeftPts[SegmentCount - 1]);
 
     // Top-right
-    for (int i = static_cast<int>(SegmentCount - 1); i >= 0; --i)
+    for (int i = int(SegmentCount - 1); i >= 0; --i)
     {
         action(innerTopRightPts[i]);
         action(outerTopRightPts[i]);
@@ -279,7 +279,7 @@ static constexpr void drawRoundedRectImpl(
     }
 
     // Bottom-left
-    for (int i = static_cast<int>(SegmentCount - 1); i >= 0; --i)
+    for (int i = int(SegmentCount - 1); i >= 0; --i)
     {
         action(innerBottomLeftPts[i]);
         action(outerBottomLeftPts[i]);

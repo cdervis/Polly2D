@@ -115,7 +115,7 @@ class Painter final
     /// The default sampler is `linearClamp`.
     ///
     /// @param sampler The sampler to use for subsequent drawing.
-    void setSampler(const Sampler& sampler);
+    void setSampler(Sampler sampler);
 
     /// Gets the currently active blend state.
     BlendState currentBlendState() const;
@@ -125,7 +125,7 @@ class Painter final
     /// The default blend state is nonPremultiplied.
     ///
     /// @param blendState The blend state to use for subsequent drawing.
-    void setBlendState(const BlendState& blendState);
+    void setBlendState(BlendState blendState);
 
     /// Draws a 2D sprite.
     ///
@@ -134,7 +134,7 @@ class Painter final
     /// @param image The image of the sprite.
     /// @param position The position of the sprite.
     /// @param color The color of the sprite.
-    void drawSprite(const Image& image, Vec2 position, Color color = white);
+    void drawSprite(Image image, Vec2 position, Color color = white);
 
     /// Draws a 2D sprite.
     ///
@@ -194,7 +194,7 @@ class Painter final
     /// @param text The text object to draw.
     /// @param position The top-left position of the text.
     /// @param color The color of the text.
-    void drawText(const Text& text, Vec2 position, Color color = white);
+    void drawText(Text text, Vec2 position, Color color = white);
 
     /// Draws 2D text from a pre-created Text object.
     ///
@@ -204,65 +204,61 @@ class Painter final
     /// @param text The text object to draw.
     /// @param position The top-left position of the text.
     /// @param color The color of the text.
-    void drawTextWithBasicShadow(const Text& text, Vec2 position, Color color = white);
+    void drawTextWithBasicShadow(Text text, Vec2 position, Color color = white);
 
     /// Draws a 2D rectangle.
     ///
     /// @param rectangle The rectangle to draw.
     /// @param color The color of the rectangle.
     /// @param strokeWidth The line width of the rectangle, in pixels.
-    void drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth);
+    void drawRectangle(Rectangle rectangle, Color color, float strokeWidth);
 
     /// Draws a filled solid color rectangle.
     ///
     /// @param rectangle The rectangle to draw.
     /// @param color The color of the rectangle.
-    void fillRectangle(const Rectangle& rectangle, const Color& color);
+    void fillRectangle(Rectangle rectangle, Color color);
 
-    void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth);
+    void drawLine(Vec2 start, Vec2 end, Color color, float strokeWidth);
 
-    void drawRoundedRectangle(
-        const Rectangle& rectangle,
-        float            cornerRadius,
-        const Color&     color,
-        float            strokeWidth);
+    void drawRoundedRectangle(Rectangle rectangle, float cornerRadius, Color color, float strokeWidth);
 
     /// Draws a filled rounded rectangle.
     ///
     /// @note This function produces polygons that can be shaded by
     /// the shader set via setPolygonShader().
-    /// If such a polygon shader is set, the `color` parameter is
+    /// If such a polygon shader is set, the color parameter is
     /// passed onto that shader as a variable.
     ///
     /// @param rectangle The rounded rectangle area
     /// @param cornerRadius The radius of the rectangle's corners, in pixels
     /// @param color The color of the rounded rectangle
-    void fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color);
+    void fillRoundedRectangle(Rectangle rectangle, float cornerRadius, Color color);
 
     /// Draws a non-filled ellipse.
     ///
     /// @note This function produces polygons that can be shaded by
     /// the shader set via setPolygonShader().
-    /// If such a polygon shader is set, the `color` parameter is
+    /// If such a polygon shader is set, the color parameter is
     /// passed onto that shader as a variable.
     ///
     /// @param center The center of the ellipse, in screen coordinates
     /// @param radius The radius of the ellipse, in screen coordinates
     /// @param color The color of the ellipse
     /// @param strokeWidth The line width, in pixels
-    void drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth);
+    void drawEllipse(Vec2 center, Vec2 radius, Color color, float strokeWidth);
 
     /// Draws a filled ellipse.
     ///
     /// @note This function produces polygons that can be shaded by
     /// the shader set via setPolygonShader().
-    /// If such a polygon shader is set, the `color` parameter is
+    /// If such a polygon shader is set, the color parameter is
     /// passed onto that shader as a variable.
     ///
     /// @param center The center of the ellipse, in screen coordinates
     /// @param radius The radius of the ellipse, in screen coordinates
     /// @param color The color of the ellipse
-    void fillEllipse(Vec2 center, Vec2 radius, const Color& color);
+    void fillEllipse(Vec2 center, Vec2 radius, Color color);
 
     /// Draws a 2D polygon, made up of lines.
     ///
@@ -273,13 +269,13 @@ class Painter final
     ///
     /// This function produces polygons that can be shaded by
     /// the shader set via setPolygonShader().
-    /// If such a polygon shader is set, the `color` parameter is
+    /// If such a polygon shader is set, the color parameter is
     /// passed onto that shader as a variable.
     ///
     /// @param vertices The list of vertices that make up the polygon's hull.
     /// @param color The uniform color of the polygon's lines.
     /// @param strokeWidth The line stroke width.
-    void drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth);
+    void drawPolygon(Span<Vec2> vertices, Color color, float strokeWidth);
 
     /// Draws a 2D polygon, made up of triangles.
     ///
@@ -296,12 +292,12 @@ class Painter final
     ///
     /// This function produces polygons that can be shaded by
     /// the shader set via setPolygonShader().
-    /// If such a polygon shader is set, the `color` parameter is
+    /// If such a polygon shader is set, the color parameter is
     /// passed onto that shader as a variable.
     ///
     /// @param vertices The list of vertices that make up the polygon
     /// @param color The uniform color of the polygon
-    void fillPolygon(Span<Vec2> vertices, const Color& color);
+    void fillPolygon(Span<Vec2> vertices, Color color);
 
     /// Draws a non-filled triangle.
     ///
@@ -310,7 +306,7 @@ class Painter final
     /// @param c The third corner of the triangle
     /// @param color The color of the triangle
     /// @param strokeWidth The line width, in pixels
-    void drawTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color, float strokeWidth);
+    void drawTriangle(Vec2 a, Vec2 b, Vec2 c, Color color, float strokeWidth);
 
     /// Fills a triangle.
     ///
@@ -318,7 +314,7 @@ class Painter final
     /// @param b The second corner of the triangle
     /// @param c The third corner of the triangle
     /// @param color The color of the triangle
-    void fillTriangle(Vec2 a, Vec2 b, Vec2 c, const Color& color);
+    void fillTriangle(Vec2 a, Vec2 b, Vec2 c, Color color);
 
     /// Draws a non-filled triangle that points in a specific direction.
     ///
@@ -327,12 +323,7 @@ class Painter final
     /// @param direction The direction the triangle points towards
     /// @param color The color of the triangle
     /// @param strokeWidth The line width, in pixels
-    void drawDirectedTriangle(
-        Vec2         center,
-        float        radius,
-        Direction    direction,
-        const Color& color,
-        float        strokeWidth);
+    void drawDirectedTriangle(Vec2 center, float radius, Direction direction, Color color, float strokeWidth);
 
     /// Fills a triangle that points in a specific direction.
     ///
@@ -340,7 +331,7 @@ class Painter final
     /// @param radius The radius of the triangle
     /// @param direction The direction the triangle points towards
     /// @param color The color of the triangle
-    void fillDirectedTriangle(Vec2 center, float radius, Direction direction, const Color& color);
+    void fillDirectedTriangle(Vec2 center, float radius, Direction direction, Color color);
 
     /// Draws a 2D mesh, made up of triangles.
     ///
@@ -360,7 +351,7 @@ class Painter final
     /// Draws a 2D particle system.
     ///
     /// @param particleSystem The particle system to draw
-    void drawParticles(const ParticleSystem& particleSystem);
+    void drawParticles(ParticleSystem particleSystem);
 
     /// Gets the size of the current canvas, in pixels.
     ///

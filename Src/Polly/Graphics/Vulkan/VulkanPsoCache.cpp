@@ -19,7 +19,7 @@ VkPipeline VulkanPsoCache::get(const Key& entry)
 {
     auto cacheEntry = _cache.find(entry);
 
-    if (not cacheEntry)
+    if (!cacheEntry)
     {
         assume(entry.vkVsModule != VK_NULL_HANDLE);
         assume(entry.vkPsModule != VK_NULL_HANDLE);
@@ -36,8 +36,8 @@ VkPipeline VulkanPsoCache::get(const Key& entry)
 
         auto attributeDescs = List<VkVertexInputAttributeDescription>();
         {
-            auto idx    = static_cast<u32>(0);
-            auto offset = static_cast<u32>(0);
+            auto idx    = u32(0);
+            auto offset = u32(0);
 
             for (const auto& element : inputElements)
             {
@@ -50,7 +50,7 @@ VkPipeline VulkanPsoCache::get(const Key& entry)
                 desc.offset   = offset;
                 attributeDescs.add(desc);
 
-                offset += static_cast<u32>(sizeInBytes);
+                offset += u32(sizeInBytes);
                 ++idx;
             }
 
@@ -133,7 +133,7 @@ VkPipeline VulkanPsoCache::get(const Key& entry)
 
         auto pipelineInfo                = VkGraphicsPipelineCreateInfo();
         pipelineInfo.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.stageCount          = static_cast<u32>(shaderStages.size());
+        pipelineInfo.stageCount          = u32(shaderStages.size());
         pipelineInfo.pStages             = shaderStages.data();
         pipelineInfo.pVertexInputState   = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssemblyInfo;
@@ -168,7 +168,7 @@ void VulkanPsoCache::notifyVkShaderModuleAboutToBeDestroyed(VkShaderModule mod)
         [mod](const auto& pair)
         {
             const auto& entry  = pair.first;
-            const auto  result = entry.vkVsModule == mod or entry.vkPsModule == mod;
+            const auto  result = entry.vkVsModule == mod || entry.vkPsModule == mod;
 
             if (result)
             {

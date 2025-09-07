@@ -37,7 +37,6 @@ class MouseCursor final
     PollyObject(MouseCursor);
 
   public:
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     MouseCursor(MouseCursorType type);
 
     explicit MouseCursor(u32 width, u32 height, u32 hotspotX, u32 hotspotY, Span<Color> data);

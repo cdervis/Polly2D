@@ -37,7 +37,7 @@ void Transformer::transform(StringView sourceCode, StringView filenameHint, cons
 
     for (const auto& symbol : builtInSymbols.allDecls())
     {
-        if (auto* var = as<VarDecl>(symbol); var and var->isSystemValue())
+        if (auto* var = as<VarDecl>(symbol); var && var->isSystemValue())
         {
             globalScope.removeSymbol(var);
         }

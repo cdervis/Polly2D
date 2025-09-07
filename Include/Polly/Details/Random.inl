@@ -63,7 +63,7 @@ inline Polly::Color Polly::Random::nextColorFast(Maybe<float> alpha)
     return Color(floatOneToZeroFast(), floatOneToZeroFast(), floatOneToZeroFast(), *alpha);
 }
 
-inline Polly::Color Polly::Random::nextColorFast(const color_interval& interval)
+inline Polly::Color Polly::Random::nextColorFast(ColorInterval interval)
 {
     return Color(
         nextFloatFast({interval.min.r, interval.max.r}),

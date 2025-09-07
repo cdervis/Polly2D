@@ -26,7 +26,7 @@ VkDescriptorSet VulkanSamplerDescriptorCache::get(VkSampler key)
 
     auto it = _cache.find(key);
 
-    if (not it)
+    if (!it)
     {
         logVerbose("Creating Vulkan sampler descriptor");
 

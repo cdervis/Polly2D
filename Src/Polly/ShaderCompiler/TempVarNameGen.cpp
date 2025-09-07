@@ -20,7 +20,7 @@ TempVarNameGen::TempVarNameGen(const CodeBlock* block)
 {
     _prefix += "var";
 
-    if (not block)
+    if (!block)
     {
         return;
     }
@@ -29,14 +29,14 @@ TempVarNameGen::TempVarNameGen(const CodeBlock* block)
     {
         const auto* lbe = as<VarStmt>(stmt.get());
 
-        if (not lbe)
+        if (!lbe)
         {
             continue;
         }
 
         const auto name = lbe->name();
 
-        if (not name.startsWith(_prefix))
+        if (!name.startsWith(_prefix))
         {
             continue;
         }

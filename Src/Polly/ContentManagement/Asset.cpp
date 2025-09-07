@@ -17,7 +17,7 @@ Asset::~Asset() noexcept
 {
     if (_contentManager)
     {
-        assume(not _assetName.isEmpty());
+        assume(!_assetName.isEmpty());
         _contentManager->notifyAssetDestroyed(this);
     }
 }

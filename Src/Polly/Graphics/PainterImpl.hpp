@@ -84,13 +84,13 @@ class Painter::Impl : public Object
         DF_VertexBuffers       = 1 << 6,
         DF_IndexBuffer         = 1 << 7,
         DF_All                 = DF_PipelineState
-                 bitor DF_Sampler
-                 bitor DF_GlobalCBufferParams
-                 bitor DF_SpriteImage
-                 bitor DF_MeshImage
-                 bitor DF_UserShaderParams
-                 bitor DF_VertexBuffers
-                 bitor DF_IndexBuffer,
+                 | DF_Sampler
+                 | DF_GlobalCBufferParams
+                 | DF_SpriteImage
+                 | DF_MeshImage
+                 | DF_UserShaderParams
+                 | DF_VertexBuffers
+                 | DF_IndexBuffer,
     };
 
     struct FrameData
@@ -460,8 +460,8 @@ Painter::Impl::MeshFillResult Painter::Impl::fillMeshVertices(
     TIndex*         dstIndices,
     u32             baseVertex) const
 {
-    auto totalVertexCount = static_cast<u32>(0);
-    auto totalIndexCount  = static_cast<u32>(0);
+    auto totalVertexCount = u32(0);
+    auto totalIndexCount  = u32(0);
 
     for (const auto& entry : meshes)
     {
@@ -558,11 +558,11 @@ void Painter::Impl::fillSprite(
     {
         if (sprite.isCanvas)
         {
-            flipFlags |= static_cast<int>(SpriteFlip::Vertically);
+            flipFlags |= int(SpriteFlip::Vertically);
         }
     }
 
-    const auto mirrorBits = static_cast<u32>(flipFlags bitand 3);
+    const auto mirrorBits = u32(flipFlags & 3);
     const auto srcPos     = source.position();
     const auto srcSize    = source.size();
 

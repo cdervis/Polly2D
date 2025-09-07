@@ -26,14 +26,12 @@ class SharedPtr
   public:
     SharedPtr();
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     SharedPtr(std::nullptr_t);
 
     explicit SharedPtr(T* ptr, u64* refCount);
 
     SharedPtr(const SharedPtr& copyFrom);
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<typename U>
     requires(Details::PointersCompatible<U, T>)
     SharedPtr(const SharedPtr<U>& copyFrom);
@@ -46,7 +44,6 @@ class SharedPtr
 
     SharedPtr(SharedPtr&& moveFrom) noexcept;
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<typename U>
     requires(Details::PointersCompatible<U, T>)
     SharedPtr(SharedPtr<U>&& moveFrom) noexcept;

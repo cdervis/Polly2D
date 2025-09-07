@@ -120,7 +120,7 @@ WavStreamInstance::WavStreamInstance(WavStream* aParent)
         if (mParent->mFiletype == WAVSTREAM_WAV)
         {
             mCodec.mWav = new drwav();
-            if (not drwav_init(mCodec.mWav, drwav_read_func, drwav_seek_func, nullptr, mFile, nullptr))
+            if (!drwav_init(mCodec.mWav, drwav_read_func, drwav_seek_func, nullptr, mFile, nullptr))
             {
                 delete mCodec.mWav;
                 mCodec.mWav = nullptr;
@@ -137,7 +137,7 @@ WavStreamInstance::WavStreamInstance(WavStream* aParent)
 				mCodec.mOgg = stb_vorbis_open_file((Soloud_Filehack *)mFile, 0, &e, 0);
 #endif
 
-            if (not mCodec.mOgg)
+            if (!mCodec.mOgg)
             {
                 if (mFile != mParent->mStreamFile)
                     delete mFile;

@@ -33,7 +33,6 @@ class ByteBlob final
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     ByteBlob(Details::NoObjectTag)
         : ByteBlob()
     {
@@ -142,13 +141,11 @@ class ByteBlob final
         return _data != nullptr;
     }
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     operator Span<u8>() const
     {
         return Span(_data, _size);
     }
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     operator MutableSpan<u8>() const
     { // NOLINT(*-explicit-constructor)
         return MutableSpan(_data, _size);

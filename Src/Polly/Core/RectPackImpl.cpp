@@ -8,12 +8,12 @@ namespace Polly
 {
 static bool isContainedIn(const Rectangle& a, const Rectangle& b)
 {
-    return a.x >= b.x and a.y >= b.y and a.x + a.width <= b.x + b.width and a.y + a.height <= b.y + b.height;
+    return a.x >= b.x && a.y >= b.y && a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height;
 }
 
 static float commonIntervalLength(float i1start, float i1end, float i2start, float i2end)
 {
-    if (i1end < i2start or i2end < i1start)
+    if (i1end < i2start || i2end < i1start)
     {
         return 0;
     }
@@ -42,11 +42,11 @@ void RectPack::Impl::insert(Span<Vec2> rectSizes, List<Rectangle>& dst, RectPack
 
     dst.clear();
 
-    while (not rectsToInsert.isEmpty())
+    while (!rectsToInsert.isEmpty())
     {
         float bestScore1    = std::numeric_limits<float>::max();
         float bestScore2    = std::numeric_limits<float>::max();
-        auto  bestRectIndex = static_cast<u32>(-1);
+        auto  bestRectIndex = u32(-1);
         auto  bestNode      = Rectangle();
 
         for (u32 i = 0; i < rectsToInsert.size(); ++i)
@@ -55,7 +55,7 @@ void RectPack::Impl::insert(Span<Vec2> rectSizes, List<Rectangle>& dst, RectPack
             auto       score2  = 0.0f;
             const auto newNode = scoreRect(rectsToInsert[i], heuristic, score1, score2);
 
-            if (score1 < bestScore1 or (score1 == bestScore1 and score2 < bestScore2))
+            if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
             {
                 bestScore1    = score1;
                 bestScore2    = score2;
@@ -64,7 +64,7 @@ void RectPack::Impl::insert(Span<Vec2> rectSizes, List<Rectangle>& dst, RectPack
             }
         }
 
-        if (bestRectIndex == static_cast<u32>(-1))
+        if (bestRectIndex == u32(-1))
         {
             return;
         }
@@ -125,7 +125,7 @@ double RectPack::Impl::occupancy() const
         usedSurfaceArea += usedRectangle.width * usedRectangle.height;
     }
 
-    return usedSurfaceArea / (static_cast<double>(_binWidth) * static_cast<double>(_binHeight));
+    return usedSurfaceArea / (double(_binWidth) * double(_binHeight));
 }
 
 Rectangle RectPack::Impl::scoreRect(Vec2 rectSize, RectPackHeuristic method, float& score1, float& score2)
@@ -188,25 +188,25 @@ float RectPack::Impl::contactPointScoreNode(float x, float y, float width, float
 {
     float score = 0;
 
-    if (x == 0 or x + width == _binWidth)
+    if (x == 0 || x + width == _binWidth)
     {
         score += height;
     }
 
-    if (y == 0 or y + height == _binHeight)
+    if (y == 0 || y + height == _binHeight)
     {
         score += width;
     }
 
     for (const auto& usedRectangle : _usedRectangles)
     {
-        if (usedRectangle.x == x + width or usedRectangle.x + usedRectangle.width == x)
+        if (usedRectangle.x == x + width || usedRectangle.x + usedRectangle.width == x)
         {
             score +=
                 commonIntervalLength(usedRectangle.y, usedRectangle.y + usedRectangle.height, y, y + height);
         }
 
-        if (usedRectangle.y == y + height or usedRectangle.y + usedRectangle.height == y)
+        if (usedRectangle.y == y + height || usedRectangle.y + usedRectangle.height == y)
         {
             score +=
                 commonIntervalLength(usedRectangle.x, usedRectangle.x + usedRectangle.width, x, x + width);
@@ -228,10 +228,10 @@ Rectangle RectPack::Impl::findPositionForNewNodeBottomLeft(Vec2 rectSize, float&
     for (const auto& freeRectangle : _freeRectangles)
     {
         // Try to place the rectangle in upright (non-flipped) orientation.
-        if (freeRectangle.width >= width and freeRectangle.height >= height)
+        if (freeRectangle.width >= width && freeRectangle.height >= height)
         {
             const auto topSideY = freeRectangle.y + height;
-            if (topSideY < bestY or (topSideY == bestY and freeRectangle.x < bestX))
+            if (topSideY < bestY || (topSideY == bestY && freeRectangle.x < bestX))
             {
                 bestNode.x      = freeRectangle.x;
                 bestNode.y      = freeRectangle.y;
@@ -242,10 +242,10 @@ Rectangle RectPack::Impl::findPositionForNewNodeBottomLeft(Vec2 rectSize, float&
             }
         }
 
-        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations && freeRectangle.width >= height && freeRectangle.height >= width)
         {
             const auto topSideY = freeRectangle.y + width;
-            if (topSideY < bestY or (topSideY == bestY and freeRectangle.x < bestX))
+            if (topSideY < bestY || (topSideY == bestY && freeRectangle.x < bestX))
             {
                 bestNode.x      = freeRectangle.x;
                 bestNode.y      = freeRectangle.y;
@@ -275,7 +275,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestShortSideFit(
     for (const auto& freeRectangle : _freeRectangles)
     {
         // Try to place the rectangle in upright (non-flipped) orientation.
-        if (freeRectangle.width >= width and freeRectangle.height >= height)
+        if (freeRectangle.width >= width && freeRectangle.height >= height)
         {
             const auto leftoverHoriz = abs(freeRectangle.width - width);
             const auto leftoverVert  = abs(freeRectangle.height - height);
@@ -283,7 +283,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestShortSideFit(
             const auto longSideFit   = max(leftoverHoriz, leftoverVert);
 
             if (shortSideFit < bestShortSideFit
-                or (shortSideFit == bestShortSideFit and longSideFit < bestLongSideFit))
+                || (shortSideFit == bestShortSideFit && longSideFit < bestLongSideFit))
             {
                 bestNode.x       = freeRectangle.x;
                 bestNode.y       = freeRectangle.y;
@@ -294,7 +294,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestShortSideFit(
             }
         }
 
-        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations && freeRectangle.width >= height && freeRectangle.height >= width)
         {
             const auto flippedLeftoverHoriz = abs(freeRectangle.width - height);
             const auto flippedLeftoverVert  = abs(freeRectangle.height - width);
@@ -302,7 +302,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestShortSideFit(
             const auto flippedLongSideFit   = max(flippedLeftoverHoriz, flippedLeftoverVert);
 
             if (flippedShortSideFit < bestShortSideFit
-                or (flippedShortSideFit == bestShortSideFit and flippedLongSideFit < bestLongSideFit))
+                || (flippedShortSideFit == bestShortSideFit && flippedLongSideFit < bestLongSideFit))
             {
                 bestNode.x       = freeRectangle.x;
                 bestNode.y       = freeRectangle.y;
@@ -332,7 +332,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestLongSideFit(
     for (const auto& freeRectangle : _freeRectangles)
     {
         // Try to place the rectangle in upright (non-flipped) orientation.
-        if (freeRectangle.width >= width and freeRectangle.height >= height)
+        if (freeRectangle.width >= width && freeRectangle.height >= height)
         {
             const auto leftoverHoriz = abs(freeRectangle.width - width);
             const auto leftoverVert  = abs(freeRectangle.height - height);
@@ -340,7 +340,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestLongSideFit(
             const auto longSideFit   = max(leftoverHoriz, leftoverVert);
 
             if (longSideFit < bestLongSideFit
-                or (longSideFit == bestLongSideFit and shortSideFit < bestShortSideFit))
+                || (longSideFit == bestLongSideFit && shortSideFit < bestShortSideFit))
             {
                 bestNode.x       = freeRectangle.x;
                 bestNode.y       = freeRectangle.y;
@@ -351,7 +351,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestLongSideFit(
             }
         }
 
-        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations && freeRectangle.width >= height && freeRectangle.height >= width)
         {
             const auto leftoverHoriz = abs(freeRectangle.width - height);
             const auto leftoverVert  = abs(freeRectangle.height - width);
@@ -359,7 +359,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestLongSideFit(
             const auto longSideFit   = max(leftoverHoriz, leftoverVert);
 
             if (longSideFit < bestLongSideFit
-                or (longSideFit == bestLongSideFit and shortSideFit < bestShortSideFit))
+                || (longSideFit == bestLongSideFit && shortSideFit < bestShortSideFit))
             {
                 bestNode.x       = freeRectangle.x;
                 bestNode.y       = freeRectangle.y;
@@ -391,13 +391,13 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestAreaFit(
         const auto areaFit = (freeRectangle.width * freeRectangle.height) - (width * height);
 
         // Try to place the rectangle in upright (non-flipped) orientation.
-        if (freeRectangle.width >= width and freeRectangle.height >= height)
+        if (freeRectangle.width >= width && freeRectangle.height >= height)
         {
             const auto leftoverHoriz = abs(freeRectangle.width - width);
             const auto leftoverVert  = abs(freeRectangle.height - height);
             const auto shortSideFit  = min(leftoverHoriz, leftoverVert);
 
-            if (areaFit < bestAreaFit or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
+            if (areaFit < bestAreaFit || (areaFit == bestAreaFit && shortSideFit < bestShortSideFit))
             {
                 bestNode.x       = freeRectangle.x;
                 bestNode.y       = freeRectangle.y;
@@ -408,13 +408,13 @@ Rectangle RectPack::Impl::findPositionForNewNodeBestAreaFit(
             }
         }
 
-        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations && freeRectangle.width >= height && freeRectangle.height >= width)
         {
             const auto leftoverHoriz = abs(freeRectangle.width - height);
             const auto leftoverVert  = abs(freeRectangle.height - width);
             const auto shortSideFit  = min(leftoverHoriz, leftoverVert);
 
-            if (areaFit < bestAreaFit or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
+            if (areaFit < bestAreaFit || (areaFit == bestAreaFit && shortSideFit < bestShortSideFit))
             {
                 bestNode.x       = freeRectangle.x;
                 bestNode.y       = freeRectangle.y;
@@ -440,7 +440,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeContactPoint(Vec2 rectSize, floa
     for (const auto& freeRectangle : _freeRectangles)
     {
         // Try to place the rectangle in upright (non-flipped) orientation.
-        if (freeRectangle.width >= width and freeRectangle.height >= height)
+        if (freeRectangle.width >= width && freeRectangle.height >= height)
         {
             const auto score = contactPointScoreNode(freeRectangle.x, freeRectangle.y, width, height);
             if (score > contactScore)
@@ -452,7 +452,7 @@ Rectangle RectPack::Impl::findPositionForNewNodeContactPoint(Vec2 rectSize, floa
                 contactScore    = score;
             }
         }
-        if (_allowRotations and freeRectangle.width >= height and freeRectangle.height >= width)
+        if (_allowRotations && freeRectangle.width >= height && freeRectangle.height >= width)
         {
             const auto score = contactPointScoreNode(freeRectangle.x, freeRectangle.y, height, width);
             if (score > contactScore)
@@ -505,9 +505,9 @@ bool RectPack::Impl::splitFreeNode(const Rectangle& freeNode, const Rectangle& u
 {
     // Test with SAT if the rectangles even intersect.
     if (usedNode.x >= freeNode.x + freeNode.width
-        or usedNode.x + usedNode.width <= freeNode.x
-        or usedNode.y >= freeNode.y + freeNode.height
-        or usedNode.y + usedNode.height <= freeNode.y)
+        || usedNode.x + usedNode.width <= freeNode.x
+        || usedNode.y >= freeNode.y + freeNode.height
+        || usedNode.y + usedNode.height <= freeNode.y)
     {
         return false;
     }
@@ -517,10 +517,10 @@ bool RectPack::Impl::splitFreeNode(const Rectangle& freeNode, const Rectangle& u
     // to avoid testing them against each other.
     _newFreeRectanglesLastSize = _newFreeRectangles.size();
 
-    if (usedNode.x < freeNode.x + freeNode.width and usedNode.x + usedNode.width > freeNode.x)
+    if (usedNode.x < freeNode.x + freeNode.width && usedNode.x + usedNode.width > freeNode.x)
     {
         // New node at the top side of the used node.
-        if (usedNode.y > freeNode.y and usedNode.y < freeNode.y + freeNode.height)
+        if (usedNode.y > freeNode.y && usedNode.y < freeNode.y + freeNode.height)
         {
             auto newNode   = freeNode;
             newNode.height = usedNode.y - newNode.y;
@@ -537,10 +537,10 @@ bool RectPack::Impl::splitFreeNode(const Rectangle& freeNode, const Rectangle& u
         }
     }
 
-    if (usedNode.y < freeNode.y + freeNode.height and usedNode.y + usedNode.height > freeNode.y)
+    if (usedNode.y < freeNode.y + freeNode.height && usedNode.y + usedNode.height > freeNode.y)
     {
         // New node at the left side of the used node.
-        if (usedNode.x > freeNode.x and usedNode.x < freeNode.x + freeNode.width)
+        if (usedNode.x > freeNode.x && usedNode.x < freeNode.x + freeNode.width)
         {
             auto newNode  = freeNode;
             newNode.width = usedNode.x - newNode.x;

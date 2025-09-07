@@ -19,7 +19,7 @@ void Polly::Details::throwEmptyUniquePtrDerefException()
     throw Error("Attempting to dereference an empty unique_ptr.");
 }
 
-void Polly::Details::throw_key_not_found_exception(StringView key)
+void Polly::Details::throwKeyNotFoundException(StringView key)
 {
     if (key.isEmpty())
     {
@@ -29,22 +29,22 @@ void Polly::Details::throw_key_not_found_exception(StringView key)
     throw Error(formatString("Attempting to access a SortedMap value by non-existent key '{}'.", key));
 }
 
-void Polly::Details::throw_empty_string_view_exception()
+void Polly::Details::throwEmptyStringViewException()
 {
     throw Error("Attempting to access characters of an empty StringView");
 }
 
-void Polly::Details::throw_string_view_out_of_range_exception()
+void Polly::Details::throwStringViewOutOfRangeException()
 {
     throw Error("Index out of StringView range");
 }
 
-void Polly::Details::throw_string_view_range_exception()
+void Polly::Details::throwStringViewRangeException()
 {
     throw Error("Index out of StringView range");
 }
 
-void Polly::Details::throw_string_view_not_null_terminated_exception()
+void Polly::Details::throwStringViewNotNullTerminatedException()
 {
     throw Error("Attempting to get the C-string of a StringView that is not null-terminated.");
 }
@@ -67,7 +67,7 @@ void Polly::Details::throwInvalidNotNullConstructionException()
     throw Error("Attempting to construct a NotNull object from a null pointer.");
 }
 
-void Polly::Details::throw_empty_maybe_exception()
+void Polly::Details::throwEmptyMaybeException()
 {
     throw Error("Attempting to access an empty Maybe object.");
 }
@@ -77,7 +77,7 @@ void Polly::Details::throwArrayIndexOutOfRangeException(u32 index, u32 n)
     throw Error(formatString("Attempting to access List of size {} at index {}.", n, index));
 }
 
-void Polly::Details::throw_sorted_set_empty_exception()
+void Polly::Details::throwSortedSetEmptyException()
 {
     throw Error("Attempting to use an empty SortedSet.");
 }

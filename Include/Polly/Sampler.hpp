@@ -23,16 +23,16 @@ enum class ImageAddressMode
 {
     /// Repeat the texture pattern by tiling it at every integer boundary.
     ///
-    /// For example, when the texture is sampled across UV coordinates `[0.0 .. 2.5]`,
+    /// For example, when the texture is sampled across UV coordinates [0.0 .. 2.5],
     /// the texture is repeated 2.5 times.
     Repeat,
 
-    /// Clamp the texture coordinates to the range `[0.0 .. 1.0]`.
+    /// Clamp the texture coordinates to the range [0.0 .. 1.0].
     ///
     /// Coordinates outside of this range result in the texture's border colors.
     ClampToEdgeTexels,
 
-    /// Clamp the texture coordinates to the range `[0.0 .. 1.0]`.
+    /// Clamp the texture coordinates to the range [0.0 .. 1.0].
     ///
     /// Coordinates outside of this range result in the border color that is specified by
     /// the texture's sampler (`Sampler::borderColor`).

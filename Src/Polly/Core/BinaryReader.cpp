@@ -151,7 +151,7 @@ String BinaryReader::readEncryptedString()
 
     for (u32 i = 0, size = str.size(); i < size; ++i)
     {
-        str[i] = static_cast<int>(str[i]) xor _decryptionKey[i % keySize];
+        str[i] = int(str[i]) xor _decryptionKey[i % keySize];
     }
 
     return str;
@@ -194,7 +194,7 @@ void BinaryReader::seekSet(u32 offset)
 
 void BinaryReader::seekFromCurrent(int offset)
 {
-    seekSet(static_cast<u32>(static_cast<int64_t>(_position) + static_cast<int64_t>(offset)));
+    seekSet(u32(static_cast<int64_t>(_position) + static_cast<int64_t>(offset)));
 }
 
 const u8* BinaryReader::currentDataPtr() const

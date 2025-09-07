@@ -12,9 +12,9 @@
 namespace Polly
 {
 static constexpr auto piPrecise = 3.141592653589793238462643383279502;
-static constexpr auto pi        = static_cast<float>(piPrecise);
-static constexpr auto twoPi     = static_cast<float>(piPrecise * 2.0);
-static constexpr auto halfPi    = static_cast<float>(piPrecise * 0.5);
+static constexpr auto pi        = float(piPrecise);
+static constexpr auto twoPi     = float(piPrecise * 2.0);
+static constexpr auto halfPi    = float(piPrecise * 0.5);
 
 static constexpr auto maxFloat          = std::numeric_limits<float>::max();
 static constexpr auto minPositiveFloat  = std::numeric_limits<float>::min();
@@ -47,7 +47,7 @@ T tan(T value);
 template<std::floating_point T>
 T round(T value);
 
-/// Calculates the value of `base` raised to the power `exp`.
+/// Calculates the value of base raised to the power exp.
 template<std::floating_point T>
 T pow(T base, T exp);
 
@@ -99,7 +99,7 @@ constexpr T abs(T value);
 template<std::floating_point T>
 constexpr T distance(T lhs, T rhs);
 
-/// Clamps a value to a range [Min .. Max].
+/// Clamps a value to a range [min .. max].
 ///
 /// @tparam T The type of value to clamp
 /// @param value The value to clamp
@@ -114,7 +114,7 @@ constexpr T clamp(T value, T min, T max);
 /// @tparam T The type of value to interpolate
 /// @param start The start value of the range
 /// @param end The end value of the range
-/// @param t The interpolation factor, in the range `[0.0 .. 1.0]`
+/// @param t The interpolation factor, in the range [0.0 .. 1.0]
 /// @return The interpolated value
 template<std::floating_point T>
 constexpr T lerp(T start, T end, T t);
@@ -140,7 +140,7 @@ constexpr T inverseLerp(T start, T end, T value);
 ///
 /// @param start The starting value.
 /// @param end The target value.
-/// @param t The interpolation factor between `start` and `end`, expected to be in the range [0.0 .. 1.0].
+/// @param t The interpolation factor between start and end, expected to be in the range [0.0 .. 1.0].
 ///          This factor will automatically be clamped by the function.
 ///
 /// @return The interpolated value.
@@ -157,11 +157,13 @@ constexpr T squared(const T& value);
 /// Proportionally maps a value from one range to another.
 ///
 /// @tparam T The type of value to remap.
+///
 /// @param inputMin The start of the input range.
 /// @param inputMax The end of the input range.
 /// @param outputMin The start of the output range.
 /// @param outputMax The end of the output range.
 /// @param value The value to remap, within the input range.
+///
 /// @return The remapped value.
 template<std::floating_point T>
 constexpr T remap(T inputMin, T inputMax, T outputMin, T outputMax, T value);
@@ -186,13 +188,15 @@ constexpr bool areEqualWithinEpsilon(T lhs, T rhs);
 /// @param rhs The second number
 /// @param threshold The threshold within which both numbers count as being equal
 ///
-/// @return True if lhs and rhs are equal within `threshold`; false otherwise.
+/// @return True if lhs and rhs are equal within threshold; false otherwise.
 template<std::floating_point T>
 constexpr bool areEqualWithin(T lhs, T rhs, T threshold);
 
 /// Calculates a number that is aligned to a specific alignment.
+///
 /// @param number The number to align.
 /// @param alignment The alignment.
+///
 /// @return The aligned number.
 template<std::integral T>
 constexpr T nextAlignedNumber(T number, T alignment);
@@ -377,14 +381,12 @@ constexpr bool Polly::areEqualWithin(T lhs, T rhs, T threshold)
 template<std::integral T>
 constexpr T Polly::nextAlignedNumber(T number, T alignment)
 {
-    // ReSharper disable once CppRedundantParentheses
-    return (number - 1u + alignment) bitand -static_cast<i64>(alignment);
+    return (number - 1u + alignment) & -static_cast<i64>(alignment);
 }
 
 template<std::integral T>
 constexpr T Polly::flatIndex2D(T width, T x, T y)
 {
-    // ReSharper disable once CppRedundantParentheses
     return (y * width) + x;
 }
 
@@ -396,5 +398,5 @@ T Polly::snapToGrid(T value, T gridSize)
 
 constexpr Polly::Pair<Polly::u16, Polly::u16> Polly::split32BitTo16Bit(const u32 value)
 {
-    return Pair(static_cast<u16>(value bitand 0xFFFF), static_cast<u16>(value >> 16));
+    return Pair(u16(value & 0xFFFF), u16(value >> 16));
 }

@@ -50,7 +50,7 @@ void SplashScreenState::draw(Painter painter)
 
     painter.setCanvas({}, backgroundColor);
 
-    if (not isBackgroundFading)
+    if (!isBackgroundFading)
     {
         painter.drawSprite(
             _logo,

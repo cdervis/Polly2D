@@ -116,7 +116,7 @@ void GameplayState::updatePlayer(const GameTime& time)
         _player.currentMoveDirection = 2;
     }
 
-    if (isKeyDown(Scancode::Space) and not _player.bulletPos)
+    if (isKeyDown(Scancode::Space) && !_player.bulletPos)
     {
         _player.bulletPos = _player.pos;
         _particle_systems.playerShot.triggerAt(_player.pos - Vec2(0, 6));
@@ -158,12 +158,7 @@ void GameplayState::updatePlayer(const GameTime& time)
 
 void GameplayState::updateEnemies(const GameTime& time)
 {
-    const auto ddd = lerp(
-        1.0f,
-        4.0f,
-        1.0f
-            - static_cast<float>(
-                static_cast<double>(_enemies.size()) / static_cast<double>(_level_enemy_count)));
+    const auto ddd = lerp(1.0f, 4.0f, 1.0f - float(double(_enemies.size()) / double(_level_enemy_count)));
 
     _time_to_next_enemy_move -= time.elapsed() * _enemy_sway_speed * ddd;
 
@@ -175,10 +170,10 @@ void GameplayState::updateEnemies(const GameTime& time)
 
         for (auto& enemy : _enemies)
         {
-            enemy.pos.x += static_cast<float>(_enemies_direction);
+            enemy.pos.x += float(_enemies_direction);
 
             const auto shouldAdvance =
-                (_enemies_direction == 1 and enemy.pos.x >= rightBorder) or enemy.pos.x <= leftBorder;
+                (_enemies_direction == 1 && enemy.pos.x >= rightBorder) || enemy.pos.x <= leftBorder;
 
             if (shouldAdvance)
             {
@@ -258,7 +253,7 @@ void GameplayState::spawnEnemies(StringView enemyRows)
     for (auto y = startY; const auto& row : rows)
     {
         constexpr auto gap      = 4.0f;
-        const auto     rowWidth = (sEnemySize.x + gap) * static_cast<float>(row.size());
+        const auto     rowWidth = (sEnemySize.x + gap) * float(row.size());
         const auto     offsetX  = (sEnemySize.x / 2) + ((sViewSize.x - rowWidth) / 2) + (gap / 2);
 
         for (auto x = 0.0f; const auto ch : row)

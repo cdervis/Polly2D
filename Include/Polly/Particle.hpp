@@ -12,8 +12,7 @@ namespace Polly
 /// Represents a single particle in a particle system.
 ///
 /// Particles are never used directly by the user.
-/// They are instead created and managed by a particle system,
-/// which is what the user typically wants.
+/// They are instead created and managed by a particle system, which is what the user typically wants.
 struct Particle
 {
     float   inception = 0.0f;

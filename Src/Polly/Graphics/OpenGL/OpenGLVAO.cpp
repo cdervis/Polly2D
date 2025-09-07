@@ -68,7 +68,7 @@ OpenGLVAO::OpenGLVAO(
 #endif
 {
     assume(vertexBufferHandleGL != 0);
-    assume(not vertexElements.isEmpty());
+    assume(!vertexElements.isEmpty());
 
     glGenVertexArrays(1, &_handleGL);
 

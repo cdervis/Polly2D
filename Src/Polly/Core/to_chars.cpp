@@ -199,7 +199,7 @@ boundaries compute_boundaries(FloatType value)
     const u64 F    = bits & (kHiddenBit - 1);
 
     const bool  is_denormal = E == 0;
-    const diyfp v = is_denormal ? diyfp(F, kMinExp) : diyfp(F + kHiddenBit, static_cast<int>(E) - kBias);
+    const diyfp v           = is_denormal ? diyfp(F, kMinExp) : diyfp(F + kHiddenBit, int(E) - kBias);
 
     // Compute the boundaries m- and m+ of the floating-point value
     // v = f * 2^e.
@@ -410,11 +410,11 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
     // for |e| <= 1500, but doesn't require floating-point operations.
     // NB: log_10(2) ~= 78913 / 2^18
     const int f = kAlpha - e - 1;
-    const int k = (f * 78913) / (1 << 18) + static_cast<int>(f > 0);
+    const int k = (f * 78913) / (1 << 18) + int(f > 0);
 
     const int index = (-kCachedPowersMinDecExp + k + (kCachedPowersDecStep - 1)) / kCachedPowersDecStep;
 
-    const cached_power cached = kCachedPowers[static_cast<u32>(index)];
+    const cached_power cached = kCachedPowers[u32(index)];
 
     return cached;
 }
@@ -548,9 +548,8 @@ inline void grisu2_digit_gen(
 
     const diyfp one(u64{1} << -M_plus.e, M_plus.e);
 
-    auto p1 =
-        static_cast<u32>(M_plus.f >> -one.e); // p1 = f div 2^-e (Since -e >= 32, p1 fits into a 32-bit int.)
-    u64 p2 = M_plus.f & (one.f - 1); // p2 = f mod 2^-e
+    auto p1 = u32(M_plus.f >> -one.e); // p1 = f div 2^-e (Since -e >= 32, p1 fits into a 32-bit int.)
+    u64  p2 = M_plus.f & (one.f - 1); // p2 = f mod 2^-e
 
     // 1)
     //
@@ -834,7 +833,7 @@ void grisu2(char* buf, int& len, int& decimal_exponent, FloatType value)
     //     (7.0385307e-26f) which can't be recovered using strtod. The resulting
     //     double precision value is off by 1 ulp.
 #if 0
-    const boundaries w = compute_boundaries(static_cast<double>(value));
+    const boundaries w = compute_boundaries(double(value));
 #else
     const boundaries w = compute_boundaries(value);
 #endif
@@ -860,7 +859,7 @@ inline char* append_exponent(char* buf, int e)
         *buf++ = '+';
     }
 
-    auto k = static_cast<u32>(e);
+    auto k = u32(e);
     if (k < 10)
     {
         // Always print at least two digits in the exponent.

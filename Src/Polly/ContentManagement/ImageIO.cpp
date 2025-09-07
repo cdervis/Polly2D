@@ -61,7 +61,7 @@ UniquePtr<Image::Impl> ImageIO::loadImageFromDisk(Painter::Impl& device, StringV
 
 UniquePtr<Image::Impl> ImageIO::tryLoadMisc(Painter::Impl& device, Span<u8> memory)
 {
-    const auto dataSize = static_cast<int>(memory.size());
+    const auto dataSize = int(memory.size());
     const auto isHDR    = stbi_is_hdr_from_memory(memory.data(), dataSize) != 0;
 
     auto  width     = 0;
@@ -75,16 +75,15 @@ UniquePtr<Image::Impl> ImageIO::tryLoadMisc(Painter::Impl& device, Span<u8> memo
     }
     else
     {
-        imageData =
-            stbi_load_from_memory(memory.data(), static_cast<int>(memory.size()), &width, &height, &comp, 4);
+        imageData = stbi_load_from_memory(memory.data(), int(memory.size()), &width, &height, &comp, 4);
     }
 
-    if (not imageData)
+    if (!imageData)
     {
         return nullptr;
     }
 
-    if (width <= 0 or height <= 0 or comp <= 0)
+    if (width <= 0 || height <= 0 || comp <= 0)
     {
         throw Error("Failed to load the image (invalid extents / channels).");
     }

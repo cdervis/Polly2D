@@ -145,7 +145,6 @@ class Tweener
 class TweenerChain
 {
   public:
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     TweenerChain(Span<Tweener> tweeners);
 
     void resume();

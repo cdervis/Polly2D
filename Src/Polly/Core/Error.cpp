@@ -46,7 +46,7 @@ Error& Error::operator=(const Error& copyFrom)
 {
     if (&copyFrom != this)
     {
-        if (not _impl)
+        if (!_impl)
         {
             _impl = new Impl();
         }

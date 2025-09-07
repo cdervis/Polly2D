@@ -73,19 +73,19 @@ namespace Polly
 namespace Concepts
 {
 template<typename T>
-concept to_string_invocable_through_pointer = requires(T t) {
+concept ToStringInvocableThroughPointer = requires(T t) {
     { t->toString() } -> std::convertible_to<String>;
 };
 
 template<typename T>
-concept has_to_string_member = requires(T t) {
+concept HasToStringMember = requires(T t) {
     { t.toString() } -> std::convertible_to<String>;
-} or to_string_invocable_through_pointer<T>;
+} or ToStringInvocableThroughPointer<T>;
 
 template<typename T>
-concept has_to_string = requires(T t) {
+concept HasToString = requires(T t) {
     { Polly::toString(t) } -> std::convertible_to<String>;
-} or has_to_string_member<T>;
+} or HasToStringMember<T>;
 } // namespace Concepts
 
 template<typename T>
@@ -95,14 +95,14 @@ static String toString(const T* value)
 }
 
 template<typename T>
-requires(Concepts::to_string_invocable_through_pointer<std::remove_cvref_t<T>>)
+requires(Concepts::ToStringInvocableThroughPointer<std::remove_cvref_t<T>>)
 static String toString(const T& value)
 {
     return value->toString();
 }
 
 template<typename T>
-requires(Concepts::has_to_string_member<std::remove_cvref_t<T>>)
+requires(Concepts::HasToStringMember<std::remove_cvref_t<T>>)
 static String toString(const T& value)
 {
     return value.toString();
@@ -121,14 +121,14 @@ inline String toString(Details::NoObjectTag)
 }
 
 template<typename T>
-requires(Concepts::has_to_string<std::remove_cvref_t<T>>)
+requires(Concepts::HasToString<std::remove_cvref_t<T>>)
 static String toString(const Maybe<T>& value)
 {
     return value ? toString(*value) : "none"_s;
 }
 
 template<Concepts::ForwardContainer T>
-requires(Concepts::has_to_string<typename T::value_type>)
+requires(Concepts::HasToString<typename T::value_type>)
 static String toString(const T& container)
 {
     auto str = String();
@@ -140,7 +140,7 @@ static String toString(const T& container)
         str += "; ";
     }
 
-    if (not container.isEmpty())
+    if (!container.isEmpty())
     {
         str.removeLast(2);
     }

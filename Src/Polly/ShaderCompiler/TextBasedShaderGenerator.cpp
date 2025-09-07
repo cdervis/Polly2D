@@ -34,7 +34,7 @@ String TextBasedShaderGenerator::generate(
     const FunctionDecl*   entryPoint,
     [[maybe_unused]] bool withDebugInfo)
 {
-    assume(not _ast);
+    assume(!_ast);
     assume(ast.isVerified());
 
     _ast = std::addressof(ast);
@@ -64,7 +64,7 @@ String TextBasedShaderGenerator::generate(
     auto code = doGeneration(context, entryPoint, childrenToGenerate);
     code.trim({'\n'});
 
-    if (not code.isEmpty())
+    if (!code.isEmpty())
     {
         code += '\n';
     }
@@ -311,9 +311,9 @@ void TextBasedShaderGenerator::generateBinOpExpr(
         const auto& lhs_type = lhsExpr->type();
         const auto& rhs_type = rhsExpr->type();
 
-        if ((lhs_type->isMatrixType() and rhs_type->isMatrixType())
-            or (lhs_type->isMatrixType() and rhs_type->isVectorType())
-            or (lhs_type->isVectorType() and rhs_type->isMatrixType()))
+        if ((lhs_type->isMatrixType() && rhs_type->isMatrixType())
+            || (lhs_type->isMatrixType() && rhs_type->isVectorType())
+            || (lhs_type->isVectorType() && rhs_type->isMatrixType()))
         {
             std::swap(lhsExpr, rhsExpr);
         }

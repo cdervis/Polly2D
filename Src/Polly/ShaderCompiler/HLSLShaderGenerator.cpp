@@ -51,7 +51,7 @@ String HLSLShaderGenerator::doGeneration(
     w << wnewline;
 
     if (const auto accessedParams = _ast->paramsAccessedByFunction(entryPoint);
-        not accessedParams.scalars.isEmpty())
+        !accessedParams.scalars.isEmpty())
     {
         emitUniformBuffer(w, accessedParams);
         w << wnewline;
@@ -167,7 +167,7 @@ void HLSLShaderGenerator::generateFunctionDecl(
     const FunctionDecl* function,
     const SemaContext&  context)
 {
-    if (not function->body())
+    if (!function->body())
     {
         return;
     }
@@ -178,8 +178,8 @@ void HLSLShaderGenerator::generateFunctionDecl(
     const auto usesPixelPosNormalized = _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get());
 
     const auto usesPixelPos = usesPixelPosNormalized
-                              or _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get())
-                              or _ast->isSymbolAccessedAnywhere(builtins.svPixelPos.get());
+                              || _ast->isSymbolAccessedAnywhere(builtins.svPixelPosNormalized.get())
+                              || _ast->isSymbolAccessedAnywhere(builtins.svPixelPos.get());
 
     _callStack.add(function);
 
@@ -300,12 +300,12 @@ void HLSLShaderGenerator::generateSymAccessExpr(
     }
     else if (
         symbol == builtIns.svSpriteColor.get()
-        or symbol == builtIns.svPolygonColor.get()
-        or symbol == builtIns.svMeshColor.get())
+        || symbol == builtIns.svPolygonColor.get()
+        || symbol == builtIns.svMeshColor.get())
     {
         w << Naming::shaderInputParam << ".color";
     }
-    else if (symbol == builtIns.svSpriteUV.get() or symbol == builtIns.svMeshUV.get())
+    else if (symbol == builtIns.svSpriteUV.get() || symbol == builtIns.svMeshUV.get())
     {
         w << Naming::shaderInputParam << ".uv";
     }
@@ -347,7 +347,7 @@ void HLSLShaderGenerator::generateFunctionCallExpr(
         return;
     }
 
-    if (builtins.isSomeVectorCtor(calleeSymbol) and args.size() == 1)
+    if (builtins.isSomeVectorCtor(calleeSymbol) && args.size() == 1)
     {
         prepareExpr(w, args[0].get(), context);
         generateExpr(w, args[0].get(), context);
@@ -381,7 +381,7 @@ void HLSLShaderGenerator::generateFunctionCallExpr(
     {
         const auto accessedParams = _ast->paramsAccessedByFunction(calledFunction);
 
-        if (not accessedParams.scalars.isEmpty())
+        if (!accessedParams.scalars.isEmpty())
         {
             if (hasAnyArgs)
             {
@@ -403,7 +403,7 @@ void HLSLShaderGenerator::generateFunctionCallExpr(
             hasAnyArgs = true;
         }
 
-        if (not accessedParams.resources.isEmpty())
+        if (!accessedParams.resources.isEmpty())
         {
             w << ", " << _imageSamplerName;
         }

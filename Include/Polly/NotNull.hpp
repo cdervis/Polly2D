@@ -20,19 +20,16 @@ requires std::is_pointer_v<T>
 class NotNull final
 {
   public:
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     constexpr NotNull(T ptr)
         : _ptr(ptr)
     {
         checkConstruction();
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     NotNull(std::nullptr_t) = delete;
 
     NotNull& operator=(std::nullptr_t) = delete;
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<typename U>
     requires(std::is_convertible_v<U, T>)
     constexpr NotNull(U&& u)
@@ -41,7 +38,6 @@ class NotNull final
         checkConstruction();
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<typename U>
     requires(std::is_convertible_v<U, T>)
     constexpr NotNull(const NotNull<U>& other)
@@ -56,7 +52,6 @@ class NotNull final
         return _ptr;
     }
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     constexpr operator T() const
     {
         return get();

@@ -27,7 +27,7 @@ bool Polly::isKeyDown(const Span<Scancode> scancodes)
 
 bool Polly::isKeyUp(const Scancode scancode)
 {
-    return not isKeyDown(scancode);
+    return !isKeyDown(scancode);
 }
 
 bool Polly::wasKeyJustPressed(const Scancode scancode)
@@ -52,7 +52,7 @@ bool Polly::isMouseButtonDown(const MouseButton button)
 
 bool Polly::isMouseButtonUp(const MouseButton button)
 {
-    return not isMouseButtonDown(button);
+    return !isMouseButtonDown(button);
 }
 
 bool Polly::wasMouseButtonJustPressed(const MouseButton button)

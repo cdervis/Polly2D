@@ -42,10 +42,10 @@ enum class SpeechWaveform
 
 struct SoundSpeech
 {
-    u32            baseFrequency    = 1330;
-    float          aBaseSpeed       = 10.0f;
-    float          aBaseDeclination = 0.5f;
-    SpeechWaveform aBaseWaveform    = SpeechWaveform::Square;
+    u32            baseFrequency   = 1330;
+    float          baseSpeed       = 10.0f;
+    float          baseDeclination = 0.5f;
+    SpeechWaveform baseWaveform    = SpeechWaveform::Square;
 };
 
 /// Represents a sound, ready for playback.
@@ -75,10 +75,21 @@ class Sound
     /// @name From asset storage
     explicit Sound(StringView assetName);
 
+    /// Creates a sound from an SFXR parameter preset.
+    /// SFXR is a way to produce 8-bit sound effects from a set of parameters.
+    ///
+    /// @param sfxrPreset The SFXR parameters.
+    /// @param seed The seed to use for frequency generation. The same seed with the same parameters will
+    /// always produce the same sound.
     explicit Sound(SfxrSoundPreset sfxrPreset, i32 seed);
 
+    /// Creates a simple text-to-speech sound.
+    ///
+    /// @param speechParams The speech parameters.
+    /// @param speechText The text to speak.
     explicit Sound(SoundSpeech speechParams, StringView speechText = StringView());
 
+    /// Gets the type of this sound.
     SoundType type() const;
 
     /// Stops playing the sound and all of its derived channels.
@@ -87,8 +98,12 @@ class Sound
     /// Gets the number of actively playing voices based on this sound.
     u32 voiceCount() const;
 
+    /// Sets the text to speak if this sound is a text-to-speech sound.
+    /// If not, the call is ignored.
     void setSpeechText(StringView value);
 
+    /// Sets the speech parameters if this sound is a text-to-speech sound.
+    /// If not, the call is ignored.
     void setSpeechParams(SoundSpeech params);
 };
 } // namespace Polly

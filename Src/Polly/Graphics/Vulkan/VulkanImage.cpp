@@ -122,7 +122,7 @@ void VulkanImage::createVkImage(const void* data, [[maybe_unused]] bool isStatic
         info.tiling      = VK_IMAGE_TILING_OPTIMAL;
         info.usage       = static_cast<VkImageUsageFlags>(
             VK_IMAGE_USAGE_SAMPLED_BIT
-            bitor (isCanvas() ? VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT : VK_IMAGE_USAGE_TRANSFER_DST_BIT)),
+            | (isCanvas() ? VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT : VK_IMAGE_USAGE_TRANSFER_DST_BIT)),
         info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
         info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 

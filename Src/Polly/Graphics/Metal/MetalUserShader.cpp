@@ -41,7 +41,7 @@ MetalUserShader::MetalUserShader(
 
     _mtlFunction = findMtlLibraryFunction(mtlLibrary.get(), "ps_main");
 
-    if (not _mtlFunction)
+    if (!_mtlFunction)
     {
         throw Polly::Error("Invalid user-shader loaded.");
     }

@@ -57,13 +57,13 @@ ByteBlob GLSLToSpirVCompiler::compile(StringView glslCode, VulkanShaderType type
         glslang::EShTargetLanguage::EShTargetSpv,
         glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
 
-    if (not shader.parse(
+    if (!shader.parse(
             GetDefaultResources(),
             110,
             ENoProfile,
             false,
             false,
-            static_cast<EShMessages>(EShMsgSpvRules bitor EShMsgVulkanRules bitor EShMsgRelaxedErrors)))
+            static_cast<EShMessages>(EShMsgSpvRules | EShMsgVulkanRules | EShMsgRelaxedErrors)))
     {
         throw Error(formatString("Failed to compile GLSL shader to SPIR-V: {}", shader.getInfoLog()));
     }
@@ -71,7 +71,7 @@ ByteBlob GLSLToSpirVCompiler::compile(StringView glslCode, VulkanShaderType type
     auto program = glslang::TProgram();
     program.addShader(&shader);
 
-    if (not program.link(EShMsgDefault) or not program.mapIO())
+    if (!program.link(EShMsgDefault) || !program.mapIO())
     {
         throw Error(formatString("Failed to link SPIR-V program: {}", program.getInfoLog()));
     }

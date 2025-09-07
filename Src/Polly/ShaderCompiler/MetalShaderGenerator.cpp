@@ -106,7 +106,7 @@ String MetalShaderGenerator::doGeneration(
 
     // Emit the uniform buffer for the shader parameters.
     const auto accessedParams = _ast->paramsAccessedByFunction(entryPoint);
-    if (not accessedParams.scalars.isEmpty())
+    if (!accessedParams.scalars.isEmpty())
     {
         emitUniformBuffer(w, accessedParams);
         w << wnewline;
@@ -173,7 +173,7 @@ void MetalShaderGenerator::generateFunctionDecl(
     const FunctionDecl* function,
     const SemaContext&  context)
 {
-    if (not function->body())
+    if (!function->body())
     {
         return;
     }
@@ -271,7 +271,7 @@ void MetalShaderGenerator::generateFunctionDecl(
     }
 
     // Emit scalar-based parameters in the function parameter list.
-    if (not accessedParams.scalars.isEmpty())
+    if (!accessedParams.scalars.isEmpty())
     {
         w << "," << wnewline;
         w.pad(4);
@@ -282,7 +282,7 @@ void MetalShaderGenerator::generateFunctionDecl(
     // TODO:
 #if 0
     // Emit resource-based parameters in the function parameter list.
-    if (not accessedParams.resources.isEmpty())
+    if (! accessedParams.resources.isEmpty())
     {
         w << "," << wnewline;
 
@@ -312,7 +312,7 @@ void MetalShaderGenerator::generateFunctionDecl(
             }
         }
 
-        if (not function->isShader() and not accessedParams.resources.isEmpty())
+        if (! function->isShader() && ! accessedParams.resources.isEmpty())
         {
             w << "," << wnewline;
             w.pad(4);
@@ -476,12 +476,12 @@ void MetalShaderGenerator::generateSymAccessExpr(
     }
     else if (
         symbol == builtIns.svSpriteColor.get()
-        or symbol == builtIns.svPolygonColor.get()
-        or symbol == builtIns.svMeshColor.get())
+        || symbol == builtIns.svPolygonColor.get()
+        || symbol == builtIns.svMeshColor.get())
     {
         w << Naming::shaderInputParam << ".color";
     }
-    else if (symbol == builtIns.svSpriteUV.get() or symbol == builtIns.svMeshUV.get())
+    else if (symbol == builtIns.svSpriteUV.get() || symbol == builtIns.svMeshUV.get())
     {
         w << Naming::shaderInputParam << ".uv";
     }
@@ -551,7 +551,7 @@ void MetalShaderGenerator::generateFunctionCallExpr(
     {
         const auto accessedParams = _ast->paramsAccessedByFunction(calledFunction);
 
-        if (not accessedParams.scalars.isEmpty())
+        if (!accessedParams.scalars.isEmpty())
         {
             if (hasAnyArgs)
             {
@@ -574,7 +574,7 @@ void MetalShaderGenerator::generateFunctionCallExpr(
             hasAnyArgs = true;
         }
 
-        if (not accessedParams.resources.isEmpty())
+        if (!accessedParams.resources.isEmpty())
         {
             w << ", " << Naming::forbiddenIdentifierPrefix << "sampler";
         }

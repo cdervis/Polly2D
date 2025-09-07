@@ -31,7 +31,7 @@ bool nextBool();
 /// Seeds the randomizer that is used in fast randomizer functions.
 ///
 /// @param value The new seed to set.
-void seedFastRand(int32_t value);
+void seedFastRand(i32 value);
 
 /// Calculates a random integer in a specific interval.
 ///
@@ -94,7 +94,7 @@ Color nextColorFast(Maybe<float> alpha = none);
 /// The components are determined using a FastRand algorithm.
 ///
 /// @param interval The interval
-Color nextColorFast(const color_interval& interval);
+Color nextColorFast(ColorInterval interval);
 } // namespace Polly::Random
 
 #include "Polly/Details/Random.inl"

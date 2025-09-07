@@ -13,8 +13,8 @@ namespace Polly
 {
 /// Represents a system that manages and emits particles.
 ///
-/// A particle system consists of particle emitters that define
-/// how individual particles look and how they are emitted.
+/// A particle system consists of particle emitters that define how individual particles look and how they are
+/// emitted.
 class ParticleSystem
 {
     PollyObject(ParticleSystem);

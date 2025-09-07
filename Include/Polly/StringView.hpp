@@ -24,15 +24,12 @@ class StringView
 
     constexpr StringView();
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     constexpr StringView(Details::NoObjectTag);
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     constexpr StringView(const char* str);
 
     constexpr StringView(const char* str, u32 size, bool isNullTerminated = false);
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<size_t N>
     constexpr StringView(const char (&str)[N])
         : _data(str)
@@ -41,7 +38,6 @@ class StringView
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     StringView(std::nullptr_t) =
         PollyDeleteWithReason("Constructing a StringView from a nullptr is invalid.");
 
@@ -126,7 +122,6 @@ class StringView
 
     size_t hashCode() const;
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     constexpr operator Span<char>() const;
 
     constexpr bool isNullTerminated() const;

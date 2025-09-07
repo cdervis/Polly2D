@@ -31,7 +31,7 @@ VulkanUBOAllocator::Allocation VulkanUBOAllocator::allocate(u32 size)
 
     auto newPosition = _positionInBuffer + size;
 
-    if (not _currentBuffer or newPosition > _entries[*_currentBuffer].buffer.sizeInBytes())
+    if (!_currentBuffer || newPosition > _entries[*_currentBuffer].buffer.sizeInBytes())
     {
         logVerbose("VulkanCBufferAllocator: Creating buffer of size {}", maxCBufferSize);
 
@@ -43,7 +43,7 @@ VulkanUBOAllocator::Allocation VulkanUBOAllocator::allocate(u32 size)
             _device.vkDevice(),
             _device.vmaAllocator(),
             maxCBufferSize,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT bitor VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VK_SHARING_MODE_EXCLUSIVE,
             VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
             nullptr,

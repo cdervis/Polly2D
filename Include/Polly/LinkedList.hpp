@@ -289,7 +289,7 @@ class LinkedList
             ++idx;
         }
 
-        return Pair(nullptr, static_cast<u32>(-1));
+        return Pair(nullptr, u32(-1));
     }
 
     void assignFromList(const LinkedList& copyFrom)

@@ -9,8 +9,7 @@
 
 namespace Polly
 {
-/// Defines the type of vertex used with mesh-drawing APIs
-/// such as Painter::drawMesh().
+/// Defines the type of vertex used with mesh-drawing APIs such as Painter::drawMesh().
 struct alignas(16) MeshVertex
 {
     Vec2  position;

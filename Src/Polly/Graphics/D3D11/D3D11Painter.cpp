@@ -48,12 +48,12 @@ D3D11Painter::D3D11Painter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 
     postInit(determineCapabilities(), 1, maxSpriteBatchSize, maxPolyVertices, maxMeshVertices);
 
-    if (not ImGui_ImplSDL3_InitForD3D(windowImpl.sdlWindow()))
+    if (!ImGui_ImplSDL3_InitForD3D(windowImpl.sdlWindow()))
     {
         throw Error("Failed to initialize ImGui for SDL3 and D3D.");
     }
 
-    if (not ImGui_ImplDX11_Init(_id3d11Device.Get(), _id3d11Context.Get()))
+    if (!ImGui_ImplDX11_Init(_id3d11Device.Get(), _id3d11Context.Get()))
     {
         throw Error("Failed to initialize the D3D11 backend of ImGui.");
     }
@@ -340,7 +340,7 @@ int D3D11Painter::prepareDrawCall()
 
         // Blend state
         if (const auto blendState = currentBlendState();
-            not _lastBoundBlendState || *_lastBoundBlendState != blendState)
+            !_lastBoundBlendState || *_lastBoundBlendState != blendState)
         {
             const auto blendFactorD3D = Array<FLOAT, 4>{
                 blendState.blendFactor.r,
@@ -797,7 +797,7 @@ void D3D11Painter::createSpriteRenderingResources()
         const auto indices = createSpriteIndicesList<maxSpriteBatchSize>();
 
         const auto desc = D3D11_BUFFER_DESC{
-            .ByteWidth = indices.size() * static_cast<u32>(sizeof(u16)),
+            .ByteWidth = indices.size() * u32(sizeof(u16)),
             .Usage     = D3D11_USAGE_IMMUTABLE,
             .BindFlags = D3D11_BIND_INDEX_BUFFER,
         };

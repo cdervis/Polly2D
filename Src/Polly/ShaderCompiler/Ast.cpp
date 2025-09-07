@@ -176,7 +176,7 @@ AccessedParams Ast::paramsAccessedByFunction(const FunctionDecl* function) const
     {
         const auto* param = as<ShaderParamDecl>(decl.get());
 
-        if (not param)
+        if (!param)
         {
             continue;
         }

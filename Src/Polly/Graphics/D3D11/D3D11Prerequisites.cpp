@@ -10,7 +10,7 @@ void checkHResult(HRESULT result, StringView message)
 {
     if (FAILED(result))
     {
-        throw Error(formatString("{} (error code {})", message, static_cast<i32>(result)));
+        throw Error(formatString("{} (error code {})", message, i32(result)));
     }
 }
 

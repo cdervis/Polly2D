@@ -28,7 +28,7 @@ const SourceLocation& Statement::location() const
 
 void Statement::verify(SemaContext& context, Scope& scope)
 {
-    if (not _isVerified)
+    if (!_isVerified)
     {
         onVerify(context, scope);
         _isVerified = true;
@@ -87,7 +87,7 @@ const Expr* CompoundAssignment::rhs() const
 
 bool CompoundAssignment::accessesSymbol(const Decl* symbol, bool transitive) const
 {
-    return _lhs->accessesSymbol(symbol, transitive) or _rhs->accessesSymbol(symbol, transitive);
+    return _lhs->accessesSymbol(symbol, transitive) || _rhs->accessesSymbol(symbol, transitive);
 }
 
 Assignment::Assignment(const SourceLocation& location, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs)
@@ -122,7 +122,7 @@ const Expr* Assignment::rhs() const
 
 bool Assignment::accessesSymbol(const Decl* symbol, bool transitive) const
 {
-    return _lhs->accessesSymbol(symbol, transitive) or _rhs->accessesSymbol(symbol, transitive);
+    return _lhs->accessesSymbol(symbol, transitive) || _rhs->accessesSymbol(symbol, transitive);
 }
 
 ReturnStmt::ReturnStmt(const SourceLocation& location, UniquePtr<Expr> expr)
@@ -221,7 +221,7 @@ BreakStmt::BreakStmt(const SourceLocation& location)
 
 void BreakStmt::onVerify([[maybe_unused]] SemaContext& context, Scope& scope)
 {
-    if (not scope.isWithinContext(ScopeContext::Loop))
+    if (!scope.isWithinContext(ScopeContext::Loop))
     {
         throw ShaderCompileError(location(), "A 'break' statement may only exist inside of a loop.");
     }
@@ -239,7 +239,7 @@ ContinueStmt::ContinueStmt(const SourceLocation& location)
 
 void ContinueStmt::onVerify([[maybe_unused]] SemaContext& context, Scope& scope)
 {
-    if (not scope.isWithinContext(ScopeContext::Loop))
+    if (!scope.isWithinContext(ScopeContext::Loop))
     {
         throw ShaderCompileError(location(), "A 'continue' statement may only exist inside of a loop.");
     }
@@ -304,7 +304,7 @@ const IfStmt* IfStmt::next() const
 
 bool IfStmt::accessesSymbol(const Decl* symbol, bool transitive) const
 {
-    if (_condition_expr and _condition_expr->accessesSymbol(symbol, transitive))
+    if (_condition_expr && _condition_expr->accessesSymbol(symbol, transitive))
     {
         return true;
     }
@@ -314,7 +314,7 @@ bool IfStmt::accessesSymbol(const Decl* symbol, bool transitive) const
         return true;
     }
 
-    if (_next and _next->accessesSymbol(symbol, transitive))
+    if (_next && _next->accessesSymbol(symbol, transitive))
     {
         return true;
     }

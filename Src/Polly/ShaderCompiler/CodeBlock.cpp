@@ -48,7 +48,7 @@ void CodeBlock::verify(SemaContext& context, Scope& scope, MutableSpan<const Dec
 
         stmt->verify(context, childScope);
 
-        if (is<BreakStmt>(stmt) or is<ContinueStmt>(stmt))
+        if (is<BreakStmt>(stmt) || is<ContinueStmt>(stmt))
         {
             breakOrContinueStmt = stmt.get();
         }

@@ -42,7 +42,7 @@ struct Pair
     constexpr explicit operator bool() const
     requires(std::convertible_to<T1, bool>)
     {
-        return static_cast<bool>(first);
+        return bool(first);
     }
 
     T1 first;

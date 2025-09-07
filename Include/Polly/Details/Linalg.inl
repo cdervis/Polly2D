@@ -35,8 +35,8 @@ constexpr Vec2i::Vec2i(const int x, const int y)
 }
 
 constexpr Vec2i::Vec2i(const Vec2& vector)
-    : x(static_cast<int>(vector.x))
-    , y(static_cast<int>(vector.y))
+    : x(int(vector.x))
+    , y(int(vector.y))
 {
 }
 

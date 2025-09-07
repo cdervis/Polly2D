@@ -52,7 +52,7 @@ Expr::~Expr() noexcept = default;
 
 void Expr::verify(SemaContext& context, Scope& scope)
 {
-    if (not _isVerified)
+    if (!_isVerified)
     {
         onVerify(context, scope);
         assumeWithMsg(_type, "Expression did not have a valid type after it was verified.");
@@ -237,7 +237,7 @@ void BinOpExpr::onVerify(SemaContext& context, Scope& scope)
         const auto maybeResultType =
             context.binaryOperationTable().binOpResultType(_binOpKind, lhsType, rhsType);
 
-        if (not maybeResultType)
+        if (!maybeResultType)
         {
             throw ShaderCompileError(
                 location(),
@@ -262,7 +262,7 @@ Any BinOpExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
     const auto lhs = _lhs->evaluateConstantValue(context, scope);
     const auto rhs = _rhs->evaluateConstantValue(context, scope);
 
-    if (lhs and rhs)
+    if (lhs && rhs)
     {
         if (lhs.type() != rhs.type())
         {
@@ -285,11 +285,11 @@ Any BinOpExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
                 case BinOpKind::GreaterThan: return lhsInt > rhsInt;
                 case BinOpKind::GreaterThanOrEqual: return lhsInt >= rhsInt;
                 case BinOpKind::BitwiseXor: return lhsInt xor rhsInt;
-                case BinOpKind::BitwiseAnd: return lhsInt bitand rhsInt;
+                case BinOpKind::BitwiseAnd: return lhsInt & rhsInt;
                 case BinOpKind::Equal: return lhsInt == rhsInt;
                 case BinOpKind::NotEqual: return lhsInt != rhsInt;
                 case BinOpKind::RightShift: return lhsInt >> rhsInt;
-                case BinOpKind::BitwiseOr: return lhsInt bitor rhsInt;
+                case BinOpKind::BitwiseOr: return lhsInt | rhsInt;
                 case BinOpKind::LeftShift: return lhsInt << rhsInt;
                 default: return {};
             }
@@ -373,7 +373,7 @@ Any BinOpExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
 
 bool BinOpExpr::accessesSymbol(const Decl* symbol, bool transitive) const
 {
-    return _lhs->accessesSymbol(symbol, transitive) or _rhs->accessesSymbol(symbol, transitive);
+    return _lhs->accessesSymbol(symbol, transitive) || _rhs->accessesSymbol(symbol, transitive);
 }
 
 BinOpExpr::BinOpExpr(const SourceLocation& location, BinOpKind kind, UniquePtr<Expr> lhs, UniquePtr<Expr> rhs)
@@ -427,7 +427,7 @@ void SubscriptExpr::onVerify(SemaContext& context, Scope& scope)
 
     const auto* arrayType = as<ArrayType>(symbol()->type());
 
-    if (not arrayType)
+    if (!arrayType)
     {
         throw ShaderCompileError(
             _indexExpr->location(),
@@ -440,7 +440,7 @@ void SubscriptExpr::onVerify(SemaContext& context, Scope& scope)
     const auto indexExprConstantValue = _indexExpr->evaluateConstantValue(context, scope);
     auto       constantIndex          = Maybe<int>();
 
-    if (indexExprConstantValue and indexExprConstantValue.type() == AnyType::Int)
+    if (indexExprConstantValue && indexExprConstantValue.type() == AnyType::Int)
     {
         const auto intIndex = indexExprConstantValue.get<int>();
 
@@ -459,7 +459,7 @@ void SubscriptExpr::onVerify(SemaContext& context, Scope& scope)
         constantIndex = intIndex;
     }
 
-    if (constantIndex and *constantIndex >= arraySize)
+    if (constantIndex && *constantIndex >= arraySize)
     {
         throw ShaderCompileError(
             location(),
@@ -474,7 +474,7 @@ void SubscriptExpr::onVerify(SemaContext& context, Scope& scope)
             const auto  minValue = range.start()->evaluateConstantValue(context, scope);
             const auto  maxValue = range.end()->evaluateConstantValue(context, scope);
 
-            if (minValue and minValue.get<int>() < 0)
+            if (minValue && minValue.get<int>() < 0)
             {
                 throw ShaderCompileError(
                     location(),
@@ -486,7 +486,7 @@ void SubscriptExpr::onVerify(SemaContext& context, Scope& scope)
                         minValue.get<int>()));
             }
 
-            if (maxValue and maxValue.get<int>() > arraySize)
+            if (maxValue && maxValue.get<int>() > arraySize)
             {
                 throw ShaderCompileError(
                     location(),
@@ -515,7 +515,7 @@ const Expr* SubscriptExpr::indexExpr() const
 
 bool SubscriptExpr::accessesSymbol(const Decl* symbol, bool transitive) const
 {
-    return _expr->accessesSymbol(symbol, transitive) or _indexExpr->accessesSymbol(symbol, transitive);
+    return _expr->accessesSymbol(symbol, transitive) || _indexExpr->accessesSymbol(symbol, transitive);
 }
 
 SubscriptExpr::SubscriptExpr(const SourceLocation& location, UniquePtr<Expr> expr, UniquePtr<Expr> indexExpr)
@@ -564,7 +564,7 @@ void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
             _isVectorSwizzling = true;
             overrideSymbolType = determineVectorSwizzlingType(_identifier);
 
-            if (not overrideSymbolType)
+            if (!overrideSymbolType)
             {
                 throw ShaderCompileError(
                     location(),
@@ -577,7 +577,7 @@ void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
             _isArraySizeAccess = true;
         }
 
-        if (not memberSymbol)
+        if (!memberSymbol)
         {
             throw ShaderCompileError(
                 location(),
@@ -599,7 +599,7 @@ void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
         {
             const auto* function = as<FunctionDecl>(symbol);
 
-            if (not function)
+            if (!function)
             {
                 continue;
             }
@@ -668,11 +668,11 @@ void SymAccessExpr::onVerify(SemaContext& context, Scope& scope)
         setSymbol(scope.findSymbol(_identifier));
     }
 
-    if (not symbol())
+    if (!symbol())
     {
         // See if there's a similarly named symbol. If so, suggest it in the error message.
         if (const auto* similarSymbol = scope.findSymbolWithSimilarName(_identifier);
-            similarSymbol and _identifier.size() > 2)
+            similarSymbol && _identifier.size() > 2)
         {
             throw ShaderCompileError(
                 location(),
@@ -789,11 +789,11 @@ bool FunctionCallExpr::accessesSymbol(const Decl* symbol, bool transitive) const
 
     if (transitive)
     {
-        if (const auto* symAccess = as<SymAccessExpr>(_callee.get()); symAccess and symAccess->isVerified())
+        if (const auto* symAccess = as<SymAccessExpr>(_callee.get()); symAccess && symAccess->isVerified())
         {
             if (const auto* func = as<FunctionDecl>(symAccess->symbol()))
             {
-                if (func->body() and func->body()->accessesSymbol(symbol, transitive))
+                if (func->body() && func->body()->accessesSymbol(symbol, transitive))
                 {
                     return true;
                 }
@@ -821,7 +821,7 @@ Any FunctionCallExpr::evaluateConstantValue(SemaContext& context, Scope& scope) 
         for (const auto& arg : _args)
         {
             auto value = arg->evaluateConstantValue(context, scope);
-            if (not value)
+            if (!value)
             {
                 argValues.clear();
                 break;
@@ -842,7 +842,7 @@ Any FunctionCallExpr::evaluateConstantValue(SemaContext& context, Scope& scope) 
 
         if (const auto i = value.tryGet<int>())
         {
-            return static_cast<float>(*i);
+            return float(*i);
         }
 
         throw ShaderCompileError::internal("expected float argument");
@@ -1044,7 +1044,7 @@ const Expr* RangeExpr::end() const
 
 bool RangeExpr::accessesSymbol(const Decl* symbol, bool transitive) const
 {
-    return _start->accessesSymbol(symbol, transitive) or _end->accessesSymbol(symbol, transitive);
+    return _start->accessesSymbol(symbol, transitive) || _end->accessesSymbol(symbol, transitive);
 }
 
 UnaryOpExpr::UnaryOpExpr(const SourceLocation& location, UnaryOpKind kind, UniquePtr<Expr> expr)
@@ -1075,7 +1075,7 @@ Any UnaryOpExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
 {
     const auto value = _expr->evaluateConstantValue(context, scope);
 
-    if (not value)
+    if (!value)
     {
         return none;
     }
@@ -1098,7 +1098,7 @@ Any UnaryOpExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
     {
         if (_kind == UnaryOpKind::LogicalNot)
         {
-            return not value.get<bool>();
+            return !value.get<bool>();
         }
     }
 
@@ -1190,21 +1190,21 @@ Any TernaryExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
 {
     const auto conditionValue = _conditionExpr->evaluateConstantValue(context, scope);
 
-    if (not conditionValue)
+    if (!conditionValue)
     {
         return none;
     }
 
     auto trueValue = _trueExpr->evaluateConstantValue(context, scope);
 
-    if (not trueValue)
+    if (!trueValue)
     {
         return none;
     }
 
     auto falseValue = _falseExpr->evaluateConstantValue(context, scope);
 
-    if (not falseValue)
+    if (!falseValue)
     {
         return none;
     }
@@ -1221,8 +1221,8 @@ Any TernaryExpr::evaluateConstantValue(SemaContext& context, Scope& scope) const
 bool TernaryExpr::accessesSymbol(const Decl* symbol, bool transitive) const
 {
     return _conditionExpr->accessesSymbol(symbol, transitive)
-           or _trueExpr->accessesSymbol(symbol, transitive)
-           or _falseExpr->accessesSymbol(symbol, transitive);
+           || _trueExpr->accessesSymbol(symbol, transitive)
+           || _falseExpr->accessesSymbol(symbol, transitive);
 }
 
 ArrayExpr::ArrayExpr(const SourceLocation& location, const Type* type, UniquePtr<Expr> sizeExpr)

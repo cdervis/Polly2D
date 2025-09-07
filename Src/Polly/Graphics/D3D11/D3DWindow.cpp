@@ -33,7 +33,7 @@ D3DWindow::D3DWindow(
 
 void D3DWindow::createInitialSwapChain(Painter::Impl* painter)
 {
-    assume(not _painter);
+    assume(!_painter);
     _painter = painter;
     createSwapChain();
 }
@@ -51,7 +51,7 @@ void D3DWindow::createSwapChain()
 
     NotNull id3d11Device = static_cast<D3D11Painter*>(_painter)->id3d11Device();
 
-    if (not _idxgiSwapChain)
+    if (!_idxgiSwapChain)
     {
         auto desc = DXGI_SWAP_CHAIN_DESC{
             .BufferDesc =
@@ -67,7 +67,7 @@ void D3DWindow::createSwapChain()
             .BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT,
             .BufferCount  = swapChainBufferCount,
             .OutputWindow = _windowHandle,
-            .Windowed     = not isMaximized(),
+            .Windowed     = !isMaximized(),
             .SwapEffect   = DXGI_SWAP_EFFECT_FLIP_DISCARD,
         };
 

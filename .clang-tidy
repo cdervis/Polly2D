@@ -144,14 +144,12 @@ Checks: "-*,
   readability-use-anyofallof,\
   readability-use-std-min-max,\
   readability-identifier-naming,\
-  readability-operators-representation,\
 "
 
 # https://clang.llvm.org/extra/clang-tidy/checks/readability/identifier-naming.html
 
 CheckOptions:
   - { key: misc-unused-parameters.StrictMode,                    value: 0 }
-  - { key: readability-operators-representation.BinaryOperators, value: and;&=;bitand;bitor;~;not;!=;or;|=;xor;xor_eq }
   - { key: readability-identifier-naming.NamespaceCase,          value: CamelCase }
   - { key: readability-identifier-naming.ClassCase,              value: CamelCase }
   - { key: readability-identifier-naming.PrivateMemberPrefix,    value: _ }

@@ -41,7 +41,7 @@ void InputDemo::draw(Painter painter)
     }
 
     // If any gamepads are connected, draw information about the first one.
-    if (const auto gamepads = browser().gamepads(); not gamepads.isEmpty())
+    if (const auto gamepads = browser().gamepads(); !gamepads.isEmpty())
     {
         const auto& gamepad = gamepads.first();
 
@@ -192,7 +192,7 @@ void InputDemo::doImGui(ImGui imgui)
 
     const auto gamepads = browser().gamepads();
 
-    if (not gamepads.isEmpty())
+    if (!gamepads.isEmpty())
     {
         const auto& gamepad = gamepads.first();
 

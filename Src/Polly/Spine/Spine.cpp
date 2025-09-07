@@ -26,12 +26,12 @@ static spine::String convert(const String& str)
 [[maybe_unused]]
 static String convert(const spine::String& str)
 {
-    return String(str.buffer(), static_cast<u32>(str.length()));
+    return String(str.buffer(), u32(str.length()));
 }
 
 static StringView convertView(const spine::String& str)
 {
-    return StringView(str.buffer(), static_cast<u32>(str.length()));
+    return StringView(str.buffer(), u32(str.length()));
 }
 
 static String getAnimationNotFoundMessage(StringView searchedFor, const Span<SpineAnimation> animations)
@@ -41,10 +41,9 @@ static String getAnimationNotFoundMessage(StringView searchedFor, const Span<Spi
 
     for (const auto& anim : animations)
     {
-        const auto animName = anim.name();
-        const auto len      = max(searchedFor.size(), animName.size());
-        const auto normalized =
-            static_cast<double>(levensteinDistance(searchedFor, animName)) / static_cast<double>(len);
+        const auto animName   = anim.name();
+        const auto len        = max(searchedFor.size(), animName.size());
+        const auto normalized = double(levensteinDistance(searchedFor, animName)) / double(len);
 
         if (normalized < minDistance)
         {
@@ -53,7 +52,7 @@ static String getAnimationNotFoundMessage(StringView searchedFor, const Span<Spi
         }
     }
 
-    if (not minDistanceName.isEmpty())
+    if (!minDistanceName.isEmpty())
     {
         return formatString(
             "No animation named '{}' in the skeleton; did you mean '{}'?",
@@ -245,13 +244,13 @@ Vec2 SpineBone::worldScale() const
 u32 SpineSlotData::index() const
 {
     PollyDeclareThisImplAs(spine::SlotData);
-    return static_cast<u32>(impl->getIndex());
+    return u32(impl->getIndex());
 }
 
 StringView SpineSlotData::name() const
 {
     PollyDeclareThisImplAs(spine::SlotData);
-    return StringView(impl->getName().buffer(), static_cast<u32>(impl->getName().length()));
+    return StringView(impl->getName().buffer(), u32(impl->getName().length()));
 }
 
 SpineBoneData SpineSlotData::boneData() const
@@ -289,9 +288,7 @@ void SpineSlotData::setHasDarkColor(bool value)
 StringView SpineSlotData::attachmentName() const
 {
     PollyDeclareThisImplAs(spine::SlotData);
-    return StringView(
-        impl->getAttachmentName().buffer(),
-        static_cast<u32>(impl->getAttachmentName().length()));
+    return StringView(impl->getAttachmentName().buffer(), u32(impl->getAttachmentName().length()));
 }
 
 void SpineSlotData::setAttachmentName(StringView value)
@@ -329,7 +326,7 @@ SpineSkeletonData::SpineSkeletonData(StringView assetName, SpineAtlas atlas, flo
         throw Error("No asset name specified.");
     }
 
-    if (not atlas)
+    if (!atlas)
     {
         throw Error("No atlas specified.");
     }
@@ -583,7 +580,7 @@ PollyImplementObject(SpineSkeleton);
 SpineSkeleton::SpineSkeleton(SpineSkeletonData skeletonData)
     : SpineSkeleton()
 {
-    if (not skeletonData)
+    if (!skeletonData)
     {
         throw Error("No skeleton data specified.");
     }
@@ -659,8 +656,7 @@ SpineAttachment SpineSkeleton::attachment(StringView slotName, const StringView 
 SpineAttachment SpineSkeleton::attachment(u32 slotIndex, const StringView attachmentName)
 {
     PollyDeclareThisImpl;
-    return SpineAttachment(
-        impl->skeleton->getAttachment(static_cast<int>(slotIndex), convert(attachmentName)));
+    return SpineAttachment(impl->skeleton->getAttachment(int(slotIndex), convert(attachmentName)));
 }
 
 void SpineSkeleton::setAttachment(StringView slotName, const StringView attachmentName)
@@ -810,7 +806,7 @@ void SpineSkeleton::setTime(Seconds value)
 u32 SpineTrack::trackIndex() const
 {
     PollyDeclareThisImplAs(spine::TrackEntry);
-    return static_cast<u32>(impl->getTrackIndex());
+    return u32(impl->getTrackIndex());
 }
 
 bool SpineTrack::shouldLoop() const
@@ -1148,7 +1144,7 @@ SpineTrack SpineAnimationState::setAnimation(u32 trackIndex, StringView animatio
     auto& skeletonData     = *skeletonDataImpl.skeleton_data;
     auto* animPtr          = skeletonData.findAnimation(convert(animationName));
 
-    if (not animPtr)
+    if (!animPtr)
     {
         throw Error(getAnimationNotFoundMessage(animationName, skeletonDataImpl.animations));
     }
@@ -1161,7 +1157,7 @@ SpineTrack SpineAnimationState::setAnimation(
     const SpineAnimation& animation,
     const bool            shouldLoop)
 {
-    if (not animation)
+    if (!animation)
     {
         throw Error("No animation specified.");
     }
@@ -1188,7 +1184,7 @@ SpineTrack SpineAnimationState::addAnimation(
     const bool            shouldLoop,
     const Seconds         delay)
 {
-    if (not animation)
+    if (!animation)
     {
         throw Error("No animation specified.");
     }
@@ -1258,7 +1254,7 @@ PollyImplementObject(SpineAnimationStateData);
 SpineAnimationStateData::SpineAnimationStateData(SpineSkeletonData skeletonData)
     : SpineAnimationStateData()
 {
-    if (not skeletonData)
+    if (!skeletonData)
     {
         throw Error("No skeleton data specified.");
     }
@@ -1300,12 +1296,12 @@ void SpineAnimationStateData::setMix(const StringView fromName, const StringView
     auto* anim1Ptr = skeletonData.findAnimation(convert(fromName));
     auto* anim2Ptr = skeletonData.findAnimation(convert(toName));
 
-    if (not anim1Ptr)
+    if (!anim1Ptr)
     {
         throw Error(getAnimationNotFoundMessage(fromName, skeletonDataImpl.animations));
     }
 
-    if (not anim2Ptr)
+    if (!anim2Ptr)
     {
         throw Error(getAnimationNotFoundMessage(toName, skeletonDataImpl.animations));
     }

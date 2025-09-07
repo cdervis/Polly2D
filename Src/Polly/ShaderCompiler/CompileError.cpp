@@ -26,7 +26,7 @@ static String buildMessage(SourceLocation location, StringView message)
                              location.column,
                              message);
 
-#if not defined(NDEBUG) and defined(WIN32)
+#if !defined(NDEBUG) && defined(WIN32)
     OutputDebugString(message.cstring());
     OutputDebugString("\n");
 #endif

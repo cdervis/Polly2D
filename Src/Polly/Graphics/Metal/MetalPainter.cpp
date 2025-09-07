@@ -53,7 +53,7 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 
     _mtlDevice = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
 
-    if (not _mtlDevice)
+    if (!_mtlDevice)
     {
         throw Error("Failed to initialize the Metal device.");
     }
@@ -108,12 +108,12 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 
     postInit(caps, maxFramesInFlight, maxSpriteBatchSize, maxPolyVertices, maxMeshVertices);
 
-    if (not ImGui_ImplSDL3_InitForMetal(windowImpl.sdlWindow()))
+    if (!ImGui_ImplSDL3_InitForMetal(windowImpl.sdlWindow()))
     {
         throw Error("Failed to initialize ImGui for SDL3 and Metal.");
     }
 
-    if (not ImGui_ImplMetal_Init(_mtlDevice.get()))
+    if (!ImGui_ImplMetal_Init(_mtlDevice.get()))
     {
         throw Error("Failed to initialize the Metal backend of ImGui.");
     }
@@ -173,7 +173,7 @@ void MetalPainter::onFrameStarted()
                 captureFilename.remove(*slashIdx);
             }
 
-            if (not captureFilename.endsWith("/"))
+            if (!captureFilename.endsWith("/"))
             {
                 captureFilename += '/';
             }
@@ -219,7 +219,7 @@ void MetalPainter::onFrameStarted()
     auto* caMetalLayer              = metalWindow.caMetalLayer();
     frameData.currentWindowDrawable = NS::RetainPtr(caMetalLayer->nextDrawable());
 
-    if (not frameData.currentWindowDrawable)
+    if (!frameData.currentWindowDrawable)
     {
         throw Error("Failed to obtain the Metal Drawable object for the frame.");
     }
@@ -407,7 +407,7 @@ void MetalPainter::spriteQueueLimitReached()
     {
         // Have to allocate a new sprite vertex buffer.
         auto buffer = createSingleSpriteVertexBuffer();
-        if (not buffer)
+        if (!buffer)
         {
             return;
         }
@@ -748,7 +748,7 @@ void MetalPainter::createSpriteRenderingResources(MTL::Library* shaderLib)
     {
         _spriteVS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_sprites"));
 
-        if (not _spriteVS)
+        if (!_spriteVS)
         {
             throw Error("Failed to create internal shaders.");
         }
@@ -772,7 +772,7 @@ void MetalPainter::createSpriteRenderingResources(MTL::Library* shaderLib)
             indices.size() * sizeof(uint16_t),
             MTL::ResourceStorageModeShared));
 
-        if (not _spriteIndexBuffer)
+        if (!_spriteIndexBuffer)
         {
             throw Error("Failed to create an index buffer.");
         }
@@ -787,7 +787,7 @@ void MetalPainter::createPolyRenderingResources(MTL::Library* shaderLib)
     {
         _polyVS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_poly"));
 
-        if (not _polyVS)
+        if (!_polyVS)
         {
             throw Error("Failed to create internal shaders.");
         }
@@ -803,7 +803,7 @@ void MetalPainter::createPolyRenderingResources(MTL::Library* shaderLib)
         data.polyVertexBuffer = NS::TransferPtr(
             _mtlDevice->newBuffer(static_cast<NS::UInteger>(vbSizeInBytes), MTL::ResourceStorageModeShared));
 
-        if (not data.polyVertexBuffer)
+        if (!data.polyVertexBuffer)
         {
             throw Error("Failed to create a vertex buffer.");
         }
@@ -818,7 +818,7 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
     {
         _meshVS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_mesh"));
 
-        if (not _meshVS)
+        if (!_meshVS)
         {
             throw Error("Failed to create internal shaders.");
         }
@@ -836,7 +836,7 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
                 static_cast<NS::UInteger>(vbSizeInBytes),
                 MTL::ResourceStorageModeShared));
 
-            if (not data.meshVertexBuffer)
+            if (!data.meshVertexBuffer)
             {
                 throw Error("Failed to create a vertex buffer.");
             }
@@ -852,7 +852,7 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
                 static_cast<NS::UInteger>(ibSizeInBytes),
                 MTL::ResourceStorageModeShared));
 
-            if (not data.meshIndexBuffer)
+            if (!data.meshIndexBuffer)
             {
                 throw Error("Failed to create an index buffer.");
             }
@@ -870,7 +870,7 @@ NS::SharedPtr<MTL::Buffer> MetalPainter::createSingleSpriteVertexBuffer()
     auto buffer = NS::TransferPtr(
         _mtlDevice->newBuffer(static_cast<NS::UInteger>(vbSizeInBytes), MTL::ResourceStorageModeShared));
 
-    if (not buffer)
+    if (!buffer)
     {
         throw Error("Failed to create a vertex buffer for sprite drawing.");
     }

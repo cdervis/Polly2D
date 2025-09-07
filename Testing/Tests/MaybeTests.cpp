@@ -26,8 +26,8 @@ struct NonTrivial
 
 static_assert(std::is_trivial_v<Trivial>);
 static_assert(std::is_trivially_destructible_v<Trivial>);
-static_assert(not std::is_trivial_v<NonTrivial>);
-static_assert(not std::is_trivially_destructible_v<NonTrivial>);
+static_assert(! std::is_trivial_v<NonTrivial>);
+static_assert(! std::is_trivially_destructible_v<NonTrivial>);
 
 bool operator==(const Trivial& lhs, const Trivial& rhs)
 {

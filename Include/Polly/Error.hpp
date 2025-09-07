@@ -12,6 +12,7 @@ namespace Polly
 class String;
 class StringView;
 
+/// Represents a general error that is raised by Polly.
 class Error : public std::exception
 {
   public:

@@ -63,20 +63,16 @@ concept AssignableToAny = SupportedByAny<std::remove_cvref_t<T>>;
 class Any final
 {
   public:
-    // ReSharper disable once CppPossiblyUninitializedMember
     Any() // NOLINT(*-pro-type-member-init)
         : _type(AnyType::None)
     {
     }
 
-    // ReSharper disable once CppPossiblyUninitializedMember
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     Any(Details::NoObjectTag)
         : Any()
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<Concepts::AssignableToAny T>
     Any(T&& value); // NOLINT(*-explicit-constructor)
 

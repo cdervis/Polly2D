@@ -15,7 +15,7 @@ static InputImpl* sInputImplInstance;
 
 int InputImpl::toSDLScancode(Scancode scancode)
 {
-    return static_cast<int>(scancode);
+    return int(scancode);
 }
 
 int InputImpl::toSDLKey(const Key key)
@@ -593,7 +593,7 @@ InputImpl::InputImpl()
 
 void InputImpl::createInstance()
 {
-    assume(not sInputImplInstance);
+    assume(!sInputImplInstance);
     sInputImplInstance = new InputImpl();
 }
 
@@ -611,12 +611,12 @@ InputImpl& InputImpl::instance()
 
 static u32 toArrayIndex(Scancode scancode)
 {
-    return static_cast<u32>(scancode);
+    return u32(scancode);
 }
 
 static u32 toArrayIndex(MouseButton button)
 {
-    return static_cast<u32>(static_cast<int>(button) - 1);
+    return u32(int(button) - 1);
 }
 
 bool InputImpl::isKeyDown(const Scancode scancode) const
@@ -628,14 +628,14 @@ bool InputImpl::wasKeyJustPressed(const Scancode scancode) const
 {
     const auto idx = toArrayIndex(scancode);
 
-    return _previousKeyStates[idx] == 0 and _keyStates[idx] == 1;
+    return _previousKeyStates[idx] == 0 && _keyStates[idx] == 1;
 }
 
 bool InputImpl::wasKeyJustReleased(const Scancode scancode) const
 {
     const auto idx = toArrayIndex(scancode);
 
-    return _previousKeyStates[idx] == 1 and _keyStates[idx] == 0;
+    return _previousKeyStates[idx] == 1 && _keyStates[idx] == 0;
 }
 
 bool InputImpl::isMouseButtonDown(const MouseButton button) const
@@ -647,14 +647,14 @@ bool InputImpl::wasMouseButtonJustPressed(const MouseButton button) const
 {
     const auto idx = toArrayIndex(button);
 
-    return _previousMouseButtonStates[idx] == 0 and _mouseButtonStates[idx] == 1;
+    return _previousMouseButtonStates[idx] == 0 && _mouseButtonStates[idx] == 1;
 }
 
 bool InputImpl::wasMouseButtonJustReleased(const MouseButton button) const
 {
     const auto idx = toArrayIndex(button);
 
-    return _previousMouseButtonStates[idx] == 1 and _mouseButtonStates[idx] == 0;
+    return _previousMouseButtonStates[idx] == 1 && _mouseButtonStates[idx] == 0;
 }
 
 void InputImpl::update()
@@ -684,9 +684,9 @@ void InputImpl::update()
 
         auto setButtonState = [this, bits](MouseButton button, const int sdlButton)
         {
-            const auto idx = static_cast<int>(button) - 1;
+            const auto idx = int(button) - 1;
             assume(idx >= 0);
-            const auto isDown       = (bits bitand SDL_BUTTON_MASK(sdlButton)) != 0u;
+            const auto isDown       = (bits & SDL_BUTTON_MASK(sdlButton)) != 0u;
             _mouseButtonStates[idx] = isDown ? 1 : 0;
         };
 

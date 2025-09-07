@@ -108,7 +108,7 @@ const Font::Impl::FontPage& Font::Impl::page(u32 index) const
 
 const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoint, float fontSize)
 {
-    if (not _initializedSizes.contains(fontSize))
+    if (!_initializedSizes.contains(fontSize))
     {
         // This is the first time we're encountering this font size.
 
@@ -140,11 +140,11 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizedGlyph(char32_t codepoin
 float Font::Impl::lineHeight(float fontSize) const
 {
     const auto scale   = stbtt_ScaleForPixelHeight(&_fontInfo, fontSize);
-    const auto ascent  = static_cast<double>(_ascent) * scale;
-    const auto descent = static_cast<double>(_descent) * scale;
-    const auto lineGap = static_cast<double>(_lineGap) * scale;
+    const auto ascent  = double(_ascent) * scale;
+    const auto descent = double(_descent) * scale;
+    const auto lineGap = double(_lineGap) * scale;
 
-    return static_cast<float>(ascent - descent + lineGap);
+    return float(ascent - descent + lineGap);
 }
 
 void Font::Impl::initialize()
@@ -176,15 +176,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
     auto cx2 = 0;
     auto cy2 = 0;
 
-    stbtt_GetCodepointBitmapBox(
-        &_fontInfo,
-        static_cast<int>(key.codepoint),
-        scale,
-        scale,
-        &cx1,
-        &cy1,
-        &cx2,
-        &cy2);
+    stbtt_GetCodepointBitmapBox(&_fontInfo, int(key.codepoint), scale, scale, &cx1, &cy1, &cx2, &cy2);
 
     constexpr auto padding = 5;
 
@@ -194,14 +186,14 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
     auto maybeInsertedRect =
         _pages[*_currentPageIndex].pack.insert(bitmapWidth + padding, bitmapHeight + padding);
 
-    if (not maybeInsertedRect)
+    if (!maybeInsertedRect)
     {
         appendNewPage();
         maybeInsertedRect =
             _pages[*_currentPageIndex].pack.insert(bitmapWidth + padding, bitmapHeight + padding);
     }
 
-    if (not maybeInsertedRect)
+    if (!maybeInsertedRect)
     {
         // Ok, it failed for real. The font size might just be too large (for now).
         throw Error(formatString(

@@ -191,7 +191,7 @@ class List : Details::ListBase<T, InlineCapacity>
     List(std::initializer_list<T> init)
         : List()
     {
-        reserve(static_cast<u32>(init.size()));
+        reserve(u32(init.size()));
         base::appendRange(std::move(init));
     }
 
@@ -360,7 +360,7 @@ class List : Details::ListBase<T, InlineCapacity>
 
     u32 size() const
     {
-        return static_cast<u32>(base::size());
+        return u32(base::size());
     }
 
     [[nodiscard]]
@@ -371,7 +371,7 @@ class List : Details::ListBase<T, InlineCapacity>
 
     u32 capacity() const
     {
-        return static_cast<u32>(base::capacity());
+        return u32(base::capacity());
     }
 
     iterator removeFirst()
@@ -416,7 +416,7 @@ class List : Details::ListBase<T, InlineCapacity>
         {
             if (std::invoke(predicate, items[i]))
             {
-                removeAt(static_cast<u32>(i));
+                removeAt(u32(i));
                 ++removedCount;
             }
         }
@@ -559,7 +559,7 @@ class List : Details::ListBase<T, InlineCapacity>
     {
         if constexpr (requires { container.size(); })
         {
-            reserve(static_cast<u32>(container.size()));
+            reserve(u32(container.size()));
         }
 
         for (const auto& value : container)
@@ -685,13 +685,11 @@ class List : Details::ListBase<T, InlineCapacity>
         return result;
     }
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     operator Span<T>() const
     {
         return isEmpty() ? Span<T>() : Span(data(), size());
     }
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     operator MutableSpan<T>()
     {
         return isEmpty() ? MutableSpan<T>() : MutableSpan(data(), size());

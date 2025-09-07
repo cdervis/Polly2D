@@ -60,7 +60,7 @@ bool SemaContext::canAssign(const Type* targetType, const Expr* rhs, bool isImpl
     if (isImplicitCastAllowed)
     {
         // Can assign int literal to float?
-        if (targetType == FloatType::instance() and rhs_type == IntType::instance())
+        if (targetType == FloatType::instance() && rhs_type == IntType::instance())
         {
             if (is<IntLiteralExpr>(rhs))
             {
@@ -77,7 +77,7 @@ bool SemaContext::canAssign(const Type* targetType, const Expr* rhs, bool isImpl
 
             if (const auto* bin_op = as<BinOpExpr>(rhs))
             {
-                if (is<IntLiteralExpr>(bin_op->lhs()) and is<IntLiteralExpr>(bin_op->rhs()))
+                if (is<IntLiteralExpr>(bin_op->lhs()) && is<IntLiteralExpr>(bin_op->rhs()))
                 {
                     return true;
                 }
@@ -88,10 +88,10 @@ bool SemaContext::canAssign(const Type* targetType, const Expr* rhs, bool isImpl
     const auto* target_as_array = as<ArrayType>(targetType);
     const auto* rhs_as_array    = as<ArrayType>(rhs_type);
 
-    if (target_as_array and rhs_as_array)
+    if (target_as_array && rhs_as_array)
     {
         if (target_as_array->elementType() == rhs_as_array->elementType()
-            and target_as_array->size() == rhs_as_array->size())
+            && target_as_array->size() == rhs_as_array->size())
         {
             return true;
         }
@@ -107,7 +107,7 @@ bool SemaContext::canAssign(const Type* targetType, const Expr* rhs, bool isImpl
 
 void SemaContext::verifyTypeAssignment(const Type* targetType, const Expr* rhs, bool isImplicitCastAllowed)
 {
-    if (not canAssign(targetType, rhs, isImplicitCastAllowed))
+    if (!canAssign(targetType, rhs, isImplicitCastAllowed))
     {
         throw ShaderCompileError(
             rhs->location(),
@@ -122,7 +122,7 @@ void SemaContext::verifySymbolAssignment(const Expr* lhs)
 {
     const auto* symbol = lhs->symbol();
 
-    if (not symbol)
+    if (!symbol)
     {
         throw ShaderCompileError(lhs->location(), "Can't assign a value to an unnamed value.");
     }
@@ -140,7 +140,7 @@ void SemaContext::verifySymbolAssignment(const Expr* lhs)
 
 void SemaContext::verifySymbolName(const SourceLocation& location, StringView name) const
 {
-    if (not _allowForbiddenIdentifierPrefix and Naming::isIdentifierForbidden(name))
+    if (!_allowForbiddenIdentifierPrefix && Naming::isIdentifierForbidden(name))
     {
         throw ShaderCompileError(
             location,

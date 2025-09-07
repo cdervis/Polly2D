@@ -9,7 +9,7 @@ namespace Polly
 namespace Details
 {
 [[noreturn]]
-void throw_empty_maybe_exception();
+void throwEmptyMaybeException();
 }
 
 template<typename T>
@@ -18,7 +18,7 @@ constexpr void Maybe<T>::checkAccess() const
 #ifndef polly_no_hardening
     if (not _isActive)
     {
-        Details::throw_empty_maybe_exception();
+        Details::throwEmptyMaybeException();
     }
 #endif
 }
@@ -68,8 +68,8 @@ template<typename T>
 constexpr std::partial_ordering operator<=>(const Maybe<T>& lhs, const Maybe<T>& rhs)
 requires requires { *lhs <=> *rhs; }
 {
-    const auto lhs_b = static_cast<bool>(lhs);
-    const auto rhs_b = static_cast<bool>(rhs);
+    const auto lhs_b = bool(lhs);
+    const auto rhs_b = bool(rhs);
 
     if (not lhs_b and not rhs_b)
     {
@@ -91,9 +91,9 @@ requires requires { *lhs <=> *rhs; }
 
 template<typename T, typename U>
 constexpr bool operator==(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs == *rhs); }
+requires requires { bool(*lhs == *rhs); }
 {
-    if (static_cast<bool>(lhs) != static_cast<bool>(rhs))
+    if (bool(lhs) != bool(rhs))
     {
         return false;
     }
@@ -108,9 +108,9 @@ requires requires { static_cast<bool>(*lhs == *rhs); }
 
 template<typename T, typename U>
 constexpr bool operator!=(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs != *rhs); }
+requires requires { bool(*lhs != *rhs); }
 {
-    if (static_cast<bool>(lhs) != static_cast<bool>(rhs))
+    if (bool(lhs) != bool(rhs))
     {
         return true;
     }
@@ -120,7 +120,7 @@ requires requires { static_cast<bool>(*lhs != *rhs); }
 
 template<typename T, typename U>
 constexpr bool operator<(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs < *rhs); }
+requires requires { bool(*lhs < *rhs); }
 {
     if (not lhs)
     {
@@ -132,7 +132,7 @@ requires requires { static_cast<bool>(*lhs < *rhs); }
 
 template<typename T, typename U>
 constexpr bool operator>(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs > *rhs); }
+requires requires { bool(*lhs > *rhs); }
 {
     if (not lhs)
     {
@@ -149,7 +149,7 @@ requires requires { static_cast<bool>(*lhs > *rhs); }
 
 template<typename T, typename U>
 constexpr bool operator<=(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs <= *rhs); }
+requires requires { bool(*lhs <= *rhs); }
 {
     if (not lhs)
     {
@@ -161,7 +161,7 @@ requires requires { static_cast<bool>(*lhs <= *rhs); }
 
 template<typename T, typename U>
 constexpr bool operator>=(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs >= *rhs); }
+requires requires { bool(*lhs >= *rhs); }
 {
     if (not lhs)
     {
@@ -184,85 +184,85 @@ constexpr bool operator==(const Maybe<T>& x, Details::NoObjectTag) noexcept
 
 template<typename T, typename U>
 constexpr bool operator==(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs == rhs); }
+requires requires { bool(*lhs == rhs); }
 {
-    return static_cast<bool>(lhs) ? *lhs == rhs : false;
+    return bool(lhs) ? *lhs == rhs : false;
 }
 
 template<typename T, typename U>
 constexpr bool operator==(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs == *rhs); }
+requires requires { bool(lhs == *rhs); }
 {
-    return static_cast<bool>(rhs) ? lhs == *rhs : false;
+    return bool(rhs) ? lhs == *rhs : false;
 }
 
 template<typename T, typename U>
 constexpr bool operator!=(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs != rhs); }
+requires requires { bool(*lhs != rhs); }
 {
-    return static_cast<bool>(lhs) ? *lhs != rhs : true;
+    return bool(lhs) ? *lhs != rhs : true;
 }
 
 template<typename T, typename U>
 constexpr bool operator!=(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs != *rhs); }
+requires requires { bool(lhs != *rhs); }
 {
-    return static_cast<bool>(rhs) ? lhs != *rhs : true;
+    return bool(rhs) ? lhs != *rhs : true;
 }
 
 template<typename T, typename U>
 constexpr bool operator<(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs < rhs); }
+requires requires { bool(*lhs < rhs); }
 {
-    return static_cast<bool>(lhs) ? *lhs < rhs : true;
+    return bool(lhs) ? *lhs < rhs : true;
 }
 
 template<typename T, typename U>
 constexpr bool operator<(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs < *rhs); }
+requires requires { bool(lhs < *rhs); }
 {
-    return static_cast<bool>(rhs) ? lhs < *rhs : false;
+    return bool(rhs) ? lhs < *rhs : false;
 }
 
 template<typename T, typename U>
 constexpr bool operator>(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs > rhs); }
+requires requires { bool(*lhs > rhs); }
 {
-    return static_cast<bool>(lhs) ? *lhs > rhs : false;
+    return bool(lhs) ? *lhs > rhs : false;
 }
 
 template<typename T, typename U>
 constexpr bool operator>(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs > *rhs); }
+requires requires { bool(lhs > *rhs); }
 {
-    return static_cast<bool>(rhs) ? lhs > *rhs : true;
+    return bool(rhs) ? lhs > *rhs : true;
 }
 
 template<typename T, typename U>
 constexpr bool operator<=(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs <= rhs); }
+requires requires { bool(*lhs <= rhs); }
 {
-    return static_cast<bool>(lhs) ? *lhs <= rhs : true;
+    return bool(lhs) ? *lhs <= rhs : true;
 }
 
 template<typename T, typename U>
 constexpr bool operator<=(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs <= *rhs); }
+requires requires { bool(lhs <= *rhs); }
 {
-    return static_cast<bool>(rhs) ? lhs <= *rhs : false;
+    return bool(rhs) ? lhs <= *rhs : false;
 }
 
 template<typename T, typename U>
 constexpr bool operator>=(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs >= rhs); }
+requires requires { bool(*lhs >= rhs); }
 {
-    return static_cast<bool>(lhs) ? *lhs >= rhs : false;
+    return bool(lhs) ? *lhs >= rhs : false;
 }
 
 template<typename T, typename U>
 constexpr bool operator>=(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs >= *rhs); }
+requires requires { bool(lhs >= *rhs); }
 {
-    return static_cast<bool>(rhs) ? lhs >= *rhs : true;
+    return bool(rhs) ? lhs >= *rhs : true;
 }
 } // namespace Polly

@@ -115,7 +115,7 @@ double Gamepad::Impl::axisValue(const GamepadAxis axis) const
     if (const auto sdl = toSDLGamepadAxis(axis))
     {
         const auto value = SDL_GetGamepadAxis(_sdlGamepad, *sdl);
-        return value < 0 ? static_cast<double>(value) / 32768 : static_cast<double>(value) / 32767;
+        return value < 0 ? double(value) / 32768 : double(value) / 32767;
     }
 
     return 0.0;
@@ -126,7 +126,7 @@ bool Gamepad::Impl::isButtonDown(const GamepadButton button) const
     if (const auto sdl = toSDLGamepadButton(button))
     {
         const auto state = SDL_GetGamepadButton(_sdlGamepad, *sdl);
-        return static_cast<int>(state) != 0;
+        return int(state) != 0;
     }
 
     return false;
@@ -138,7 +138,7 @@ Maybe<Array<float, 8>> Gamepad::Impl::sensorData(GamepadSensorType sensor) const
 
     if (const auto sdl = toSDLGamepadSensorType(sensor))
     {
-        if (not SDL_GetGamepadSensorData(_sdlGamepad, *sdl, result.data(), result.size()))
+        if (!SDL_GetGamepadSensorData(_sdlGamepad, *sdl, result.data(), result.size()))
         {
             result.fill(0);
         }
@@ -171,7 +171,7 @@ u32 Gamepad::Impl::touchpadCount() const
 
 List<GamepadTouchpadFingerData> Gamepad::Impl::touchpadFingerData(const u32 touchpadIndex) const
 {
-    const auto sdlTouchpadIndex = static_cast<int>(touchpadIndex);
+    const auto sdlTouchpadIndex = int(touchpadIndex);
     const auto count            = SDL_GetNumGamepadTouchpadFingers(_sdlGamepad, sdlTouchpadIndex);
 
     auto result = List<GamepadTouchpadFingerData>();
@@ -187,7 +187,7 @@ List<GamepadTouchpadFingerData> Gamepad::Impl::touchpadFingerData(const u32 touc
         if (SDL_GetGamepadTouchpadFinger(_sdlGamepad, sdlTouchpadIndex, i, &state, &x, &y, &pressure))
         {
             result[i] = {
-                .index    = static_cast<u32>(i),
+                .index    = u32(i),
                 .position = {x, y},
                 .pressure = pressure,
             };
@@ -243,12 +243,12 @@ bool Gamepad::Impl::startRumble(float leftMotorIntensity, float rightMotorIntens
     const auto normalizedLeftMotorIntensity =
         isZero(leftMotorIntensity)
             ? static_cast<Uint16>(0)
-            : static_cast<Uint16>(clamp(leftMotorIntensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
+            : static_cast<Uint16>(clamp(leftMotorIntensity, 0.0f, 1.0f) * float(0xFFFF));
 
     const auto normalizedRightMotorIntensity =
         isZero(rightMotorIntensity)
             ? static_cast<Uint16>(0)
-            : static_cast<Uint16>(clamp(rightMotorIntensity, 0.0f, 1.0f) * static_cast<float>(0xFFFF));
+            : static_cast<Uint16>(clamp(rightMotorIntensity, 0.0f, 1.0f) * float(0xFFFF));
 
     if (_sdlGamepad)
     {
@@ -256,7 +256,7 @@ bool Gamepad::Impl::startRumble(float leftMotorIntensity, float rightMotorIntens
             _sdlGamepad,
             normalizedLeftMotorIntensity,
             normalizedRightMotorIntensity,
-            static_cast<Uint32>(static_cast<double>(duration) * 1000));
+            static_cast<Uint32>(double(duration) * 1000));
 
         return success == 0; // NOLINT
     }

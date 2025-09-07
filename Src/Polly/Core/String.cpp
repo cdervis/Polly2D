@@ -52,7 +52,7 @@ char* String::rawConcat(char* dst, const char* src)
 
 void String::assign(const char* str, Maybe<u32> size)
 {
-    if (not size)
+    if (!size)
     {
         size = narrow<u32>(std::strlen(str));
     }
@@ -87,7 +87,7 @@ void String::reserve(u32 newCapacity)
         newBuffer[currentSize] = '\0';
     }
 
-    if (not isSmall())
+    if (!isSmall())
     {
         delete[] _data;
     }
@@ -120,12 +120,12 @@ void String::trim(SmallList<char> chars)
         return std::ranges::find(chars, ch) != chars.end();
     };
 
-    while (not isEmpty() and shouldRemove(last()))
+    while (!isEmpty() && shouldRemove(last()))
     {
         removeLast();
     }
 
-    while (not isEmpty() and shouldRemove(first()))
+    while (!isEmpty() && shouldRemove(first()))
     {
         removeFirst();
     }
@@ -146,7 +146,7 @@ void String::trimEnd(SmallList<char> chars)
     auto trimmed = StringView(*this);
     trimmed.trimEnd(chars);
 
-    assume(trimmed.data() >= begin() and trimmed.data() < end()); // NOLINT(*-simplify-boolean-expr)
+    assume(trimmed.data() >= begin() && trimmed.data() < end()); // NOLINT(*-simplify-boolean-expr)
 
     removeLast(size() - trimmed.size());
 }
@@ -275,7 +275,7 @@ Maybe<double> String::toDouble() const
 
 void String::insertAt(u32 index, StringView str)
 {
-    if (isEmpty() and index == 0)
+    if (isEmpty() && index == 0)
     {
         assign(str.data(), str.size());
         return;
@@ -332,21 +332,21 @@ void String::moveFrom(String&& other) // NOLINT(*-rvalue-reference-param-not-mov
 
     // We can retain our large buffer if we have one, and if the other string
     // is a small string. We just copy its contents into our large buffer.
-    const auto shouldRetainLargeBuffer = not isSmall() and otherSmall;
+    const auto shouldRetainLargeBuffer = !isSmall() && otherSmall;
 
-    if (not shouldRetainLargeBuffer)
+    if (!shouldRetainLargeBuffer)
     {
         destroy();
     }
 
     _size = other._size;
 
-    if (not shouldRetainLargeBuffer)
+    if (!shouldRetainLargeBuffer)
     {
         _capacity = other._capacity;
     }
 
-    if (not otherSmall)
+    if (!otherSmall)
     {
         // Obtain the other string's large buffer pointer.
         _data = other._data;
@@ -378,10 +378,10 @@ static String toString(T value)
     const auto* ptr = simdjson::internal::to_chars(
         begin,
         buffer.end(),
-        static_cast<double>(value),
+        double(value),
         std::is_integral_v<std::remove_cvref_t<T>>);
 
-    return String(begin, static_cast<u32>(ptr - begin));
+    return String(begin, u32(ptr - begin));
 }
 
 String toString(short value)

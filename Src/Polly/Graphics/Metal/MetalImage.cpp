@@ -34,7 +34,7 @@ MTL::Texture* createMtlTexture(
     {
         const auto maybeFormat = convertToMtl(format);
 
-        if (not maybeFormat)
+        if (!maybeFormat)
         {
             throw Error("Failed to convert image format to Metal pixel format.");
         }
@@ -48,7 +48,7 @@ MTL::Texture* createMtlTexture(
 
     if (isCanvas)
     {
-        desc->setUsage(MTL::TextureUsageRenderTarget bitor MTL::TextureUsageShaderRead);
+        desc->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
         desc->setStorageMode(MTL::StorageModePrivate);
     }
     else

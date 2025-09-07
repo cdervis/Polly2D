@@ -105,18 +105,18 @@ void Window::Impl::createSDLWindow(
         if (const auto& disp = displays[idx]; disp.currentMode)
         {
             const auto& mode = *disp.currentMode;
-            windowSize       = Vec2(static_cast<float>(mode.width), static_cast<float>(mode.height));
+            windowSize       = Vec2(float(mode.width), float(mode.height));
             transitionToFullScreen();
         }
         else if (const auto* sdlDesktopMode = SDL_GetDesktopDisplayMode(idx))
         {
-            windowSize = Vec2(static_cast<float>(sdlDesktopMode->w), static_cast<float>(sdlDesktopMode->h));
+            windowSize = Vec2(float(sdlDesktopMode->w), float(sdlDesktopMode->h));
             transitionToFullScreen();
         }
-        else if (not disp.modes.isEmpty())
+        else if (!disp.modes.isEmpty())
         {
             const auto& mode = disp.modes.first();
-            windowSize       = Vec2(static_cast<float>(mode.width), static_cast<float>(mode.height));
+            windowSize       = Vec2(float(mode.width), float(mode.height));
             transitionToFullScreen();
         }
     }
@@ -125,7 +125,7 @@ void Window::Impl::createSDLWindow(
 
     _sdlWindow = SDL_CreateWindow(_initialTitle.cstring(), int(windowSize.x), int(windowSize.y), flags);
 
-    if (not _sdlWindow)
+    if (!_sdlWindow)
     {
         throw Error(formatString("Failed to create the internal window. Reason: {}", SDL_GetError()));
     }
@@ -148,7 +148,7 @@ Vec2 Window::Impl::size() const
     int width  = 0;
     int height = 0;
     SDL_GetWindowSize(_sdlWindow, &width, &height);
-    return Vec2(static_cast<float>(width), static_cast<float>(height));
+    return Vec2(float(width), float(height));
 }
 
 Vec2ui Window::Impl::sizeUInt() const
@@ -156,13 +156,13 @@ Vec2ui Window::Impl::sizeUInt() const
     int width  = 0;
     int height = 0;
     SDL_GetWindowSize(_sdlWindow, &width, &height);
-    return Vec2ui(static_cast<u32>(width), static_cast<u32>(height));
+    return Vec2ui(u32(width), u32(height));
 }
 
 Vec2 Window::Impl::sizePx() const
 {
     const auto [widthPx, heightPx] = sizePxUInt();
-    return Vec2(static_cast<float>(widthPx), static_cast<float>(heightPx));
+    return Vec2(float(widthPx), float(heightPx));
 }
 
 Vec2ui Window::Impl::sizePxUInt() const
@@ -171,7 +171,7 @@ Vec2ui Window::Impl::sizePxUInt() const
     int heightPx = 0;
     SDL_GetWindowSizeInPixels(_sdlWindow, &widthPx, &heightPx);
 
-    return Vec2ui(static_cast<u32>(widthPx), static_cast<u32>(heightPx));
+    return Vec2ui(u32(widthPx), u32(heightPx));
 }
 
 float Window::Impl::pixelRatio() const
@@ -232,12 +232,12 @@ void Window::Impl::hide()
 
 void Window::Impl::setMinimumSize(u32 width, u32 height)
 {
-    SDL_SetWindowMinimumSize(_sdlWindow, static_cast<int>(width), static_cast<int>(height));
+    SDL_SetWindowMinimumSize(_sdlWindow, int(width), int(height));
 }
 
 void Window::Impl::setMaximumSize(u32 width, u32 height)
 {
-    SDL_SetWindowMaximumSize(_sdlWindow, static_cast<int>(width), static_cast<int>(height));
+    SDL_SetWindowMaximumSize(_sdlWindow, int(width), int(height));
 }
 
 void Window::Impl::setMouseGrab(bool value)
@@ -247,12 +247,12 @@ void Window::Impl::setMouseGrab(bool value)
 
 void Window::Impl::setPosition(const Vec2& position)
 {
-    SDL_SetWindowPosition(_sdlWindow, static_cast<int>(position.x), static_cast<int>(position.y));
+    SDL_SetWindowPosition(_sdlWindow, int(position.x), int(position.y));
 }
 
 void Window::Impl::setSize(const Vec2& size, bool recenter)
 {
-    SDL_SetWindowSize(_sdlWindow, static_cast<int>(size.x), static_cast<int>(size.y));
+    SDL_SetWindowSize(_sdlWindow, int(size.x), int(size.y));
 
     if (recenter)
     {
@@ -268,21 +268,21 @@ void Window::Impl::centerOnDisplay()
     auto displayRect = SDL_Rect();
     SDL_GetDisplayBounds(display, &displayRect);
 
-    const auto displayTopLeft = Vec2(static_cast<float>(displayRect.x), static_cast<float>(displayRect.y));
+    const auto displayTopLeft = Vec2(float(displayRect.x), float(displayRect.y));
 
-    const auto displaySize = Vec2(static_cast<float>(displayRect.w), static_cast<float>(displayRect.h));
+    const auto displaySize = Vec2(float(displayRect.w), float(displayRect.h));
 
     setPosition(displayTopLeft + (displaySize / 2) - (mySize / 2));
 }
 
 bool Window::Impl::isMinimized() const
 {
-    return (SDL_GetWindowFlags(_sdlWindow) bitand SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED;
+    return (SDL_GetWindowFlags(_sdlWindow) & SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED;
 }
 
 bool Window::Impl::isMaximized() const
 {
-    return (SDL_GetWindowFlags(_sdlWindow) bitand SDL_WINDOW_MAXIMIZED) == SDL_WINDOW_MAXIMIZED;
+    return (SDL_GetWindowFlags(_sdlWindow) & SDL_WINDOW_MAXIMIZED) == SDL_WINDOW_MAXIMIZED;
 }
 
 int Window::Impl::displayId() const

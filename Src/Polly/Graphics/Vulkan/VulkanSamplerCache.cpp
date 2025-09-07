@@ -20,7 +20,7 @@ VkSampler VulkanSamplerCache::get(const Sampler& key)
 {
     auto it = _cache.find(key);
 
-    if (not it)
+    if (!it)
     {
         logVerbose("Creating VkSampler");
 
@@ -67,7 +67,7 @@ void VulkanSamplerCache::clear()
 {
     logVerbose("Clearing VulkanSamplerCache");
 
-    if (not _cache.isEmpty())
+    if (!_cache.isEmpty())
     {
         const auto vkDevice = _painter.vkDevice();
         assume(vkDevice != VK_NULL_HANDLE);

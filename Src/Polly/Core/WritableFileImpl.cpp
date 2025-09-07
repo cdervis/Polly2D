@@ -35,7 +35,7 @@ WritableFile::Impl::Impl(StringView filename)
 
     auto* prefPath = SDL_GetPrefPath(companyName.data(), gameTitle.data());
 
-    if (not prefPath)
+    if (!prefPath)
     {
         throw Error(formatString("Failed to create writable file '{}'.", filename));
     }
@@ -51,7 +51,7 @@ WritableFile::Impl::Impl(StringView filename)
 
     _stream = SDL_IOFromFile(_fullFilename.cstring(), "wb");
 
-    if (not _stream)
+    if (!_stream)
     {
         throw Error(formatString("Failed to open file '{}' for writing.", _fullFilename));
     }

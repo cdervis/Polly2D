@@ -52,7 +52,7 @@ SpineSkeleton::Impl::Impl(SpineSkeletonData skeleton_data)
 #else
     const auto add_spine_elements = [](auto& dst, auto& src)
     {
-        const auto size = static_cast<u32>(src.size());
+        const auto size = u32(src.size());
         dst.reserve(size);
 
         for (u32 i = 0; i < size; ++i)
@@ -93,13 +93,13 @@ SpineSkeletonData::Impl::Impl(SpineAtlas atlas, float scale, Span<u8> data, bool
 
         skeleton_data.reset(json.readSkeletonData(json_source_str.cstring()));
 
-        if (not skeleton_data)
+        if (!skeleton_data)
         {
             const auto& error_str = json.getError();
 
             throw Error(formatString(
                 "Failed to load skeleton data. Reason: {}",
-                StringView(error_str.buffer(), static_cast<u32>(error_str.length()))));
+                StringView(error_str.buffer(), u32(error_str.length()))));
         }
     }
     else
@@ -107,15 +107,15 @@ SpineSkeletonData::Impl::Impl(SpineAtlas atlas, float scale, Span<u8> data, bool
         auto binary = spine::SkeletonBinary(atlas.impl()->atlas.get());
         binary.setScale(scale);
 
-        skeleton_data.reset(binary.readSkeletonData(data.data(), static_cast<int>(data.size())));
+        skeleton_data.reset(binary.readSkeletonData(data.data(), int(data.size())));
 
-        if (not skeleton_data)
+        if (!skeleton_data)
         {
             const auto& error_str = binary.getError();
 
             throw Error(formatString(
                 "Failed to load skeleton data. Reason: {}",
-                StringView(error_str.buffer(), static_cast<u32>(error_str.length()))));
+                StringView(error_str.buffer(), u32(error_str.length()))));
         }
     }
 
@@ -133,7 +133,7 @@ SpineSkeletonData::Impl::Impl(SpineAtlas atlas, float scale, Span<u8> data, bool
 #else
     const auto add_spine_elements = [](auto& dst, auto& src)
     {
-        const auto size = static_cast<u32>(src.size());
+        const auto size = u32(src.size());
         dst.reserve(size);
 
         for (u32 i = 0; i < size; ++i)
@@ -177,7 +177,7 @@ void SpineAtlas::Impl::TextureLoader::load(spine::AtlasPage& page, const spine::
     auto maybe_img =
         findWhere(_images, [&full_path](const Image& e) { return e.impl()->assetName() == full_path; });
 
-    if (not maybe_img)
+    if (!maybe_img)
     {
         maybe_img = _images.emplace(full_path);
         maybe_img->impl()->setAssetName(full_path);

@@ -199,6 +199,8 @@ Visual Studio Community is free for individual developers and can be used to dev
                     pipewire-jack-audio-connection-kit-devel
    ```
 
+   If you have issues with installing some packages, or see some missing, feel free to [report them](https://github.com/cdervis/Polly2D/issues).
+
 :::
 
 ::: steps

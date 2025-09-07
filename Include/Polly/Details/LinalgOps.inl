@@ -8,114 +8,114 @@
 #include "Polly/Math.hpp"
 #include "Polly/Radians.hpp"
 
-inline float Polly::length(const Vec2& vector)
+inline float Polly::length(Vec2 vector)
 {
     return sqrt(lengthSquared(vector));
 }
 
-constexpr float Polly::lengthSquared(const Vec2& vector)
+constexpr float Polly::lengthSquared(Vec2 vector)
 {
     return (vector.x * vector.x) + (vector.y * vector.y);
 }
 
-inline Polly::Vec2 Polly::normalize(const Vec2& vector)
+inline Polly::Vec2 Polly::normalize(Vec2 vector)
 {
     const auto len = length(vector);
 
     return isZero(len) ? Vec2() : vector / len;
 }
 
-inline Polly::Vec2 Polly::round(const Vec2& vector)
+inline Polly::Vec2 Polly::round(Vec2 vector)
 {
     return Vec2(round(vector.x), round(vector.y));
 }
 
-inline Polly::Vec2 Polly::abs(const Vec2& vector)
+inline Polly::Vec2 Polly::abs(Vec2 vector)
 {
     return Vec2(abs(vector.x), abs(vector.y));
 }
 
-inline Polly::Vec2 Polly::sin(const Vec2& vector)
+inline Polly::Vec2 Polly::sin(Vec2 vector)
 {
     return Vec2(sin(vector.x), sin(vector.y));
 }
 
-inline Polly::Vec2 Polly::cos(const Vec2& vector)
+inline Polly::Vec2 Polly::cos(Vec2 vector)
 {
     return Vec2(cos(vector.x), cos(vector.y));
 }
 
-inline Polly::Vec2 Polly::tan(const Vec2& vector)
+inline Polly::Vec2 Polly::tan(Vec2 vector)
 {
     return Vec2(tan(vector.x), tan(vector.y));
 }
 
-inline Polly::Vec2 Polly::pow(const Vec2& x, const Vec2& y)
+inline Polly::Vec2 Polly::pow(Vec2 x, Vec2 y)
 {
     return Vec2(pow(x.x, y.x), pow(x.y, y.y));
 }
 
-inline Polly::Vec2 Polly::floor(const Vec2& value)
+inline Polly::Vec2 Polly::floor(Vec2 value)
 {
     return Vec2(floor(value.x), floor(value.y));
 }
 
-inline Polly::Vec2 Polly::ceil(const Vec2& value)
+inline Polly::Vec2 Polly::ceil(Vec2 value)
 {
     return Vec2(ceil(value.x), ceil(value.y));
 }
 
-constexpr float Polly::dot(const Vec2& lhs, const Vec2& rhs)
+constexpr float Polly::dot(Vec2 lhs, Vec2 rhs)
 {
     return (lhs.x * rhs.x) + (lhs.y * rhs.y);
 }
 
-inline float Polly::distance(const Vec2& lhs, const Vec2& rhs)
+inline float Polly::distance(Vec2 lhs, Vec2 rhs)
 {
     return length(rhs - lhs);
 }
 
-constexpr float Polly::distanceSquared(const Vec2& lhs, const Vec2& rhs)
+constexpr float Polly::distanceSquared(Vec2 lhs, Vec2 rhs)
 {
     return lengthSquared(rhs - lhs);
 }
 
-constexpr Polly::Vec2 Polly::lerp(const Vec2& start, const Vec2& end, float t)
+constexpr Polly::Vec2 Polly::lerp(Vec2 start, Vec2 end, float t)
 {
     return Vec2(lerp(start.x, end.x, t), lerp(start.y, end.y, t));
 }
 
-constexpr Polly::Vec2 Polly::smoothstep(const Vec2& start, const Vec2& end, float t)
+constexpr Polly::Vec2 Polly::smoothstep(Vec2 start, Vec2 end, float t)
 {
     return Vec2(smoothstep(start.x, end.x, t), smoothstep(start.y, end.y, t));
 }
 
-constexpr Polly::Vec2 Polly::clamp(const Vec2& value, const Vec2& min, const Vec2& max)
+constexpr Polly::Vec2 Polly::clamp(Vec2 value, Vec2 min, Vec2 max)
 {
     return Vec2(clamp(value.x, min.x, max.x), clamp(value.y, min.y, max.y));
 }
 
-constexpr bool Polly::isZero(const Vec2& vector)
+constexpr bool Polly::isZero(Vec2 vector)
 {
-    return isZero(vector.x) and isZero(vector.y);
+    return isZero(vector.x) && isZero(vector.y);
 }
 
-constexpr bool Polly::areEqualWithin(const Vec2& lhs, const Vec2& rhs, float threshold)
+constexpr bool Polly::areEqualWithin(Vec2 lhs, Vec2 rhs, float threshold)
 {
-    return areEqualWithin(lhs.x, rhs.x, threshold) and areEqualWithin(lhs.y, rhs.y, threshold);
+    return areEqualWithin(lhs.x, rhs.x, threshold) && areEqualWithin(lhs.y, rhs.y, threshold);
 }
 
-constexpr Polly::Vec2 Polly::min(const Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2 Polly::min(Vec2 lhs, Vec2 rhs)
 {
     return Vec2(min(lhs.x, rhs.x), min(lhs.y, rhs.y));
 }
 
-constexpr Polly::Vec2 Polly::max(const Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2 Polly::max(Vec2 lhs, Vec2 rhs)
 {
     return Vec2(max(lhs.x, rhs.x), max(lhs.y, rhs.y));
 }
 
-inline Polly::Vec2 Polly::lineNormal(const Vec2& start, const Vec2& end)
+inline Polly::Vec2 Polly::lineNormal(Vec2 start, Vec2 end)
 {
     const auto dx = end.x - start.x;
     const auto dy = end.y - start.y;
@@ -128,28 +128,28 @@ inline Polly::Vec2 Polly::snapToGrid(Vec2 value, Vec2 grid_size)
     return Vec2(snapToGrid(value.x, grid_size.x), snapToGrid(value.y, grid_size.y));
 }
 
-constexpr Polly::Vec2& Polly::operator+=(Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2& Polly::operator+=(Vec2& lhs, Vec2 rhs)
 {
     lhs.x += rhs.x;
     lhs.y += rhs.y;
     return lhs;
 }
 
-constexpr Polly::Vec2& Polly::operator-=(Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2& Polly::operator-=(Vec2& lhs, Vec2 rhs)
 {
     lhs.x -= rhs.x;
     lhs.y -= rhs.y;
     return lhs;
 }
 
-constexpr Polly::Vec2& Polly::operator*=(Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2& Polly::operator*=(Vec2& lhs, Vec2 rhs)
 {
     lhs.x *= rhs.x;
     lhs.y *= rhs.y;
     return lhs;
 }
 
-constexpr Polly::Vec2& Polly::operator*=(Vec2& lhs, const Matrix& rhs)
+constexpr Polly::Vec2& Polly::operator*=(Vec2& lhs, Matrix rhs)
 {
     lhs = lhs * rhs;
     return lhs;
@@ -162,7 +162,7 @@ constexpr Polly::Vec2& Polly::operator*=(Vec2& lhs, float rhs)
     return lhs;
 }
 
-constexpr Polly::Vec2& Polly::operator/=(Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2& Polly::operator/=(Vec2& lhs, Vec2 rhs)
 {
     lhs.x /= rhs.x;
     lhs.y /= rhs.y;
@@ -176,59 +176,59 @@ constexpr Polly::Vec2& Polly::operator/=(Vec2& lhs, float rhs)
     return lhs;
 }
 
-constexpr Polly::Vec2 Polly::operator-(const Vec2& value)
+constexpr Polly::Vec2 Polly::operator-(Vec2 value)
 {
     return Vec2(-value.x, -value.y);
 }
 
-constexpr Polly::Vec2 Polly::operator+(const Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2 Polly::operator+(Vec2 lhs, Vec2 rhs)
 {
     return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
 }
 
-constexpr Polly::Vec2 Polly::operator-(const Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2 Polly::operator-(Vec2 lhs, Vec2 rhs)
 {
     return Vec2(lhs.x - rhs.x, lhs.y - rhs.y);
 }
 
-constexpr Polly::Vec2 Polly::operator*(const Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2 Polly::operator*(Vec2 lhs, Vec2 rhs)
 {
     return Vec2(lhs.x * rhs.x, lhs.y * rhs.y);
 }
 
-constexpr Polly::Vec2 Polly::operator*(const Vec2& lhs, float rhs)
+constexpr Polly::Vec2 Polly::operator*(Vec2 lhs, float rhs)
 {
     return Vec2(lhs.x * rhs, lhs.y * rhs);
 }
 
-constexpr Polly::Vec2 Polly::operator*(float lhs, const Vec2& rhs)
+constexpr Polly::Vec2 Polly::operator*(float lhs, Vec2 rhs)
 {
     return rhs * lhs;
 }
 
-constexpr Polly::Vec2 Polly::operator*(const Vec2& lhs, const Matrix& rhs)
+constexpr Polly::Vec2 Polly::operator*(Vec2 lhs, Matrix rhs)
 {
     return Vec2(
         (lhs.x * rhs.row1.x) + (lhs.y * rhs.row2.x) + rhs.row4.x,
         (lhs.x * rhs.row1.y) + (lhs.y * rhs.row2.y) + rhs.row4.y);
 }
 
-constexpr Polly::Vec2 Polly::operator/(const Vec2& lhs, const Vec2& rhs)
+constexpr Polly::Vec2 Polly::operator/(Vec2 lhs, Vec2 rhs)
 {
     return Vec2(lhs.x / rhs.x, lhs.y / rhs.y);
 }
 
-constexpr Polly::Vec2 Polly::operator/(const Vec2& lhs, float rhs)
+constexpr Polly::Vec2 Polly::operator/(Vec2 lhs, float rhs)
 {
     return Vec2(lhs.x / rhs, lhs.y / rhs);
 }
 
-inline Polly::Vec2i Polly::abs(const Vec2i& vector)
+inline Polly::Vec2i Polly::abs(Vec2i vector)
 {
     return Vec2i(abs(vector.x), abs(vector.y));
 }
 
-constexpr Polly::Vec2i Polly::clamp(const Vec2i& value, const Vec2i& min, const Vec2i& max)
+constexpr Polly::Vec2i Polly::clamp(Vec2i value, Vec2i min, Vec2i max)
 {
     return {
         clamp(value.x, min.x, max.x),
@@ -236,36 +236,36 @@ constexpr Polly::Vec2i Polly::clamp(const Vec2i& value, const Vec2i& min, const 
     };
 }
 
-constexpr bool Polly::isZero(const Vec2i& vector)
+constexpr bool Polly::isZero(Vec2i vector)
 {
-    return vector.x == 0 and vector.y == 0;
+    return vector.x == 0 && vector.y == 0;
 }
 
-constexpr Polly::Vec2i Polly::min(const Vec2i& lhs, const Vec2i& rhs)
+constexpr Polly::Vec2i Polly::min(Vec2i lhs, Vec2i rhs)
 {
     return Vec2i(min(lhs.x, rhs.x), min(lhs.y, rhs.y));
 }
 
-constexpr Polly::Vec2i Polly::max(const Vec2i& lhs, const Vec2i& rhs)
+constexpr Polly::Vec2i Polly::max(Vec2i lhs, Vec2i rhs)
 {
     return Vec2i(max(lhs.x, rhs.x), max(lhs.y, rhs.y));
 }
 
-constexpr Polly::Vec2i& Polly::operator+=(Vec2i& vector, const Vec2i& rhs)
+constexpr Polly::Vec2i& Polly::operator+=(Vec2i& vector, Vec2i rhs)
 {
     vector.x += rhs.x;
     vector.y += rhs.y;
     return vector;
 }
 
-constexpr Polly::Vec2i& Polly::operator-=(Vec2i& vector, const Vec2i& rhs)
+constexpr Polly::Vec2i& Polly::operator-=(Vec2i& vector, Vec2i rhs)
 {
     vector.x -= rhs.x;
     vector.y -= rhs.y;
     return vector;
 }
 
-constexpr Polly::Vec2i& Polly::operator*=(Vec2i& vector, const Vec2i& rhs)
+constexpr Polly::Vec2i& Polly::operator*=(Vec2i& vector, Vec2i rhs)
 {
     vector.x *= rhs.x;
     vector.y *= rhs.y;
@@ -279,7 +279,7 @@ constexpr Polly::Vec2i& Polly::operator*=(Vec2i& vector, int rhs)
     return vector;
 }
 
-constexpr Polly::Vec2i& Polly::operator/=(Vec2i& vector, const Vec2i& rhs)
+constexpr Polly::Vec2i& Polly::operator/=(Vec2i& vector, Vec2i rhs)
 {
     vector.x /= rhs.x;
     vector.y /= rhs.y;
@@ -293,17 +293,17 @@ constexpr Polly::Vec2i& Polly::operator/=(Vec2i& vector, int rhs)
     return vector;
 }
 
-constexpr Polly::Vec2i Polly::operator-(const Vec2i& value)
+constexpr Polly::Vec2i Polly::operator-(Vec2i value)
 {
     return Vec2i(-value.x, -value.y);
 }
 
-constexpr Polly::Vec2i Polly::operator+(const Vec2i& lhs, const Vec2i& rhs)
+constexpr Polly::Vec2i Polly::operator+(Vec2i lhs, Vec2i rhs)
 {
     return Vec2i(lhs.x + rhs.x, lhs.y + rhs.y);
 }
 
-constexpr Polly::Vec2i Polly::operator-(const Vec2i& lhs, const Vec2i& rhs)
+constexpr Polly::Vec2i Polly::operator-(Vec2i lhs, Vec2i rhs)
 {
     return {
         lhs.x - rhs.x,
@@ -311,93 +311,93 @@ constexpr Polly::Vec2i Polly::operator-(const Vec2i& lhs, const Vec2i& rhs)
     };
 }
 
-constexpr Polly::Vec2i Polly::operator*(const Vec2i& lhs, const Vec2i& rhs)
+constexpr Polly::Vec2i Polly::operator*(Vec2i lhs, Vec2i rhs)
 {
     return Vec2i(lhs.x * rhs.x, lhs.y * rhs.y);
 }
 
-constexpr Polly::Vec2i Polly::operator*(const Vec2i& lhs, int rhs)
+constexpr Polly::Vec2i Polly::operator*(Vec2i lhs, int rhs)
 {
     return Vec2i(lhs.x * rhs, lhs.y * rhs);
 }
 
-constexpr Polly::Vec2i Polly::operator*(int lhs, const Vec2i& rhs)
+constexpr Polly::Vec2i Polly::operator*(int lhs, Vec2i rhs)
 {
     return rhs * lhs;
 }
 
-constexpr Polly::Vec2i Polly::operator/(const Vec2i& lhs, const Vec2i& rhs)
+constexpr Polly::Vec2i Polly::operator/(Vec2i lhs, Vec2i rhs)
 {
     return Vec2i(lhs.x / rhs.x, lhs.y / rhs.y);
 }
 
-constexpr Polly::Vec2i Polly::operator/(const Vec2i& lhs, int rhs)
+constexpr Polly::Vec2i Polly::operator/(Vec2i lhs, int rhs)
 {
     return Vec2i(lhs.x / rhs, lhs.y / rhs);
 }
 
-inline float Polly::length(const Vec3& vector)
+inline float Polly::length(Vec3 vector)
 {
     return sqrt(lengthSquared(vector));
 }
 
-constexpr float Polly::lengthSquared(const Vec3& vector)
+constexpr float Polly::lengthSquared(Vec3 vector)
 {
     return (vector.x * vector.x) + (vector.y * vector.y) + (vector.z * vector.z);
 }
 
-inline Polly::Vec3 Polly::normalize(const Vec3& vector)
+inline Polly::Vec3 Polly::normalize(Vec3 vector)
 {
     const auto len = length(vector);
     return isZero(len) ? Vec3() : vector / len;
 }
 
-inline Polly::Vec3 Polly::round(const Vec3& vector)
+inline Polly::Vec3 Polly::round(Vec3 vector)
 {
     return Vec3(round(vector.x), round(vector.y), round(vector.z));
 }
 
-inline Polly::Vec3 Polly::abs(const Vec3& vector)
+inline Polly::Vec3 Polly::abs(Vec3 vector)
 {
     return Vec3(abs(vector.x), abs(vector.y), abs(vector.z));
 }
 
-inline Polly::Vec3 Polly::sin(const Vec3& vector)
+inline Polly::Vec3 Polly::sin(Vec3 vector)
 {
     return Vec3(sin(vector.x), sin(vector.y), sin(vector.z));
 }
 
-inline Polly::Vec3 Polly::cos(const Vec3& vector)
+inline Polly::Vec3 Polly::cos(Vec3 vector)
 {
     return Vec3(cos(vector.x), cos(vector.y), cos(vector.z));
 }
 
-inline Polly::Vec3 Polly::tan(const Vec3& vector)
+inline Polly::Vec3 Polly::tan(Vec3 vector)
 {
     return Vec3(tan(vector.x), tan(vector.y), tan(vector.z));
 }
 
-inline Polly::Vec3 Polly::pow(const Vec3& base, const Vec3& exp)
+inline Polly::Vec3 Polly::pow(Vec3 base, Vec3 exp)
 {
     return Vec3(pow(base.x, exp.x), pow(base.y, exp.y), pow(base.z, exp.z));
 }
 
-inline Polly::Vec3 Polly::floor(const Vec3& value)
+inline Polly::Vec3 Polly::floor(Vec3 value)
 {
     return Vec3(floor(value.x), floor(value.y), floor(value.z));
 }
 
-inline Polly::Vec3 Polly::ceil(const Vec3& value)
+inline Polly::Vec3 Polly::ceil(Vec3 value)
 {
     return Vec3(ceil(value.x), ceil(value.y), ceil(value.z));
 }
 
-inline float Polly::dot(const Vec3& lhs, const Vec3& rhs)
+inline float Polly::dot(Vec3 lhs, Vec3 rhs)
 {
     return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
 }
 
-inline Polly::Vec3 Polly::cross(const Vec3& lhs, const Vec3& rhs)
+inline Polly::Vec3 Polly::cross(Vec3 lhs, Vec3 rhs)
 {
     return Vec3(
         (lhs.y * rhs.z) - (rhs.y * lhs.z),
@@ -405,54 +405,54 @@ inline Polly::Vec3 Polly::cross(const Vec3& lhs, const Vec3& rhs)
         (lhs.x * rhs.y) - (rhs.x * lhs.y));
 }
 
-inline float Polly::distance(const Vec3& lhs, const Vec3& rhs)
+inline float Polly::distance(Vec3 lhs, Vec3 rhs)
 {
     return length(rhs - lhs);
 }
 
-inline float Polly::distanceSquared(const Vec3& lhs, const Vec3& rhs)
+inline float Polly::distanceSquared(Vec3 lhs, Vec3 rhs)
 {
     return lengthSquared(rhs - lhs);
 }
 
-constexpr Polly::Vec3 Polly::lerp(const Vec3& start, const Vec3& end, float t)
+constexpr Polly::Vec3 Polly::lerp(Vec3 start, Vec3 end, float t)
 {
     return Vec3(lerp(start.x, end.x, t), lerp(start.y, end.y, t), lerp(start.z, end.z, t));
 }
 
-constexpr Polly::Vec3 Polly::smoothstep(const Vec3& start, const Vec3& end, float t)
+constexpr Polly::Vec3 Polly::smoothstep(Vec3 start, Vec3 end, float t)
 {
     return Vec3(smoothstep(start.x, end.x, t), smoothstep(start.y, end.y, t), smoothstep(start.z, end.z, t));
 }
 
-constexpr Polly::Vec3 Polly::clamp(const Vec3& value, const Vec3& min, const Vec3& max)
+constexpr Polly::Vec3 Polly::clamp(Vec3 value, Vec3 min, Vec3 max)
 {
     return Vec3(clamp(value.x, min.x, max.x), clamp(value.y, min.y, max.y), clamp(value.z, min.z, max.z));
 }
 
-constexpr bool Polly::isZero(const Vec3& vector)
+constexpr bool Polly::isZero(Vec3 vector)
 {
-    return isZero(vector.x) and isZero(vector.y) and isZero(vector.z);
+    return isZero(vector.x) && isZero(vector.y) && isZero(vector.z);
 }
 
-constexpr bool Polly::areEqualWithin(const Vec3& lhs, const Vec3& rhs, float threshold)
+constexpr bool Polly::areEqualWithin(Vec3 lhs, Vec3 rhs, float threshold)
 {
     return areEqualWithin(lhs.x, rhs.x, threshold)
-           and areEqualWithin(lhs.y, rhs.y, threshold)
-           and areEqualWithin(lhs.z, rhs.z, threshold);
+           && areEqualWithin(lhs.y, rhs.y, threshold)
+           && areEqualWithin(lhs.z, rhs.z, threshold);
 }
 
-constexpr Polly::Vec3 Polly::min(const Vec3& lhs, const Vec3& rhs)
+constexpr Polly::Vec3 Polly::min(Vec3 lhs, Vec3 rhs)
 {
     return Vec3(min(lhs.x, rhs.x), min(lhs.y, rhs.y), min(lhs.z, rhs.z));
 }
 
-constexpr Polly::Vec3 Polly::max(const Vec3& lhs, const Vec3& rhs)
+constexpr Polly::Vec3 Polly::max(Vec3 lhs, Vec3 rhs)
 {
     return Vec3(max(lhs.x, rhs.x), max(lhs.y, rhs.y), max(lhs.z, rhs.z));
 }
 
-constexpr Polly::Vec3& Polly::operator+=(Vec3& vector, const Vec3& rhs)
+constexpr Polly::Vec3& Polly::operator+=(Vec3& vector, Vec3 rhs)
 {
     vector.x += rhs.x;
     vector.y += rhs.y;
@@ -460,7 +460,7 @@ constexpr Polly::Vec3& Polly::operator+=(Vec3& vector, const Vec3& rhs)
     return vector;
 }
 
-constexpr Polly::Vec3& Polly::operator-=(Vec3& vector, const Vec3& rhs)
+constexpr Polly::Vec3& Polly::operator-=(Vec3& vector, Vec3 rhs)
 {
     vector.x -= rhs.x;
     vector.y -= rhs.y;
@@ -468,7 +468,7 @@ constexpr Polly::Vec3& Polly::operator-=(Vec3& vector, const Vec3& rhs)
     return vector;
 }
 
-constexpr Polly::Vec3& Polly::operator*=(Vec3& vector, const Vec3& rhs)
+constexpr Polly::Vec3& Polly::operator*=(Vec3& vector, Vec3 rhs)
 {
     vector.x *= rhs.x;
     vector.y *= rhs.y;
@@ -484,7 +484,7 @@ constexpr Polly::Vec3& Polly::operator*=(Vec3& vector, float rhs)
     return vector;
 }
 
-constexpr Polly::Vec3& Polly::operator/=(Vec3& vector, const Vec3& rhs)
+constexpr Polly::Vec3& Polly::operator/=(Vec3& vector, Vec3 rhs)
 {
     vector.x /= rhs.x;
     vector.y /= rhs.y;
@@ -500,72 +500,72 @@ constexpr Polly::Vec3& Polly::operator/=(Vec3& vector, float rhs)
     return vector;
 }
 
-constexpr Polly::Vec3 Polly::operator-(const Vec3& value)
+constexpr Polly::Vec3 Polly::operator-(Vec3 value)
 {
     return Vec3(-value.x, -value.y, -value.z);
 }
 
-constexpr Polly::Vec3 Polly::operator+(const Vec3& lhs, const Vec3& rhs)
+constexpr Polly::Vec3 Polly::operator+(Vec3 lhs, Vec3 rhs)
 {
     return Vec3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 }
 
-constexpr Polly::Vec3 Polly::operator-(const Vec3& lhs, const Vec3& rhs)
+constexpr Polly::Vec3 Polly::operator-(Vec3 lhs, Vec3 rhs)
 {
     return Vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 }
 
-constexpr Polly::Vec3 Polly::operator*(const Vec3& lhs, const Vec3& rhs)
+constexpr Polly::Vec3 Polly::operator*(Vec3 lhs, Vec3 rhs)
 {
     return Vec3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
 }
 
-constexpr Polly::Vec3 Polly::operator*(const Vec3& lhs, float rhs)
+constexpr Polly::Vec3 Polly::operator*(Vec3 lhs, float rhs)
 {
     return Vec3(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
 }
 
-constexpr Polly::Vec3 Polly::operator*(float lhs, const Vec3& rhs)
+constexpr Polly::Vec3 Polly::operator*(float lhs, Vec3 rhs)
 {
     return rhs * lhs;
 }
 
-constexpr Polly::Vec3 Polly::operator/(const Vec3& lhs, const Vec3& rhs)
+constexpr Polly::Vec3 Polly::operator/(Vec3 lhs, Vec3 rhs)
 {
     return Vec3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
 }
 
-constexpr Polly::Vec3 Polly::operator/(const Vec3& lhs, float rhs)
+constexpr Polly::Vec3 Polly::operator/(Vec3 lhs, float rhs)
 {
     return Vec3(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs);
 }
 
-inline Polly::Vec3i Polly::abs(const Vec3i& vector)
+inline Polly::Vec3i Polly::abs(Vec3i vector)
 {
     return Vec3i(abs(vector.x), abs(vector.y), abs(vector.z));
 }
 
-constexpr Polly::Vec3i Polly::clamp(const Vec3i& value, const Vec3i& min, const Vec3i& max)
+constexpr Polly::Vec3i Polly::clamp(Vec3i value, Vec3i min, Vec3i max)
 {
     return Vec3i(clamp(value.x, min.x, max.x), clamp(value.y, min.y, max.y), clamp(value.z, min.z, max.z));
 }
 
-constexpr bool Polly::isZero(const Vec3i& vector)
+constexpr bool Polly::isZero(Vec3i vector)
 {
-    return vector.x == 0 and vector.y == 0 and vector.z == 0;
+    return vector.x == 0 && vector.y == 0 && vector.z == 0;
 }
 
-constexpr Polly::Vec3i Polly::min(const Vec3i& lhs, const Vec3i& rhs)
+constexpr Polly::Vec3i Polly::min(Vec3i lhs, Vec3i rhs)
 {
     return Vec3i(min(lhs.x, rhs.x), min(lhs.y, rhs.y), min(lhs.z, rhs.z));
 }
 
-constexpr Polly::Vec3i Polly::max(const Vec3i& lhs, const Vec3i& rhs)
+constexpr Polly::Vec3i Polly::max(Vec3i lhs, Vec3i rhs)
 {
     return Vec3i(max(lhs.x, rhs.x), max(lhs.y, rhs.y), max(lhs.z, rhs.z));
 }
 
-constexpr Polly::Vec3i& Polly::operator+=(Vec3i& vector, const Vec3i& rhs)
+constexpr Polly::Vec3i& Polly::operator+=(Vec3i& vector, Vec3i rhs)
 {
     vector.x += rhs.x;
     vector.y += rhs.y;
@@ -573,7 +573,7 @@ constexpr Polly::Vec3i& Polly::operator+=(Vec3i& vector, const Vec3i& rhs)
     return vector;
 }
 
-constexpr Polly::Vec3i& Polly::operator-=(Vec3i& vector, const Vec3i& rhs)
+constexpr Polly::Vec3i& Polly::operator-=(Vec3i& vector, Vec3i rhs)
 {
     vector.x -= rhs.x;
     vector.y -= rhs.y;
@@ -581,7 +581,7 @@ constexpr Polly::Vec3i& Polly::operator-=(Vec3i& vector, const Vec3i& rhs)
     return vector;
 }
 
-constexpr Polly::Vec3i& Polly::operator*=(Vec3i& vector, const Vec3i& rhs)
+constexpr Polly::Vec3i& Polly::operator*=(Vec3i& vector, Vec3i rhs)
 {
     vector.x *= rhs.x;
     vector.y *= rhs.y;
@@ -597,7 +597,7 @@ constexpr Polly::Vec3i& Polly::operator*=(Vec3i& vector, int rhs)
     return vector;
 }
 
-constexpr Polly::Vec3i& Polly::operator/=(Vec3i& vector, const Vec3i& rhs)
+constexpr Polly::Vec3i& Polly::operator/=(Vec3i& vector, Vec3i rhs)
 {
     vector.x /= rhs.x;
     vector.y /= rhs.y;
@@ -613,47 +613,47 @@ constexpr Polly::Vec3i& Polly::operator/=(Vec3i& vector, int rhs)
     return vector;
 }
 
-constexpr Polly::Vec3i Polly::operator-(const Vec3i& value)
+constexpr Polly::Vec3i Polly::operator-(Vec3i value)
 {
     return Vec3i(-value.x, -value.y, -value.z);
 }
 
-constexpr Polly::Vec3i Polly::operator+(const Vec3i& lhs, const Vec3i& rhs)
+constexpr Polly::Vec3i Polly::operator+(Vec3i lhs, Vec3i rhs)
 {
     return Vec3i(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 }
 
-constexpr Polly::Vec3i Polly::operator-(const Vec3i& lhs, const Vec3i& rhs)
+constexpr Polly::Vec3i Polly::operator-(Vec3i lhs, Vec3i rhs)
 {
     return Vec3i(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 }
 
-constexpr Polly::Vec3i Polly::operator*(const Vec3i& lhs, const Vec3i& rhs)
+constexpr Polly::Vec3i Polly::operator*(Vec3i lhs, Vec3i rhs)
 {
     return Vec3i(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
 }
 
-constexpr Polly::Vec3i Polly::operator*(const Vec3i& lhs, int rhs)
+constexpr Polly::Vec3i Polly::operator*(Vec3i lhs, int rhs)
 {
     return Vec3i(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
 }
 
-constexpr Polly::Vec3i Polly::operator*(int lhs, const Vec3i& rhs)
+constexpr Polly::Vec3i Polly::operator*(int lhs, Vec3i rhs)
 {
     return rhs * lhs;
 }
 
-constexpr Polly::Vec3i Polly::operator/(const Vec3i& lhs, const Vec3i& rhs)
+constexpr Polly::Vec3i Polly::operator/(Vec3i lhs, Vec3i rhs)
 {
     return Vec3i(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
 }
 
-constexpr Polly::Vec3i Polly::operator/(const Vec3i& lhs, int rhs)
+constexpr Polly::Vec3i Polly::operator/(Vec3i lhs, int rhs)
 {
     return Vec3i(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs);
 }
 
-constexpr Polly::Matrix Polly::transpose(const Matrix& matrix)
+constexpr Polly::Matrix Polly::transpose(Matrix matrix)
 {
     return Matrix(
         Vec4(matrix.row1.x, matrix.row2.x, matrix.row3.x, matrix.row4.x),
@@ -683,27 +683,27 @@ inline Polly::Matrix Polly::rotate(const Radians radians)
     return Matrix(Vec4(c, s, 0, 0), Vec4(-s, c, 0, 0), Vec4(0, 0, 1, 0), Vec4(0, 0, 0, 1));
 }
 
-constexpr bool Polly::areEqualWithin(const Matrix& lhs, const Matrix& rhs, float threshold)
+constexpr bool Polly::areEqualWithin(Matrix lhs, Matrix rhs, float threshold)
 {
     return areEqualWithin(lhs.row1.x, rhs.row1.x, threshold)
-           and areEqualWithin(lhs.row1.y, rhs.row1.y, threshold)
-           and areEqualWithin(lhs.row1.z, rhs.row1.z, threshold)
-           and areEqualWithin(lhs.row1.w, rhs.row1.w, threshold)
-           and areEqualWithin(lhs.row2.x, rhs.row2.x, threshold)
-           and areEqualWithin(lhs.row2.y, rhs.row2.y, threshold)
-           and areEqualWithin(lhs.row2.z, rhs.row2.z, threshold)
-           and areEqualWithin(lhs.row2.w, rhs.row2.w, threshold)
-           and areEqualWithin(lhs.row3.x, rhs.row3.x, threshold)
-           and areEqualWithin(lhs.row3.y, rhs.row3.y, threshold)
-           and areEqualWithin(lhs.row3.z, rhs.row3.z, threshold)
-           and areEqualWithin(lhs.row3.w, rhs.row3.w, threshold)
-           and areEqualWithin(lhs.row4.x, rhs.row4.x, threshold)
-           and areEqualWithin(lhs.row4.y, rhs.row4.y, threshold)
-           and areEqualWithin(lhs.row4.z, rhs.row4.z, threshold)
-           and areEqualWithin(lhs.row4.w, rhs.row4.w, threshold);
+           && areEqualWithin(lhs.row1.y, rhs.row1.y, threshold)
+           && areEqualWithin(lhs.row1.z, rhs.row1.z, threshold)
+           && areEqualWithin(lhs.row1.w, rhs.row1.w, threshold)
+           && areEqualWithin(lhs.row2.x, rhs.row2.x, threshold)
+           && areEqualWithin(lhs.row2.y, rhs.row2.y, threshold)
+           && areEqualWithin(lhs.row2.z, rhs.row2.z, threshold)
+           && areEqualWithin(lhs.row2.w, rhs.row2.w, threshold)
+           && areEqualWithin(lhs.row3.x, rhs.row3.x, threshold)
+           && areEqualWithin(lhs.row3.y, rhs.row3.y, threshold)
+           && areEqualWithin(lhs.row3.z, rhs.row3.z, threshold)
+           && areEqualWithin(lhs.row3.w, rhs.row3.w, threshold)
+           && areEqualWithin(lhs.row4.x, rhs.row4.x, threshold)
+           && areEqualWithin(lhs.row4.y, rhs.row4.y, threshold)
+           && areEqualWithin(lhs.row4.z, rhs.row4.z, threshold)
+           && areEqualWithin(lhs.row4.w, rhs.row4.w, threshold);
 }
 
-constexpr Polly::Matrix Polly::operator*(const Matrix& lhs, const Matrix& rhs)
+constexpr Polly::Matrix Polly::operator*(Matrix lhs, Matrix rhs)
 {
     const auto l11 = lhs.row1.x;
     const auto l12 = lhs.row1.y;
@@ -768,78 +768,78 @@ constexpr Polly::Matrix Polly::operator*(const Matrix& lhs, const Matrix& rhs)
             (l41 * r14) + (l42 * r24) + (l43 * r34) + (l44 * r44)));
 }
 
-inline float Polly::length(const Vec4& vector)
+inline float Polly::length(Vec4 vector)
 {
     return sqrt(lengthSquared(vector));
 }
 
-constexpr float Polly::lengthSquared(const Vec4& vector)
+constexpr float Polly::lengthSquared(Vec4 vector)
 {
     return (vector.x * vector.x) + (vector.y * vector.y) + (vector.z * vector.z) + (vector.w * vector.w);
 }
 
-inline Polly::Vec4 Polly::normalize(const Vec4& vector)
+inline Polly::Vec4 Polly::normalize(Vec4 vector)
 {
     const float len = length(vector);
     return isZero(len) ? Vec4() : vector / len;
 }
 
-inline Polly::Vec4 Polly::round(const Vec4& vector)
+inline Polly::Vec4 Polly::round(Vec4 vector)
 {
     return Vec4(round(vector.x), round(vector.y), round(vector.z), round(vector.w));
 }
 
-inline Polly::Vec4 Polly::abs(const Vec4& vector)
+inline Polly::Vec4 Polly::abs(Vec4 vector)
 {
     return Vec4(abs(vector.x), abs(vector.y), abs(vector.z), abs(vector.w));
 }
 
-inline Polly::Vec4 Polly::sin(const Vec4& vector)
+inline Polly::Vec4 Polly::sin(Vec4 vector)
 {
     return Vec4(sin(vector.x), sin(vector.y), sin(vector.z), sin(vector.w));
 }
 
-inline Polly::Vec4 Polly::cos(const Vec4& vector)
+inline Polly::Vec4 Polly::cos(Vec4 vector)
 {
     return Vec4(cos(vector.x), cos(vector.y), cos(vector.z), cos(vector.w));
 }
 
-inline Polly::Vec4 Polly::tan(const Vec4& vector)
+inline Polly::Vec4 Polly::tan(Vec4 vector)
 {
     return Vec4(tan(vector.x), tan(vector.y), tan(vector.z), tan(vector.w));
 }
 
-inline Polly::Vec4 Polly::pow(const Vec4& x, const Vec4& y)
+inline Polly::Vec4 Polly::pow(Vec4 x, Vec4 y)
 {
     return Vec4(pow(x.x, y.x), pow(x.y, y.y), pow(x.z, y.z), pow(x.w, y.w));
 }
 
-inline Polly::Vec4 Polly::floor(const Vec4& value)
+inline Polly::Vec4 Polly::floor(Vec4 value)
 {
     return Vec4(floor(value.x), floor(value.y), floor(value.z), floor(value.w));
 }
 
-inline Polly::Vec4 Polly::ceil(const Vec4& value)
+inline Polly::Vec4 Polly::ceil(Vec4 value)
 {
     return Vec4(ceil(value.x), ceil(value.y), ceil(value.z), ceil(value.w));
 }
 
-inline float Polly::dot(const Vec4& lhs, const Vec4& rhs)
+inline float Polly::dot(Vec4 lhs, Vec4 rhs)
 {
     return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z) + (lhs.w * rhs.w);
 }
 
-inline float Polly::distance(const Vec4& lhs, const Vec4& rhs)
+inline float Polly::distance(Vec4 lhs, Vec4 rhs)
 {
     return length(rhs - lhs);
 }
 
-inline float Polly::distanceSquared(const Vec4& lhs, const Vec4& rhs)
+inline float Polly::distanceSquared(Vec4 lhs, Vec4 rhs)
 {
     return lengthSquared(rhs - lhs);
 }
 
-constexpr Polly::Vec4 Polly::lerp(const Vec4& start, const Vec4& end, float t)
+constexpr Polly::Vec4 Polly::lerp(Vec4 start, Vec4 end, float t)
 {
     return Vec4(
         lerp(start.x, end.x, t),
@@ -848,7 +848,7 @@ constexpr Polly::Vec4 Polly::lerp(const Vec4& start, const Vec4& end, float t)
         lerp(start.w, end.w, t));
 }
 
-constexpr Polly::Vec4 Polly::smoothstep(const Vec4& start, const Vec4& end, float t)
+constexpr Polly::Vec4 Polly::smoothstep(Vec4 start, Vec4 end, float t)
 {
     return Vec4(
         smoothstep(start.x, end.x, t),
@@ -857,7 +857,7 @@ constexpr Polly::Vec4 Polly::smoothstep(const Vec4& start, const Vec4& end, floa
         smoothstep(start.w, end.w, t));
 }
 
-constexpr Polly::Vec4 Polly::clamp(const Vec4& value, const Vec4& min, const Vec4& max)
+constexpr Polly::Vec4 Polly::clamp(Vec4 value, Vec4 min, Vec4 max)
 {
     return Vec4(
         clamp(value.x, min.x, max.x),
@@ -866,30 +866,30 @@ constexpr Polly::Vec4 Polly::clamp(const Vec4& value, const Vec4& min, const Vec
         clamp(value.w, min.w, max.w));
 }
 
-constexpr bool Polly::isZero(const Vec4& vector)
+constexpr bool Polly::isZero(Vec4 vector)
 {
-    return isZero(vector.x) and isZero(vector.y) and isZero(vector.z) and isZero(vector.w);
+    return isZero(vector.x) && isZero(vector.y) && isZero(vector.z) && isZero(vector.w);
 }
 
-constexpr bool Polly::areEqualWithin(const Vec4& lhs, const Vec4& rhs, float threshold)
+constexpr bool Polly::areEqualWithin(Vec4 lhs, Vec4 rhs, float threshold)
 {
     return areEqualWithin(lhs.x, rhs.x, threshold)
-           and areEqualWithin(lhs.y, rhs.y, threshold)
-           and areEqualWithin(lhs.z, rhs.z, threshold)
-           and areEqualWithin(lhs.w, rhs.w, threshold);
+           && areEqualWithin(lhs.y, rhs.y, threshold)
+           && areEqualWithin(lhs.z, rhs.z, threshold)
+           && areEqualWithin(lhs.w, rhs.w, threshold);
 }
 
-constexpr Polly::Vec4 Polly::min(const Vec4& lhs, const Vec4& rhs)
+constexpr Polly::Vec4 Polly::min(Vec4 lhs, Vec4 rhs)
 {
     return Vec4(min(lhs.x, rhs.x), min(lhs.y, rhs.y), min(lhs.z, rhs.z), min(lhs.w, rhs.w));
 }
 
-constexpr Polly::Vec4 Polly::max(const Vec4& lhs, const Vec4& rhs)
+constexpr Polly::Vec4 Polly::max(Vec4 lhs, Vec4 rhs)
 {
     return Vec4(max(lhs.x, rhs.x), max(lhs.y, rhs.y), max(lhs.z, rhs.z), max(lhs.w, rhs.w));
 }
 
-constexpr Polly::Vec4& Polly::operator+=(Vec4& vector, const Vec4& rhs)
+constexpr Polly::Vec4& Polly::operator+=(Vec4& vector, Vec4 rhs)
 {
     vector.x += rhs.x;
     vector.y += rhs.y;
@@ -898,7 +898,7 @@ constexpr Polly::Vec4& Polly::operator+=(Vec4& vector, const Vec4& rhs)
     return vector;
 }
 
-constexpr Polly::Vec4& Polly::operator-=(Vec4& vector, const Vec4& rhs)
+constexpr Polly::Vec4& Polly::operator-=(Vec4& vector, Vec4 rhs)
 {
     vector.x -= rhs.x;
     vector.y -= rhs.y;
@@ -907,7 +907,7 @@ constexpr Polly::Vec4& Polly::operator-=(Vec4& vector, const Vec4& rhs)
     return vector;
 }
 
-constexpr Polly::Vec4& Polly::operator*=(Vec4& vector, const Vec4& rhs)
+constexpr Polly::Vec4& Polly::operator*=(Vec4& vector, Vec4 rhs)
 {
     vector.x *= rhs.x;
     vector.y *= rhs.y;
@@ -925,7 +925,7 @@ constexpr Polly::Vec4& Polly::operator*=(Vec4& vector, float rhs)
     return vector;
 }
 
-constexpr Polly::Vec4& Polly::operator/=(Vec4& vector, const Vec4& rhs)
+constexpr Polly::Vec4& Polly::operator/=(Vec4& vector, Vec4 rhs)
 {
     vector.x /= rhs.x;
     vector.y /= rhs.y;
@@ -943,52 +943,52 @@ constexpr Polly::Vec4& Polly::operator/=(Vec4& vector, float rhs)
     return vector;
 }
 
-constexpr Polly::Vec4 Polly::operator-(const Vec4& value)
+constexpr Polly::Vec4 Polly::operator-(Vec4 value)
 {
     return Vec4(-value.x, -value.y, -value.z, -value.w);
 }
 
-constexpr Polly::Vec4 Polly::operator+(const Vec4& lhs, const Vec4& rhs)
+constexpr Polly::Vec4 Polly::operator+(Vec4 lhs, Vec4 rhs)
 {
     return Vec4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w);
 }
 
-constexpr Polly::Vec4 Polly::operator-(const Vec4& lhs, const Vec4& rhs)
+constexpr Polly::Vec4 Polly::operator-(Vec4 lhs, Vec4 rhs)
 {
     return Vec4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w);
 }
 
-constexpr Polly::Vec4 Polly::operator*(const Vec4& lhs, const Vec4& rhs)
+constexpr Polly::Vec4 Polly::operator*(Vec4 lhs, Vec4 rhs)
 {
     return Vec4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w);
 }
 
-constexpr Polly::Vec4 Polly::operator*(const Vec4& lhs, float rhs)
+constexpr Polly::Vec4 Polly::operator*(Vec4 lhs, float rhs)
 {
     return Vec4(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs);
 }
 
-constexpr Polly::Vec4 Polly::operator*(float lhs, const Vec4& rhs)
+constexpr Polly::Vec4 Polly::operator*(float lhs, Vec4 rhs)
 {
     return rhs * lhs;
 }
 
-constexpr Polly::Vec4 Polly::operator/(const Vec4& lhs, const Vec4& rhs)
+constexpr Polly::Vec4 Polly::operator/(Vec4 lhs, Vec4 rhs)
 {
     return Vec4(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w);
 }
 
-constexpr Polly::Vec4 Polly::operator/(const Vec4& lhs, float rhs)
+constexpr Polly::Vec4 Polly::operator/(Vec4 lhs, float rhs)
 {
     return Vec4(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs);
 }
 
-inline Polly::Vec4i Polly::abs(const Vec4i& vector)
+inline Polly::Vec4i Polly::abs(Vec4i vector)
 {
     return Vec4i(abs(vector.x), abs(vector.y), abs(vector.z), abs(vector.w));
 }
 
-constexpr Polly::Vec4i Polly::clamp(const Vec4i& value, const Vec4i& min, const Vec4i& max)
+constexpr Polly::Vec4i Polly::clamp(Vec4i value, Vec4i min, Vec4i max)
 {
     return Vec4i(
         clamp(value.x, min.x, max.x),
@@ -997,22 +997,22 @@ constexpr Polly::Vec4i Polly::clamp(const Vec4i& value, const Vec4i& min, const 
         clamp(value.w, min.w, max.w));
 }
 
-constexpr bool Polly::isZero(const Vec4i& vector)
+constexpr bool Polly::isZero(Vec4i vector)
 {
-    return vector.x == 0 and vector.y == 0 and vector.z == 0 and vector.w == 0;
+    return vector.x == 0 && vector.y == 0 && vector.z == 0 && vector.w == 0;
 }
 
-constexpr Polly::Vec4i Polly::min(const Vec4i& lhs, const Vec4i& rhs)
+constexpr Polly::Vec4i Polly::min(Vec4i lhs, Vec4i rhs)
 {
     return Vec4i(min(lhs.x, rhs.x), min(lhs.y, rhs.y), min(lhs.z, rhs.z), min(lhs.w, rhs.w));
 }
 
-constexpr Polly::Vec4i Polly::max(const Vec4i& lhs, const Vec4i& rhs)
+constexpr Polly::Vec4i Polly::max(Vec4i lhs, Vec4i rhs)
 {
     return Vec4i(max(lhs.x, rhs.x), max(lhs.y, rhs.y), max(lhs.z, rhs.z), max(lhs.w, rhs.w));
 }
 
-constexpr Polly::Vec4i& Polly::operator+=(Vec4i& vector, const Vec4i& rhs)
+constexpr Polly::Vec4i& Polly::operator+=(Vec4i& vector, Vec4i rhs)
 {
     vector.x += rhs.x;
     vector.y += rhs.y;
@@ -1021,7 +1021,7 @@ constexpr Polly::Vec4i& Polly::operator+=(Vec4i& vector, const Vec4i& rhs)
     return vector;
 }
 
-constexpr Polly::Vec4i& Polly::operator-=(Vec4i& vector, const Vec4i& rhs)
+constexpr Polly::Vec4i& Polly::operator-=(Vec4i& vector, Vec4i rhs)
 {
     vector.x -= rhs.x;
     vector.y -= rhs.y;
@@ -1030,7 +1030,7 @@ constexpr Polly::Vec4i& Polly::operator-=(Vec4i& vector, const Vec4i& rhs)
     return vector;
 }
 
-constexpr Polly::Vec4i& Polly::operator*=(Vec4i& vector, const Vec4i& rhs)
+constexpr Polly::Vec4i& Polly::operator*=(Vec4i& vector, Vec4i rhs)
 {
     vector.x *= rhs.x;
     vector.y *= rhs.y;
@@ -1048,7 +1048,7 @@ constexpr Polly::Vec4i& Polly::operator*=(Vec4i& vector, int rhs)
     return vector;
 }
 
-constexpr Polly::Vec4i& Polly::operator/=(Vec4i& vector, const Vec4i& rhs)
+constexpr Polly::Vec4i& Polly::operator/=(Vec4i& vector, Vec4i rhs)
 {
     vector.x /= rhs.x;
     vector.y /= rhs.y;
@@ -1066,42 +1066,42 @@ constexpr Polly::Vec4i& Polly::operator/=(Vec4i& vector, int rhs)
     return vector;
 }
 
-constexpr Polly::Vec4i Polly::operator-(const Vec4i& value)
+constexpr Polly::Vec4i Polly::operator-(Vec4i value)
 {
     return Vec4i(-value.x, -value.y, -value.z, -value.w);
 }
 
-constexpr Polly::Vec4i Polly::operator+(const Vec4i& lhs, const Vec4i& rhs)
+constexpr Polly::Vec4i Polly::operator+(Vec4i lhs, Vec4i rhs)
 {
     return Vec4i(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w);
 }
 
-constexpr Polly::Vec4i Polly::operator-(const Vec4i& lhs, const Vec4i& rhs)
+constexpr Polly::Vec4i Polly::operator-(Vec4i lhs, Vec4i rhs)
 {
     return Vec4i(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w);
 }
 
-constexpr Polly::Vec4i Polly::operator*(const Vec4i& lhs, const Vec4i& rhs)
+constexpr Polly::Vec4i Polly::operator*(Vec4i lhs, Vec4i rhs)
 {
     return Vec4i(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w);
 }
 
-constexpr Polly::Vec4i Polly::operator*(const Vec4i& lhs, int rhs)
+constexpr Polly::Vec4i Polly::operator*(Vec4i lhs, int rhs)
 {
     return Vec4i(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs);
 }
 
-constexpr Polly::Vec4i Polly::operator*(int lhs, const Vec4i& rhs)
+constexpr Polly::Vec4i Polly::operator*(int lhs, Vec4i rhs)
 {
     return rhs * lhs;
 }
 
-constexpr Polly::Vec4i Polly::operator/(const Vec4i& lhs, const Vec4i& rhs)
+constexpr Polly::Vec4i Polly::operator/(Vec4i lhs, Vec4i rhs)
 {
     return Vec4i(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w);
 }
 
-constexpr Polly::Vec4i Polly::operator/(const Vec4i& lhs, int rhs)
+constexpr Polly::Vec4i Polly::operator/(Vec4i lhs, int rhs)
 {
     return Vec4i(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs, lhs.w / rhs);
 }

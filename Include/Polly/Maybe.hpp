@@ -438,7 +438,6 @@ class Maybe<T&>
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     constexpr Maybe(Details::NoObjectTag) noexcept
         : _value(nullptr)
     {
@@ -452,7 +451,6 @@ class Maybe<T&>
         return *this;
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     /// Forbid construction of an Maybe<T&> from a nullptr.
     Maybe(std::nullptr_t) = PollyDeleteWithReason(
         "Maybe<T&> cannot be constructed from a nullptr; use 'none' or default-construction instead.");
@@ -472,7 +470,6 @@ class Maybe<T&>
         convertRefInitValue(std::forward<U>(u));
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<class U>
     requires(std::is_constructible_v<T&, U>
              and not std::is_same_v<std::remove_cvref_t<U>, Maybe>
@@ -535,7 +532,6 @@ class Maybe<T&>
         }
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<class U>
     requires(std::is_constructible_v<T&, U&>
              and not std::is_same_v<std::remove_cv_t<T>, Maybe<U>>
@@ -543,7 +539,6 @@ class Maybe<T&>
              and Details::reference_constructs_from_temporary_v<T&, U&>)
     constexpr Maybe(Maybe<U>&) = delete;
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<class U>
     requires(std::is_constructible_v<T&, const U&>
              and not std::is_same_v<std::remove_cv_t<T>, Maybe<U>>
@@ -551,7 +546,6 @@ class Maybe<T&>
              and Details::reference_constructs_from_temporary_v<T&, const U&>)
     constexpr Maybe(const Maybe<U>&) = delete;
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<class U>
     requires(std::is_constructible_v<T&, U>
              and not std::is_same_v<std::remove_cv_t<T>, Maybe<U>>
@@ -559,7 +553,6 @@ class Maybe<T&>
              and Details::reference_constructs_from_temporary_v<T&, U>)
     constexpr Maybe(Maybe<U>&&) = delete;
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<class U>
     requires(std::is_constructible_v<T&, const U>
              and not std::is_same_v<std::remove_cv_t<T>, Maybe<U>>
@@ -654,78 +647,78 @@ requires requires { *lhs <=> *rhs; };
 
 template<typename T, typename U>
 constexpr bool operator==(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs == *rhs); };
+requires requires { bool(*lhs == *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator!=(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs != *rhs); };
+requires requires { bool(*lhs != *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator<(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs < *rhs); };
+requires requires { bool(*lhs < *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator>(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs > *rhs); };
+requires requires { bool(*lhs > *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator<=(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs <= *rhs); };
+requires requires { bool(*lhs <= *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator>=(const Maybe<T>& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(*lhs >= *rhs); };
+requires requires { bool(*lhs >= *rhs); };
 
 template<typename T>
 constexpr bool operator==(const Maybe<T>& x, Details::NoObjectTag) noexcept;
 
 template<typename T, typename U>
 constexpr bool operator==(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs == rhs); };
+requires requires { bool(*lhs == rhs); };
 
 template<typename T, typename U>
 constexpr bool operator==(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs == *rhs); };
+requires requires { bool(lhs == *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator!=(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs != rhs); };
+requires requires { bool(*lhs != rhs); };
 
 template<typename T, typename U>
 constexpr bool operator!=(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs != *rhs); };
+requires requires { bool(lhs != *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator<(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs < rhs); };
+requires requires { bool(*lhs < rhs); };
 
 template<typename T, typename U>
 constexpr bool operator<(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs < *rhs); };
+requires requires { bool(lhs < *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator>(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs > rhs); };
+requires requires { bool(*lhs > rhs); };
 
 template<typename T, typename U>
 constexpr bool operator>(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs > *rhs); };
+requires requires { bool(lhs > *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator<=(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs <= rhs); };
+requires requires { bool(*lhs <= rhs); };
 
 template<typename T, typename U>
 constexpr bool operator<=(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs <= *rhs); };
+requires requires { bool(lhs <= *rhs); };
 
 template<typename T, typename U>
 constexpr bool operator>=(const Maybe<T>& lhs, const U& rhs)
-requires requires { static_cast<bool>(*lhs >= rhs); };
+requires requires { bool(*lhs >= rhs); };
 
 template<typename T, typename U>
 constexpr bool operator>=(const T& lhs, const Maybe<U>& rhs)
-requires requires { static_cast<bool>(lhs >= *rhs); };
+requires requires { bool(lhs >= *rhs); };
 
 template<typename T>
 constexpr void swap(Maybe<T>& lhs, Maybe<T>& rhs) noexcept

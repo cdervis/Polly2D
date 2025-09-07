@@ -168,7 +168,7 @@ void ParticleSystem::Impl::emit(EmitterData& data, Vec2 position, u32 count)
         }
         else
         {
-            const auto newCapacity = static_cast<u32>(static_cast<double>(particlesCap) * 1.5);
+            const auto newCapacity = u32(double(particlesCap) * 1.5);
 
             data.particles.resize(max(newCapacity, newActiveParticleCount));
         }

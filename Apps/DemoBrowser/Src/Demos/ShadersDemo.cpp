@@ -13,7 +13,7 @@ ShadersDemo::ShadersDemo(DemoBrowser* browser)
 
 void ShadersDemo::tick(GameTime time)
 {
-    _wobbleShader.set("TotalTime", static_cast<float>(time.total()));
+    _wobbleShader.set("TotalTime", float(time.total()));
 }
 
 void ShadersDemo::draw(Painter painter)

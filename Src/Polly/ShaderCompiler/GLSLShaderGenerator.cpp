@@ -77,7 +77,7 @@ String GLSLShaderGenerator::doGeneration(
 
     w << wnewline;
 
-    if (_ast->shaderType() == ShaderType::Sprite or _ast->shaderType() == ShaderType::Mesh)
+    if (_ast->shaderType() == ShaderType::Sprite || _ast->shaderType() == ShaderType::Mesh)
     {
         // Emit uniforms that are always available/implicit, depending on shader domain.
         if (_shouldGenerateForVulkan)
@@ -162,7 +162,7 @@ void GLSLShaderGenerator::generateFunctionDecl(
     const FunctionDecl* function,
     const SemaContext&  context)
 {
-    if (not function->body())
+    if (!function->body())
     {
         return;
     }
@@ -174,7 +174,7 @@ void GLSLShaderGenerator::generateFunctionDecl(
     if (function->isShader())
     {
         // Sprite and Mesh shaders share the same inputs and names.
-        if (_ast->shaderType() == ShaderType::Sprite or _ast->shaderType() == ShaderType::Mesh)
+        if (_ast->shaderType() == ShaderType::Sprite || _ast->shaderType() == ShaderType::Mesh)
         {
             // Keep this in sync with the output of SpriteBatchOpenGL.vert/SpriteBatchVulkan.vert!
             w << "in vec4 " << _v2fColor << ';' << wnewline;
@@ -236,7 +236,7 @@ void GLSLShaderGenerator::generateFunctionDecl(
 
 void GLSLShaderGenerator::generateReturnStmt(Writer& w, const ReturnStmt* stmt, const SemaContext& context)
 {
-    assume(not _callStack.isEmpty());
+    assume(!_callStack.isEmpty());
 
     if (const auto* currentFunction = _callStack.last(); currentFunction->isShader())
     {
@@ -339,7 +339,7 @@ void GLSLShaderGenerator::generateSymAccessExpr(
     const auto* symbol   = expr->symbol();
     const auto  name     = expr->name();
 
-    if (const auto* param = as<ShaderParamDecl>(symbol); param and param->type()->canBeInCbuffer())
+    if (const auto* param = as<ShaderParamDecl>(symbol); param && param->type()->canBeInCbuffer())
     {
         w << name;
     }
@@ -347,18 +347,18 @@ void GLSLShaderGenerator::generateSymAccessExpr(
     {
         w << expr->identifier();
     }
-    else if (symbol == builtIns.svSpriteImage.get() or symbol == builtIns.svMeshImage.get())
+    else if (symbol == builtIns.svSpriteImage.get() || symbol == builtIns.svMeshImage.get())
     {
         w << _imageName;
     }
     else if (
         symbol == builtIns.svSpriteColor.get()
-        or symbol == builtIns.svPolygonColor.get()
-        or symbol == builtIns.svMeshColor.get())
+        || symbol == builtIns.svPolygonColor.get()
+        || symbol == builtIns.svMeshColor.get())
     {
         w << _v2fColor;
     }
-    else if (symbol == builtIns.svSpriteUV.get() or symbol == builtIns.svMeshUV.get())
+    else if (symbol == builtIns.svSpriteUV.get() || symbol == builtIns.svMeshUV.get())
     {
         w << _v2fUV;
     }
@@ -390,7 +390,7 @@ void GLSLShaderGenerator::emitUniformBufferForUserParams(
     [[maybe_unused]] const FunctionDecl* shader,
     const AccessedParams&                params) const
 {
-    if (not params.scalars.isEmpty())
+    if (!params.scalars.isEmpty())
     {
         w << "layout(std140";
 

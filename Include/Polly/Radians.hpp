@@ -25,7 +25,7 @@ struct Radians
 
 constexpr Polly::Radians operator""_rad(long double value)
 {
-    return Polly::Radians(static_cast<float>(value));
+    return Polly::Radians(float(value));
 }
 
 #include "Polly/Details/Radians.inl"

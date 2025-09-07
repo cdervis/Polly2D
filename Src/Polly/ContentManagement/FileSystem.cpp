@@ -27,7 +27,7 @@ namespace Polly::Details
 {
 void set_android_asset_manager([[maybe_unused]] void* asset_manager)
 {
-    if (not asset_manager)
+    if (!asset_manager)
     {
         throw Error("No Android asset manager specified.");
     }
@@ -43,7 +43,7 @@ namespace Polly
 #ifdef __ANDROID__
 static auto GetAndroidAssetManager() -> AAssetManager*
 {
-    if (not s_PollyAndroidAssetManager)
+    if (!s_PollyAndroidAssetManager)
     {
         throw Error(
             "Attempting to load a file, however no Android asset "
@@ -134,7 +134,7 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
     filenameStr += filename;
     transformToCleanPath(filenameStr, false);
 
-#if TARGET_OS_IPHONE or TARGET_OS_OSX
+#if TARGET_OS_IPHONE || TARGET_OS_OSX
     auto*      ifs          = static_cast<SDL_IOStream*>(nullptr);
     const auto ext          = pathExtension(filenameStr);
     const auto resourceName = pathExtension(filenameStr, false);
@@ -179,7 +179,7 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
 
         const auto fullAssetPathStr = StringView(reinterpret_cast<const char*>(fullAssetPath.data()));
 
-        if (not fullAssetPathStr.isEmpty())
+        if (!fullAssetPathStr.isEmpty())
         {
             ifs = SDL_IOFromFile(fullAssetPathStr.data(), "rb");
         }
@@ -189,7 +189,7 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
         }
     }
 
-    if (not ifs)
+    if (!ifs)
     {
         ifs = SDL_IOFromFile(filenameStr.cstring(), "rb");
     }
@@ -215,14 +215,14 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
     auto* ifs = SDL_IOFromFile(filenameStr.cstring(), "rb");
 #endif
 
-    if (not ifs)
+    if (!ifs)
     {
         return none;
     }
 
     const auto dataSize = SDL_GetIOSize(ifs);
 
-    auto data = ByteBlob(static_cast<u32>(dataSize));
+    auto data = ByteBlob(u32(dataSize));
 
     // TODO: check return value:
     SDL_ReadIO(ifs, data.data(), dataSize);
@@ -232,12 +232,12 @@ Maybe<ByteBlob> FileSystem::loadAssetData(StringView filename)
 
 Maybe<String> FileSystem::loadTextFileFromDisk(StringView filename)
 {
-#if defined(__ANDROID__) or TARGET_OS_IPHONE
+#if defined(__ANDROID__) || TARGET_OS_IPHONE
     throw Error("Loading files from disk is not supported on the current system.");
 #else
     auto* ifs = SDL_IOFromFile(String(filename).cstring(), "r");
 
-    if (not ifs)
+    if (!ifs)
     {
         return none;
     }
@@ -264,7 +264,7 @@ Maybe<ByteBlob> FileSystem::loadFileFromDisk([[maybe_unused]] StringView filenam
 #else
     auto* ifs = SDL_IOFromFile(String(filename).cstring(), "rb");
 
-    if (not ifs)
+    if (!ifs)
     {
         return none;
     }
@@ -292,7 +292,7 @@ void FileSystem::writeBinaryFileToDisk(StringView filename, Span<u8> contents)
 #else
     auto* ofs = SDL_IOFromFile(String(filename).cstring(), "wb");
 
-    if (not ofs)
+    if (!ofs)
     {
         throw Error(formatString("Failed to open file '{}' for writing.", filename));
     }
@@ -313,7 +313,7 @@ void FileSystem::writeTextFileToDisk(StringView filename, StringView contents)
 #else
     auto* ofs = SDL_IOFromFile(String(filename).cstring(), "w");
 
-    if (not ofs)
+    if (!ofs)
     {
         throw Error(formatString("Failed to open file '{}' for writing.", filename));
     }
@@ -348,7 +348,7 @@ void FileSystem::transformToCleanPath(String& path, Maybe<bool> withEndingSlash)
 {
     path.replaceCharacter('\\', '/');
 
-    if (not path.isEmpty())
+    if (!path.isEmpty())
     {
         if (withEndingSlash.valueOr(false))
         {
@@ -371,13 +371,13 @@ void FileSystem::transformToCleanPath(String& path, Maybe<bool> withEndingSlash)
     while (idx)
     {
         const auto idxOfPrevious = path.reverseFind('/', *idx);
-        if (not idxOfPrevious)
+        if (!idxOfPrevious)
         {
             break;
         }
 
         const auto idxOfPrevious2 = path.reverseFind('/', *idxOfPrevious - 1);
-        if (not idxOfPrevious2)
+        if (!idxOfPrevious2)
         {
             break;
         }
@@ -418,7 +418,7 @@ String FileSystem::pathFilename(StringView path, bool withExtension)
 
     auto str = String(slashIdx ? path.substring(*slashIdx + 1) : path);
 
-    if (not withExtension)
+    if (!withExtension)
     {
         str = pathReplaceExtension(str, {});
     }
@@ -462,7 +462,7 @@ String FileSystem::pathParent(StringView path)
 
 void FileSystem::createDirectories(StringView path)
 {
-    if (not SDL_CreateDirectory(path.cstring()))
+    if (!SDL_CreateDirectory(path.cstring()))
     {
         throw Error(formatString("Failed to create directory '{}'.", path));
     }
@@ -472,7 +472,7 @@ String FileSystem::pathReplaceExtension(StringView path, StringView newExtension
 {
     newExtension.trimStart({'.'});
 
-    if (const auto lastDotIdx = path.reverseFind('.'); lastDotIdx and *lastDotIdx != path.size() - 1)
+    if (const auto lastDotIdx = path.reverseFind('.'); lastDotIdx && *lastDotIdx != path.size() - 1)
     {
         path = path.substring(0, *lastDotIdx + 1);
     }
@@ -484,7 +484,7 @@ String FileSystem::pathReplaceExtension(StringView path, StringView newExtension
         result += '.';
     }
 
-    if (newExtension.isEmpty() and result.last() == '.')
+    if (newExtension.isEmpty() && result.last() == '.')
     {
         result.removeLast();
     }
@@ -498,7 +498,7 @@ Maybe<String> FileSystem::randomWritablePath(StringView companyName, StringView 
 {
     char* prefPath = nullptr;
 
-    if (companyName.isNullTerminated() and gameName.isNullTerminated())
+    if (companyName.isNullTerminated() && gameName.isNullTerminated())
     {
         prefPath = SDL_GetPrefPath(companyName.cstring(), gameName.cstring());
     }
@@ -507,7 +507,7 @@ Maybe<String> FileSystem::randomWritablePath(StringView companyName, StringView 
         prefPath = SDL_GetPrefPath(String(companyName).cstring(), String(gameName).cstring());
     }
 
-    if (not prefPath)
+    if (!prefPath)
     {
         return none;
     }

@@ -38,16 +38,16 @@ static constexpr u32 string_literal_length(const char* str)
 }
 
 [[noreturn]]
-void throw_empty_string_view_exception();
+void throwEmptyStringViewException();
 
 [[noreturn]]
-void throw_string_view_out_of_range_exception();
+void throwStringViewOutOfRangeException();
 
 [[noreturn]]
-void throw_string_view_range_exception();
+void throwStringViewRangeException();
 
 [[noreturn]]
-void throw_string_view_not_null_terminated_exception();
+void throwStringViewNotNullTerminatedException();
 } // namespace Details
 
 constexpr StringView::StringView()
@@ -87,7 +87,7 @@ constexpr StringView StringView::substring(u32 offset, Maybe<u32> size) const
     {
         if (offset + *size >= _size)
         {
-            Details::throw_string_view_range_exception();
+            Details::throwStringViewRangeException();
         }
 
         return StringView(_data + offset, *size);
@@ -95,13 +95,12 @@ constexpr StringView StringView::substring(u32 offset, Maybe<u32> size) const
 
     if (offset > _size)
     {
-        Details::throw_string_view_out_of_range_exception();
+        Details::throwStringViewOutOfRangeException();
     }
 
     return StringView(_data + offset, _size - offset);
 }
 
-// ReSharper disable once CppNonExplicitConversionOperator
 constexpr StringView::operator Span<char>() const
 {
     return Span(_data, _size);
@@ -109,17 +108,17 @@ constexpr StringView::operator Span<char>() const
 
 inline bool StringView::contains(StringView str) const
 {
-    return static_cast<bool>(find(str));
+    return bool(find(str));
 }
 
 inline bool StringView::contains(char ch) const
 {
-    return static_cast<bool>(find(ch));
+    return bool(find(ch));
 }
 
 inline u32 StringView::count(char ch) const
 {
-    auto result = static_cast<u32>(0);
+    auto result = u32(0);
 
     for (const auto item : *this)
     {
@@ -134,7 +133,7 @@ inline u32 StringView::count(char ch) const
 
 inline u32 StringView::count(StringView str) const
 {
-    auto result = static_cast<u32>(0);
+    auto result = u32(0);
     auto idx    = find(str);
 
     while (idx)
@@ -165,7 +164,7 @@ constexpr const char* StringView::cstring() const
     // do things we really don't like when the string isn't null-terminated.
     if (not _data or not _isNullTerminated)
     {
-        Details::throw_string_view_not_null_terminated_exception();
+        Details::throwStringViewNotNullTerminatedException();
     }
 
     return _data;
@@ -200,7 +199,7 @@ constexpr const char& StringView::operator[](u32 index) const
 {
     if (index > _size)
     {
-        Details::throw_string_view_out_of_range_exception();
+        Details::throwStringViewOutOfRangeException();
     }
 
     return _data[index];
@@ -210,7 +209,7 @@ constexpr const char& StringView::first() const
 {
     if (isEmpty())
     {
-        Details::throw_empty_string_view_exception();
+        Details::throwEmptyStringViewException();
     }
 
     return _data[0];
@@ -220,7 +219,7 @@ constexpr const char& StringView::last() const
 {
     if (isEmpty())
     {
-        Details::throw_empty_string_view_exception();
+        Details::throwEmptyStringViewException();
     }
 
     return _data[_size - 1];
@@ -231,7 +230,7 @@ inline Maybe<u32> StringView::find(char ch, u32 offset) const
 {
     if (offset >= _size)
     {
-        Details::throw_string_view_range_exception();
+        Details::throwStringViewRangeException();
     }
 
     const auto  my_size = _size;

@@ -30,13 +30,10 @@ class String
 
     constexpr String();
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     constexpr String(Details::NoObjectTag);
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     String(const char* str);
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     String(std::nullptr_t) = PollyDeleteWithReason("Constructing a String from a nullptr is invalid.");
 
     explicit String(const char* str, u32 size);
@@ -189,17 +186,13 @@ class String
 
     void operator+=(char ch);
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     operator StringView() const PollyLifetimeBound;
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     constexpr operator Span<char>() const PollyLifetimeBound
     {
         return Span(_data, _size);
     }
 
-    // ReSharper disable once CppMemberFunctionMayBeConst
-    // ReSharper disable once CppNonExplicitConversionOperator
     constexpr operator MutableSpan<char>() PollyLifetimeBound
     {
         return MutableSpan(_data, _size);

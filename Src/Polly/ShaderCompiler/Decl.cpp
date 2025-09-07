@@ -29,16 +29,16 @@ Decl::Decl(const SourceLocation& location, StringView name)
     , _name(name)
     , _type(nullptr)
 {
-    assume(not _name.isEmpty());
+    assume(!_name.isEmpty());
 }
 
 Decl::~Decl() noexcept = default;
 
 void Decl::verify(SemaContext& context, Scope& scope)
 {
-    assume(not _name.isEmpty());
+    assume(!_name.isEmpty());
 
-    if (not _isVerified)
+    if (!_isVerified)
     {
         onVerify(context, scope);
 
@@ -86,9 +86,7 @@ StringView ShaderTypeDecl::id() const
 
 void ShaderTypeDecl::onVerify([[maybe_unused]] SemaContext& context, [[maybe_unused]] Scope& scope)
 {
-    if (_id != Naming::shaderTypeSprite
-        and _id != Naming::shaderTypePolygon
-        and _id != Naming::shaderTypeMesh)
+    if (_id != Naming::shaderTypeSprite && _id != Naming::shaderTypePolygon && _id != Naming::shaderTypeMesh)
     {
         throw ShaderCompileError(
             location(),
@@ -114,7 +112,7 @@ void FunctionParamDecl::onVerify(SemaContext& context, Scope& scope)
     auto* type = this->type()->resolve(context, scope);
     setType(type);
 
-    if (const auto* function = scope.currentFunction(); function and function->body())
+    if (const auto* function = scope.currentFunction(); function && function->body())
     {
         if (type->isImageType())
         {
@@ -158,7 +156,7 @@ Span<UniquePtr<FunctionParamDecl>> FunctionDecl::parameters() const
 
 bool FunctionDecl::accessesSymbol(const Decl* symbol, bool transitive) const
 {
-    return _body and _body->accessesSymbol(symbol, transitive);
+    return _body && _body->accessesSymbol(symbol, transitive);
 }
 
 CodeBlock* FunctionDecl::body()
@@ -205,16 +203,16 @@ void FunctionDecl::onVerify(SemaContext& context, Scope& scope)
 
     context.verifySymbolName(location(), name());
 
-    const bool isBuiltIn = not _body;
+    const bool isBuiltIn = !_body;
 
-    if (not isBuiltIn and scope.containsSymbolOnlyHere(name()))
+    if (!isBuiltIn && scope.containsSymbolOnlyHere(name()))
     {
         throw ShaderCompileError(location(), formatString("Symbol '{}' is already defined.", name()));
     }
 
     for (auto& param : _parameters)
     {
-        if (not isBuiltIn)
+        if (!isBuiltIn)
         {
             scope.addSymbol(param.get());
         }
@@ -228,7 +226,7 @@ void FunctionDecl::onVerify(SemaContext& context, Scope& scope)
 
     // Verify that the function does not return a type that is never allowed to be
     // returned from functions.
-    if (returnType->isArray() or returnType->isImageType())
+    if (returnType->isArray() || returnType->isImageType())
     {
         throw ShaderCompileError(
             location(),
@@ -266,7 +264,7 @@ void FunctionDecl::onVerify(SemaContext& context, Scope& scope)
         }
     }
 
-    if (not isBuiltIn)
+    if (!isBuiltIn)
     {
         assume(_body);
 
@@ -314,7 +312,7 @@ void FunctionDecl::onVerify(SemaContext& context, Scope& scope)
         // Check actual returned type with the function's declared return type.
         const auto* returnStmt = as<ReturnStmt>(_body->stmts().last().get());
 
-        if (not returnStmt)
+        if (!returnStmt)
         {
             throw ShaderCompileError(
                 _body->stmts().last()->location(),
@@ -328,15 +326,15 @@ void FunctionDecl::onVerify(SemaContext& context, Scope& scope)
         const auto usesPixelPosNormalized = ast.isSymbolAccessedAnywhere(builtIns.svPixelPosNormalized.get());
 
         const auto usesPixelPos = usesPixelPosNormalized
-                                  or ast.isSymbolAccessedAnywhere(builtIns.svPixelPosNormalized.get())
-                                  or ast.isSymbolAccessedAnywhere(builtIns.svPixelPos.get());
+                                  || ast.isSymbolAccessedAnywhere(builtIns.svPixelPosNormalized.get())
+                                  || ast.isSymbolAccessedAnywhere(builtIns.svPixelPos.get());
 
         const auto usesViewportSize = ast.isSymbolAccessedAnywhere(builtIns.svViewportSize.get());
 
         const auto usesViewportSizeInv =
-            usesPixelPosNormalized or ast.isSymbolAccessedAnywhere(builtIns.svViewportSizeInv.get());
+            usesPixelPosNormalized || ast.isSymbolAccessedAnywhere(builtIns.svViewportSizeInv.get());
 
-        _usesSystemValues = usesPixelPosNormalized or usesPixelPos or usesViewportSize or usesViewportSizeInv;
+        _usesSystemValues = usesPixelPosNormalized || usesPixelPos || usesViewportSize || usesViewportSizeInv;
     }
 }
 
@@ -369,7 +367,7 @@ void ShaderParamDecl::onVerify(SemaContext& context, Scope& scope)
 {
     setType(type()->resolve(context, scope));
 
-    if (not type()->canBeShaderParameter())
+    if (!type()->canBeShaderParameter())
     {
         throw ShaderCompileError(
             location(),
@@ -391,7 +389,7 @@ void ShaderParamDecl::onVerify(SemaContext& context, Scope& scope)
 
         const auto constantValue = _defaultValueExpr->evaluateConstantValue(context, scope);
 
-        if (not constantValue)
+        if (!constantValue)
         {
             throw ShaderCompileError(
                 _defaultValueExpr->location(),
@@ -448,7 +446,7 @@ VarDecl::VarDecl(StringView name, const Type* type)
     , _isSystemValue(true)
 {
     // A valid type must be known beforehand
-    assume(not type->isUnresolved());
+    assume(!type->isUnresolved());
     setType(type);
 }
 
@@ -458,7 +456,7 @@ void VarDecl::onVerify(SemaContext& context, Scope& scope)
 {
     if (_isSystemValue)
     {
-        assume(not type()->isUnresolved());
+        assume(!type()->isUnresolved());
     }
     else
     {

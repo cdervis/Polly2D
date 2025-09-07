@@ -17,9 +17,8 @@ namespace Polly
 {
 /// Represents emission properties of a ParticleEmitter.
 ///
-/// These properties determine the value ranges and behaviors
-/// of how particles are emitted. They do *not* alter the behavior
-/// of a particle that has already been emitted.
+/// These properties determine the value ranges and behaviors of how particles are emitted.
+/// They don't alter the behavior of a particle that has already been emitted.
 ///
 /// For modifiers that modify already emitted particles, see
 /// the ParticleModifier type and the modifiers field of ParticleEmitter.
@@ -32,7 +31,7 @@ struct ParticleEmissionParams
     FloatInterval speed = FloatInterval(-100.0f, 100.0f);
 
     /// The color of the particle to be emitted.
-    color_interval color = color_interval(black, white);
+    ColorInterval color = ColorInterval(black, white);
 
     /// The duration of the particle to be emitted, in fractional seconds.
     FloatInterval duration = FloatInterval(1.0f, 1.0f);

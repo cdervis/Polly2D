@@ -20,7 +20,7 @@ Maybe<u32> StringView::find(StringView str, u32 offset) const
     const auto needleSize = str.size();
     const auto mySize     = _size;
 
-    if (needleSize == 0 or offset >= mySize)
+    if (needleSize == 0 || offset >= mySize)
     {
         return none;
     }
@@ -31,20 +31,20 @@ Maybe<u32> StringView::find(StringView str, u32 offset) const
     const char* myBegin    = myData + offset;
     const auto* myEnd      = myData + mySize;
 
-    for (auto size = mySize - offset; size >= needleSize; size = static_cast<int>(myEnd - myBegin))
+    for (auto size = mySize - offset; size >= needleSize; size = int(myEnd - myBegin))
     {
         const auto remainingSpace = size - needleSize + 1;
 
         myBegin = static_cast<const char*>(std::memchr(myBegin, firstCh, remainingSpace));
 
-        if (not myBegin)
+        if (!myBegin)
         {
             return none;
         }
 
         if (std::memcmp(myBegin, needleData, needleSize) == 0)
         {
-            return static_cast<int>(myBegin - myData);
+            return int(myBegin - myData);
         }
 
         ++myBegin;
@@ -64,7 +64,7 @@ Maybe<u32> StringView::findAnyOf(StringView chars, Maybe<u32> offset) const
 
     if (*offset >= _size)
     {
-        Details::throw_string_view_range_exception();
+        Details::throwStringViewRangeException();
     }
 
     const auto  mySize = _size;
@@ -97,7 +97,7 @@ Maybe<u32> StringView::reverseFind(StringView str, Maybe<u32> offset) const
     const auto  mySize     = _size;
     const auto  diff       = mySize - needleSize;
 
-    if (not offset)
+    if (!offset)
     {
         offset = std::numeric_limits<u32>::max();
     }
@@ -149,7 +149,7 @@ Maybe<u32> StringView::reverseFind(char ch, Maybe<u32> offset) const
 bool StringView::startsWith(StringView str) const
 {
     const auto idx = find(str);
-    return idx and *idx == 0;
+    return idx && *idx == 0;
 }
 
 bool StringView::endsWith(StringView str) const
@@ -193,7 +193,7 @@ void StringView::trimStart(SmallList<char> chars)
 {
     const auto* const endPtr = end();
 
-    while (_data != endPtr and Polly::find(chars, *_data))
+    while (_data != endPtr && Polly::find(chars, *_data))
     {
         ++_data, --_size;
     }
@@ -205,14 +205,14 @@ void StringView::trimEnd(SmallList<char> chars)
     const auto* const endPtr   = end() - 1;
     auto*             last     = endPtr;
 
-    while (last != beginPtr and Polly::find(chars, *last))
+    while (last != beginPtr && Polly::find(chars, *last))
     {
         --last;
     }
 
     if (last < endPtr)
     {
-        _size -= static_cast<u32>(endPtr - last);
+        _size -= u32(endPtr - last);
         _isNullTerminated = false;
     }
 }

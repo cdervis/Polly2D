@@ -23,7 +23,7 @@ void AstOptimizer::optimize(Ast& ast)
 
         for (auto& child : decls)
         {
-            if (auto* func = as<FunctionDecl>(child.get()); func and func->isShader())
+            if (auto* func = as<FunctionDecl>(child.get()); func && func->isShader())
             {
                 keepGoing |= optimizeBlock(func->body());
             }
@@ -33,7 +33,7 @@ void AstOptimizer::optimize(Ast& ast)
 
     const auto isParamUnused = [&ast](const UniquePtr<Decl>& decl)
     {
-        return as<ShaderParamDecl>(decl.get()) and not ast.isSymbolAccessedAnywhere(decl.get());
+        return as<ShaderParamDecl>(decl.get()) && !ast.isSymbolAccessedAnywhere(decl.get());
     };
 
     const auto it = std::ranges::remove_if(decls, isParamUnused);
@@ -46,13 +46,13 @@ bool AstOptimizer::removeUnusedFunctions(Ast& ast)
     {
         const auto* func = as<FunctionDecl>(decl.get());
 
-        if (not func)
+        if (!func)
         {
             return false;
         }
 
         // A built-in function; don't optimize it away.
-        if (not func->body())
+        if (!func->body())
         {
             return false;
         }
@@ -63,7 +63,7 @@ bool AstOptimizer::removeUnusedFunctions(Ast& ast)
             return false;
         }
 
-        return not ast.isSymbolAccessedAnywhere(func);
+        return !ast.isSymbolAccessedAnywhere(func);
     };
 
     return ast.decls().removeAllWhere(isDeclUnused) > 0;
@@ -74,7 +74,7 @@ bool AstOptimizer::optimizeBlock(CodeBlock* block)
     const auto value =
         _codeBlockNameGens.findWhere([block](const auto& pair) { return pair.first == block; });
 
-    if (not value)
+    if (!value)
     {
         _codeBlockNameGens.add(block, TempVarNameGen(block));
     }
@@ -98,13 +98,13 @@ bool AstOptimizer::removeUnusedVariables(CodeBlock* block)
 
     for (auto* varStmt : varStmts)
     {
-        if (not block->accessesSymbol(varStmt->variable(), false))
+        if (!block->accessesSymbol(varStmt->variable(), false))
         {
             varStmtsToRemove.emplace(varStmt);
         }
     }
 
-    const auto hasRemovedAny = not varStmtsToRemove.isEmpty();
+    const auto hasRemovedAny = !varStmtsToRemove.isEmpty();
 
     for (const auto& lbe : varStmtsToRemove)
     {

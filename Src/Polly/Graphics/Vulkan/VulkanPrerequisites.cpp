@@ -32,10 +32,9 @@
 #endif
 
 #define VMA_IMPLEMENTATION
-// ReSharper disable once CppUnusedIncludeDirective
 #include <vk_mem_alloc.h>
 
-#if defined(__GNUC__) or defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 

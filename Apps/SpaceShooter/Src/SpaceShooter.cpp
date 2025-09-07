@@ -21,7 +21,7 @@ SpaceShooter::SpaceShooter()
 
 void SpaceShooter::update(GameTime time)
 {
-    if (_cameraShakeOffset and _drawnCameraShakeCount > 2)
+    if (_cameraShakeOffset && _drawnCameraShakeCount > 2)
     {
         _cameraShakeOffset = none;
     }

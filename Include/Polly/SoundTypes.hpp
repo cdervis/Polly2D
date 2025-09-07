@@ -11,7 +11,6 @@ struct SoundTime
 {
     SoundTime() = default;
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     SoundTime(const double value)
         : value(value)
     {
@@ -20,13 +19,13 @@ struct SoundTime
     double value = 0.0;
 };
 
-/// Defines the behavior of a sound's playback when it is inaudible.
+/// Defines the behavior of a sound's playback when it's inaudible.
 enum class SoundInaudibleBehavior
 {
     /// If the sound is inaudible, its playback is paused.
     PauseIfInaudible = 1,
 
-    /// If the sound is inaudible, it is killed.
+    /// If the sound is inaudible, it's killed.
     KillIfInaudible = 2,
 
     /// If the sound is inaudible, its playback continues.

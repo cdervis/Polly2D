@@ -59,13 +59,11 @@ struct Array
         return std::addressof(items[N]);
     }
 
-    // ReSharper disable once CppMemberFunctionMayBeStatic
     constexpr u32 size() const
     {
         return N;
     }
 
-    // ReSharper disable once CppMemberFunctionMayBeStatic
     constexpr bool isEmpty() const
     {
         return N == 0;
@@ -123,13 +121,11 @@ struct Array
         }
     }
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     constexpr operator Span<T>() const
     {
         return Span(items, size());
     }
 
-    // ReSharper disable once CppNonExplicitConversionOperator
     constexpr operator MutableSpan<T>()
     {
         return MutableSpan(items, size());

@@ -97,7 +97,7 @@ Maybe<const Type*> BinaryOperationTable::binOpResultType(BinOpKind opKind, const
 {
     const auto it = findWhere(
         _entries,
-        [&](const Entry& e) { return e.opKind == opKind and e.lhs == lhs and e.rhs == rhs; });
+        [&](const Entry& e) { return e.opKind == opKind && e.lhs == lhs && e.rhs == rhs; });
 
     return it ? it->result : Maybe<const Type*>();
 }

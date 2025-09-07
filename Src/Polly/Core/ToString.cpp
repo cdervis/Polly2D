@@ -18,7 +18,7 @@ namespace Polly
 {
 auto toString(const Any& value) -> String
 {
-    if (not value)
+    if (!value)
     {
         return "<empty>";
     }

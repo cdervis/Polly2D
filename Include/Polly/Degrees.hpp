@@ -36,7 +36,7 @@ struct Degrees
 
 constexpr Polly::Degrees operator""_deg(long double value)
 {
-    return Polly::Degrees(static_cast<float>(value));
+    return Polly::Degrees(float(value));
 }
 
 #include "Polly/Details/Degrees.inl"

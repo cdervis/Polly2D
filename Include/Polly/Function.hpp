@@ -20,7 +20,6 @@ class Function<R(Params...)> final
     {
     }
 
-    // ReSharper disable once CppNonExplicitConvertingConstructor
     template<typename Functor>
     Function(Functor functor) // NOLINT(*-explicit-constructor)
         : _callable(new CallableImpl<Functor>(std::move(functor)))

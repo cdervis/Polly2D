@@ -213,7 +213,7 @@ void SpineDemo::switchToSpineEntry(u32 index)
     _camera.position = _skeleton.bounds().center() + Vec2(250, 0);
 
     // Update some UI properties.
-    _currentAnimationIndex = static_cast<int>(*_skeletonData.indexOfAnimation(entry.initial_animation_name));
+    _currentAnimationIndex = int(*_skeletonData.indexOfAnimation(entry.initial_animation_name));
 }
 
 void SpineDemo::onMouseWheelScrolled(const MouseWheelEvent& event)

@@ -44,12 +44,12 @@ OpenGLShader::OpenGLShader(StringView glslCode, GLenum type)
     auto success = GLint();
     glGetShaderiv(_handleGL, GL_COMPILE_STATUS, &success);
 
-    if (not success)
+    if (!success)
     {
         auto logLength = GLint();
         glGetShaderiv(_handleGL, GL_INFO_LOG_LENGTH, &logLength);
 
-        auto errorBuffer = List<GLchar>(static_cast<u32>(logLength) + 1);
+        auto errorBuffer = List<GLchar>(u32(logLength) + 1);
         glGetShaderInfoLog(_handleGL, static_cast<GLsizei>(logLength), nullptr, errorBuffer.data());
 
         const auto errorMessage =

@@ -24,7 +24,7 @@ OpenGLWindow::OpenGLWindow(
 
     _openGLContext = SDL_GL_CreateContext(sdlWindow());
 
-    if (not _openGLContext)
+    if (!_openGLContext)
     {
         throw Error(formatString("Failed to create the OpenGL context. Reason: {}", SDL_GetError()));
     }
@@ -43,7 +43,7 @@ OpenGLWindow::~OpenGLWindow() noexcept
 
 void OpenGLWindow::makeContextCurrent()
 {
-    if (not SDL_GL_MakeCurrent(sdlWindow(), _openGLContext))
+    if (!SDL_GL_MakeCurrent(sdlWindow(), _openGLContext))
     {
         throw Error(formatString(
             "Failed to make the game window's OpenGL context the current context. Reason: {}",

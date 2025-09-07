@@ -20,7 +20,7 @@ VkFramebuffer VulkanFramebufferCache::get(const Key& entry)
 {
     auto cacheEntry = _cache.find(entry);
 
-    if (not cacheEntry)
+    if (!cacheEntry)
     {
         logVerbose("Creating VkFramebuffer @ {}x{}", entry.width, entry.height);
 
@@ -78,7 +78,7 @@ void VulkanFramebufferCache::clear()
 {
     logVerbose("Clearing VulkanFramebufferCache");
 
-    if (not _cache.isEmpty())
+    if (!_cache.isEmpty())
     {
         logVerbose("-- FBO cache has {} FBO(s)", _cache.size());
 

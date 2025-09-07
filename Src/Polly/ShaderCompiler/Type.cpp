@@ -30,9 +30,9 @@ static ImageType*  sImageType;
 
 static bool isVectorSwizzlingString(StringView name)
 {
-    assume(not name.isEmpty());
+    assume(!name.isEmpty());
     return name.size() <= 4
-           and name.all([](char ch) { return ch == 'x' or ch == 'y' or ch == 'z' or ch == 'w'; });
+           && name.all([](char ch) { return ch == 'x' || ch == 'y' || ch == 'z' || ch == 'w'; });
 }
 
 Type::Type(const SourceLocation& location)
@@ -80,7 +80,7 @@ const Decl* Type::findMemberSymbol(
 
 bool Type::canBeInCbuffer() const
 {
-    return not isImageType();
+    return !isImageType();
 }
 
 bool Type::canBeShaderParameter() const
@@ -180,17 +180,17 @@ bool IntType::isScalarType() const
 
 Maybe<u16> IntType::occupiedSizeInCbuffer() const
 {
-    return static_cast<u16>(4u);
+    return u16(4u);
 }
 
 Maybe<u16> IntType::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(4u);
+    return u16(4u);
 }
 
 Maybe<u16> IntType::scalarComponentCount() const
 {
-    return static_cast<u16>(1u);
+    return u16(1u);
 }
 
 BoolType::BoolType()
@@ -215,17 +215,17 @@ StringView BoolType::typeName() const
 
 Maybe<u16> BoolType::occupiedSizeInCbuffer() const
 {
-    return static_cast<u16>(4u);
+    return u16(4u);
 }
 
 Maybe<u16> BoolType::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(4u);
+    return u16(4u);
 }
 
 Maybe<u16> BoolType::scalarComponentCount() const
 {
-    return static_cast<u16>(1u);
+    return u16(1u);
 }
 
 FloatType::FloatType()
@@ -255,17 +255,17 @@ bool FloatType::isScalarType() const
 
 Maybe<u16> FloatType::occupiedSizeInCbuffer() const
 {
-    return static_cast<u16>(4u);
+    return u16(4u);
 }
 
 Maybe<u16> FloatType::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(4u);
+    return u16(4u);
 }
 
 Maybe<u16> FloatType::scalarComponentCount() const
 {
-    return static_cast<u16>(1u);
+    return u16(1u);
 }
 
 Vec2Type::Vec2Type()
@@ -300,17 +300,17 @@ bool Vec2Type::isVectorType() const
 
 Maybe<u16> Vec2Type::occupiedSizeInCbuffer() const
 {
-    return static_cast<u16>(8u);
+    return u16(8u);
 }
 
 Maybe<u16> Vec2Type::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(8u);
+    return u16(8u);
 }
 
 Maybe<u16> Vec2Type::scalarComponentCount() const
 {
-    return static_cast<u16>(2u);
+    return u16(2u);
 }
 
 Vec3Type::Vec3Type()
@@ -345,17 +345,17 @@ bool Vec3Type::isVectorType() const
 
 Maybe<u16> Vec3Type::occupiedSizeInCbuffer() const
 {
-    return static_cast<u16>(12u);
+    return u16(12u);
 }
 
 Maybe<u16> Vec3Type::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(16u);
+    return u16(16u);
 }
 
 Maybe<u16> Vec3Type::scalarComponentCount() const
 {
-    return static_cast<u16>(3u);
+    return u16(3u);
 }
 
 Vec4Type::Vec4Type()
@@ -390,17 +390,17 @@ bool Vec4Type::isVectorType() const
 
 Maybe<u16> Vec4Type::occupiedSizeInCbuffer() const
 {
-    return static_cast<u16>(16u);
+    return u16(16u);
 }
 
 Maybe<u16> Vec4Type::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(16u);
+    return u16(16u);
 }
 
 Maybe<u16> Vec4Type::scalarComponentCount() const
 {
-    return static_cast<u16>(4u);
+    return u16(4u);
 }
 
 MatrixType::MatrixType()
@@ -430,17 +430,17 @@ bool MatrixType::isMatrixType() const
 
 Maybe<u16> MatrixType::occupiedSizeInCbuffer() const
 {
-    return static_cast<u16>(64u);
+    return u16(64u);
 }
 
 Maybe<u16> MatrixType::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(16u);
+    return u16(16u);
 }
 
 Maybe<u16> MatrixType::scalarComponentCount() const
 {
-    return static_cast<u16>(16u);
+    return u16(16u);
 }
 
 ImageType::ImageType()
@@ -538,7 +538,7 @@ const Type* ArrayType::resolve(SemaContext& context, Scope& scope) const
 
     const auto constantValue = _sizeExpr->evaluateConstantValue(context, scope);
 
-    if (not constantValue)
+    if (!constantValue)
     {
         throw ShaderCompileError(location(), "Expression does not evaluate to a constant integer value.");
     }
@@ -591,7 +591,7 @@ const Type* ArrayType::resolve(SemaContext& context, Scope& scope) const
 
 u16 ArrayType::size() const
 {
-    assume(not _elementType->isUnresolved());
+    assume(!_elementType->isUnresolved());
 
     return _size;
 }
@@ -603,17 +603,17 @@ StringView ArrayType::typeName() const
 
 bool ArrayType::canBeShaderParameter() const
 {
-    assume(not _elementType->isUnresolved());
+    assume(!_elementType->isUnresolved());
 
     // image arrays are not supported yet
-    return not _elementType->isImageType();
+    return !_elementType->isImageType();
 }
 
 Maybe<u16> ArrayType::occupiedSizeInCbuffer() const
 {
     if (const auto sizeInCbuffer = elementType()->occupiedSizeInCbuffer())
     {
-        return narrow<u16>(static_cast<int>(size()) * static_cast<int>(*sizeInCbuffer));
+        return narrow<u16>(int(size()) * int(*sizeInCbuffer));
     }
 
     return none;
@@ -621,7 +621,7 @@ Maybe<u16> ArrayType::occupiedSizeInCbuffer() const
 
 Maybe<u16> ArrayType::baseAlignmentInCbuffer() const
 {
-    return static_cast<u16>(16u); // TODO: check this
+    return u16(16u); // TODO: check this
 }
 
 UnresolvedType::UnresolvedType(const SourceLocation& location, StringView name)
@@ -634,7 +634,7 @@ const Type* UnresolvedType::resolve([[maybe_unused]] SemaContext& context, Scope
 {
     const auto* resolvedType = scope.findType(_name);
 
-    if (not resolvedType)
+    if (!resolvedType)
     {
         throw ShaderCompileError(location(), formatString("Undefined type '{}'.", _name));
     }

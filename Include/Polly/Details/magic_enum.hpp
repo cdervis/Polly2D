@@ -875,11 +875,11 @@ constexpr U ualue(std::size_t i) noexcept
     }
     else if constexpr (S == enum_subtype::flags)
     {
-        return static_cast<U>(U{1} << static_cast<U>(static_cast<int>(i) + O));
+        return static_cast<U>(U{1} << static_cast<U>(int(i) + O));
     }
     else
     {
-        return static_cast<U>(static_cast<int>(i) + O);
+        return static_cast<U>(int(i) + O);
     }
 }
 
@@ -1894,7 +1894,7 @@ constexpr auto enum_contains(E value) noexcept -> detail::enable_if_t<E, bool>
     using D = std::decay_t<E>;
     using U = underlying_type_t<D>;
 
-    return static_cast<bool>(enum_cast<D, S>(static_cast<U>(value)));
+    return bool(enum_cast<D, S>(static_cast<U>(value)));
 }
 
 // Checks whether enum contains value with such value.
@@ -1905,7 +1905,7 @@ constexpr auto enum_contains(E value) noexcept -> detail::enable_if_t<E, bool>
     using D = std::decay_t<E>;
     using U = underlying_type_t<D>;
 
-    return static_cast<bool>(enum_cast<D, S>(static_cast<U>(value)));
+    return bool(enum_cast<D, S>(static_cast<U>(value)));
 }
 
 // Checks whether enum contains value with such integer value.
@@ -1915,7 +1915,7 @@ constexpr auto enum_contains(underlying_type_t<E> value) noexcept -> detail::ena
 {
     using D = std::decay_t<E>;
 
-    return static_cast<bool>(enum_cast<D, S>(value));
+    return bool(enum_cast<D, S>(value));
 }
 
 // Checks whether enum contains enumerator with such name.
@@ -1929,7 +1929,7 @@ constexpr auto enum_contains(string_view value, BinaryPredicate p = {}) noexcept
 {
     using D = std::decay_t<E>;
 
-    return static_cast<bool>(enum_cast<D, S>(value, std::move(p)));
+    return bool(enum_cast<D, S>(value, std::move(p)));
 }
 
 // Returns true if the enum integer value is in the range of values that can be reflected.

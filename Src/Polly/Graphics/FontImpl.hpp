@@ -65,9 +65,9 @@ class Font::Impl final : public Object,
 
         const auto scale = stbtt_ScaleForPixelHeight(&_fontInfo, fontSize);
 
-        const auto ascent  = static_cast<double>(_ascent) * scale;
-        const auto descent = static_cast<double>(_descent) * scale;
-        const auto lineGap = static_cast<double>(_lineGap) * scale;
+        const auto ascent  = double(_ascent) * scale;
+        const auto descent = double(_descent) * scale;
+        const auto lineGap = double(_lineGap) * scale;
 
         auto       it    = utf8::iterator(text.begin(), text.begin(), text.end());
         const auto itEnd = utf8::iterator(text.end(), text.begin(), text.end());
@@ -85,9 +85,9 @@ class Font::Impl final : public Object,
 
         if constexpr (ComputeExtras)
         {
-            extras.lineIncrement = static_cast<float>(lineIncrement);
-            extras.ascent        = static_cast<float>(ascent);
-            extras.descent       = static_cast<float>(descent);
+            extras.lineIncrement = float(lineIncrement);
+            extras.ascent        = float(ascent);
+            extras.descent       = float(descent);
         }
 
         constexpr auto newline = static_cast<char32_t>('\n');
@@ -121,7 +121,7 @@ class Font::Impl final : public Object,
 
             stbtt_GetCodepointBitmapBox(
                 &_fontInfo,
-                static_cast<int>(codepoint),
+                int(codepoint),
                 scale,
                 scale,
                 &boxLeft,
@@ -129,15 +129,15 @@ class Font::Impl final : public Object,
                 &boxRight,
                 &boxBottom);
 
-            const auto x = static_cast<float>(penX);
-            const auto y = static_cast<float>(penY + ascent + boxTop);
+            const auto x = float(penX);
+            const auto y = float(penY + ascent + boxTop);
 
             auto advanceX = 0;
 
-            stbtt_GetCodepointHMetrics(&_fontInfo, static_cast<int>(codepoint), &advanceX, nullptr);
+            stbtt_GetCodepointHMetrics(&_fontInfo, int(codepoint), &advanceX, nullptr);
 
-            const auto width  = static_cast<float>(boxRight - boxLeft);
-            const auto height = static_cast<float>(boxBottom - boxTop);
+            const auto width  = float(boxRight - boxLeft);
+            const auto height = float(boxBottom - boxTop);
             const auto rect   = Rectangle(x, y, width, height);
 
             if constexpr (ComputeExtras)
@@ -175,16 +175,14 @@ class Font::Impl final : public Object,
                 break;
             }
 
-            penX += static_cast<double>(static_cast<float>(advanceX) * scale);
+            penX += double(float(advanceX) * scale);
 
             if (not isLast)
             {
-                const auto kern = stbtt_GetCodepointKernAdvance(
-                    &_fontInfo,
-                    static_cast<int>(codepoint),
-                    static_cast<int>(nextCodepoint));
+                const auto kern =
+                    stbtt_GetCodepointKernAdvance(&_fontInfo, int(codepoint), int(nextCodepoint));
 
-                penX += static_cast<float>(kern) * scale;
+                penX += float(kern) * scale;
             }
 
             codepoint = nextCodepoint;

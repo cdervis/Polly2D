@@ -72,7 +72,7 @@ class OpenGLPainter final : public Painter::Impl
         256u,
         512u,
         1024u,
-        static_cast<u32>(std::numeric_limits<u16>::max()),
+        u32(std::numeric_limits<u16>::max()),
     };
 
     void notifyResourceDestroyed(GraphicsResource& resource) override;

@@ -31,11 +31,7 @@ class BinPack final
 
         Rectangle toRectf() const
         {
-            return Rectangle(
-                static_cast<float>(x),
-                static_cast<float>(y),
-                static_cast<float>(width),
-                static_cast<float>(height));
+            return Rectangle(float(x), float(y), float(width), float(height));
         }
 
         int x      = 0;

@@ -25,7 +25,7 @@ enum class SpriteFlip : u8
     Vertically = 2,
 
     /// The sprite is flipped both horizontally and vertically around its center.
-    Both = Horizontally bitor Vertically,
+    Both = Horizontally | Vertically,
 };
 
 PollyDefineEnumFlagOperations(SpriteFlip);

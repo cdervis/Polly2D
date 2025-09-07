@@ -227,7 +227,7 @@ int getTimeMillis()
 {
     struct timespec spec;
     clock_gettime(CLOCK_REALTIME, &spec);
-    return static_cast<int>(spec.tv_sec * 1000 + static_cast<long>(spec.tv_nsec / 1.0e6));
+    return int(spec.tv_sec * 1000 + static_cast<long>(spec.tv_nsec / 1.0e6));
 }
 #endif
 

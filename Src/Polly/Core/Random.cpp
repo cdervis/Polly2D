@@ -70,21 +70,17 @@ int Polly::Random::nextIntFast(Maybe<IntInterval> interval)
     {
         const auto [min, max] = *interval;
 
-        return static_cast<int>(lerp(
-            static_cast<double>(min),
-            static_cast<double>(max),
-            static_cast<double>(floatOneToZeroFast())));
+        return int(lerp(double(min), double(max), double(floatOneToZeroFast())));
     }
 
     sFastrandSeed = 214013 * sFastrandSeed + 2531011;
 
-    return (sFastrandSeed >> 16) bitand 0x7FFF;
+    return (sFastrandSeed >> 16) & 0x7FFF;
 }
 
 float Polly::Random::floatOneToZeroFast()
 {
-    return static_cast<float>(
-        static_cast<double>(nextIntFast()) / static_cast<double>(std::numeric_limits<int16_t>::max()));
+    return float(double(nextIntFast()) / double(std::numeric_limits<int16_t>::max()));
 }
 
 float Polly::Random::nextFloatFast(FloatInterval interval)

@@ -137,7 +137,7 @@ constexpr bool all(const Container& container, Predicate&& predicate)
 template<Concepts::ForwardContainer T, typename U>
 constexpr bool contains(const T& container, const U& value)
 {
-    return static_cast<bool>(indexOf(container, value));
+    return bool(indexOf(container, value));
 }
 
 template<Concepts::ForwardContainer Container, typename U>
@@ -159,7 +159,7 @@ constexpr u32 count(const Container& container, const U& value)
 template<Concepts::ForwardContainer Container, typename Predicate>
 constexpr u32 countWhere(const Container& container, Predicate&& predicate)
 {
-    auto count = static_cast<u32>(0);
+    auto count = u32(0);
 
     for (const auto& valueInContainer : container)
     {
@@ -230,12 +230,11 @@ constexpr void copyRange(const SrcContainer& from, const DstContainer& to, u32 d
 }
 
 /// Performs a binary search over a range.
-
 template<Concepts::ContiguousContainer Container, typename T>
 constexpr Maybe<u32> binaryFindIndex(const Container& container, const T& value)
 {
     auto count = container.size();
-    auto step  = static_cast<u32>(0);
+    auto step  = u32(0);
     auto it    = typename Container::const_iterator();
     auto first = container.begin();
 
@@ -256,7 +255,7 @@ constexpr Maybe<u32> binaryFindIndex(const Container& container, const T& value)
         }
     }
 
-    return not(first == container.end()) and not(value < *first) ? static_cast<u32>(first - container.begin())
+    return not(first == container.end()) and not(value < *first) ? u32(first - container.begin())
                                                                  : Maybe<u32>();
 }
 
@@ -344,7 +343,7 @@ void shuffle(Container& container)
 
     for (int64_t i = size - 1; i > 0; --i)
     {
-        std::swap(data[i], data[Random::nextInt({0, static_cast<u32>(i)})]);
+        std::swap(data[i], data[Random::nextInt({0, u32(i)})]);
     }
 }
 
@@ -488,7 +487,7 @@ constexpr Maybe<u32> mismatch(const Container1& container1, const Container2& co
 
     const auto doMismatch = [](auto primaryIt, auto secondaryIt, auto end) -> Maybe<u32>
     { // NOLINT(*-trailing-return)
-        auto idx = static_cast<u32>(0);
+        auto idx = u32(0);
 
         while (primaryIt != end && *primaryIt == *secondaryIt)
         {
@@ -571,7 +570,7 @@ requires std::invocable<Predicate, typename Container::value_type>
 String joinToStringBy(const Container& container, StringView delimiter, Predicate&& predicate);
 
 template<Concepts::ForwardContainer Container>
-requires Concepts::has_to_string<typename Container::value_type>
+requires Concepts::HasToString<typename Container::value_type>
 String joinToString(const Container& container, StringView delimiter);
 
 template<Concepts::ListLike ResultList>
@@ -582,7 +581,6 @@ ResultList splitString(StringView str, StringView delimiters);
 
 #include "Polly/StringView.hpp"
 
-// ReSharper disable once CppUnusedIncludeDirective
 #include "Polly/ToString.hpp" // NOLINT(*-duplicate-include)
 
 namespace Polly
@@ -608,7 +606,7 @@ String joinToStringBy(const Container& container, StringView delimiter, Predicat
 }
 
 template<Concepts::ForwardContainer Container>
-requires Concepts::has_to_string<typename Container::value_type>
+requires Concepts::HasToString<typename Container::value_type>
 String joinToString(const Container& container, StringView delimiter)
 {
     return joinToStringBy(
@@ -624,7 +622,7 @@ ResultList splitString(StringView str, StringView delimiters)
 {
     auto result = ResultList();
 
-    auto start = static_cast<u32>(0);
+    auto start = u32(0);
     auto end   = str.findAnyOf(delimiters);
 
     while (end)

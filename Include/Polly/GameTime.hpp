@@ -8,9 +8,8 @@ namespace Polly
 {
 /// Represents timing information about a running game.
 ///
-/// A GameTime is not created by the user directly.
-/// It's instead obtained as a parameter by the callback function that's attached to
-/// Game::update().
+/// A GameTime isn't created by the user directly.
+/// It's instead obtained as a parameter by the callback function that's attached to Game::update().
 class GameTime
 {
   public:
@@ -20,7 +19,7 @@ class GameTime
     }
 
     constexpr explicit GameTime(double elapsed, double total)
-        : _elapsed(static_cast<float>(elapsed))
+        : _elapsed(float(elapsed))
         , _elapsedPrecise(elapsed)
         , _total(total)
     {

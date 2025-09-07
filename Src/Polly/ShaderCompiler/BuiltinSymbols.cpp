@@ -311,35 +311,35 @@ bool BuiltinSymbols::isIntCtor(const Decl* symbol) const
 
 bool BuiltinSymbols::isSomeVectorCtor(const Decl* symbol) const
 {
-    return isVec2Ctor(symbol) or isVec3Ctor(symbol) or isVec4Ctor(symbol);
+    return isVec2Ctor(symbol) || isVec3Ctor(symbol) || isVec4Ctor(symbol);
 }
 
 bool BuiltinSymbols::isVec2Ctor(const Decl* symbol) const
 {
-    return symbol == vec2Ctor.get() or symbol == vec2Ctor_x_y.get() or symbol == vec2Ctor_xy.get();
+    return symbol == vec2Ctor.get() || symbol == vec2Ctor_x_y.get() || symbol == vec2Ctor_xy.get();
 }
 
 bool BuiltinSymbols::isVec3Ctor(const Decl* symbol) const
 {
     return symbol == vec3Ctor.get()
-           or symbol == vec3Ctor_x_y_z.get()
-           or symbol == vec3Ctor_xy_z.get()
-           or symbol == vec3_ctor_xyz.get();
+           || symbol == vec3Ctor_x_y_z.get()
+           || symbol == vec3Ctor_xy_z.get()
+           || symbol == vec3_ctor_xyz.get();
 }
 
 bool BuiltinSymbols::isVec4Ctor(const Decl* symbol) const
 {
     return symbol == vec4Ctor.get()
-           or symbol == vec4Ctor_x_y_z_w.get()
-           or symbol == vec4Ctor_xy_zw.get()
-           or symbol == vec4Ctor_xy_z_w.get()
-           or symbol == vec4Ctor_xyz_w.get()
-           or symbol == vec4Ctor_xyzw.get();
+           || symbol == vec4Ctor_x_y_z_w.get()
+           || symbol == vec4Ctor_xy_zw.get()
+           || symbol == vec4Ctor_xy_z_w.get()
+           || symbol == vec4Ctor_xyz_w.get()
+           || symbol == vec4Ctor_xyzw.get();
 }
 
 bool BuiltinSymbols::isSomeIntrinsicFunction(const Decl* symbol) const
 {
-    if (isNot<FunctionDecl>(symbol) or isSomeVectorCtor(symbol))
+    if (isNot<FunctionDecl>(symbol) || isSomeVectorCtor(symbol))
     {
         return false;
     }
@@ -364,7 +364,7 @@ void BuiltinSymbols::addFunc(
     const Type*                              returnType)
 {
     // The variable must not be initialized yet.
-    assume(not var);
+    assume(!var);
 
     auto params = FunctionDecl::param_list();
 

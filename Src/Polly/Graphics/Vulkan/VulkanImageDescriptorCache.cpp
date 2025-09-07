@@ -26,7 +26,7 @@ VkDescriptorSet VulkanImageDescriptorCache::get(const Key& key)
 
     auto cacheEntry = _cache.find(key);
 
-    if (not cacheEntry)
+    if (!cacheEntry)
     {
         logVerbose("Creating Vulkan image descriptor");
 
@@ -103,7 +103,7 @@ void VulkanImageDescriptorCache::clear()
 {
     logVerbose("Clearing VulkanImageDescriptorCache");
 
-    if (not _cache.isEmpty() and _vkDescriptorPool != VK_NULL_HANDLE)
+    if (!_cache.isEmpty() && _vkDescriptorPool != VK_NULL_HANDLE)
     {
         auto sets = List<VkDescriptorSet, 8>();
         sets.reserve(_cache.size());

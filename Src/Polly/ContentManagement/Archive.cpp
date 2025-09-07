@@ -46,10 +46,9 @@ static void verifyArchive(BinaryReader& reader)
         const auto minor    = reader.readUInt8();
         const auto revision = reader.readUInt8();
 
-        const auto storedVersion =
-            Array{static_cast<int>(major), static_cast<int>(minor), static_cast<int>(revision)};
+        const auto storedVersion = Array{int(major), int(minor), int(revision)};
 
-        if (not isAssetVersionCompatible(storedVersion))
+        if (!isAssetVersionCompatible(storedVersion))
         {
             throw Error("Invalid game data (wrong version)");
         }
@@ -80,7 +79,7 @@ Archive::UnpackedAssetData Archive::unpackAsset(StringView name) const
 {
     const auto entry = findWhere(_entries, [&](const auto& e) { return e.name == name; });
 
-    if (not entry)
+    if (!entry)
     {
         throw Error(formatString("Asset '{}' not found.", name));
     }
@@ -95,10 +94,10 @@ Archive::UnpackedAssetData Archive::unpackAsset(StringView name) const
     }
 
     zs.next_in  = reader.currentDataPtr();
-    zs.avail_in = static_cast<u32>(entry->compressedDataSize);
+    zs.avail_in = u32(entry->compressedDataSize);
 
     auto uncompressedData = List<u8>();
-    uncompressedData.reserve(static_cast<u32>(static_cast<double>(entry->compressedDataSize) * 1.1));
+    uncompressedData.reserve(u32(double(entry->compressedDataSize) * 1.1));
 
     auto ret = Z_OK;
     do
@@ -110,7 +109,7 @@ Archive::UnpackedAssetData Archive::unpackAsset(StringView name) const
 
         if (uncompressedData.size() < zs.total_out)
         {
-            const auto count = static_cast<int>(zs.total_out) - uncompressedData.size();
+            const auto count = int(zs.total_out) - uncompressedData.size();
 
             uncompressedData.addRange(Span(_tmpDecompressionBuffer.data(), count));
         }
@@ -143,11 +142,11 @@ void Archive::readEntries(BinaryReader& reader)
 
     for (u32 i = 0; i < assetCount; ++i)
     {
-        const auto assetVersionMajor    = static_cast<int>(reader.readUInt8());
-        const auto assetVersionMinor    = static_cast<int>(reader.readUInt8());
-        const auto assetVersionRevision = static_cast<int>(reader.readUInt8());
+        const auto assetVersionMajor    = int(reader.readUInt8());
+        const auto assetVersionMinor    = int(reader.readUInt8());
+        const auto assetVersionRevision = int(reader.readUInt8());
 
-        if (not isAssetVersionCompatible(Array{assetVersionMajor, assetVersionMinor, assetVersionRevision}))
+        if (!isAssetVersionCompatible(Array{assetVersionMajor, assetVersionMinor, assetVersionRevision}))
         {
             throw Error("Invalid asset in archive.");
         }

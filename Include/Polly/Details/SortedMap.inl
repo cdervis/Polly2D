@@ -10,7 +10,7 @@ namespace Polly
 {
 namespace Details
 {
-void throw_key_not_found_exception(StringView key);
+void throwKeyNotFoundException(StringView key);
 
 template<typename ValueType>
 struct SortedMapStringComparer
@@ -221,18 +221,17 @@ Value& SortedMap<Key, Value, Comparer>::operator[](const Key& key)
 #ifndef polly_no_hardening
     if (not node)
     {
-        if constexpr (Concepts::has_to_string<std::remove_cvref_t<Key>>)
+        if constexpr (Concepts::HasToString<std::remove_cvref_t<Key>>)
         {
-            Details::throw_key_not_found_exception(toString(key));
+            Details::throwKeyNotFoundException(toString(key));
         }
         else
         {
-            Details::throw_key_not_found_exception({});
+            Details::throwKeyNotFoundException({});
         }
     }
 #endif
 
-    // ReSharper disable once CppDFANullDereference
     return node->value.second;
 }
 
@@ -245,18 +244,17 @@ const Value& SortedMap<Key, Value, Comparer>::operator[](const Key& key) const
 #ifndef polly_no_hardening
     if (not node)
     {
-        if constexpr (Concepts::has_to_string<std::remove_cvref_t<Key>>)
+        if constexpr (Concepts::HasToString<std::remove_cvref_t<Key>>)
         {
-            Details::throw_key_not_found_exception(toString(key));
+            Details::throwKeyNotFoundException(toString(key));
         }
         else
         {
-            Details::throw_key_not_found_exception({});
+            Details::throwKeyNotFoundException({});
         }
     }
 #endif
 
-    // ReSharper disable once CppDFANullDereference
     return node->value.second;
 }
 

@@ -220,8 +220,8 @@ class Gamepad final
     /// Starts the rumble motors on the gamepad, if supported by the gamepad, for
     /// a specific duration.
     ///
-    /// @param leftMotorIntensity The intensity of the left motor, in the range `[0.0 .. 1.0]`
-    /// @param rightMotorIntensity The intensity of the right motor, in the range `[0.0 .. 1.0]`
+    /// @param leftMotorIntensity The intensity of the left motor, in the range [0.0 .. 1.0]
+    /// @param rightMotorIntensity The intensity of the right motor, in the range [0.0 .. 1.0]
     /// @param duration The duration of the rumble
     ///
     /// @return true if the rumble was started successfully;

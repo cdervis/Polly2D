@@ -78,7 +78,7 @@ struct Color
 
 /// Represents a closed interval of color values.
 
-using color_interval = Details::Interval<Color>;
+using ColorInterval = Details::Interval<Color>;
 
 /// Performs a linear interpolation between two colors.
 ///

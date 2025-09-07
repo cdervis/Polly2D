@@ -39,14 +39,14 @@ Span<const Decl*> Scope::symbols() const
 
 void Scope::addSymbol(const Decl* symbol)
 {
-    assume(not containsWhere(_symbols, [symbol](const auto& e) { return e == symbol; }));
+    assume(!containsWhere(_symbols, [symbol](const auto& e) { return e == symbol; }));
 
     _symbols.emplace(symbol);
 }
 
 void Scope::removeSymbol(StringView name)
 {
-    assume(not name.isEmpty());
+    assume(!name.isEmpty());
 
     _symbols.removeAllWhere([name](const auto& e) { return e->name() == name; });
 }
@@ -58,7 +58,7 @@ void Scope::removeSymbol(const Decl* symbol)
 
 const Decl* Scope::findSymbol(StringView name, bool fallBackToParent) const
 {
-    assume(not name.isEmpty());
+    assume(!name.isEmpty());
 
     const Decl* decl = nullptr;
 
@@ -90,7 +90,7 @@ const Decl* Scope::findSymbol(StringView name, bool fallBackToParent) const
 
 const Decl* Scope::findSymbolWithSimilarName(StringView name, bool fallBackToParent) const
 {
-    assume(not name.isEmpty());
+    assume(!name.isEmpty());
 
     constexpr auto threshold = 0.1;
 
@@ -106,10 +106,9 @@ const Decl* Scope::findSymbolWithSimilarName(StringView name, bool fallBackToPar
             if (symName != name)
             {
                 const auto len = max(symName.size(), name.size());
-                const auto d =
-                    static_cast<double>(Polly::levensteinDistance(symName, name)) / static_cast<double>(len);
+                const auto d   = double(Polly::levensteinDistance(symName, name)) / double(len);
 
-                if (d <= threshold and d < minDistance)
+                if (d <= threshold && d < minDistance)
                 {
                     symbolWithMinDistance = symbol;
                     minDistance           = d;
@@ -127,7 +126,7 @@ const Decl* Scope::findSymbolWithSimilarName(StringView name, bool fallBackToPar
 
 List<const Decl*> Scope::findSymbols(StringView name, bool fallBackToParent) const
 {
-    assume(not name.isEmpty());
+    assume(!name.isEmpty());
 
     auto foundSymbols = List<const Decl*>();
 
@@ -139,7 +138,7 @@ List<const Decl*> Scope::findSymbols(StringView name, bool fallBackToParent) con
         }
     }
 
-    if (fallBackToParent and _parent)
+    if (fallBackToParent && _parent)
     {
         const auto syms = _parent->findSymbols(name, true);
         foundSymbols.addRangeAt(0, syms);
@@ -165,14 +164,14 @@ Span<const Type*> Scope::types() const
 
 void Scope::addType(const Type* type)
 {
-    assume(not contains(_types, type));
+    assume(!contains(_types, type));
 
     _types.emplace(type);
 }
 
 void Scope::removeType(StringView name)
 {
-    assume(not name.isEmpty());
+    assume(!name.isEmpty());
 
     _types.removeFirstWhere([name](const auto& e) { return e->typeName() == name; });
 }
@@ -184,14 +183,14 @@ void Scope::removeType(const Type* type)
 
 const Type* Scope::findType(StringView name, bool fallBackToParent) const
 {
-    assume(not name.isEmpty());
+    assume(!name.isEmpty());
 
     if (const auto maybeType = findWhere(_types, [name](const auto& e) { return e->typeName() == name; }))
     {
         return *maybeType;
     }
 
-    if (fallBackToParent and _parent)
+    if (fallBackToParent && _parent)
     {
         return _parent->findType(name);
     }

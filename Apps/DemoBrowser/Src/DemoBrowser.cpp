@@ -148,14 +148,14 @@ void DemoBrowser::onImGui(ImGui imgui)
 
     imgui.text("Demo %d/%d", _currentDemoIndex + 1, _demoFactory.size());
 
-    if (not shouldHideSidebar)
+    if (!shouldHideSidebar)
     {
         imgui.newLine();
     }
 
     imgui.text("%s", _currentDemo->name().data());
 
-    if (not shouldHideSidebar)
+    if (!shouldHideSidebar)
     {
         imgui.spacing();
         imgui.separator();

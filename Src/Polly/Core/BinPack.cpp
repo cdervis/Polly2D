@@ -12,7 +12,7 @@ namespace Polly
 {
 static bool isContainedIn(const BinPack::Rect& a, const BinPack::Rect& b)
 {
-    return a.x >= b.x and a.y >= b.y and a.x + a.width <= b.x + b.width and a.y + a.height <= b.y + b.height;
+    return a.x >= b.x && a.y >= b.y && a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height;
 }
 
 BinPack::BinPack() = default;
@@ -43,7 +43,7 @@ void BinPack::insert(List<Size>& rects, List<Rect>& dst)
 {
     dst.clear();
 
-    while (not rects.isEmpty())
+    while (!rects.isEmpty())
     {
         auto bestScore1    = std::numeric_limits<int>::max();
         auto bestScore2    = std::numeric_limits<int>::max();
@@ -56,7 +56,7 @@ void BinPack::insert(List<Size>& rects, List<Rect>& dst)
             auto       score2  = 0;
             const auto newNode = scoreRect(rects[i].width, rects[i].height, score1, score2);
 
-            if (score1 < bestScore1 or (score1 == bestScore1 and score2 < bestScore2))
+            if (score1 < bestScore1 || (score1 == bestScore1 && score2 < bestScore2))
             {
                 bestScore1    = score1;
                 bestScore2    = score2;
@@ -65,7 +65,7 @@ void BinPack::insert(List<Size>& rects, List<Rect>& dst)
             }
         }
 
-        if (not bestRectIndex)
+        if (!bestRectIndex)
         {
             return;
         }
@@ -105,7 +105,7 @@ Maybe<BinPack::Rect> BinPack::scoreRect(int width, int height, int& score1, int&
     const auto newNode = findPositionForNewNode(width, height, score1, score2);
 
     // Cannot fit the current rect.
-    if (not newNode)
+    if (!newNode)
     {
         score1 = std::numeric_limits<int>::max();
         score2 = std::numeric_limits<int>::max();
@@ -129,13 +129,13 @@ Maybe<BinPack::Rect> BinPack::findPositionForNewNode(
     {
         const auto areaFit = (freeRectangle.width * freeRectangle.height) - (width * height);
 
-        if (freeRectangle.width >= width and freeRectangle.height >= height)
+        if (freeRectangle.width >= width && freeRectangle.height >= height)
         {
             const int leftoverHorizontal = abs(freeRectangle.width - width);
             const int leftoverVertical   = abs(freeRectangle.height - height);
             const int shortSideFit       = min(leftoverHorizontal, leftoverVertical);
 
-            if (areaFit < bestAreaFit or (areaFit == bestAreaFit and shortSideFit < bestShortSideFit))
+            if (areaFit < bestAreaFit || (areaFit == bestAreaFit && shortSideFit < bestShortSideFit))
             {
                 bestNode         = Rect(freeRectangle.x, freeRectangle.y, width, height);
                 bestShortSideFit = shortSideFit;
@@ -151,9 +151,9 @@ bool BinPack::splitFreeNode(const Rect& freeNode, const Rect& usedNode)
 {
     // Test with SAT if the rectangles even intersect.
     if (usedNode.x >= freeNode.x + freeNode.width
-        or usedNode.x + usedNode.width <= freeNode.x
-        or usedNode.y >= freeNode.y + freeNode.height
-        or usedNode.y + usedNode.height <= freeNode.y)
+        || usedNode.x + usedNode.width <= freeNode.x
+        || usedNode.y >= freeNode.y + freeNode.height
+        || usedNode.y + usedNode.height <= freeNode.y)
     {
         return false;
     }
@@ -163,10 +163,10 @@ bool BinPack::splitFreeNode(const Rect& freeNode, const Rect& usedNode)
     // so keep a mark of them to avoid testing them against each other.
     _newFreeRectanglesLastSize = _newFreeRectangles.size();
 
-    if (usedNode.x < freeNode.x + freeNode.width and usedNode.x + usedNode.width > freeNode.x)
+    if (usedNode.x < freeNode.x + freeNode.width && usedNode.x + usedNode.width > freeNode.x)
     {
         // New node at the top side of the used node.
-        if (usedNode.y > freeNode.y and usedNode.y < freeNode.y + freeNode.height)
+        if (usedNode.y > freeNode.y && usedNode.y < freeNode.y + freeNode.height)
         {
             auto newNode   = freeNode;
             newNode.height = usedNode.y - newNode.y;
@@ -183,10 +183,10 @@ bool BinPack::splitFreeNode(const Rect& freeNode, const Rect& usedNode)
         }
     }
 
-    if (usedNode.y < freeNode.y + freeNode.height and usedNode.y + usedNode.height > freeNode.y)
+    if (usedNode.y < freeNode.y + freeNode.height && usedNode.y + usedNode.height > freeNode.y)
     {
         // New node at the left side of the used node.
-        if (usedNode.x > freeNode.x and usedNode.x < freeNode.x + freeNode.width)
+        if (usedNode.x > freeNode.x && usedNode.x < freeNode.x + freeNode.width)
         {
             auto newNode  = freeNode;
             newNode.width = usedNode.x - newNode.x;
@@ -255,7 +255,7 @@ void BinPack::pruneFreeList()
                 // The old free rectangles can never be contained in any of the
                 // new free rectangles (the new free rectangles keep shrinking
                 // in size)
-                assume(not isContainedIn(rect, _newFreeRectangles[j]));
+                assume(!isContainedIn(rect, _newFreeRectangles[j]));
                 ++j;
             }
         }

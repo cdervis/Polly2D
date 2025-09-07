@@ -31,7 +31,7 @@ MTL::RenderPipelineState* MetalPsoCache::operator[](const Key& key)
     }
     else
     {
-        if (vs and ps)
+        if (vs && ps)
         {
             logVerbose(
                 "Creating Metal PSO: VS='{}'; PS='{}'",
@@ -79,7 +79,7 @@ MTL::RenderPipelineState* MetalPsoCache::operator[](const Key& key)
         _list.emplace(key, NS::TransferPtr(mtlPso));
     }
 
-    if (not mtlPso)
+    if (!mtlPso)
     {
         throw Error("Failed to create a Metal render pipeline state.");
     }

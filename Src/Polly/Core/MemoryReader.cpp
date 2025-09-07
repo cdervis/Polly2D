@@ -94,7 +94,7 @@ u32 MemoryReader::read(unsigned char* dst, u32 bytes)
 void MemoryReader::seek(int offset)
 {
     _offset = offset >= 0 ? offset : _data.size() + offset;
-    _offset = min(static_cast<u32>(_offset), _data.size() - 1);
+    _offset = min(u32(_offset), _data.size() - 1);
 }
 
 u32 MemoryReader::pos() const

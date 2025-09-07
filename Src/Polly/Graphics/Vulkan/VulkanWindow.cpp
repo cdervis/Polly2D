@@ -110,7 +110,7 @@ void VulkanWindow::nextSwapChainImage(
         VK_NULL_HANDLE,
         &_currentSwapChainImageIndex);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR or result == VK_SUBOPTIMAL_KHR)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         logWarning(
             "VK_ERROR_OUT_OF_DATE_KHR or VK_SUBOPTIMAL_KHR returned from vkAcquireNextImageKHR()! "
@@ -175,7 +175,7 @@ void VulkanWindow::createSurface()
 
     logVerbose("Creating Vulkan surface");
 
-    if (not SDL_Vulkan_CreateSurface(sdlWindow(), _vkInstance, nullptr, &_surfaceKhr))
+    if (!SDL_Vulkan_CreateSurface(sdlWindow(), _vkInstance, nullptr, &_surfaceKhr))
     {
         throw Error("Failed to create the internal Vulkan surface.");
     }
@@ -235,7 +235,7 @@ void VulkanWindow::createSwapChain(
 
     auto imageCount = capabilities.minImageCount + 1;
 
-    if (capabilities.maxImageCount > 0 and imageCount > capabilities.maxImageCount)
+    if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount)
     {
         imageCount = capabilities.maxImageCount;
     }

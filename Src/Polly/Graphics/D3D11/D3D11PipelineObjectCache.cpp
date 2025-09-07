@@ -94,7 +94,7 @@ ID3D11BlendState* D3D11PipelineObjectCache::getBlendState(const BlendState& stat
 
     auto cachedState = _blendStates.find(state);
 
-    if (not cachedState)
+    if (!cachedState)
     {
         auto writeMask = static_cast<UINT8>(0u);
 
@@ -151,7 +151,7 @@ ID3D11SamplerState* D3D11PipelineObjectCache::getSamplerState(const Sampler& sam
 
     auto cachedState = _samplerStates.find(sampler);
 
-    if (not cachedState)
+    if (!cachedState)
     {
         auto desc = D3D11_SAMPLER_DESC{
             .Filter         = *convert(sampler.filter),

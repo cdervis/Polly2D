@@ -28,7 +28,7 @@ static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
             DXGI_SAMPLE_DESC{
                 .Count = 1,
             },
-        .Usage     = (isCanvas or not isStatic) ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE,
+        .Usage     = (isCanvas || !isStatic) ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE,
         .BindFlags = D3D11_BIND_SHADER_RESOURCE,
     };
 

@@ -17,7 +17,7 @@ OpenGLShaderProgram& OpenGLShaderProgramCache::get(GLuint vertexShaderHandleGL, 
 
     auto entry = _cache.find(key);
 
-    if (not entry)
+    if (!entry)
     {
         logVerbose(
             "Adding OpenGLShaderProgram to cache, with VS={} and FS={}",

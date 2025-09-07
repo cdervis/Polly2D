@@ -82,7 +82,7 @@ MouseCursor::Impl::~Impl() noexcept
 {
     if (_type)
     {
-        auto& [_, sdlCursor] = sSDLSystemCursors[static_cast<u32>(*_type)];
+        auto& [_, sdlCursor] = sSDLSystemCursors[u32(*_type)];
         sdlCursor            = nullptr;
     }
 
@@ -94,9 +94,9 @@ MouseCursor::Impl::~Impl() noexcept
 
 SDL_Cursor* MouseCursor::Impl::demandCreateSdlCursorForType(MouseCursorType type)
 {
-    auto& [_, sdlCursor] = sSDLSystemCursors[static_cast<int>(type)];
+    auto& [_, sdlCursor] = sSDLSystemCursors[int(type)];
 
-    if (not sdlCursor)
+    if (!sdlCursor)
     {
         sdlCursor = SDL_CreateSystemCursor(convertCursorType(type));
     }

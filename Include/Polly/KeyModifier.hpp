@@ -27,10 +27,10 @@ enum class KeyModifier
     Caps          = 0x2000,
     Mode          = 0x4000,
     Scroll        = 0x8000,
-    AnyControlKey = LeftControl bitor RightControl,
-    AnyShiftKey   = LeftShift bitor RightShift,
-    AnyAltKey     = LeftAlt bitor RightAlt,
-    AnyGuiKey     = LeftGui bitor RightGui,
+    AnyControlKey = LeftControl | RightControl,
+    AnyShiftKey   = LeftShift | RightShift,
+    AnyAltKey     = LeftAlt | RightAlt,
+    AnyGuiKey     = LeftGui | RightGui,
 };
 
 PollyDefineEnumFlagOperations(KeyModifier);

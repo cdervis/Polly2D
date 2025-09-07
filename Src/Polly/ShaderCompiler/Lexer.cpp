@@ -23,22 +23,22 @@ enum class CharClassification
 
 static bool isDigit(char ch)
 {
-    return ch >= '0' and ch <= '9';
+    return ch >= '0' && ch <= '9';
 }
 
 static bool isLetter(char ch)
 {
-    return (ch >= 'a' and ch <= 'z') or (ch >= 'A' and ch <= 'Z') or ch == '_';
+    return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_';
 }
 
 static bool isSymbol(char ch)
 {
-    return not isDigit(ch) and not isLetter(ch);
+    return !isDigit(ch) && !isLetter(ch);
 }
 
 static bool isIdentifier(StringView str)
 {
-    if (const char first = str.first(); isDigit(first) or not isLetter(first))
+    if (const char first = str.first(); isDigit(first) || !isLetter(first))
     {
         return false;
     }
@@ -116,7 +116,7 @@ static CharClassification getCharClassification(char ch)
 
 static bool shouldIgnoreChar(char ch)
 {
-    return ch == '\r' or ch == '\t';
+    return ch == '\r' || ch == '\t';
 }
 
 static bool isInt(StringView str)
@@ -132,7 +132,7 @@ static TokenType determineTokenType(const SourceLocation& location, StringView v
     {
         type = getSingleCharTokenType(value.first());
 
-        if (not type)
+        if (!type)
         {
             if (isIdentifier(value))
             {
@@ -157,7 +157,7 @@ static TokenType determineTokenType(const SourceLocation& location, StringView v
         type = TokenType::IntLiteral;
     }
 
-    if (not type)
+    if (!type)
     {
         throw ShaderCompileError(location, formatString("Invalid token '{}'.", value));
     }
@@ -185,7 +185,7 @@ List<Token> doLexing(StringView code, StringView filenameHint, bool doPostProces
     auto column                 = 1;
     auto previousClassification = getCharClassification(code.first());
     auto isCurrentlyInIdentifierToken =
-        previousClassification == CharClassification::Letter or code.first() == '_';
+        previousClassification == CharClassification::Letter || code.first() == '_';
 
     for (uint32_t i = 0, count = code.size(); i < count; ++i)
     {
@@ -193,28 +193,28 @@ List<Token> doLexing(StringView code, StringView filenameHint, bool doPostProces
         const auto classification = getCharClassification(ch);
         auto       shouldCut      = classification != previousClassification;
 
-        if (ch != '_' and classification == CharClassification::Symbol)
+        if (ch != '_' && classification == CharClassification::Symbol)
         {
             isCurrentlyInIdentifierToken = false;
             shouldCut                    = true;
         }
 
-        if (shouldCut and isCurrentlyInIdentifierToken)
+        if (shouldCut && isCurrentlyInIdentifierToken)
         {
             shouldCut = false;
         }
 
-        if (i > 0 and shouldCut and not shouldIgnoreChar(ch))
+        if (i > 0 && shouldCut && !shouldIgnoreChar(ch))
         {
             const auto value =
                 code.substring(previousTokenIndex, i - previousTokenIndex).trimmed({' ', '\r', '\n', '\t'});
 
-            if (value.size() == 1 and value[0] == '\0')
+            if (value.size() == 1 && value[0] == '\0')
             {
                 break;
             }
 
-            if (not value.isEmpty())
+            if (!value.isEmpty())
             {
                 const auto location = SourceLocation(
                     filenameHint,
@@ -225,9 +225,9 @@ List<Token> doLexing(StringView code, StringView filenameHint, bool doPostProces
                 tokens.emplace(determineTokenType(location, value), value, location);
             }
 
-            previousTokenIndex           = static_cast<int>(i);
+            previousTokenIndex           = int(i);
             previousTokenColumn          = column;
-            isCurrentlyInIdentifierToken = classification == CharClassification::Letter or ch == '_';
+            isCurrentlyInIdentifierToken = classification == CharClassification::Letter || ch == '_';
         }
 
         if (ch == '\n')
@@ -279,7 +279,7 @@ static bool areTokensNeighbors(List<TokenIterator, 4> tokens)
 // Checks whether a string represents a valid hexadecimal suffix (the part that follows '0x').
 static bool isHexSuffix(StringView str)
 {
-    auto len = static_cast<int>(str.size());
+    auto len = int(str.size());
 
     if (len == 9)
     {
@@ -297,12 +297,12 @@ static bool isHexSuffix(StringView str)
 
     const auto isValid = [](char ch)
     {
-        return (ch >= 'a' and ch <= 'f') or (ch >= '0' and ch <= '9') or (ch >= 'A' and ch <= 'F');
+        return (ch >= 'a' && ch <= 'f') || (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'F');
     };
 
     for (int i = 0; i < len; ++i)
     {
-        if (not isValid(str[i]))
+        if (!isValid(str[i]))
         {
             return false;
         }
@@ -338,9 +338,9 @@ static TokenIterator mergeTokens(
 
 static void assembleIntLiterals(StringView code, List<Token>& tokens)
 {
-    for (auto tk0 = tokens.begin(); tokens.size() >= 3 and tk0 < tokens.end() - 2; ++tk0)
+    for (auto tk0 = tokens.begin(); tokens.size() >= 3 && tk0 < tokens.end() - 2; ++tk0)
     {
-        if (const auto tk1 = tk0 + 1; tk0->is(TokenType::IntLiteral) and tk1->is(TokenType::Dot))
+        if (const auto tk1 = tk0 + 1; tk0->is(TokenType::IntLiteral) && tk1->is(TokenType::Dot))
         {
             auto tk2        = tk0 + 2;
             auto tkPrevious = tk1;
@@ -348,8 +348,8 @@ static void assembleIntLiterals(StringView code, List<Token>& tokens)
             auto tkLast     = tkPrevious;
 
             while (tkNext->is(TokenType::IntLiteral)
-                   and tkNext->location.startIndex
-                           == tkPrevious->location.startIndex + tkPrevious->value.size())
+                   && tkNext->location.startIndex
+                          == tkPrevious->location.startIndex + tkPrevious->value.size())
             {
                 ++tk2;
                 tkPrevious = tkNext;
@@ -376,21 +376,21 @@ static void assembleScientificNumbers(StringView code, List<Token>& tokens)
 {
     // format: (<float>|<int>)'e'('+'|'-')<int>
 
-    for (auto tk0 = tokens.begin(); tokens.size() >= 4 and tk0 < tokens.end() - 4; ++tk0)
+    for (auto tk0 = tokens.begin(); tokens.size() >= 4 && tk0 < tokens.end() - 4; ++tk0)
     {
         const auto tk1 = tk0 + 1; // 'e'
         const auto tk2 = tk0 + 2; // '+'|'-'
         const auto tk3 = tk0 + 3; // <int>
 
-        if (not areTokensNeighbors({{tk0, tk1, tk2, tk3}}))
+        if (!areTokensNeighbors({{tk0, tk1, tk2, tk3}}))
         {
             continue;
         }
 
-        if ((tk0->is(TokenType::FloatLiteral) or tk0->is(TokenType::IntLiteral))
-            and tk1->value == "e"
-            and (tk2->value == "+" or tk2->value == "-")
-            and tk3->is(TokenType::IntLiteral))
+        if ((tk0->is(TokenType::FloatLiteral) || tk0->is(TokenType::IntLiteral))
+            && tk1->value == "e"
+            && (tk2->value == "+" || tk2->value == "-")
+            && tk3->is(TokenType::IntLiteral))
         {
             std::ignore = mergeTokens(code, tokens, tk0, tk3, TokenType::ScientificNumber);
         }
@@ -399,19 +399,19 @@ static void assembleScientificNumbers(StringView code, List<Token>& tokens)
 
 static void assembleHexNumbers(StringView code, List<Token>& tokens)
 {
-    for (auto tk0 = tokens.begin(); tokens.size() >= 2 and tk0 < tokens.end() - 2; ++tk0)
+    for (auto tk0 = tokens.begin(); tokens.size() >= 2 && tk0 < tokens.end() - 2; ++tk0)
     {
         const auto tk1 = tk0 + 1;
 
-        if (not areTokensNeighbors({{tk0, tk1}}))
+        if (!areTokensNeighbors({{tk0, tk1}}))
         {
             continue;
         }
 
-        if (tk0->value == "0" and tk1->is(TokenType::Identifier) and tk1->value[0] == 'x')
+        if (tk0->value == "0" && tk1->is(TokenType::Identifier) && tk1->value[0] == 'x')
         {
             // Verify that the 'x...' part represents a valid hexadecimal number.
-            if (const auto suffix = tk1->value.substring(1); not isHexSuffix(suffix))
+            if (const auto suffix = tk1->value.substring(1); !isHexSuffix(suffix))
             {
                 throw ShaderCompileError(tk0->location, "Expected a valid hexadecimal number.");
             }
@@ -530,7 +530,7 @@ static void assembleMultiCharTokens(StringView code, List<Token>& tokens)
         if (const auto it = std::ranges::find_if(
                 s_transformations,
                 [&](const auto& transform)
-                { return tk0->type == transform.first and tk1->type == transform.second; });
+                { return tk0->type == transform.first && tk1->type == transform.second; });
             it != s_transformations.end())
         {
             tk0 = mergeTokens(code, tokens, tk0, tk1, it->result);
@@ -557,21 +557,21 @@ void removeUnnecessaryTokens(List<Token>& tokens)
         return;
     }
 
-    for (auto tk0 = tokens.begin(); tokens.size() >= 2 and tk0 < tokens.end() - 2; ++tk0)
+    for (auto tk0 = tokens.begin(); tokens.size() >= 2 && tk0 < tokens.end() - 2; ++tk0)
     {
         const auto tk1 = tk0 + 1;
 
-        if (not areTokensNeighbors({{tk0, tk1}}))
+        if (!areTokensNeighbors({{tk0, tk1}}))
         {
             continue;
         }
 
-        if (tk0->is(TokenType::ForwardSlash) and tk1->is(TokenType::ForwardSlash))
+        if (tk0->is(TokenType::ForwardSlash) && tk1->is(TokenType::ForwardSlash))
         {
             // Got a '//'. Remove everything that follows, until a new line begins.
             auto lastTk = tk1;
 
-            while (lastTk < tokens.end() and lastTk->location.line == tk0->location.line)
+            while (lastTk < tokens.end() && lastTk->location.line == tk0->location.line)
             {
                 ++lastTk;
             }

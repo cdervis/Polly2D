@@ -21,7 +21,7 @@ void Writer::appendLine(StringView str)
 
 void Writer::append(StringView str)
 {
-    if (not _buffer.isEmpty() and _buffer.last() == '\n')
+    if (!_buffer.isEmpty() && _buffer.last() == '\n')
     {
         for (int i = 0; i < _indentation; ++i)
         {
@@ -152,7 +152,7 @@ Writer& Writer::operator<<(write_newline_tag)
 
 Writer& Writer::operator<<(write_newline_lazy_tag)
 {
-    if (_buffer.isEmpty() or _buffer.last() != '\n')
+    if (_buffer.isEmpty() || _buffer.last() != '\n')
     {
         append("\n");
     }

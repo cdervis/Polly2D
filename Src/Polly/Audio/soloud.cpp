@@ -40,7 +40,7 @@ freely, subject to the following restrictions:
 #endif
 #endif
 
-#if defined(__GNUC__) or defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #endif

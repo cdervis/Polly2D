@@ -177,7 +177,7 @@ VulkanPainter::VulkanPainter(
 
     // Initialize ImGui
     {
-        if (not ImGui_ImplSDL3_InitForVulkan(windowImpl.sdlWindow()))
+        if (!ImGui_ImplSDL3_InitForVulkan(windowImpl.sdlWindow()))
         {
             throw Error("Failed to initialize ImGui for Vulkan.");
         }
@@ -231,7 +231,7 @@ VulkanPainter::VulkanPainter(
         info.UseDynamicRendering = false;
         info.ApiVersion          = VK_API_VERSION_1_0;
 
-        if (not ImGui_ImplVulkan_Init(&info))
+        if (!ImGui_ImplVulkan_Init(&info))
         {
             throw Error("Failed to initialize the Vulkan backend of ImGui.");
         }
@@ -318,13 +318,9 @@ VulkanPainter::~VulkanPainter() noexcept
         cmdBuffers.add(_vkImmediateCmdBuffer);
     }
 
-    if (not cmdBuffers.isEmpty())
+    if (!cmdBuffers.isEmpty())
     {
-        vkFreeCommandBuffers(
-            _vkDevice,
-            _vkCommandPool,
-            static_cast<u32>(cmdBuffers.size()),
-            cmdBuffers.data());
+        vkFreeCommandBuffers(_vkDevice, _vkCommandPool, u32(cmdBuffers.size()), cmdBuffers.data());
     }
 
     _vkImmediateCmdBuffer = VK_NULL_HANDLE;
@@ -675,8 +671,8 @@ void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
     const auto vkViewport = VkViewport{
         .x        = 0.0f,
         .y        = 0.0f,
-        .width    = static_cast<float>(fboCacheKey.width),
-        .height   = static_cast<float>(fboCacheKey.height),
+        .width    = float(fboCacheKey.width),
+        .height   = float(fboCacheKey.height),
         .minDepth = 0.0f,
         .maxDepth = 1.0f,
     };
@@ -700,14 +696,14 @@ void VulkanPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColo
 
     setDirtyFlags(
         dirtyFlags()
-        bitor DF_GlobalCBufferParams
-        bitor DF_GlobalCBufferParams
-        bitor DF_SystemValueCBufferParams
-        bitor DF_SpriteImage
-        bitor DF_MeshImage
-        bitor DF_Sampler
-        bitor DF_VertexBuffers
-        bitor DF_PipelineState);
+        | DF_GlobalCBufferParams
+        | DF_GlobalCBufferParams
+        | DF_SystemValueCBufferParams
+        | DF_SpriteImage
+        | DF_MeshImage
+        | DF_Sampler
+        | DF_VertexBuffers
+        | DF_PipelineState);
 }
 
 void VulkanPainter::setScissorRects([[maybe_unused]] Span<Rectangle> scissorRects)
@@ -727,13 +723,13 @@ void VulkanPainter::setScissorRects([[maybe_unused]] Span<Rectangle> scissorRect
         vkRects.add( VkRect2D{
             .offset =
                 {
-                    .x = static_cast<i32>( rect.x ),
-                    .y = static_cast<i32>( rect.y ),
+                    .x = i32( rect.x ),
+                    .y = i32( rect.y ),
                 },
             .extent =
                 {
-                    .width  = static_cast<u32>( rect.width ),
-                    .height = static_cast<u32>( rect.height ),
+                    .width  = u32( rect.width ),
+                    .height = u32( rect.height ),
                 },
         } );
     }
@@ -915,25 +911,24 @@ List<String> VulkanPainter::determineVkPhysicalDevice(
 
                     for (uint32_t j = 0; j < queueFamilies.size(); ++j)
                     {
-                        if (not graphicsQueueFamily
-                            and queueFamilies[j].queueFlags bitand VK_QUEUE_GRAPHICS_BIT)
+                        if (!graphicsQueueFamily && queueFamilies[j].queueFlags & VK_QUEUE_GRAPHICS_BIT)
                         {
                             graphicsQueueFamily = j;
                         }
 
-                        if (not presentQueueFamily)
+                        if (!presentQueueFamily)
                         {
                             auto       supported = VkBool32();
                             const auto result =
                                 vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, j, surface, &supported);
 
-                            if (result == VK_SUCCESS and supported)
+                            if (result == VK_SUCCESS && supported)
                             {
                                 presentQueueFamily = j;
                             }
                         }
 
-                        if (graphicsQueueFamily and presentQueueFamily)
+                        if (graphicsQueueFamily && presentQueueFamily)
                         {
                             logVerbose("Found graphics + present queue family (index={})", j);
                             break;
@@ -941,7 +936,7 @@ List<String> VulkanPainter::determineVkPhysicalDevice(
                     }
                 }
 
-                if (not graphicsQueueFamily or not presentQueueFamily)
+                if (!graphicsQueueFamily || !presentQueueFamily)
                 {
                     logVerbose("Skipping device (no graphics or present queue family)");
                     continue;
@@ -976,7 +971,7 @@ List<String> VulkanPainter::determineVkPhysicalDevice(
                     extensionsLeft.remove(extension.extensionName);
                 }
 
-                if (not extensionsLeft.isEmpty())
+                if (!extensionsLeft.isEmpty())
                 {
                     continue;
                 }
@@ -1039,7 +1034,7 @@ List<String> VulkanPainter::determineVkPhysicalDevice(
         const auto& heap = memoryProps.memoryHeaps[i];
         totalMemorySize += heap.size;
 
-        if (heap.flags bitand VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+        if (heap.flags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
         {
             deviceLocalMemorySize += heap.size;
         }
@@ -1167,7 +1162,7 @@ void VulkanPainter::createVkLogicalDevice(Span<const char*> requiredExtensions)
 
     auto result = vkCreateDevice(_vkPhysicalDevice, &deviceCreateInfo, nullptr, &_vkDevice);
 
-    if (result != VK_SUCCESS and not extensionsToEnable.isEmpty())
+    if (result != VK_SUCCESS && !extensionsToEnable.isEmpty())
     {
         logInfo(
             "Vulkan device creation with extensions failed. Attempting to create a device with no "
@@ -1290,7 +1285,7 @@ void VulkanPainter::createSyncObjects()
 
         const auto fenceResult = vkCreateFence(_vkDevice, &fenceInfo, nullptr, &i.inFlightFence);
 
-        if (semaphore1Result != VK_SUCCESS or semaphore2Result != VK_SUCCESS or fenceResult != VK_SUCCESS)
+        if (semaphore1Result != VK_SUCCESS || semaphore2Result != VK_SUCCESS || fenceResult != VK_SUCCESS)
         {
             throw Error("Failed to create sync objects.");
         }
@@ -1325,18 +1320,18 @@ void VulkanPainter::createVkDebugMessenger()
     const auto pfnCreateDebugUtilsMessengerExt = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
         vkGetInstanceProcAddr(_vkInstance, "vkCreateDebugUtilsMessengerEXT"));
 
-    if (_isDebugMarkerExtensionEnabled and pfnCreateDebugUtilsMessengerExt != nullptr)
+    if (_isDebugMarkerExtensionEnabled && pfnCreateDebugUtilsMessengerExt != nullptr)
     {
         logDebug("Device supports debug messenger callbacks; enabling them");
 
         auto info            = VkDebugUtilsMessengerCreateInfoEXT();
         info.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
         info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-                               bitor VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-                               bitor VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+                               | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+                               | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
         info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-                           bitor VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-                           bitor VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+                           | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+                           | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         info.pfnUserCallback = vulkanDebugCallback;
         info.pUserData       = this;
 
@@ -1404,7 +1399,7 @@ int VulkanPainter::prepareDrawCall()
     auto&      shader                  = currentShader(currentBatchMode);
     auto*      currentVulkanUserShader = shader ? static_cast<VulkanUserShader*>(shader.impl()) : nullptr;
 
-    if ((df bitand DF_PipelineState) == DF_PipelineState)
+    if ((df & DF_PipelineState) == DF_PipelineState)
     {
         auto psoCacheKey = VulkanPsoCache::Key();
 
@@ -1471,7 +1466,7 @@ int VulkanPainter::prepareDrawCall()
         df &= ~DF_PipelineState;
     }
 
-    if ((df bitand DF_VertexBuffers) == DF_VertexBuffers)
+    if ((df & DF_VertexBuffers) == DF_VertexBuffers)
     {
         auto vkBuffer = VkBuffer();
 
@@ -1493,7 +1488,7 @@ int VulkanPainter::prepareDrawCall()
         df &= ~DF_VertexBuffers;
     }
 
-    if ((df bitand DF_IndexBuffer) == DF_IndexBuffer)
+    if ((df & DF_IndexBuffer) == DF_IndexBuffer)
     {
         VkBuffer indexBufferToBind = VK_NULL_HANDLE;
 
@@ -1506,7 +1501,7 @@ int VulkanPainter::prepareDrawCall()
             indexBufferToBind = frameData.meshIndexBuffer.vkBuffer();
         }
 
-        if (indexBufferToBind != VK_NULL_HANDLE and indexBufferToBind != frameData.lastBoundIndexBuffer)
+        if (indexBufferToBind != VK_NULL_HANDLE && indexBufferToBind != frameData.lastBoundIndexBuffer)
         {
             vkCmdBindIndexBuffer(
                 frameData.vkCommandBuffer,
@@ -1520,7 +1515,7 @@ int VulkanPainter::prepareDrawCall()
         df &= ~DF_IndexBuffer;
     }
 
-    if ((df bitand DF_Sampler) == DF_Sampler)
+    if ((df & DF_Sampler) == DF_Sampler)
     {
         const auto vkSampler            = _samplerCache.get(currentSampler());
         const auto samplerDescriptorSet = _samplerDescriptorCache.get(vkSampler);
@@ -1543,7 +1538,7 @@ int VulkanPainter::prepareDrawCall()
         df &= ~DF_Sampler;
     }
 
-    if ((df bitand DF_GlobalCBufferParams) == DF_GlobalCBufferParams)
+    if ((df & DF_GlobalCBufferParams) == DF_GlobalCBufferParams)
     {
         const auto params = GlobalCBufferParams{
             .transformation = combinedTransformation(),
@@ -1560,7 +1555,7 @@ int VulkanPainter::prepareDrawCall()
         df &= ~DF_GlobalCBufferParams;
     }
 
-    if ((df bitand DF_SystemValueCBufferParams) == DF_SystemValueCBufferParams)
+    if ((df & DF_SystemValueCBufferParams) == DF_SystemValueCBufferParams)
     {
         // Only set when there are any pushConstants specified in the user-shader?
         // i.e., only when the user used >0 system values
@@ -1568,7 +1563,7 @@ int VulkanPainter::prepareDrawCall()
 
         if (frameData.lastAppliedViewportToSystemValues != viewport)
         {
-            if (currentVulkanUserShader and currentVulkanUserShader->usesSystemValues())
+            if (currentVulkanUserShader && currentVulkanUserShader->usesSystemValues())
             {
                 const auto params = SystemValueCBufferParams{
                     .viewportSize    = viewport.size(),
@@ -1596,7 +1591,7 @@ int VulkanPainter::prepareDrawCall()
     // Handle image binding stuff
     if (currentBatchMode == BatchMode::Sprites)
     {
-        if ((df bitand DF_SpriteImage) == DF_SpriteImage)
+        if ((df & DF_SpriteImage) == DF_SpriteImage)
         {
             if (const auto* image = spriteBatchImage())
             {
@@ -1607,7 +1602,7 @@ int VulkanPainter::prepareDrawCall()
     }
     else if (currentBatchMode == BatchMode::Mesh)
     {
-        if ((df bitand DF_MeshImage) == DF_MeshImage)
+        if ((df & DF_MeshImage) == DF_MeshImage)
         {
             if (const auto* image = meshBatchImage())
             {
@@ -1625,7 +1620,7 @@ int VulkanPainter::prepareDrawCall()
     df &= ~DF_SpriteImage;
     df &= ~DF_MeshImage;
 
-    if ((df bitand DF_UserShaderParams) == DF_UserShaderParams)
+    if ((df & DF_UserShaderParams) == DF_UserShaderParams)
     {
         if (currentVulkanUserShader)
         {
@@ -1634,7 +1629,7 @@ int VulkanPainter::prepareDrawCall()
             const auto offset = allocation.offsetToMapAt;
 
             if (frameData.lastBoundSets[2] != allocation.vkDescriptorSet
-                or frameData.lastBoundSet2Offset != offset)
+                || frameData.lastBoundSet2Offset != offset)
             {
                 u8* dstData = nullptr;
 
@@ -2010,7 +2005,7 @@ void VulkanPainter::createPolyRenderingResources()
             _vkDevice,
             _vmaAllocator,
             sizeof(Tessellation2D::PolyVertex) * maxPolyVertices,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT bitor VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VK_SHARING_MODE_EXCLUSIVE,
             VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
             nullptr,
@@ -2031,7 +2026,7 @@ void VulkanPainter::createMeshRenderingResources()
             _vkDevice,
             _vmaAllocator,
             sizeof(MeshVertex) * maxMeshVertices,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT bitor VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VK_SHARING_MODE_EXCLUSIVE,
             VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
             nullptr,
@@ -2046,7 +2041,7 @@ void VulkanPainter::createMeshRenderingResources()
             _vkDevice,
             _vmaAllocator,
             sizeof(MeshVertex) * maxMeshVertices,
-            VK_BUFFER_USAGE_INDEX_BUFFER_BIT bitor VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+            VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
             VK_SHARING_MODE_EXCLUSIVE,
             VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
             nullptr,
@@ -2067,7 +2062,7 @@ VulkanBuffer VulkanPainter::createSingleSpriteVertexBuffer(uint32_t index)
         _vkDevice,
         _vmaAllocator,
         sizeof(SpriteVertex) * maxSpriteBatchSize * verticesPerSprite,
-        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT bitor VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
         VK_SHARING_MODE_EXCLUSIVE,
         VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
         nullptr,
@@ -2081,9 +2076,9 @@ VulkanBuffer VulkanPainter::createSingleSpriteVertexBuffer(uint32_t index)
 void VulkanPainter::destroyQueuedVulkanObjects()
 {
     const auto isThereAnythingToDestroy =
-        not _destruction_queue.imageAndViewPairs.isEmpty() or not _destruction_queue.shaderModules.isEmpty();
+        !_destruction_queue.imageAndViewPairs.isEmpty() || !_destruction_queue.shaderModules.isEmpty();
 
-    if (not isThereAnythingToDestroy)
+    if (!isThereAnythingToDestroy)
     {
         return;
     }
@@ -2154,7 +2149,7 @@ void VulkanPainter::setResourceDebugName(
     [[maybe_unused]] StringView        name)
 {
 #ifndef NDEBUG
-    if (not _vkSetObjectName)
+    if (!_vkSetObjectName)
     {
         return;
     }
