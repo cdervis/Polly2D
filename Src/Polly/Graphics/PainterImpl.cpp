@@ -298,9 +298,8 @@ void Painter::Impl::startFrame()
 
     onFrameStarted();
 
-    auto& frameData     = _frameData[_currentFrameIndex];
-    frameData.batchMode = none;
-    // frameData.spriteBatchShaderKind = static_cast<SpriteShaderKind>(-1);
+    auto& frameData            = _frameData[_currentFrameIndex];
+    frameData.batchMode        = none;
     frameData.spriteBatchImage = nullptr;
     frameData.spriteQueue.clear();
     frameData.meshBatchImage = nullptr;
@@ -433,8 +432,7 @@ void Painter::Impl::setShader(BatchMode mode, const Shader& shader)
     }
 
     // Accumulate the flags that we have to mark as dirty.
-    // Because the shader will be changed, the pipeline state is
-    // dirty either way.
+    // Because the shader will be changed, the pipeline state is dirty either way.
     int dirtyFlags = DF_PipelineState;
 
     if (!shader)
@@ -489,7 +487,6 @@ void Painter::Impl::setBlendState(const BlendState& blendState)
         _frameData[_currentFrameIndex].dirtyFlags |= DF_PipelineState;
     }
 }
-
 
 void Painter::Impl::pushStringToQueue(
     StringView            text,

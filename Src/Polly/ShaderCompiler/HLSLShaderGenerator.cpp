@@ -238,43 +238,6 @@ void HLSLShaderGenerator::generateFunctionDecl(
                        Naming::svViewportSizeInv)
                 << wnewline;
         }
-
-#if 0
-        if (_ast->isSpriteShader())
-        {
-            if (_ast->isSymbolAccessedAnywhere(builtins.svSpriteColor.get()))
-            {
-                w
-                    << formatString(
-                           "const float4 {} = {}.color;",
-                           Naming::spriteBatchColorAttrib,
-                           Naming::shaderInputParam)
-                    << wnewline;
-            }
-
-            if (_ast->isSymbolAccessedAnywhere(builtins.svSpriteUV.get()))
-            {
-                w
-                    << formatString(
-                           "const float2 {} = {}.uv;",
-                           Naming::spriteBatchUVAttrib,
-                           Naming::shaderInputParam)
-                    << wnewline;
-            }
-        }
-        else if (_ast->isPolygonShader())
-        {
-            if (_ast->isSymbolAccessedAnywhere(builtins.svPolygonColor.get()))
-            {
-                w
-                    << formatString(
-                           "const float4 {} = {}.color;",
-                           Naming::polyBatchColorAttrib,
-                           Naming::shaderInputParam)
-                    << wnewline;
-            }
-        }
-#endif
     }
 
     generateCodeBlock(w, function->body(), context);
