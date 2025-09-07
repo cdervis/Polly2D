@@ -8,6 +8,7 @@
 
 #include "Polly/Core/Casting.hpp"
 #include "Polly/Format.hpp"
+#include "Polly/Graphics/Metal/MetalPainter.hpp"
 #include "Polly/ShaderCompiler/Ast.hpp"
 #include "Polly/ShaderCompiler/BuiltinSymbols.hpp"
 #include "Polly/ShaderCompiler/CodeBlock.hpp"
@@ -19,7 +20,6 @@
 #include "Polly/ShaderCompiler/Stmt.hpp"
 #include "Polly/ShaderCompiler/Type.hpp"
 #include "Polly/ShaderCompiler/Writer.hpp"
-#include <CommonMetalInfo.hpp>
 
 namespace Polly::ShaderCompiler
 {
@@ -28,7 +28,7 @@ MetalShaderGenerator::MetalShaderGenerator()
     _isSwappingMatrixVectorMults = true;
 
     _systemValuesCBufferTypeName  = Naming::forbiddenIdentifierPrefix + "SystemValues"_sv;
-    _systemValuesCBufferParamName = "sv"_sv;
+    _systemValuesCBufferParamName = Naming::forbiddenIdentifierPrefix + "sv"_sv;
 
     _userParamsCBufferTypeName  = Naming::forbiddenIdentifierPrefix + "Params"_sv;
     _userParamsCBufferParamName = Naming::forbiddenIdentifierPrefix + "params"_sv;
@@ -224,17 +224,49 @@ void MetalShaderGenerator::generateFunctionDecl(
             << "& "
             << _systemValuesCBufferParamName
             << " [[buffer("
-            << CommonMetalInfo::userShaderSvCBufferIndex
-            << ")]],"
-            << wnewline;
+            << MetalPainter::systemValuesCBufferSlot
+            << ")]]";
+
+        auto needSampler = false;
 
         if (_ast->isSpriteShader())
         {
+            w << ", " << wnewline;
             w.pad(4);
-            w << "texture2d<float> " << Naming::spriteBatchImageParam << " [[texture(0)]]," << wnewline;
+            w
+                << "texture2d<float> "
+                << Naming::spriteBatchImageParam
+                << " [[texture("
+                << MetalPainter::spriteImageTextureSlot
+                << ")]],"
+                << wnewline;
 
+            needSampler = true;
+        }
+        else if (_ast->isMeshShader())
+        {
+            w << ", " << wnewline;
             w.pad(4);
-            w << "sampler " << Naming::forbiddenIdentifierPrefix << "sampler [[sampler(0)]]";
+            w
+                << "texture2d<float> "
+                << Naming::meshImageParam
+                << " [[texture("
+                << MetalPainter::meshImageTextureSlot
+                << ")]],"
+                << wnewline;
+
+            needSampler = true;
+        }
+
+        if (needSampler)
+        {
+            w.pad(4);
+            w
+                << "sampler "
+                << Naming::imageSamplerParam
+                << " [[sampler("
+                << MetalPainter::imageSamplerSlot
+                << ")]]";
         }
     }
 
@@ -244,7 +276,7 @@ void MetalShaderGenerator::generateFunctionDecl(
         w << "," << wnewline;
         w.pad(4);
         w << "constant " << _userParamsCBufferTypeName << "& " << _userParamsCBufferParamName;
-        w << ' ' << "[[buffer(" << CommonMetalInfo::userShaderParamsCBufferIndex << ")]]";
+        w << ' ' << "[[buffer(" << MetalPainter::userShaderParamsCBufferSlot << ")]]";
     }
 
     // TODO:

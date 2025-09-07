@@ -23,6 +23,7 @@ static constexpr auto svTransformation     = "pl_transformation"_sv;
 static constexpr auto svViewportSize       = "pl_viewportSize"_sv;
 static constexpr auto svViewportSizeInv    = "pl_viewportSizeInv"_sv;
 
+static constexpr auto imageSamplerParam      = "pl_sampler"_sv;
 static constexpr auto spriteBatchImageParam  = "pl_spriteImage"_sv;
 static constexpr auto spriteBatchColorAttrib = "pl_spriteColor"_sv;
 static constexpr auto spriteBatchUVAttrib    = "pl_spriteUV"_sv;
