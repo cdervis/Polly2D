@@ -5,12 +5,8 @@ list(APPEND opengl_header_files "glad.h")
 list(APPEND opengl_source_files "glad.c")
 
 target_sources(Polly PRIVATE
-    FILE_SET HEADERS
-    FILES ${opengl_header_files}
-    PRIVATE ${opengl_source_files}
-)
-
-target_sources(Polly PRIVATE
+    ${opengl_header_files}
+    ${opengl_source_files}
     Resources/SpriteBatchOpenGL.vert
     Resources/PolyOpenGL.vert
     Resources/MeshOpenGL.vert

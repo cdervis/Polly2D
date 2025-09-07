@@ -5,11 +5,10 @@
 #include "Polly/Audio/SoundImpl.hpp"
 
 #include "Polly/Audio/AudioDeviceImpl.hpp"
+#include "Polly/Audio/soloud_sfxr.hpp"
+#include "Polly/Audio/soloud_speech.hpp"
+#include "Polly/Audio/soloud_wav.hpp"
 #include "Polly/Error.hpp"
-
-#include <soloud_sfxr.hpp>
-#include <soloud_speech.hpp>
-#include <soloud_wav.hpp>
 
 namespace Polly
 {

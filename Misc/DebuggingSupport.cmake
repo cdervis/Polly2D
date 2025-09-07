@@ -1,3 +1,17 @@
+function(get_home_dir output_var)
+    if (WIN32)
+        set(home_dir "$ENV{USERPROFILE}")
+    else ()
+        set(home_dir "$ENV{HOME}")
+    endif ()
+
+    if (EXISTS "${home_dir}")
+        set("${output_var}" "${home_dir}" PARENT_SCOPE)
+    else ()
+        polly_fatal_error("Failed to determine the home directory.")
+    endif ()
+endfunction()
+
 if (NOT POLLY_NO_DEBUG_SUPPORT)
     if (MSVC)
         set(natvis_file ${polly_root_dir}/Misc/DebugVis/PollyMSVC.natvis)
@@ -6,12 +20,12 @@ if (NOT POLLY_NO_DEBUG_SUPPORT)
     else ()
         polly_log("Checking LLDB support")
 
-        file(REAL_PATH "~" user_home_dir EXPAND_TILDE)
+        get_home_dir(user_home_dir)
         set(lldb_dir ${user_home_dir}/.lldb)
 
         if (NOT EXISTS ${lldb_dir})
             file(MAKE_DIRECTORY ${lldb_dir})
-        endif()
+        endif ()
 
         file(COPY ${polly_root_dir}/Misc/DebugVis/PollyLLDB.py DESTINATION ${lldb_dir})
 
@@ -23,11 +37,11 @@ if (NOT POLLY_NO_DEBUG_SUPPORT)
 
         if (EXISTS ${lldbinit_filename})
             file(READ ${lldbinit_filename} lldbinit_contents)
-        endif()
+        endif ()
 
         if (NOT lldbinit_contents STREQUAL "")
             string(FIND ${lldbinit_contents} "${lldb_command_str}" is_polly_lldb_registered)
-        endif()
+        endif ()
 
         if (is_polly_lldb_registered EQUAL -1)
             polly_log("Registering Polly LLDB visualizers")

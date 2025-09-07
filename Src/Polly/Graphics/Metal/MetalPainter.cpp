@@ -22,6 +22,7 @@
 #include "Polly/Graphics/Tessellation2D.hpp"
 #include "Polly/ImGui.hpp"
 #include "Polly/Logging.hpp"
+#include "Polly/ShaderCompiler/Ast.hpp"
 #include "Polly/ShaderCompiler/MetalShaderGenerator.hpp"
 #include "Resources/MetalCppCommonStuff.hpp"
 #include <Foundation/Foundation.hpp>
@@ -33,7 +34,6 @@
 #include <imgui.h>
 
 #include "AllShaders.metal.hpp"
-#include "Ast.hpp"
 
 namespace Polly
 {

@@ -4,8 +4,8 @@
 
 #include "Polly/Graphics/PainterImpl.hpp"
 
-#include "Casting.hpp"
 #include "Polly/Array.hpp"
+#include "Polly/Core/Casting.hpp"
 #include "Polly/Core/LoggingInternals.hpp"
 #include "Polly/Defer.hpp"
 #include "Polly/Font.hpp"

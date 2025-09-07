@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Polly/Audio/soloud.hpp"
 #include "Polly/AudioDevice.hpp"
 #include "Polly/CopyMoveMacros.hpp"
 #include "Polly/Core/Object.hpp"
@@ -11,8 +12,6 @@
 #include "Polly/SortedSet.hpp"
 #include "Polly/Sound.hpp"
 #include "Polly/SoundTypes.hpp"
-
-#include <soloud.hpp>
 
 namespace Polly
 {
