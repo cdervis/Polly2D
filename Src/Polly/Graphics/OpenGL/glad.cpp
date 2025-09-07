@@ -27,7 +27,7 @@
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 
-#include "glad.h"
+#include "glad.hpp"
 
 static void* get_proc(const char *namez);
 

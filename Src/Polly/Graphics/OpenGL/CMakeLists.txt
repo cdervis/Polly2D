@@ -1,9 +1,6 @@
 file(GLOB opengl_header_files CONFIGURE_DEPENDS "*.hpp")
 file(GLOB opengl_source_files CONFIGURE_DEPENDS "*.cpp")
 
-list(APPEND opengl_header_files "glad.h")
-list(APPEND opengl_source_files "glad.c")
-
 target_sources(Polly PRIVATE
     ${opengl_header_files}
     ${opengl_source_files}

@@ -14,7 +14,7 @@
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 
-#include "Polly/Graphics/OpenGL/glad.h"
+#include "Polly/Graphics/OpenGL/glad.hpp"
 
 #if defined(__GNUC__) or defined(__clang__)
 #pragma GCC diagnostic pop
