@@ -355,16 +355,15 @@ void MetalPainter::onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor
 
     setDirtyFlags(
         dirtyFlags()
-        bitor DF_GlobalCBufferParams
-        bitor DF_SystemValueCBufferParams
-        bitor DF_SpriteImage
-        bitor DF_MeshImage
-        bitor DF_Sampler
-        bitor DF_VertexBuffers
-        bitor DF_PipelineState);
+        | DF_GlobalCBufferParams
+        | DF_SpriteImage
+        | DF_MeshImage
+        | DF_Sampler
+        | DF_VertexBuffers
+        | DF_PipelineState);
 }
 
-void MetalPainter::setScissorRects(Span<Rectangle> scissorRects)
+void MetalPainter::onSetScissorRects(Span<Rectangle> scissorRects)
 {
     const auto& frameData = currentFrameData();
 
@@ -399,59 +398,6 @@ UniquePtr<Image::Impl> MetalPainter::createImage(
     bool        isStatic)
 {
     return makeUnique<MetalImage>(*this, width, height, format, data, isStatic);
-}
-
-void MetalPainter::readCanvasDataInto(
-    const Image& canvas,
-    u32          x,
-    u32          y,
-    u32          width,
-    u32          height,
-    void*        destination)
-{
-
-    const auto& metalCanvas   = static_cast<const MetalImage&>(*canvas.impl());
-    const auto* mtlTexture    = metalCanvas.mtlTexture();
-    const auto  baseWidth     = metalCanvas.width();
-    const auto  baseHeight    = metalCanvas.height();
-    const auto  format        = metalCanvas.format();
-    const auto  bytesPerRow   = imageRowPitch(baseWidth, format);
-    const auto  bytesPerImage = imageSlicePitch(baseWidth, baseHeight, format);
-    const auto  dataSize      = imageSlicePitch(width, height, format);
-
-    auto* arp = NS::AutoreleasePool::alloc()->init();
-
-    defer
-    {
-        arp->release();
-    };
-
-    auto* buffer = _mtlDevice->newBuffer(static_cast<NS::UInteger>(dataSize), MTL::ResourceStorageModeShared);
-
-    auto* cmdBuffer = _mtlCommandQueue->commandBuffer();
-    auto* encoder   = cmdBuffer->blitCommandEncoder();
-
-    const auto minWidth  = min(width, baseWidth);
-    const auto minHeight = min(height, baseHeight);
-
-    encoder->copyFromTexture(
-        /*src: */ mtlTexture,
-        /*slice: */ 0,
-        /*level: */ 0,
-        /*src_origin: */ MTL::Origin(x, y, 0),
-        /*src_size: */ MTL::Size(minWidth, minHeight, 1),
-        /*dst: */ buffer,
-        /*dst_offset: */ 0,
-        static_cast<NS::UInteger>(bytesPerRow),
-        static_cast<NS::UInteger>(bytesPerImage));
-
-    encoder->endEncoding();
-
-    cmdBuffer->commit();
-
-    cmdBuffer->waitUntilCompleted();
-
-    std::memcpy(destination, buffer->contents(), dataSize);
 }
 
 void MetalPainter::spriteQueueLimitReached()
@@ -559,7 +505,7 @@ int MetalPainter::prepareDrawCall()
     auto&      perfStats        = performanceStats();
     const auto currentBatchMode = *batchMode();
 
-    if ((df bitand DF_PipelineState) == DF_PipelineState)
+    if ((df & DF_PipelineState) == DF_PipelineState)
     {
         const auto* currentDrawable = currentMetalDrawable();
 
@@ -568,50 +514,19 @@ int MetalPainter::prepareDrawCall()
         const auto renderTargetFormat = currentCanvas() ? *convertToMtl(currentCanvas().format())
                                                         : currentDrawable->texture()->pixelFormat();
 
-        MTL::Function* vertexShader      = nullptr;
-        MTL::Function* fragmentShader    = nullptr;
-        auto&          currentUserShader = currentShader(currentBatchMode);
+        auto& currentUserShader = currentShader(currentBatchMode);
+
+        MTL::Function* vertexShader = nullptr;
+
+        MTL::Function* fragmentShader =
+            static_cast<const MetalUserShader&>(*currentUserShader.impl()).mtlFunction();
 
         {
             switch (currentBatchMode)
             {
-                case BatchMode::Sprites: {
-                    vertexShader = _spriteVS.get();
-
-                    if (currentUserShader)
-                    {
-                        fragmentShader =
-                            static_cast<MetalUserShader&>(*currentUserShader.impl()).mtlFunction();
-                    }
-                    else
-                    {
-                        fragmentShader = spriteShaderKind() == SpriteShaderKind::Default
-                                             ? _defaultSpritePS.get()
-                                             : _monochromaticSpritePS.get();
-                    }
-
-                    break;
-                }
-                case BatchMode::Polygons: {
-                    vertexShader = _polyVS.get();
-
-                    if (currentUserShader)
-                    {
-                        fragmentShader =
-                            static_cast<MetalUserShader&>(*currentUserShader.impl()).mtlFunction();
-                    }
-                    else
-                    {
-                        fragmentShader = _polyPS.get();
-                    }
-
-                    break;
-                }
-                case BatchMode::Mesh: {
-                    vertexShader   = _meshVS.get();
-                    fragmentShader = _meshPS.get();
-                    break;
-                }
+                case BatchMode::Sprites: vertexShader = _spriteVS.get(); break;
+                case BatchMode::Polygons: vertexShader = _polyVS.get(); break;
+                case BatchMode::Mesh: vertexShader = _meshVS.get(); break;
             }
         }
 
@@ -627,7 +542,7 @@ int MetalPainter::prepareDrawCall()
         df &= ~DF_PipelineState;
     }
 
-    if ((df bitand DF_VertexBuffers) == DF_VertexBuffers)
+    if ((df & DF_VertexBuffers) == DF_VertexBuffers)
     {
         frameData.renderEncoder->setVertexBuffer(
             frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get(),
@@ -651,7 +566,7 @@ int MetalPainter::prepareDrawCall()
     // Therefore count the index buffer as handled implicitly.
     df &= ~DF_IndexBuffer;
 
-    if ((df bitand DF_Sampler) == DF_Sampler)
+    if ((df & DF_Sampler) == DF_Sampler)
     {
         frameData.renderEncoder->setFragmentSamplerState(
             _samplerStateCache[currentSampler()],
@@ -660,10 +575,14 @@ int MetalPainter::prepareDrawCall()
         df &= ~DF_Sampler;
     }
 
-    if ((df bitand DF_GlobalCBufferParams) == DF_GlobalCBufferParams)
+    if ((df & DF_GlobalCBufferParams) == DF_GlobalCBufferParams)
     {
+        const auto viewport = currentViewport();
+
         const auto params = GlobalCBufferParams{
-            .transformation = combinedTransformation(),
+            .transformation  = combinedTransformation(),
+            .viewportSize    = viewport.size(),
+            .viewportSizeInv = Vec2(1.0f) / viewport.size(),
         };
 
         frameData.renderEncoder->setVertexBytes(&params, sizeof(params), MTLBufferSlot_GlobalCBuffer);
@@ -671,29 +590,7 @@ int MetalPainter::prepareDrawCall()
         df &= ~DF_GlobalCBufferParams;
     }
 
-    if ((df bitand DF_SystemValueCBufferParams) == DF_SystemValueCBufferParams)
-    {
-        const auto viewport = currentViewport();
-
-        if (frameData.lastAppliedViewportToSystemValues != viewport)
-        {
-            const auto params = SystemValueCBufferParams{
-                .viewportSize    = viewport.size(),
-                .viewportSizeInv = Vec2(1.0f) / viewport.size(),
-            };
-
-            frameData.renderEncoder->setFragmentBytes(
-                &params,
-                sizeof(params),
-                CommonMetalInfo::userShaderParamsCBufferIndex);
-
-            frameData.lastAppliedViewportToSystemValues = viewport;
-        }
-
-        df &= ~DF_SystemValueCBufferParams;
-    }
-
-    if ((df bitand DF_SpriteImage) == DF_SpriteImage)
+    if ((df & DF_SpriteImage) == DF_SpriteImage)
     {
         if (const auto* image = spriteBatchImage())
         {
@@ -707,7 +604,7 @@ int MetalPainter::prepareDrawCall()
         df &= ~DF_SpriteImage;
     }
 
-    if ((df bitand DF_MeshImage) == DF_MeshImage)
+    if ((df & DF_MeshImage) == DF_MeshImage)
     {
         if (const auto* image = meshBatchImage())
         {
@@ -719,7 +616,7 @@ int MetalPainter::prepareDrawCall()
         df &= ~DF_MeshImage;
     }
 
-    if ((df bitand DF_UserShaderParams) == DF_UserShaderParams)
+    if ((df & DF_UserShaderParams) == DF_UserShaderParams)
     {
         if (auto& userShader = currentShader(currentBatchMode))
         {
@@ -760,25 +657,11 @@ void MetalPainter::flushSprites(
     GamePerformanceStats& stats,
     Rectangle             imageSizeAndInverse)
 {
-    auto& frameData = currentFrameData();
-
+    auto& frameData    = currentFrameData();
     auto* vertexBuffer = frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get();
+    auto* dstVertices  = static_cast<SpriteVertex*>(vertexBuffer->contents()) + frameData.spriteVertexCounter;
 
-    // Draw sprites
-    auto* dstVertices = static_cast<SpriteVertex*>(vertexBuffer->contents()) + frameData.spriteVertexCounter;
-
-    fillSpriteVertices(
-        dstVertices,
-        sprites,
-        imageSizeAndInverse,
-        false,
-        [](const Vec2& position, const Color& color, const Vec2& uv)
-        {
-            return SpriteVertex{
-                .positionAndUV = Vec4(position, uv),
-                .color         = color,
-            };
-        });
+    fillSpriteVertices<false>(dstVertices, sprites, imageSizeAndInverse);
 
     const auto vertexCount = sprites.size() * verticesPerSprite;
     const auto indexCount  = sprites.size() * indicesPerSprite;
@@ -851,11 +734,9 @@ void MetalPainter::createSpriteRenderingResources(MTL::Library* shaderLib)
 {
     // Shaders
     {
-        _spriteVS              = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_sprites"));
-        _defaultSpritePS       = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "ps_sprites_default"));
-        _monochromaticSpritePS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "ps_monochromatic"));
+        _spriteVS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_sprites"));
 
-        if (not _spriteVS or not _defaultSpritePS or not _monochromaticSpritePS)
+        if (not _spriteVS)
         {
             throw Error("Failed to create internal shaders.");
         }
@@ -888,9 +769,8 @@ void MetalPainter::createPolyRenderingResources(MTL::Library* shaderLib)
     // Shaders
     {
         _polyVS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_poly"));
-        _polyPS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "ps_poly"));
 
-        if (not _polyVS or not _polyPS)
+        if (not _polyVS)
         {
             throw Error("Failed to create internal shaders.");
         }
@@ -916,9 +796,8 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
     // Shaders
     {
         _meshVS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "vs_mesh"));
-        _meshPS = NS::TransferPtr(findMtlLibraryFunction(shaderLib, "ps_mesh"));
 
-        if (not _meshVS or not _meshPS)
+        if (not _meshVS)
         {
             throw Error("Failed to create internal shaders.");
         }

@@ -35,7 +35,7 @@ class MetalPainter final : public Painter::Impl
 
     void onAfterCanvasChanged(Image newCanvas, Maybe<Color> clearColor, Rectangle viewport) override;
 
-    void setScissorRects(Span<Rectangle> scissorRects) override;
+    void onSetScissorRects(Span<Rectangle> scissorRects) override;
 
     UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
 
@@ -45,9 +45,6 @@ class MetalPainter final : public Painter::Impl
         ImageFormat format,
         const void* data,
         bool        isStatic) override;
-
-    void readCanvasDataInto(const Image& canvas, u32 x, u32 y, u32 width, u32 height, void* destination)
-        override;
 
     void spriteQueueLimitReached() override;
 
@@ -152,15 +149,10 @@ class MetalPainter final : public Painter::Impl
     dispatch_semaphore_t _semaphore = nil;
 
     NS::SharedPtr<MTL::Function> _spriteVS;
-    NS::SharedPtr<MTL::Function> _defaultSpritePS;
-    NS::SharedPtr<MTL::Function> _monochromaticSpritePS;
-    NS::SharedPtr<MTL::Buffer>   _spriteIndexBuffer;
-
     NS::SharedPtr<MTL::Function> _polyVS;
-    NS::SharedPtr<MTL::Function> _polyPS;
-
     NS::SharedPtr<MTL::Function> _meshVS;
-    NS::SharedPtr<MTL::Function> _meshPS;
+
+    NS::SharedPtr<MTL::Buffer>   _spriteIndexBuffer;
 
 #if !TARGET_OS_IOS
     bool                 _isFrameCaptureRequested = false;

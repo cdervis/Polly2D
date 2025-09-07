@@ -60,26 +60,6 @@ vertex SpriteVSOutput vs_sprites(
     };
 }
 
-fragment float4 ps_sprites_default(
-    SpriteVSOutput   in [[stage_in]],
-    texture2d<float> spriteImage [[texture( MTLTextureSlot_SpriteImage )]],
-    sampler          spriteImageSampler [[sampler( MTLTextureSlot_SpriteImageSampler )]] )
-{
-    const float4 texValue = spriteImage.sample( spriteImageSampler, in.uv );
-
-    return texValue * in.color;
-}
-
-fragment float4 ps_monochromatic(
-    SpriteVSOutput   in [[stage_in]],
-    texture2d<float> spriteImage [[texture( MTLTextureSlot_SpriteImage )]],
-    sampler          spriteImageSampler [[sampler( MTLTextureSlot_SpriteImageSampler )]] )
-{
-    const float texValue = spriteImage.sample( spriteImageSampler, in.uv ).x;
-
-    return float4( 1.0, 1.0, 1.0, texValue ) * in.color;
-}
-
 // Meshes
 
 struct MeshVertex
@@ -109,15 +89,6 @@ vertex MeshVSOutput vs_mesh(
     };
 }
 
-fragment float4 ps_mesh(
-    MeshVSOutput     in [[stage_in]],
-    texture2d<float> meshImage [[texture( MTLTextureSlot_MeshImage )]],
-    sampler          imageSampler [[sampler( MTLTextureSlot_MeshImageSampler )]] )
-{
-    const auto texColor = meshImage.sample( imageSampler, in.uv );
-    return texColor * in.color;
-}
-
 // Polys
 
 // Same as vertex type in Tessellation2D.
@@ -144,9 +115,4 @@ vertex PolyVSOutput vs_poly(
         .position = params.transformation * vert.position,
         .color    = vert.color,
     };
-}
-
-fragment float4 ps_poly( PolyVSOutput in [[stage_in]] )
-{
-    return in.color;
 }

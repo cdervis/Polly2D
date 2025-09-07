@@ -22,9 +22,6 @@ MetalUserShader::MetalUserShader(
     auto& metalPainter = static_cast<MetalPainter&>(painter);
     auto* mtlDevice    = metalPainter.mtlDevice();
 
-    // Cast to non-const because NS::String::init() expects void*.
-    // This is fine, because it optionally frees the specified buffer.
-    // But since we pass false (don't free the buffer), it's a read-only operation.
     const auto metalSrcCodeStr = NS::String::alloc()->init(
         /*pBytes=*/metalSourceCode.data(),
         /*len=*/metalSourceCode.size(),

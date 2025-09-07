@@ -17,10 +17,12 @@ static constexpr auto shaderTypeSprite  = "sprite"_sv;
 static constexpr auto shaderTypePolygon = "polygon"_sv;
 static constexpr auto shaderTypeMesh    = "mesh"_sv;
 
-static constexpr auto svPixelPos             = "pl_pixelPos"_sv;
-static constexpr auto svPixelPosNormalized   = "pl_pixelPosNormalized"_sv;
-static constexpr auto svViewportSize         = "pl_viewportSize"_sv;
-static constexpr auto svViewportSizeInv      = "pl_viewportSizeInv"_sv;
+static constexpr auto svPixelPos           = "pl_pixelPos"_sv;
+static constexpr auto svPixelPosNormalized = "pl_pixelPosNormalized"_sv;
+static constexpr auto svTransformation     = "pl_transformation"_sv;
+static constexpr auto svViewportSize       = "pl_viewportSize"_sv;
+static constexpr auto svViewportSizeInv    = "pl_viewportSizeInv"_sv;
+
 static constexpr auto spriteBatchImageParam  = "pl_spriteImage"_sv;
 static constexpr auto spriteBatchColorAttrib = "pl_spriteColor"_sv;
 static constexpr auto spriteBatchUVAttrib    = "pl_spriteUV"_sv;
