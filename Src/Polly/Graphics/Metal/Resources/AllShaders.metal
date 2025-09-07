@@ -6,6 +6,8 @@ using namespace metal;
 struct SystemValuesCBuffer
 {
     float4x4 transformation;
+    float2 viewportSize;
+    float2 viewportSizeInv;
 };
 
 struct SpriteVertex

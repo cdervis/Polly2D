@@ -555,6 +555,13 @@ int MetalPainter::prepareDrawCall()
             NS::UInteger(0),
         };
 
+        // The vertex buffers start right after the painter's built-in cbuffers (such as system values).
+        static_assert(
+            spriteVerticesBufferSlot == systemValuesCBufferSlot + 1,
+            "The geometry vertex buffers must start right after any of the painter's built-in cbuffers.");
+
+        const auto startSlot = systemValuesCBufferSlot + 1;
+
         static_assert(
             spriteVerticesBufferSlot + 1 == polyVerticesBufferSlot
                 && polyVerticesBufferSlot + 1 == meshVerticesBufferSlot,
@@ -564,7 +571,7 @@ int MetalPainter::prepareDrawCall()
         frameData.renderEncoder->setVertexBuffers(
             buffers.data(),
             offsets.data(),
-            NS::Range(0, NS::UInteger(buffers.size())));
+            NS::Range(startSlot, NS::UInteger(buffers.size())));
 
         df &= ~DF_VertexBuffers;
     }
@@ -745,12 +752,15 @@ void MetalPainter::createSpriteRenderingResources(MTL::Library* shaderLib)
         {
             throw Error("Failed to create internal shaders.");
         }
+
+        _spriteVS->setLabel(NSStringLiteral("SpriteVertexShader"));
     }
 
     // Vertex buffer
     for (auto& data : _frameDatas)
     {
         data.spriteVertexBuffers.add(createSingleSpriteVertexBuffer());
+        data.spriteVertexBuffers.last()->setLabel(NSStringLiteral("SpriteVertexBuffer"));
     }
 
     // Index buffer
@@ -766,6 +776,8 @@ void MetalPainter::createSpriteRenderingResources(MTL::Library* shaderLib)
         {
             throw Error("Failed to create an index buffer.");
         }
+
+        _spriteIndexBuffer->setLabel(NSStringLiteral("SpriteIndexBuffer"));
     }
 }
 
@@ -779,6 +791,8 @@ void MetalPainter::createPolyRenderingResources(MTL::Library* shaderLib)
         {
             throw Error("Failed to create internal shaders.");
         }
+
+        _polyVS->setLabel(NSStringLiteral("PolyVertexShader"));
     }
 
     // Vertex buffer
@@ -793,6 +807,8 @@ void MetalPainter::createPolyRenderingResources(MTL::Library* shaderLib)
         {
             throw Error("Failed to create a vertex buffer.");
         }
+
+        data.polyVertexBuffer->setLabel(NSStringLiteral("PolyVertexBuffer"));
     }
 }
 
@@ -806,6 +822,8 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
         {
             throw Error("Failed to create internal shaders.");
         }
+
+        _meshVS->setLabel(NSStringLiteral("MeshVertexShader"));
     }
 
     for (auto& data : _frameDatas)
@@ -822,6 +840,8 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
             {
                 throw Error("Failed to create a vertex buffer.");
             }
+
+            data.meshVertexBuffer->setLabel(NSStringLiteral("MeshVertexBuffer"));
         }
 
         // Index buffer
@@ -836,6 +856,8 @@ void MetalPainter::createMeshRenderingResources(MTL::Library* shaderLib)
             {
                 throw Error("Failed to create an index buffer.");
             }
+
+            data.meshIndexBuffer->setLabel(NSStringLiteral("MeshIndexBuffer"));
         }
     }
 }
