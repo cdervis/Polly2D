@@ -24,7 +24,6 @@
 #include "Polly/Logging.hpp"
 #include "Polly/ShaderCompiler/MetalShaderGenerator.hpp"
 #include "Resources/MetalCppCommonStuff.hpp"
-#include <CommonMetalInfo.hpp>
 #include <Foundation/Foundation.hpp>
 #include <SDL3/SDL.h>
 #include <TargetConditionals.h>
@@ -426,7 +425,7 @@ void MetalPainter::spriteQueueLimitReached()
     frameData.renderEncoder->setVertexBuffer(
         frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get(),
         0,
-        MTLBufferSlot_SpriteVertices);
+        spriteVerticesBufferSlot);
 }
 
 void MetalPainter::requestFrameCapture()
@@ -544,20 +543,28 @@ int MetalPainter::prepareDrawCall()
 
     if ((df & DF_VertexBuffers) == DF_VertexBuffers)
     {
-        frameData.renderEncoder->setVertexBuffer(
+        const auto buffers = Array{
             frameData.spriteVertexBuffers[frameData.currentSpriteVertexBufferIndex].get(),
-            0,
-            MTLBufferSlot_SpriteVertices);
-
-        frameData.renderEncoder->setVertexBuffer(
             frameData.polyVertexBuffer.get(),
-            0,
-            MTLBufferSlot_PolyVertices);
-
-        frameData.renderEncoder->setVertexBuffer(
             frameData.meshVertexBuffer.get(),
-            0,
-            MTLBufferSlot_MeshVertices);
+        };
+
+        constexpr auto offsets = Array{
+            NS::UInteger(0),
+            NS::UInteger(0),
+            NS::UInteger(0),
+        };
+
+        static_assert(
+            spriteVerticesBufferSlot + 1 == polyVerticesBufferSlot
+                && polyVerticesBufferSlot + 1 == meshVerticesBufferSlot,
+            "The vertex buffers of MetalPainter should have consecutive slots. This allows us to bind them "
+            "all at once.");
+
+        frameData.renderEncoder->setVertexBuffers(
+            buffers.data(),
+            offsets.data(),
+            NS::Range(0, NS::UInteger(buffers.size())));
 
         df &= ~DF_VertexBuffers;
     }
@@ -570,7 +577,7 @@ int MetalPainter::prepareDrawCall()
     {
         frameData.renderEncoder->setFragmentSamplerState(
             _samplerStateCache[currentSampler()],
-            MTLTextureSlot_SpriteImageSampler);
+            spriteImageTextureSlot);
 
         df &= ~DF_Sampler;
     }
@@ -585,7 +592,7 @@ int MetalPainter::prepareDrawCall()
             .viewportSizeInv = Vec2(1.0f) / viewport.size(),
         };
 
-        frameData.renderEncoder->setVertexBytes(&params, sizeof(params), MTLBufferSlot_GlobalCBuffer);
+        frameData.renderEncoder->setVertexBytes(&params, sizeof(params), systemValuesCBufferSlot);
 
         df &= ~DF_GlobalCBufferParams;
     }
@@ -595,9 +602,7 @@ int MetalPainter::prepareDrawCall()
         if (const auto* image = spriteBatchImage())
         {
             const auto& metalImage = static_cast<const MetalImage&>(*image);
-
-            frameData.renderEncoder->setFragmentTexture(metalImage.mtlTexture(), MTLTextureSlot_SpriteImage);
-
+            frameData.renderEncoder->setFragmentTexture(metalImage.mtlTexture(), spriteImageTextureSlot);
             ++perfStats.textureChangeCount;
         }
 
@@ -609,8 +614,8 @@ int MetalPainter::prepareDrawCall()
         if (const auto* image = meshBatchImage())
         {
             const auto& metalImage = static_cast<const MetalImage&>(*image);
-
-            frameData.renderEncoder->setFragmentTexture(metalImage.mtlTexture(), MTLTextureSlot_MeshImage);
+            frameData.renderEncoder->setFragmentTexture(metalImage.mtlTexture(), meshImageTextureSlot);
+            ++perfStats.textureChangeCount;
         }
 
         df &= ~DF_MeshImage;
@@ -631,7 +636,7 @@ int MetalPainter::prepareDrawCall()
                 frameData.renderEncoder->setFragmentBuffer(
                     allocation.buffer,
                     allocation.bindOffset,
-                    CommonMetalInfo::userShaderParamsCBufferIndex);
+                    userShaderParamsCBufferSlot);
 
                 frameData.lastBoundUserShaderParamsCBuffer = allocation.buffer;
             }
@@ -640,7 +645,7 @@ int MetalPainter::prepareDrawCall()
                 // Only update offset, because the buffer is already bound.
                 frameData.renderEncoder->setFragmentBufferOffset(
                     allocation.bindOffset,
-                    CommonMetalInfo::userShaderParamsCBufferIndex);
+                    userShaderParamsCBufferSlot);
             }
 
             shaderImpl.clearDirtyScalarParameters();

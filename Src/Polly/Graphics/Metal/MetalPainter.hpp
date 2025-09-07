@@ -21,6 +21,17 @@ class MetalWindow;
 class MetalPainter final : public Painter::Impl
 {
   public:
+    // The MetalPainter defines which resources are bound to which slots.
+    // These have to be kept in sync with the built-in Metal shaders (AllShaders.metal).
+    static constexpr auto systemValuesCBufferSlot     = 0; // [buffer(0)]
+    static constexpr auto spriteVerticesBufferSlot    = 1; // [buffer(1)]
+    static constexpr auto polyVerticesBufferSlot      = 2; // [buffer(2)]
+    static constexpr auto meshVerticesBufferSlot      = 3; // [buffer(3)]
+    static constexpr auto userShaderParamsCBufferSlot = 4; // [buffer(4)]
+    static constexpr auto spriteImageTextureSlot      = 0; // [texture(0)]
+    static constexpr auto meshImageTextureSlot        = 1; // [texture(1)]
+    static constexpr auto imageSamplerSlot            = 0; // [sampler(0)]
+
     explicit MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& performanceStats);
 
     DeleteCopyAndMove(MetalPainter);
@@ -152,7 +163,7 @@ class MetalPainter final : public Painter::Impl
     NS::SharedPtr<MTL::Function> _polyVS;
     NS::SharedPtr<MTL::Function> _meshVS;
 
-    NS::SharedPtr<MTL::Buffer>   _spriteIndexBuffer;
+    NS::SharedPtr<MTL::Buffer> _spriteIndexBuffer;
 
 #if !TARGET_OS_IOS
     bool                 _isFrameCaptureRequested = false;
