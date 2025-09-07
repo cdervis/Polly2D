@@ -248,16 +248,14 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
 
 #ifdef polly_have_gfx_metal
 
-        const auto& metalImage = static_cast<const Polly::MetalImage&>(*page.atlas.impl());
+        const auto& metalImage = static_cast<const MetalImage&>(*page.atlas.impl());
         auto*       mtlTexture = metalImage.mtlTexture();
-
-        const auto rowPitch = imageRowPitch(metalImage.width(), metalImage.format());
 
         mtlTexture->replaceRegion(
             MTL::Region(xInPage, yInPage, bitmapWidth, bitmapHeight),
             0,
             _glyphBufferRGBA.data(),
-            rowPitch);
+            imageRowPitch(bitmapWidth, metalImage.format()));
 
 #elif polly_have_gfx_d3d11
 
