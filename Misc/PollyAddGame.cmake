@@ -59,8 +59,6 @@ function(polly_add_game)
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin
     )
 
-    get_target_property(target_type Polly TYPE)
-
     file(GLOB_RECURSE asset_files CONFIGURE_DEPENDS "${assets_dir}/[^.]*")
 
     list(LENGTH asset_files asset_count)

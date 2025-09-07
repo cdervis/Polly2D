@@ -34,12 +34,6 @@ if (POLLY_ENABLE_ADDRESS_SANITIZER AND NOT MSVC)
 endif ()
 
 function(enable_default_cpp_flags target_name)
-    set_target_properties(
-        ${target_name}
-        PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${polly_binary_dir}/bin
-        LIBRARY_OUTPUT_DIRECTORY ${polly_binary_dir}/bin
-        RUNTIME_OUTPUT_DIRECTORY ${polly_binary_dir}/bin)
-
     if (MSVC)
         # Warning level 4, warnings as errors etc.
         target_compile_options(${target_name} PRIVATE /W4 /WX /MP /utf-8)
