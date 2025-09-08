@@ -20,8 +20,6 @@ class MouseCursor::Impl final : public Object
   public:
     explicit Impl(MouseCursorType type);
 
-    explicit Impl(u32 width, u32 height, u32 hotspotX, u32 hotspotY, Span<Color> data);
-
     ~Impl() noexcept override;
 
     static SDL_Cursor* demandCreateSdlCursorForType(MouseCursorType type);

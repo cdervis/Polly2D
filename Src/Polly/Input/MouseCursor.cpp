@@ -16,10 +16,4 @@ MouseCursor::MouseCursor(MouseCursorType type)
 {
     setImpl(*this, makeUnique<Impl>(type).release());
 }
-
-MouseCursor::MouseCursor(u32 width, u32 height, u32 hotspotX, u32 hotspotY, Span<Color> data)
-    : MouseCursor()
-{
-    setImpl(*this, makeUnique<Impl>(width, height, hotspotX, hotspotY, data).release());
-}
 } // namespace Polly

@@ -67,17 +67,6 @@ MouseCursor::Impl::Impl(MouseCursorType type)
     _sdlCursor = demandCreateSdlCursorForType(type);
 }
 
-MouseCursor::Impl::Impl(
-    [[maybe_unused]] u32         width,
-    [[maybe_unused]] u32         height,
-    [[maybe_unused]] u32         hotspotX,
-    [[maybe_unused]] u32         hotspotY,
-    [[maybe_unused]] Span<Color> data)
-{
-    // TODO:
-    notImplemented();
-}
-
 MouseCursor::Impl::~Impl() noexcept
 {
     if (_type)
