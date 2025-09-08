@@ -4,7 +4,7 @@
 
 <p><img title="Polly logo" src="Docs/assets/images/logo.svg" width="160" height="160"></p>
 
-2D C++ Game Framework for Minimalists
+Minimalistic 2D C++ Game Framework
 
 [![Homepage](https://img.shields.io/badge/Homepage-polly2d.org-blue)](https://polly2d.org) &nbsp;
 [![Homepage](https://img.shields.io/badge/Get%20Started-29B24F)](#getting-started) &nbsp;

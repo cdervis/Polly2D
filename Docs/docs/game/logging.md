@@ -7,7 +7,7 @@ On Windows with Visual Studio, this would be the Output Window. On Android, this
 Example:
 
 ```cpp
-logInfo("Hello {}!", "World");        // Hello World!
+logInfo("Hello {}!", "World");          // Hello World!
 logInfo("Numbers: {}", Array{1, 2, 3}); // Numbers: [1; 2; 3]
 ```
 

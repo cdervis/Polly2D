@@ -1,5 +1,5 @@
 module.exports = {
-    siteTitle: 'Polly - 2D C++ Game Framework for Minimalists',
+    siteTitle: 'Polly - Minimalistic 2D C++ Game Framework',
     siteUrl: 'https://polly2d.org',
 
     logo: {

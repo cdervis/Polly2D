@@ -1,10 +1,11 @@
 ---
+title: Home
 toc: none
 ---
 
 <h1 class="main-title" style="text-align: center">Polly</h1>
 
-<p class="sub-title center-text" style="font-size: 120%">2D C++ Game Framework for Minimalists</p>
+<p class="sub-title center-text" style="font-size: 120%">Minimalistic 2D C++ Game Framework</p>
 
 ![cover](/assets/images/logo256.png){width=150 .align-center}
 
@@ -18,7 +19,9 @@ Polly is a framework that makes it easy to get started with C++ 2D game developm
 </div>
 -->
 
-![Polly Demo Browser](/assets/images/cover-1.webp){.align-center width=1000}
+![Polly Demo Browser](/assets/images/cover-1.webp){.align-center width=800}
+
+## Example
 
 ```cpp
 #include "Polly.hpp"
