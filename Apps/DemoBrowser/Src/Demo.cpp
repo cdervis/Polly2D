@@ -6,7 +6,7 @@ Demo::Demo(String name, DemoBrowser* browser)
 {
 }
 
-void Demo::tick(GameTime time)
+void Demo::update(GameTime time)
 {
     // A demo does nothing by default.
 }
@@ -16,7 +16,7 @@ void Demo::draw(Painter painter)
     // A demo draws nothing by default.
 }
 
-void Demo::doImGui(ImGui imgui)
+void Demo::onImGui(ImGui imgui)
 {
     // A demo does not do ImGui by default.
 }

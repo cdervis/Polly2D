@@ -7,7 +7,7 @@ SpritesDemo::SpritesDemo(DemoBrowser* browser)
 {
 }
 
-void SpritesDemo::tick(GameTime time)
+void SpritesDemo::update(GameTime time)
 {
     if (_rotate)
     {
@@ -57,7 +57,7 @@ void SpritesDemo::draw(Painter painter)
         });
 }
 
-void SpritesDemo::doImGui(ImGui imgui)
+void SpritesDemo::onImGui(ImGui imgui)
 {
     imgui.colorEdit("Color", _imageColor);
     imgui.checkbox("Alpha Blending", _enableAlphaBlending);

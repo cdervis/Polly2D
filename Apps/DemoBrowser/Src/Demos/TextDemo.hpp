@@ -9,7 +9,7 @@ class TextDemo final : public Demo
 
     void draw(Painter painter) override;
 
-    void doImGui(ImGui imgui) override;
+    void onImGui(ImGui imgui) override;
 
   private:
     enum class DemoTextDecoration

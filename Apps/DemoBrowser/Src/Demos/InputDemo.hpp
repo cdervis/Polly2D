@@ -9,11 +9,11 @@ class InputDemo final : public Demo
 
     ~InputDemo() noexcept override;
 
-    void tick(GameTime time) override;
+    void update(GameTime time) override;
 
     void draw(Painter painter) override;
 
-    void doImGui(ImGui imgui) override;
+    void onImGui(ImGui imgui) override;
 
   private:
     void onKeyPressed(KeyEvent e) override;

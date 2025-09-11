@@ -13,11 +13,11 @@ class Demo
 
     virtual ~Demo() noexcept = default;
 
-    virtual void tick(GameTime time);
+    virtual void update(GameTime time);
 
     virtual void draw(Painter painter);
 
-    virtual void doImGui(ImGui imgui);
+    virtual void onImGui(ImGui imgui);
 
     virtual Maybe<Vec2> preferredWindowSize() const;
 

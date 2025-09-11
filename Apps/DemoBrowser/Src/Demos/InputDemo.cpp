@@ -14,7 +14,7 @@ InputDemo::~InputDemo() noexcept
     browser().window().setIsLogVisible(false);
 }
 
-void InputDemo::tick([[maybe_unused]] GameTime time)
+void InputDemo::update([[maybe_unused]] GameTime time)
 {
     _mousePos       = currentMousePosition();
     _mouseMoveDelta = currentMousePositionDelta();
@@ -184,7 +184,7 @@ void InputDemo::draw(Painter painter)
     }
 }
 
-void InputDemo::doImGui(ImGui imgui)
+void InputDemo::onImGui(ImGui imgui)
 {
     // Show some dynamic information in the sidebar.
     imgui.text("Mouse Position: %.1f; %.1f", _mousePos.x, _mousePos.y);
