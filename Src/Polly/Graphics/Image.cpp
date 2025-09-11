@@ -140,7 +140,7 @@ void Image::clear(Color color, bool shouldUpdateImmediately)
             "updates. Please pass false to 'shouldUpdateImmediately'.");
     }
 
-    const auto data = List(impl->width() * impl->height(), R8G8B8A8(color));
+    const auto data = List<R8G8B8A8>(impl->width() * impl->height(), R8G8B8A8(color));
 
     impl->updateData(0, 0, impl->width(), impl->height(), data.data(), shouldUpdateImmediately);
 }
