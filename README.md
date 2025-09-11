@@ -100,11 +100,10 @@ Polly is able to run on the following platforms:
 - Windows x64 & ARM64
 - Linux x64 & ARM64 (Ubuntu, Fedora, Debian)
 - Linux RISC-V (StarFive VisionFive board, Debian)
-- macOS 13 Ventura (released in 2022)
-- iOS 16 (released in 2022)
-- Android (all ABIs) [Porting WIP]
-
-Porting Polly to the web is trivial, but will only be done if there's enough interest.
+- macOS 13+ (released in 2022)
+- iOS 16+ (released in 2022)
+- Android 8.0+ (all ABIs) [Porting WIP]
+- Web [Porting WIP]
 
 ### Compiler requirements
 
