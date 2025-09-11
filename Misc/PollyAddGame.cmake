@@ -151,7 +151,7 @@ function(polly_add_game)
         if (${asset_count} GREATER 0)
             add_custom_target(${target_name}_CopyAssets ALL
                 COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${target_name}>
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset_archive_filename} $<TARGET_FILE_DIR:${target_name}>/
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${asset_archive_filename} $<TARGET_FILE_DIR:${target_name}>
                 DEPENDS ${asset_archive_filename}
                 COMMENT "Copying asset archive to $<TARGET_FILE_DIR:${target_name}>"
             )
@@ -163,12 +163,6 @@ function(polly_add_game)
                 FOLDER "Polly"
             )
         endif ()
-    endif ()
-
-    if (polly_FOUND)
-        add_custom_command(
-            POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${polly_LIBRARY_LOCATION} $<TARGET_FILE_DIR:${target_name}>
-        )
     endif ()
 
     set(game_src_files_dir ${current_src_dir}/Src)
