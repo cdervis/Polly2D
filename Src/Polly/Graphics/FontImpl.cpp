@@ -238,7 +238,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
             }
         }
 
-#ifdef polly_have_gfx_metal
+#if defined(polly_have_gfx_metal) || defined(polly_have_gfx_opengl)
 
         page.atlas.updateData(xInPage, yInPage, bitmapWidth, bitmapHeight, _glyphBufferRGBA.data(), true);
 
@@ -266,40 +266,6 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
             _glyphBufferRGBA.data(),
             bitmapWidth * sizeof(R8G8B8A8),
             bitmapWidth * bitmapHeight * sizeof(R8G8B8A8));
-
-#elif polly_have_gfx_opengl
-
-        auto& openGLImage     = static_cast<const Polly::OpenGLImage&>(*page.atlas.impl());
-        auto  textureHandleGL = openGLImage.textureHandleGL();
-
-        auto previousTexture = GLint();
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTexture);
-
-        if (GLuint(previousTexture) != textureHandleGL)
-        {
-            glBindTexture(GL_TEXTURE_2D, textureHandleGL);
-        }
-
-        defer
-        {
-            if (GLuint(previousTexture) != textureHandleGL)
-            {
-                glBindTexture(GL_TEXTURE_2D, GLuint(previousTexture));
-            }
-        };
-
-        const auto formatTriplet = openGLImage.formatTriplet();
-
-        glTexSubImage2D(
-            GL_TEXTURE_2D,
-            0,
-            xInPage,
-            yInPage,
-            bitmapWidth,
-            bitmapHeight,
-            formatTriplet.baseFormat,
-            formatTriplet.type,
-            _glyphBufferRGBA.data());
 
 #elif polly_have_gfx_vulkan
 

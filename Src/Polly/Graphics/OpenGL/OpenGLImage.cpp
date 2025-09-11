@@ -37,12 +37,12 @@ static Maybe<GLenum> convert(ImageFilter filter)
 
 OpenGLImage::OpenGLImage(
     Painter::Impl& painter,
+    ImageUsage     usage,
     u32            width,
     uint32_t       height,
     ImageFormat    format,
-    const void*    data,
-    bool           isStatic)
-    : Impl(painter, false, width, height, format)
+    const void*    data)
+    : Impl(painter, usage, width, height, format, false)
 {
     auto previousTextureHandle = GLint();
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTextureHandle);
@@ -52,23 +52,29 @@ OpenGLImage::OpenGLImage(
         glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(previousTextureHandle));
     };
 
-    createOpenGLTexture(data, isStatic);
+    glGenTextures(1, &_textureHandleGL);
 
-    verifyOpenGLState();
-}
-
-OpenGLImage::OpenGLImage(Painter::Impl& painter, uint32_t width, uint32_t height, ImageFormat format)
-    : Impl(painter, true, width, height, format)
-{
-    auto previousTextureHandle = GLint();
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTextureHandle);
-
-    defer
+    if (_textureHandleGL == 0)
     {
-        glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(previousTextureHandle));
-    };
+        throw Error("Failed to create an OpenGL texture handle.");
+    }
 
-    createOpenGLTexture(nullptr, false);
+    _formatTriplet = *convertImageFormat(format);
+
+    glBindTexture(GL_TEXTURE_2D, _textureHandleGL);
+
+    applySampler(Sampler(), true);
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        _formatTriplet.internalFormat,
+        GLsizei(width),
+        GLsizei(height),
+        0,
+        _formatTriplet.baseFormat,
+        _formatTriplet.type,
+        data);
 
     glGenFramebuffers(1, &_framebufferHandleGL);
 
@@ -137,30 +143,49 @@ void OpenGLImage::applySampler(Sampler sampler, bool force)
     _lastAppliedSampler = sampler;
 }
 
-void OpenGLImage::createOpenGLTexture([[maybe_unused]] const void* data, [[maybe_unused]] bool isStatic)
+void OpenGLImage::updateData(
+    u32                   x,
+    u32                   y,
+    u32                   width,
+    u32                   height,
+    const void*           data,
+    [[maybe_unused]] bool shouldUpdateImmediately)
 {
-    glGenTextures(1, &_textureHandleGL);
+    auto previousTexture = GLint();
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTexture);
 
-    if (_textureHandleGL == 0)
+    if (GLuint(previousTexture) != _textureHandleGL)
     {
-        throw Error("Failed to create an OpenGL texture handle.");
+        glBindTexture(GL_TEXTURE_2D, _textureHandleGL);
     }
 
-    _formatTriplet = *convertImageFormat(format());
+    defer
+    {
+        if (GLuint(previousTexture) != _textureHandleGL)
+        {
+            glBindTexture(GL_TEXTURE_2D, GLuint(previousTexture));
+        }
+    };
 
-    glBindTexture(GL_TEXTURE_2D, _textureHandleGL);
-
-    applySampler(Sampler(), true);
-
-    glTexImage2D(
+    glTexSubImage2D(
         GL_TEXTURE_2D,
         0,
-        _formatTriplet.internalFormat,
-        GLsizei(width()),
-        GLsizei(height()),
-        0,
+        GLint(x),
+        GLint(y),
+        GLsizei(width),
+        GLsizei(height),
         _formatTriplet.baseFormat,
         _formatTriplet.type,
         data);
+}
+
+void OpenGLImage::updateFromEnqueuedData(
+    [[maybe_unused]] u32         x,
+    [[maybe_unused]] u32         y,
+    [[maybe_unused]] u32         width,
+    [[maybe_unused]] u32         height,
+    [[maybe_unused]] const void* data)
+{
+    // Nothing to do in OpenGL.
 }
 } // namespace Polly

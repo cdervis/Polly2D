@@ -241,6 +241,8 @@ void OpenGLPainter::onSetScissorRects([[maybe_unused]] Span<Rectangle> scissorRe
     {
         glEnable(GL_SCISSOR_TEST);
 
+        const auto viewport = currentViewport();
+
         if (scissorRects.size() > 1)
         {
             assume(glScissorArrayv);
@@ -255,10 +257,10 @@ void OpenGLPainter::onSetScissorRects([[maybe_unused]] Span<Rectangle> scissorRe
 
             for (const auto& rect : scissorRects)
             {
-                list.add(static_cast<GLint>(rect.x));
-                list.add(static_cast<GLint>(rect.y));
-                list.add(static_cast<GLint>(rect.width));
-                list.add(static_cast<GLint>(rect.height));
+                list.add(GLint(rect.x));
+                list.add(GLint(viewport.height) - GLint(rect.height) - GLint(rect.y));
+                list.add(GLint(rect.width));
+                list.add(GLint(rect.height));
             }
 
             glScissorArrayv(0, static_cast<GLsizei>(scissorRects.size()), list.data());
@@ -268,27 +270,22 @@ void OpenGLPainter::onSetScissorRects([[maybe_unused]] Span<Rectangle> scissorRe
             const auto rect = scissorRects.first();
 
             glScissor(
-                static_cast<GLint>(rect.x),
-                static_cast<GLint>(rect.y),
-                static_cast<GLsizei>(rect.width),
-                static_cast<GLsizei>(rect.height));
+                GLint(rect.x),
+                GLint(viewport.height) - GLint(rect.height) - GLint(rect.y),
+                GLsizei(rect.width),
+                GLsizei(rect.height));
         }
     }
 }
 
-UniquePtr<Image::Impl> OpenGLPainter::createCanvas(u32 width, u32 height, ImageFormat format)
-{
-    return makeUnique<OpenGLImage>(*this, width, height, format);
-}
-
 UniquePtr<Image::Impl> OpenGLPainter::createImage(
+    ImageUsage  usage,
     u32         width,
     u32         height,
     ImageFormat format,
-    const void* data,
-    bool        isStatic)
+    const void* data)
 {
-    return makeUnique<OpenGLImage>(*this, width, height, format, data, isStatic);
+    return makeUnique<OpenGLImage>(*this, usage, width, height, format, data);
 }
 
 UniquePtr<Shader::Impl> OpenGLPainter::onCreateNativeUserShader(
