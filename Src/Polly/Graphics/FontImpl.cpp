@@ -238,75 +238,9 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
             }
         }
 
-#ifdef polly_have_gfx_metal
+#if defined(polly_have_gfx_metal) || defined(polly_have_gfx_opengl) || defined(polly_have_gfx_d3d11)
 
-        const auto& metalImage = static_cast<const MetalImage&>(*page.atlas.impl());
-        auto*       mtlTexture = metalImage.mtlTexture();
-
-        mtlTexture->replaceRegion(
-            MTL::Region(xInPage, yInPage, bitmapWidth, bitmapHeight),
-            0,
-            _glyphBufferRGBA.data(),
-            imageRowPitch(bitmapWidth, metalImage.format()));
-
-#elif polly_have_gfx_d3d11
-
-        auto& painterImpl  = *Painter::Impl::instance();
-        auto& d3d11Painter = static_cast<D3D11Painter&>(painterImpl);
-
-        auto& d3d11Image    = static_cast<const D3D11Image&>(*page.atlas.impl());
-        auto* id3d11Texture = d3d11Image.id3d11Texture2D();
-
-        const auto updateBox = D3D11_BOX{
-            .left   = UINT(xInPage),
-            .top    = UINT(yInPage),
-            .front  = 0,
-            .right  = UINT(xInPage + bitmapWidth),
-            .bottom = UINT(yInPage + bitmapHeight),
-            .back   = 1,
-        };
-
-        d3d11Painter.id3d11Context()->UpdateSubresource(
-            id3d11Texture,
-            0,
-            &updateBox,
-            _glyphBufferRGBA.data(),
-            bitmapWidth * sizeof(R8G8B8A8),
-            bitmapWidth * bitmapHeight * sizeof(R8G8B8A8));
-
-#elif polly_have_gfx_opengl
-
-        auto& openGLImage     = static_cast<const Polly::OpenGLImage&>(*page.atlas.impl());
-        auto  textureHandleGL = openGLImage.textureHandleGL();
-
-        auto previousTexture = GLint();
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &previousTexture);
-
-        if (GLuint(previousTexture) != textureHandleGL)
-        {
-            glBindTexture(GL_TEXTURE_2D, textureHandleGL);
-        }
-
-        defer
-        {
-            if (GLuint(previousTexture) != textureHandleGL)
-            {
-                glBindTexture(GL_TEXTURE_2D, GLuint(previousTexture));
-            }
-        };
-
-        const auto formatTriplet = openGLImage.formatTriplet();
-
-        glTexSubImage2D(
-            GL_TEXTURE_2D,
-            0,
-            xInPage,
-            yInPage,
-            bitmapWidth,
-            bitmapHeight,
-            formatTriplet.baseFormat,
-            formatTriplet.type,
-            _glyphBufferRGBA.data());
+        page.atlas.updateData(xInPage, yInPage, bitmapWidth, bitmapHeight, _glyphBufferRGBA.data(), true);
 
 #elif polly_have_gfx_vulkan
 
@@ -447,7 +381,7 @@ void Font::Impl::appendNewPage()
         .width  = width,
         .height = height,
         .pack   = BinPack(width, height),
-        .atlas  = Image(width, height, ImageFormat::R8G8B8A8UNorm, nullptr, false),
+        .atlas  = Image(ImageUsage::Updatable, width, height, ImageFormat::R8G8B8A8UNorm, nullptr),
     };
 
     const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());

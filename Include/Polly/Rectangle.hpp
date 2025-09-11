@@ -109,6 +109,10 @@ struct Rectangle
     /// Gets the size of the rectangle as a vector.
     Vec2 size() const;
 
+    /// Gets a version of this rectangle that is clamped to the bounds of a specific rectangle.
+    [[nodiscard]]
+    Rectangle clampedTo(Rectangle other) const;
+
     DefineDefaultEqualityOperations(Rectangle);
 
     float x      = 0.0f;

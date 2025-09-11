@@ -16,7 +16,7 @@ BackgroundStars::BackgroundStars()
 
     constexpr auto pixelColor = Array<u8, 4>{255, 255, 255, 255};
 
-    _starImage = Image(1, 1, ImageFormat::R8G8B8A8UNorm, pixelColor.data());
+    _starImage = Image(ImageUsage::Immutable, 1, 1, ImageFormat::R8G8B8A8UNorm, pixelColor.data());
 
     // Spawn some initial stars.
     for (auto i = 0u; i < maxStarCount; ++i)

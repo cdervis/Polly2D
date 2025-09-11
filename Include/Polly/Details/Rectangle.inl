@@ -113,12 +113,37 @@ inline Rectangle Rectangle::scaled(const Vec2& scale) const
 
 inline Vec2 Rectangle::position() const
 {
-    return {x, y};
+    return Vec2(x, y);
 }
 
 inline Vec2 Rectangle::size() const
 {
-    return {width, height};
+    return Vec2(width, height);
+}
+
+inline Rectangle Rectangle::clampedTo(Rectangle other) const
+{
+    auto result = *this;
+
+    result.x = max(result.x, other.x);
+
+    const auto rightDiff = result.right() - other.right();
+
+    if (rightDiff > 0.0f)
+    {
+        result.width -= rightDiff;
+    }
+
+    result.y = max(result.y, other.y);
+
+    const auto bottomDiff = result.bottom() - other.bottom();
+
+    if (bottomDiff > 0.0f)
+    {
+        result.height -= bottomDiff;
+    }
+
+    return result;
 }
 
 inline bool Rectangle::contains(const Vec2& point) const

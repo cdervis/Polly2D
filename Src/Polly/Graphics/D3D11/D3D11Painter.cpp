@@ -167,19 +167,14 @@ void D3D11Painter::onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGui
     resetCurrentStates();
 }
 
-UniquePtr<Image::Impl> D3D11Painter::createCanvas(u32 width, u32 height, ImageFormat format)
-{
-    return makeUnique<D3D11Image>(*this, width, height, format);
-}
-
 UniquePtr<Image::Impl> D3D11Painter::createImage(
+    ImageUsage  usage,
     u32         width,
     u32         height,
     ImageFormat format,
-    const void* data,
-    bool        isStatic)
+    const void* data)
 {
-    return makeUnique<D3D11Image>(*this, width, height, format, data, isStatic);
+    return makeUnique<D3D11Image>(*this, usage, width, height, format, data);
 }
 
 UniquePtr<Shader::Impl> D3D11Painter::onCreateNativeUserShader(
@@ -695,6 +690,7 @@ PainterCapabilities D3D11Painter::determineCapabilities() const
 
     caps.maxCanvasWidth  = caps.maxImageExtent;
     caps.maxCanvasHeight = caps.maxImageExtent;
+    caps.maxScissorRects = 16;
 
     return caps;
 }

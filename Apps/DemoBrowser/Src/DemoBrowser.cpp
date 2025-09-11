@@ -1,6 +1,8 @@
 #include "DemoBrowser.hpp"
 
+#include "Demos/DynamicImageDemo.hpp"
 #include "Demos/InputDemo.hpp"
+#include "Demos/ScissorRectsDemo.hpp"
 #include "Demos/ShadersDemo.hpp"
 #include "Demos/SpineDemo.hpp"
 #include "Demos/SpritesDemo.hpp"
@@ -20,7 +22,7 @@ void DemoBrowser::onStartedRunning()
 
 void DemoBrowser::update(GameTime time)
 {
-    _currentDemo->tick(time);
+    _currentDemo->update(time);
 }
 
 void DemoBrowser::draw(Painter painter)
@@ -162,7 +164,7 @@ void DemoBrowser::onImGui(ImGui imgui)
         imgui.spacing();
         imgui.newLine();
 
-        _currentDemo->doImGui(imgui);
+        _currentDemo->onImGui(imgui);
     }
 
     imgui.endGroup();
@@ -184,6 +186,8 @@ void DemoBrowser::createFactoryFunctions()
         CREATE_DEMO(TextDemo),
         CREATE_DEMO(InputDemo),
         CREATE_DEMO(ShadersDemo),
+        CREATE_DEMO(DynamicImageDemo),
+        CREATE_DEMO(ScissorRectsDemo),
     };
 }
 

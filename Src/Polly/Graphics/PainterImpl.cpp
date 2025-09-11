@@ -233,12 +233,12 @@ UniquePtr<Shader::Impl> Painter::Impl::createUserShader(StringView sourceCode, S
     return shader;
 }
 
-void Painter::Impl::notifyShaderParamAboutToChangeWhileBound(const Shader::Impl& shaderImpl)
+void Painter::Impl::notifyShaderParamAboutToChangeWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
 {
     flush();
 }
 
-void Painter::Impl::notifyShaderParamHasChangedWhileBound(const Shader::Impl& shaderImpl)
+void Painter::Impl::notifyShaderParamHasChangedWhileBound([[maybe_unused]] const Shader::Impl& shaderImpl)
 {
     auto& frameData = _frameData[_currentFrameIndex];
     frameData.dirtyFlags |= DF_UserShaderParams;
@@ -295,6 +295,23 @@ void Painter::Impl::startFrame()
     assume(_maxFramesInFlight > 0);
 
     resetCurrentStates();
+
+    setScissorRects({});
+
+    for (auto& imageToUpdate : _imagesToUpdateQueue)
+    {
+        auto& imageImpl = *imageToUpdate.image.impl();
+
+        imageImpl.updateFromEnqueuedData(
+            imageToUpdate.x,
+            imageToUpdate.y,
+            imageToUpdate.width,
+            imageToUpdate.height,
+            imageToUpdate.data);
+    }
+
+    _imagesToUpdateQueue.clear();
+    _arenaAllocator.reset();
 
     onFrameStarted();
 
@@ -380,13 +397,34 @@ void Painter::Impl::setScissorRects(Span<Rectangle> scissorRects)
             _capabilities.maxScissorRects));
     }
 
-    if (areContainersEqual(scissorRects, _currentScissorRects))
+    const auto viewport = _viewport;
+
+    for (auto index = 0u; const auto& rect : scissorRects)
     {
-        return;
+        if (rect.x < viewport.x
+            || rect.y < viewport.y
+            || rect.x > viewport.right()
+            || rect.y > viewport.bottom())
+        {
+            throw Error(formatString(
+                "The scissor rectangle at index {} (x={}; y={}; width={}; height={}) exceeds the bounds of "
+                "the current viewport (x={}; y={}; width={}; height={}). Scissor rectangles must always be "
+                "within the viewport's bounds.",
+                index,
+                rect.x,
+                rect.y,
+                rect.width,
+                rect.height,
+                viewport.x,
+                viewport.y,
+                viewport.width,
+                viewport.height));
+        }
+
+        ++index;
     }
 
     onSetScissorRects(scissorRects);
-    _currentScissorRects.assign(scissorRects);
 }
 
 const Matrix& Painter::Impl::transformation() const
@@ -501,14 +539,14 @@ void Painter::Impl::pushStringToQueue(
     doInternalPushTextToQueue(tmpGlyphs, tmpDecorationRects, position, color);
 }
 
-void Painter::Impl::pushTextToQueue(const Text& text, Vec2 position, const Color& color)
+void Painter::Impl::pushTextToQueue(Text text, Vec2 position, Color color)
 {
     assume(text);
     const auto& textImpl = *text.impl();
     doInternalPushTextToQueue(textImpl.glyphs(), textImpl.decorationRects(), position, color);
 }
 
-void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
+void Painter::Impl::pushParticlesToQueue(ParticleSystem particleSystem)
 {
     const auto  previousBlendState = _currentBlendState;
     const auto& particleSystemImpl = *particleSystem.impl();
@@ -556,11 +594,7 @@ void Painter::Impl::pushParticlesToQueue(const ParticleSystem& particleSystem)
 }
 
 template<bool PrepareBatchMode>
-void Painter::Impl::fillRectangleUsingSprite(
-    const Rectangle& rectangle,
-    const Color&     color,
-    Radians          rotation,
-    const Vec2&      origin)
+void Painter::Impl::fillRectangleUsingSprite(Rectangle rectangle, Color color, Radians rotation, Vec2 origin)
 {
     drawSprite<false, PrepareBatchMode, true>(Sprite{
         .image    = _whiteImage,
@@ -573,7 +607,7 @@ void Painter::Impl::fillRectangleUsingSprite(
     });
 }
 
-void Painter::Impl::drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth)
+void Painter::Impl::drawLine(Vec2 start, Vec2 end, Color color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -591,9 +625,9 @@ void Painter::Impl::drawLine(Vec2 start, Vec2 end, const Color& color, float str
 }
 
 void Painter::Impl::drawLinePath(
-    [[maybe_unused]] Span<Line>   lines,
-    [[maybe_unused]] const Color& color,
-    [[maybe_unused]] float        strokeWidth)
+    [[maybe_unused]] Span<Line> lines,
+    [[maybe_unused]] Color      color,
+    [[maybe_unused]] float      strokeWidth)
 {
 // TODO: implement
 #if 0
@@ -614,7 +648,7 @@ void Painter::Impl::drawLinePath(
 #endif
 }
 
-void Painter::Impl::drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth)
+void Painter::Impl::drawRectangle(Rectangle rectangle, Color color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -630,7 +664,7 @@ void Painter::Impl::drawRectangle(const Rectangle& rectangle, const Color& color
     ++performanceStats().polygonCount;
 }
 
-void Painter::Impl::fillRectangle(const Rectangle& rectangle, const Color& color)
+void Painter::Impl::fillRectangle(Rectangle rectangle, Color color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -645,7 +679,7 @@ void Painter::Impl::fillRectangle(const Rectangle& rectangle, const Color& color
     ++performanceStats().polygonCount;
 }
 
-void Painter::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth)
+void Painter::Impl::drawPolygon(Span<Vec2> vertices, Color color, float strokeWidth)
 {
     const auto firstPoint    = vertices[0];
     auto       previousPoint = firstPoint;
@@ -661,7 +695,7 @@ void Painter::Impl::drawPolygon(Span<Vec2> vertices, const Color& color, float s
     drawLine(previousPoint, firstPoint, color, strokeWidth);
 }
 
-void Painter::Impl::fillPolygon(Span<Vec2> vertices, const Color& color)
+void Painter::Impl::fillPolygon(Span<Vec2> vertices, Color color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -739,10 +773,10 @@ void Painter::Impl::drawSpineSkeleton(SpineSkeleton& skeleton)
 }
 
 void Painter::Impl::drawRoundedRectangle(
-    const Rectangle& rectangle,
-    float            cornerRadius,
-    const Color&     color,
-    float            strokeWidth)
+    Rectangle rectangle,
+    float     cornerRadius,
+    Color     color,
+    float     strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -759,7 +793,7 @@ void Painter::Impl::drawRoundedRectangle(
     ++performanceStats().polygonCount;
 }
 
-void Painter::Impl::fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color)
+void Painter::Impl::fillRoundedRectangle(Rectangle rectangle, float cornerRadius, Color color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -775,7 +809,7 @@ void Painter::Impl::fillRoundedRectangle(const Rectangle& rectangle, float corne
     ++performanceStats().polygonCount;
 }
 
-void Painter::Impl::drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth)
+void Painter::Impl::drawEllipse(Vec2 center, Vec2 radius, Color color, float strokeWidth)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -792,7 +826,7 @@ void Painter::Impl::drawEllipse(Vec2 center, Vec2 radius, const Color& color, fl
     ++performanceStats().polygonCount;
 }
 
-void Painter::Impl::fillEllipse(Vec2 center, Vec2 radius, const Color& color)
+void Painter::Impl::fillEllipse(Vec2 center, Vec2 radius, Color color)
 {
     auto& frameData = _frameData[_currentFrameIndex];
 
@@ -826,12 +860,12 @@ void Painter::Impl::resetCurrentStates()
     setShader(BatchMode::Mesh, _defaultMeshShader);
 }
 
-const Rectangle& Painter::Impl::currentViewport() const
+Rectangle Painter::Impl::currentViewport() const
 {
     return _viewport;
 }
 
-const Matrix& Painter::Impl::combinedTransformation() const
+Matrix Painter::Impl::combinedTransformation() const
 {
     return _combinedTransformation;
 }
@@ -974,6 +1008,7 @@ void Painter::Impl::flush()
         }
     }
 }
+
 bool Painter::Impl::mustIndirectlyFlush(const FrameData& frameData) const
 {
     return (frameData.dirtyFlags & DF_UserShaderParams) == DF_UserShaderParams;
@@ -1054,6 +1089,22 @@ void Painter::Impl::prepareForMultipleSprites()
     prepareForBatchMode(frameData, BatchMode::Sprites);
 }
 
+void Painter::Impl::enqueueImageToUpdate(Image::Impl* image, u32 x, u32 y, u32 width, u32 height)
+{
+    const auto dataSize = imageSlicePitch(width, height, image->format());
+
+    _imagesToUpdateQueue.add(
+        ImageDataToUpdate{
+            .image  = Image(image),
+            .x      = x,
+            .y      = y,
+            .width  = width,
+            .height = height,
+            .data   = _arenaAllocator.allocate(dataSize),
+            .size   = dataSize,
+        });
+}
+
 Vec2 Painter::Impl::currentCanvasSize() const
 {
     return _viewport.size();
@@ -1096,7 +1147,9 @@ void Painter::Impl::postInit(
         auto data = Array<u8, pixelCount>();
         data.fill(255);
 
-        _whiteImage = Image(createImage(size, size, ImageFormat::R8G8B8A8UNorm, data.data(), true).release());
+        _whiteImage =
+            Image(createImage(ImageUsage::Immutable, size, size, ImageFormat::R8G8B8A8UNorm, data.data())
+                      .release());
         _whiteImage.setDebuggingLabel("WhiteImage");
     }
 }

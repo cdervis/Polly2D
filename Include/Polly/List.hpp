@@ -804,7 +804,6 @@ constexpr auto operator<=>(const List<T, InlineCapacity>& lhs, const List<T, Inl
     return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), comparison);
 }
 
-
 template<typename T>
 using SmallList = List<T, 3>;
 } // namespace Polly

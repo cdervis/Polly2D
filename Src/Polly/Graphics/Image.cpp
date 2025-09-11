@@ -15,23 +15,51 @@ namespace Polly
 {
 PollyImplementObject(Image);
 
-Image::Image(u32 width, u32 height, ImageFormat format, const void* data, bool isStatic)
+Image::Image(ImageUsage usage, u32 width, u32 height, ImageFormat format, const void* data)
     : Image()
 {
     auto& painterImpl = *Painter::Impl::instance();
 
     const auto caps = painterImpl.capabilities();
 
-    if (width > caps.maxImageExtent || height > caps.maxImageExtent)
+    if (usage == ImageUsage::Canvas)
     {
-        throw Error(formatString(
-            "The specified width ({}) or height ({}) exceeds the graphics device's limit ({}).",
-            width,
-            height,
-            caps.maxImageExtent));
+        if (width > caps.maxCanvasWidth)
+        {
+            throw Error(formatString(
+                "The specified width ({}) exceeds the graphics device's limit ({}).",
+                width,
+                caps.maxCanvasWidth));
+        }
+
+        if (height > caps.maxCanvasHeight)
+        {
+            throw Error(formatString(
+                "The specified height ({}) exceeds the graphics device's limit ({}).",
+                height,
+                caps.maxCanvasHeight));
+        }
+    }
+    else
+    {
+        if (width > caps.maxImageExtent || height > caps.maxImageExtent)
+        {
+            throw Error(formatString(
+                "The specified width ({}) or height ({}) exceeds the graphics device's limit ({}).",
+                width,
+                height,
+                caps.maxImageExtent));
+        }
     }
 
-    setImpl(*this, painterImpl.createImage(width, height, format, data, isStatic).release());
+    if (usage == ImageUsage::Immutable && !data)
+    {
+        throw Error(
+            "Attempting to create an immutable image without data. When creating images with "
+            "ImageUsage::Immutable, the image's data must be specified.");
+    }
+
+    setImpl(*this, painterImpl.createImage(usage, width, height, format, data).release());
 }
 
 Image::Image(Span<u8> memory)
@@ -45,39 +73,6 @@ Image::Image(StringView assetName)
 {
     auto& content = Game::Impl::instance().contentManager();
     *this         = content.loadImage(assetName);
-}
-
-Image::Image(u32 width, u32 height, ImageFormat format)
-    : Image()
-{
-    auto& painterImpl = *Painter::Impl::instance();
-
-    const auto caps = painterImpl.capabilities();
-
-    if (width > caps.maxCanvasWidth)
-    {
-        throw Error(formatString(
-            "The specified width ({}) exceeds the graphics device's limit ({}).",
-            width,
-            caps.maxCanvasWidth));
-    }
-
-    if (height > caps.maxCanvasHeight)
-    {
-        throw Error(formatString(
-            "The specified height ({}) exceeds the graphics device's limit ({}).",
-            height,
-            caps.maxCanvasHeight));
-    }
-
-    auto imageImpl = painterImpl.createCanvas(width, height, format);
-
-    if (!imageImpl)
-    {
-        return;
-    }
-
-    setImpl(*this, imageImpl.release());
 }
 
 StringView Image::assetName() const
@@ -98,10 +93,68 @@ void Image::setDebuggingLabel(StringView name)
     impl->setDebuggingLabel(name);
 }
 
+void Image::updateData(u32 x, u32 y, u32 width, u32 height, const void* data, bool shouldUpdateImmediately)
+{
+    PollyDeclareThisImpl;
+
+    const auto imageWidth  = impl->width();
+    const auto imageHeight = impl->height();
+
+    if (x + width > imageWidth || y + height > imageHeight)
+    {
+        throw Error(formatString(
+            "The specified coordinates (x={}; y={}; width={}; height={}) would exceed the image's bounds "
+            "(width={}; height={}).",
+            x,
+            y,
+            width,
+            height,
+            imageWidth,
+            imageHeight));
+    }
+
+    impl->updateData(x, y, width, height, data, shouldUpdateImmediately);
+}
+
+bool Image::supportsImmediateUpdate() const
+{
+    PollyDeclareThisImpl;
+    return impl->supportsImmediateUpdate();
+}
+
+void Image::clear(Color color, bool shouldUpdateImmediately)
+{
+    PollyDeclareThisImpl;
+
+    if (impl->format() != ImageFormat::R8G8B8A8UNorm)
+    {
+        throw Error(
+            "Currently, clear() only supports images with format R8G8B8A8UNorm. Please use updateData() "
+            "instead.");
+    }
+
+    if (shouldUpdateImmediately && !impl->supportsImmediateUpdate())
+    {
+        throw Error(
+            "Attempting to clear an image immediately. However, the system doesn't support immediate image "
+            "updates. Please pass false to 'shouldUpdateImmediately'.");
+    }
+
+    const auto data = List<R8G8B8A8>(impl->width() * impl->height(), R8G8B8A8(color));
+
+    impl->updateData(0, 0, impl->width(), impl->height(), data.data(), shouldUpdateImmediately);
+}
+
+ImageUsage Image::usage() const
+{
+    PollyDeclareThisImpl;
+    return impl->usage();
+}
+
 bool Image::isCanvas() const
 {
     PollyDeclareThisImpl;
-    return impl->isCanvas();
+    return impl->usage() == ImageUsage::Canvas;
 }
 
 u32 Image::width() const

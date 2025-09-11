@@ -8,6 +8,7 @@
 #include "Polly/BlendState.hpp"
 #include "Polly/Color.hpp"
 #include "Polly/CopyMoveMacros.hpp"
+#include "Polly/Core/ArenaAllocator.hpp"
 #include "Polly/Core/Object.hpp"
 #include "Polly/Function.hpp"
 #include "Polly/GamePerformanceStats.hpp"
@@ -111,6 +112,17 @@ class Painter::Impl : public Object
     static constexpr auto verticesPerSprite = 4u;
     static constexpr auto indicesPerSprite  = 6u;
 
+    struct ImageDataToUpdate
+    {
+        Image       image;
+        u32         x      = 0;
+        u32         y      = 0;
+        u32         width  = 0;
+        u32         height = 0;
+        const void* data   = nullptr;
+        size_t      size   = 0;
+    };
+
     static Impl* instance();
 
     DeleteCopyAndMove(Impl);
@@ -125,14 +137,12 @@ class Painter::Impl : public Object
 
     virtual void onFrameEnded(ImGui& imgui, const Function<void(ImGui)>& imGuiDrawFunc) = 0;
 
-    virtual UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) = 0;
-
     virtual UniquePtr<Image::Impl> createImage(
+        ImageUsage  usage,
         u32         width,
         u32         height,
         ImageFormat format,
-        const void* data,
-        bool        isStatic) = 0;
+        const void* data) = 0;
 
     UniquePtr<Shader::Impl> createUserShader(StringView sourceCode, StringView filenameHint);
 
@@ -188,39 +198,31 @@ class Painter::Impl : public Object
     void drawSprite(Sprite sprite);
 
     template<bool PrepareBatchMode>
-    void fillRectangleUsingSprite(
-        const Rectangle& rectangle,
-        const Color&     color,
-        Radians          rotation,
-        const Vec2&      origin);
+    void fillRectangleUsingSprite(Rectangle rectangle, Color color, Radians rotation, Vec2 origin);
 
-    void drawLine(Vec2 start, Vec2 end, const Color& color, float strokeWidth);
+    void drawLine(Vec2 start, Vec2 end, Color color, float strokeWidth);
 
-    void drawLinePath(Span<Line> lines, const Color& color, float strokeWidth);
+    void drawLinePath(Span<Line> lines, Color color, float strokeWidth);
 
-    void drawRectangle(const Rectangle& rectangle, const Color& color, float strokeWidth);
+    void drawRectangle(Rectangle rectangle, Color color, float strokeWidth);
 
-    void fillRectangle(const Rectangle& rectangle, const Color& color);
+    void fillRectangle(Rectangle rectangle, Color color);
 
-    void drawPolygon(Span<Vec2> vertices, const Color& color, float strokeWidth);
+    void drawPolygon(Span<Vec2> vertices, Color color, float strokeWidth);
 
-    void fillPolygon(Span<Vec2> vertices, const Color& color);
+    void fillPolygon(Span<Vec2> vertices, Color color);
 
     void drawMesh(Span<MeshVertex> vertices, Span<uint16_t> indices, Image::Impl* image);
 
     void drawSpineSkeleton(SpineSkeleton& skeleton);
 
-    void drawRoundedRectangle(
-        const Rectangle& rectangle,
-        float            cornerRadius,
-        const Color&     color,
-        float            strokeWidth);
+    void drawRoundedRectangle(Rectangle rectangle, float cornerRadius, Color color, float strokeWidth);
 
-    void fillRoundedRectangle(const Rectangle& rectangle, float cornerRadius, const Color& color);
+    void fillRoundedRectangle(Rectangle rectangle, float cornerRadius, Color color);
 
-    void drawEllipse(Vec2 center, Vec2 radius, const Color& color, float strokeWidth);
+    void drawEllipse(Vec2 center, Vec2 radius, Color color, float strokeWidth);
 
-    void fillEllipse(Vec2 center, Vec2 radius, const Color& color);
+    void fillEllipse(Vec2 center, Vec2 radius, Color color);
 
     void pushStringToQueue(
         StringView            text,
@@ -230,9 +232,9 @@ class Painter::Impl : public Object
         Color                 color,
         Maybe<TextDecoration> decoration);
 
-    void pushTextToQueue(const Text& text, Vec2 position, const Color& color);
+    void pushTextToQueue(Text text, Vec2 position, Color color);
 
-    void pushParticlesToQueue(const ParticleSystem& particleSystem);
+    void pushParticlesToQueue(ParticleSystem particleSystem);
 
     Vec2 currentCanvasSize() const;
 
@@ -241,29 +243,7 @@ class Painter::Impl : public Object
     PainterCapabilities capabilities() const;
 
     template<size_t SpriteCount>
-    static auto createSpriteIndicesList()
-    {
-        auto indices = List<uint16_t>();
-        indices.resize(SpriteCount * indicesPerSprite);
-
-        auto push = [counter = 0, &indices](size_t index) mutable
-        {
-            indices[counter++] = static_cast<uint16_t>(index);
-        };
-
-        for (auto j = 0u; j < SpriteCount * verticesPerSprite; j += verticesPerSprite)
-        {
-            push(j);
-            push(j + 1);
-            push(j + 2);
-
-            push(j + 1);
-            push(j + 3);
-            push(j + 2);
-        }
-
-        return indices;
-    }
+    static auto createSpriteIndicesList();
 
     GamePerformanceStats& performanceStats()
     {
@@ -298,6 +278,8 @@ class Painter::Impl : public Object
 
     void prepareForMultipleSprites();
 
+    void enqueueImageToUpdate(Image::Impl* image, u32 x, u32 y, u32 width, u32 height);
+
   protected:
     Window::Impl& window() const;
 
@@ -329,9 +311,9 @@ class Painter::Impl : public Object
 
     void resetCurrentStates();
 
-    const Rectangle& currentViewport() const;
+    Rectangle currentViewport() const;
 
-    const Matrix& combinedTransformation() const;
+    Matrix combinedTransformation() const;
 
     u32 frameIndex() const;
 
@@ -411,6 +393,9 @@ class Painter::Impl : public Object
     u32                     _maxPolyVertices    = 0;
     u32                     _maxMeshVertices    = 0;
 
+    ArenaAllocator             _arenaAllocator;
+    List<ImageDataToUpdate, 4> _imagesToUpdateQueue;
+
     Shader _defaultSpriteShader;
     Shader _defaultPolyShader;
     Shader _defaultMeshShader;
@@ -420,22 +405,20 @@ class Painter::Impl : public Object
     Matrix    _combinedTransformation;
     float     _pixelRatio = 1.0f;
 
-    Image              _currentCanvas;
-    Matrix             _currentTransformation;
-    BlendState         _currentBlendState;
-    Sampler            _currentSampler;
-    List<Rectangle, 4> _currentScissorRects;
+    Image      _currentCanvas;
+    Matrix     _currentTransformation;
+    BlendState _currentBlendState;
+    Sampler    _currentSampler;
 
     // Currently bound shaders. Slots correspond to BatchMode enum values.
     Array<Shader, 3> _currentShaders;
+
+    spine::SkeletonRenderer _spineSkeletonRenderer;
 
   public:
     // Used in drawString() as temporary buffers for text shaping results.
     List<PreshapedGlyph>     tmpGlyphs;
     List<TextDecorationRect> tmpDecorationRects;
-
-  private:
-    spine::SkeletonRenderer _spineSkeletonRenderer;
 };
 
 // Inline function implementations
@@ -594,7 +577,7 @@ void Painter::Impl::drawSprite(Sprite sprite)
     auto* imageImpl = sprite.image.impl();
     assume(imageImpl);
 
-    const auto isCanvas = imageImpl->isCanvas();
+    const auto isCanvas = imageImpl->usage() == ImageUsage::Canvas;
 
     if constexpr (PerformCanvasCheck)
     {
@@ -638,5 +621,30 @@ void Painter::Impl::drawSprite(Sprite sprite)
     {
         ++_performanceStats.spriteCount;
     }
+}
+
+template<size_t SpriteCount>
+auto Painter::Impl::createSpriteIndicesList()
+{
+    auto indices = List<uint16_t>();
+    indices.resize(SpriteCount * indicesPerSprite);
+
+    auto push = [counter = 0, &indices](size_t index) mutable
+    {
+        indices[counter++] = static_cast<uint16_t>(index);
+    };
+
+    for (auto j = 0u; j < SpriteCount * verticesPerSprite; j += verticesPerSprite)
+    {
+        push(j);
+        push(j + 1);
+        push(j + 2);
+
+        push(j + 1);
+        push(j + 3);
+        push(j + 2);
+    }
+
+    return indices;
 }
 } // namespace Polly

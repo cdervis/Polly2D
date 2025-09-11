@@ -20,6 +20,7 @@ void TextDemo::draw(Painter painter)
 
     // Use DrawString for simple fire-and-forget text drawing.
     painter.drawString("Enter some text in the sidebar! >>>", font, 48 * pixelRatio, Vec2(50));
+
     auto decoration = Maybe<TextDecoration>();
     switch (_decoration)
     {
@@ -56,7 +57,7 @@ void TextDemo::draw(Painter painter)
     }
 }
 
-void TextDemo::doImGui(ImGui imgui)
+void TextDemo::onImGui(ImGui imgui)
 {
     imgui.inputTextMultiline("Text", _inputText);
     imgui.newLine();

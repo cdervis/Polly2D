@@ -7,11 +7,11 @@ class SpritesDemo final : public Demo
   public:
     explicit SpritesDemo(DemoBrowser* browser);
 
-    void tick(GameTime time) override;
+    void update(GameTime time) override;
 
     void draw(Painter painter) override;
 
-    void doImGui(ImGui imgui) override;
+    void onImGui(ImGui imgui) override;
 
   private:
     Image _logo;
