@@ -66,7 +66,7 @@ void DynamicImageDemo::onImGui(ImGui imgui)
 
 void DynamicImageDemo::createImage(Vec2ui size)
 {
-    const auto initialData = List(size.x * size.y, R8G8B8A8(black));
+    const auto initialData = List<R8G8B8A8>(size.x * size.y, R8G8B8A8(black));
 
     _image = Image(
         ImageUsage::FrequentlyUpdatable,

@@ -11,13 +11,31 @@ namespace Polly
 {
 static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
     NotNull<ID3D11Device*> device,
+    ImageUsage             usage,
     u32                    width,
     u32                    height,
     ImageFormat            format,
-    bool                   isCanvas,
-    const void*            data,
-    bool                   isStatic)
+    const void*            data)
 {
+    auto usageD3D11     = D3D11_USAGE_DEFAULT;
+    auto bindFlags      = UINT(D3D11_BIND_SHADER_RESOURCE);
+    auto cpuAccessFlags = UINT();
+
+    if (usage == ImageUsage::Immutable)
+    {
+        usageD3D11 = D3D11_USAGE_IMMUTABLE;
+    }
+    // TODO:
+    // else if (usage == ImageUsage::FrequentlyUpdatable)
+    //{
+    //    usageD3D11     = D3D11_USAGE_DYNAMIC;
+    //    cpuAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    //}
+    else if (usage == ImageUsage::Canvas)
+    {
+        bindFlags |= D3D11_BIND_RENDER_TARGET;
+    }
+
     auto desc = D3D11_TEXTURE2D_DESC{
         .Width     = width,
         .Height    = height,
@@ -28,20 +46,15 @@ static ComPtr<ID3D11Texture2D> createID3D11Texture2D(
             DXGI_SAMPLE_DESC{
                 .Count = 1,
             },
-        .Usage     = (isCanvas || !isStatic) ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE,
-        .BindFlags = D3D11_BIND_SHADER_RESOURCE,
+        .Usage          = usageD3D11,
+        .BindFlags      = bindFlags,
+        .CPUAccessFlags = cpuAccessFlags,
     };
-
-    if (isCanvas)
-    {
-        desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-    }
 
     auto subresourceData = D3D11_SUBRESOURCE_DATA();
 
-    if (isStatic)
+    if (data)
     {
-        assume(data);
         subresourceData.pSysMem     = data;
         subresourceData.SysMemPitch = imageRowPitch(width, format);
     }
@@ -78,28 +91,20 @@ static ComPtr<ID3D11ShaderResourceView> createSRV(
 
 D3D11Image::D3D11Image(
     Painter::Impl& painter,
+    ImageUsage     usage,
     u32            width,
     u32            height,
     ImageFormat    format,
-    const void*    data,
-    bool           isStatic)
-    : Impl(painter, false, width, height, format)
+    const void*    data)
+    : Impl(painter, usage, width, height, format, false)
 {
     NotNull id3d11Device = static_cast<D3D11Painter&>(painter).id3d11Device();
 
-    _id3d11Texture2D = createID3D11Texture2D(id3d11Device, width, height, format, false, data, isStatic);
-    _id3d11SRV       = createSRV(id3d11Device, _id3d11Texture2D.Get());
-}
-
-D3D11Image::D3D11Image(Painter::Impl& painter, u32 width, u32 height, ImageFormat format)
-    : Impl(painter, true, width, height, format)
-{
-    NotNull id3d11Device = static_cast<D3D11Painter&>(painter).id3d11Device();
-
-    _id3d11Texture2D = createID3D11Texture2D(id3d11Device, width, height, format, true, nullptr, false);
+    _id3d11Texture2D = createID3D11Texture2D(id3d11Device, usage, width, height, format, data);
     _id3d11SRV       = createSRV(id3d11Device, _id3d11Texture2D.Get());
 
     // Create the RTV.
+    if (usage == ImageUsage::Canvas)
     {
         const auto desc = D3D11_RENDER_TARGET_VIEW_DESC{
             .Format        = DXGI_FORMAT_UNKNOWN,
@@ -139,5 +144,43 @@ ID3D11ShaderResourceView* D3D11Image::id3d11SRV() const
 ID3D11RenderTargetView* D3D11Image::id3d11RTV() const
 {
     return _id3d11RTV.Get();
+}
+
+void D3D11Image::updateData(
+    u32         x,
+    u32         y,
+    u32         width,
+    u32         height,
+    const void* data,
+    bool        shouldUpdateImmediately)
+{
+    const auto updateBox = D3D11_BOX{
+        .left   = UINT(x),
+        .top    = UINT(y),
+        .front  = 0,
+        .right  = UINT(x + width),
+        .bottom = UINT(y + height),
+        .back   = 1,
+    };
+
+    auto& d3d11Painter = static_cast<D3D11Painter&>(painter());
+
+    d3d11Painter.id3d11Context()->UpdateSubresource(
+        _id3d11Texture2D.Get(),
+        0,
+        &updateBox,
+        data,
+        width * sizeof(R8G8B8A8),
+        width * height * sizeof(R8G8B8A8));
+}
+
+void D3D11Image::updateFromEnqueuedData(
+    [[maybe_unused]] u32         x,
+    [[maybe_unused]] u32         y,
+    [[maybe_unused]] u32         width,
+    [[maybe_unused]] u32         height,
+    [[maybe_unused]] const void* data)
+{
+    // Nothing to do in D3D11.
 }
 } // namespace Polly

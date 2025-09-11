@@ -14,14 +14,11 @@ class D3D11Image final : public Image::Impl
   public:
     explicit D3D11Image(
         Painter::Impl& painter,
+        ImageUsage     usage,
         u32            width,
         u32            height,
         ImageFormat    format,
-        const void*    data,
-        bool           isStatic);
-
-    // Canvas overload
-    explicit D3D11Image(Painter::Impl& painter, u32 width, u32 height, ImageFormat format);
+        const void*    data);
 
     void setDebuggingLabel(StringView name) override;
 
@@ -30,6 +27,11 @@ class D3D11Image final : public Image::Impl
     ID3D11ShaderResourceView* id3d11SRV() const;
 
     ID3D11RenderTargetView* id3d11RTV() const;
+
+    void updateData(u32 x, u32 y, u32 width, u32 height, const void* data, bool shouldUpdateImmediately)
+        override;
+
+    void updateFromEnqueuedData(u32 x, u32 y, u32 width, u32 height, const void* data) override;
 
   private:
     ComPtr<ID3D11Texture2D>          _id3d11Texture2D;
