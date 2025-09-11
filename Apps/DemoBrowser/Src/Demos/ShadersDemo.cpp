@@ -11,7 +11,7 @@ ShadersDemo::ShadersDemo(DemoBrowser* browser)
 {
 }
 
-void ShadersDemo::tick(GameTime time)
+void ShadersDemo::update(GameTime time)
 {
     _wobbleShader.set("TotalTime", float(time.total()));
 }
@@ -29,9 +29,9 @@ void ShadersDemo::draw(Painter painter)
     }
 }
 
-void ShadersDemo::doImGui(ImGui imgui)
+void ShadersDemo::onImGui(ImGui imgui)
 {
-    const auto items = SmallList<StringView>{
+    const auto items = Array{
         "Wobble"_sv,
         "Grayscale"_sv,
         "Edge-Detection"_sv,

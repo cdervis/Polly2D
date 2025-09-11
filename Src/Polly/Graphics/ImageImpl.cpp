@@ -7,22 +7,24 @@
 namespace Polly
 {
 Image::Impl::Impl(
-    Painter::Impl&    painterImpl,
-    const bool        isCanvas,
-    const u32         width,
-    const u32         height,
-    const ImageFormat format)
+    Painter::Impl& painterImpl,
+    ImageUsage     usage,
+    u32            width,
+    u32            height,
+    ImageFormat    format,
+    bool           supportsImmediateUpdate)
     : GraphicsResource(painterImpl, GraphicsResourceType::Image)
-    , _isCanvas(isCanvas)
+    , _usage(usage)
     , _width(width)
     , _height(height)
     , _format(format)
+    , _supportsImmediateUpdate(supportsImmediateUpdate)
 {
 }
 
-bool Image::Impl::isCanvas() const
+ImageUsage Image::Impl::usage() const
 {
-    return _isCanvas;
+    return _usage;
 }
 
 u32 Image::Impl::width() const
@@ -38,5 +40,10 @@ u32 Image::Impl::height() const
 ImageFormat Image::Impl::format() const
 {
     return _format;
+}
+
+bool Image::Impl::supportsImmediateUpdate() const
+{
+    return _supportsImmediateUpdate;
 }
 } // namespace Polly

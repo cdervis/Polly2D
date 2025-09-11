@@ -50,7 +50,7 @@ class ArenaAllocator
 template<typename T, typename... Args>
 T* ArenaAllocator::createObject(Args&&... args)
 {
-    auto* obj = static_cast<T*>(allocate(sizeof(T), alignof(T)));
+    auto* obj = static_cast<T*>(allocate(sizeof(T), u32(alignof(T))));
 
     if (not obj)
     {

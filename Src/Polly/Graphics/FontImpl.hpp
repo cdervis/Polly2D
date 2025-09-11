@@ -5,12 +5,12 @@
 #pragma once
 
 #include "imstb_truetype.h"
+#include "Polly/BitColors.hpp"
 #include "Polly/ContentManagement/Asset.hpp"
 #include "Polly/Core/BinPack.hpp"
 #include "Polly/Core/Object.hpp"
 #include "Polly/Core/utf8.hpp"
 #include "Polly/Font.hpp"
-#include "Polly/Graphics/BitColors.hpp"
 #include "Polly/Image.hpp"
 #include "Polly/List.hpp"
 #include "Polly/SortedMap.hpp"

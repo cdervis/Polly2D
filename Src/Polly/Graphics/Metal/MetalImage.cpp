@@ -11,16 +11,17 @@
 
 namespace Polly
 {
-MTL::Texture* createMtlTexture(
-    MetalPainter&         device,
-    u32                   width,
-    u32                   height,
-    ImageFormat           format,
-    bool                  isCanvas,
-    const void*           data,
-    [[maybe_unused]] bool isStatic)
+MetalImage::MetalImage(
+    Painter::Impl& painter,
+    ImageUsage     usage,
+    u32            width,
+    u32            height,
+    ImageFormat    format,
+    const void*    data)
+    : Impl(painter, usage, width, height, format, true)
 {
-    auto* mtlDevice = device.mtlDevice();
+    auto& metalPainter = static_cast<MetalPainter&>(painter);
+    auto* mtlDevice    = metalPainter.mtlDevice();
 
     auto arp = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 
@@ -30,76 +31,35 @@ MTL::Texture* createMtlTexture(
     desc->setWidth(width);
     desc->setHeight(height);
     desc->setDepth(1);
-
-    {
-        const auto maybeFormat = convertToMtl(format);
-
-        if (!maybeFormat)
-        {
-            throw Error("Failed to convert image format to Metal pixel format.");
-        }
-
-        desc->setPixelFormat(*maybeFormat);
-    }
-
+    desc->setPixelFormat(*convertToMtl(format));
     desc->setMipmapLevelCount(1);
     desc->setSampleCount(1);
     desc->setArrayLength(1);
 
-    if (isCanvas)
+
+    switch (usage)
     {
-        desc->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
-        desc->setStorageMode(MTL::StorageModePrivate);
-    }
-    else
-    {
-        desc->setUsage(MTL::TextureUsageShaderRead);
-        desc->setStorageMode(MTL::StorageModeShared);
+        case ImageUsage::Immutable:
+        case ImageUsage::Updatable:
+        case ImageUsage::FrequentlyUpdatable:
+            desc->setUsage(MTL::TextureUsageShaderRead);
+            desc->setStorageMode(MTL::StorageModeShared);
+            break;
+        case ImageUsage::Canvas:
+            desc->setUsage(MTL::TextureUsageRenderTarget | MTL::TextureUsageShaderRead);
+            desc->setStorageMode(MTL::StorageModePrivate);
+            break;
     }
 
-    auto* mtlTexture = mtlDevice->newTexture(desc);
-
-    deferNamed(mtlTextureGuard)
-    {
-        if (mtlTexture)
-        {
-            mtlTexture->release();
-        }
-    };
+    _mtlTexture = mtlDevice->newTexture(desc);
 
     if (data)
     {
         const auto rowPitch   = imageRowPitch(width, format);
         const auto slicePitch = imageSlicePitch(width, height, format);
 
-        mtlTexture->replaceRegion(MTL::Region(0, 0, width, height), 0, 0, data, rowPitch, slicePitch);
+        _mtlTexture->replaceRegion(MTL::Region(0, 0, width, height), 0, 0, data, rowPitch, slicePitch);
     }
-
-    mtlTextureGuard.dismiss();
-
-    return mtlTexture;
-}
-
-MetalImage::MetalImage(
-    Painter::Impl& painter,
-    u32            width,
-    u32            height,
-    ImageFormat    format,
-    const void*    data,
-    bool           isStatic)
-    : Impl(painter, false, width, height, format)
-{
-    auto& metalPainter = static_cast<MetalPainter&>(painter);
-
-    _mtlTexture = createMtlTexture(metalPainter, width, height, format, false, data, isStatic);
-}
-
-MetalImage::MetalImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format)
-    : Impl(painter, true, width, height, format)
-{
-    auto& metalPainter = static_cast<MetalPainter&>(painter);
-
-    _mtlTexture = createMtlTexture(metalPainter, width, height, format, true, nullptr, false);
 }
 
 MetalImage::~MetalImage() noexcept
@@ -119,5 +79,37 @@ void MetalImage::setDebuggingLabel(StringView name)
 {
     const auto nameStr = String(name);
     _mtlTexture->setLabel(NSStringFromC(nameStr.cstring()));
+}
+
+void MetalImage::updateData(
+    u32         x,
+    u32         y,
+    u32         width,
+    u32         height,
+    const void* data,
+    bool        shouldUpdateImmediately)
+{
+    if (shouldUpdateImmediately)
+    {
+        updateDataImmediately(x, y, width, height, data);
+    }
+    else
+    {
+        painter().enqueueImageToUpdate(this, x, y, width, height);
+    }
+}
+
+void MetalImage::updateFromEnqueuedData(u32 x, u32 y, u32 width, u32 height, const void* data)
+{
+    updateDataImmediately(x, y, width, height, data);
+}
+
+void MetalImage::updateDataImmediately(u32 x, u32 y, u32 width, u32 height, const void* data)
+{
+    _mtlTexture->replaceRegion(
+        MTL::Region(NS::UInteger(x), NS::UInteger(y), NS::UInteger(width), NS::UInteger(height)),
+        0,
+        data,
+        imageRowPitch(width, format()));
 }
 } // namespace Polly

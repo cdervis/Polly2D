@@ -15,14 +15,11 @@ class OpenGLImage final : public Image::Impl
   public:
     OpenGLImage(
         Painter::Impl& painter,
+        ImageUsage     usage,
         u32            width,
         u32            height,
         ImageFormat    format,
-        const void*    data,
-        bool           isStatic);
-
-    // Canvas overload
-    explicit OpenGLImage(Painter::Impl& painter, u32 width, u32 height, ImageFormat format);
+        const void*    data);
 
     DeleteCopyAndMove(OpenGLImage);
 
@@ -36,9 +33,12 @@ class OpenGLImage final : public Image::Impl
 
     void applySampler(Sampler sampler, bool force);
 
-  private:
-    void createOpenGLTexture(const void* data, bool isStatic);
+    void updateData(u32 x, u32 y, u32 width, u32 height, const void* data, bool shouldUpdateImmediately)
+        override;
 
+    void updateFromEnqueuedData(u32 x, u32 y, u32 width, u32 height, const void* data) override;
+
+  private:
     GLuint              _textureHandleGL     = 0;
     GLuint              _framebufferHandleGL = 0;
     OpenGLFormatTriplet _formatTriplet;

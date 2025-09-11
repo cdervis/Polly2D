@@ -40,14 +40,12 @@ class OpenGLPainter final : public Painter::Impl
 
     void requestFrameCapture() override;
 
-    UniquePtr<Image::Impl> createCanvas(u32 width, u32 height, ImageFormat format) override;
-
     UniquePtr<Image::Impl> createImage(
+        ImageUsage  usage,
         u32         width,
         u32         height,
         ImageFormat format,
-        const void* data,
-        bool        isStatic) override;
+        const void* data) override;
 
     UniquePtr<Shader::Impl> onCreateNativeUserShader(
         const ShaderCompiler::Ast&          ast,

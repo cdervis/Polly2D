@@ -16,6 +16,10 @@ OpenGLWindow::OpenGLWindow(
     Span<Display>   displays)
     : Impl(title)
 {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, minimumRequiredOpenGLVersionMajor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minimumRequiredOpenGLVersionMinor);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
 #ifndef NDEBUG
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif

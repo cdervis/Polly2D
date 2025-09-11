@@ -15,7 +15,7 @@ SpaceShooter::SpaceShooter()
     window().setIsResizable(false);
     window().setClearColor(black);
 
-    _mainCanvas = Image(sViewSize.x, sViewSize.y, ImageFormat::R8G8B8A8UNorm);
+    _mainCanvas = Image(ImageUsage::Canvas, sViewSize.x, sViewSize.y, ImageFormat::R8G8B8A8UNorm, nullptr);
     _nextState  = makeUnique<SplashScreenState>();
 }
 

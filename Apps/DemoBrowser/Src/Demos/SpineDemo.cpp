@@ -4,68 +4,68 @@
 
 struct SpineAssetEntry
 {
-    StringView display_name;
-    StringView atlas_name;
-    StringView skeleton_data_name;
-    StringView initial_animation_name;
+    StringView displayName;
+    StringView atlasName;
+    StringView skeletonDataName;
+    StringView initialAnimationName;
     float      scale = 1.0f;
 };
 
-constexpr Array s_spine_asset_entries = {
+constexpr Array sSpineAssetEntries = {
     SpineAssetEntry{
-        .display_name           = "Cloud Pot",
-        .atlas_name             = "Spine/cloud-pot.atlas",
-        .skeleton_data_name     = "Spine/cloud-pot.json",
-        .initial_animation_name = "playing-in-the-rain",
+        .displayName          = "Cloud Pot",
+        .atlasName            = "Spine/cloud-pot.atlas",
+        .skeletonDataName     = "Spine/cloud-pot.json",
+        .initialAnimationName = "playing-in-the-rain",
     },
     SpineAssetEntry{
-        .display_name           = "Snow Globe",
-        .atlas_name             = "Spine/snowglobe.atlas",
-        .skeleton_data_name     = "Spine/snowglobe-pro.json",
-        .initial_animation_name = "idle",
-        .scale                  = 0.4f,
+        .displayName          = "Snow Globe",
+        .atlasName            = "Spine/snowglobe.atlas",
+        .skeletonDataName     = "Spine/snowglobe-pro.json",
+        .initialAnimationName = "idle",
+        .scale                = 0.4f,
     },
     SpineAssetEntry{
-        .display_name           = "Windmill",
-        .atlas_name             = "Spine/windmill.atlas",
-        .skeleton_data_name     = "Spine/windmill-ess.skel",
-        .initial_animation_name = "animation",
-        .scale                  = 1.0f,
+        .displayName          = "Windmill",
+        .atlasName            = "Spine/windmill.atlas",
+        .skeletonDataName     = "Spine/windmill-ess.skel",
+        .initialAnimationName = "animation",
+        .scale                = 1.0f,
     },
     SpineAssetEntry{
-        .display_name           = "Spineboy",
-        .atlas_name             = "Spine/spineboy-ess.atlas",
-        .skeleton_data_name     = "Spine/spineboy-ess.json",
-        .initial_animation_name = "walk",
+        .displayName          = "Spineboy",
+        .atlasName            = "Spine/spineboy-ess.atlas",
+        .skeletonDataName     = "Spine/spineboy-ess.json",
+        .initialAnimationName = "walk",
     },
     SpineAssetEntry{
-        .display_name           = "Dragon",
-        .atlas_name             = "Spine/dragon-ess.atlas",
-        .skeleton_data_name     = "Spine/dragon-ess.json",
-        .initial_animation_name = "flying",
+        .displayName          = "Dragon",
+        .atlasName            = "Spine/dragon-ess.atlas",
+        .skeletonDataName     = "Spine/dragon-ess.json",
+        .initialAnimationName = "flying",
     },
     SpineAssetEntry{
-        .display_name           = "Power-Up",
-        .atlas_name             = "Spine/powerup.atlas",
-        .skeleton_data_name     = "Spine/powerup-ess.json",
-        .initial_animation_name = "bounce",
+        .displayName          = "Power-Up",
+        .atlasName            = "Spine/powerup.atlas",
+        .skeletonDataName     = "Spine/powerup-ess.json",
+        .initialAnimationName = "bounce",
     },
     SpineAssetEntry{
-        .display_name           = "Hero",
-        .atlas_name             = "Spine/hero.atlas",
-        .skeleton_data_name     = "Spine/hero-pro.json",
-        .initial_animation_name = "walk",
-        .scale                  = 1.5f,
+        .displayName          = "Hero",
+        .atlasName            = "Spine/hero.atlas",
+        .skeletonDataName     = "Spine/hero-pro.json",
+        .initialAnimationName = "walk",
+        .scale                = 1.5f,
     },
 };
 
 // Save the display names for the combo box in the GUI.
 constexpr auto extractDisplayNames()
 {
-    auto list = Array<StringView, s_spine_asset_entries.size()>();
+    auto list = Array<StringView, sSpineAssetEntries.size()>();
 
-    for (int i = 0; const auto& entry : s_spine_asset_entries)
-        list[i++] = entry.display_name;
+    for (int i = 0; const auto& entry : sSpineAssetEntries)
+        list[i++] = entry.displayName;
 
     return list;
 }
@@ -78,7 +78,7 @@ SpineDemo::SpineDemo(DemoBrowser* browser)
     switchToSpineEntry(0);
 }
 
-void SpineDemo::tick(GameTime time)
+void SpineDemo::update(GameTime time)
 {
     if (distance(_camera.zoom, _targetZoom) > 0.001f)
     {
@@ -134,7 +134,7 @@ void SpineDemo::draw(Painter painter)
         Vec2(50, 130));
 }
 
-void SpineDemo::doImGui(ImGui imgui)
+void SpineDemo::onImGui(ImGui imgui)
 {
     if (imgui.combo("Asset", _currentAssetIndex, sAssetDisplayNames))
     {
@@ -181,19 +181,19 @@ void SpineDemo::doImGui(ImGui imgui)
 
 void SpineDemo::switchToSpineEntry(u32 index)
 {
-    const auto& entry = s_spine_asset_entries[index];
+    const auto& entry = sSpineAssetEntries[index];
 
     // Load the atlas image for the Spine animation.
-    const auto atlas = SpineAtlas(entry.atlas_name);
+    const auto atlas = SpineAtlas(entry.atlasName);
 
     // Load the Spine skeleton data.
-    _skeletonData = SpineSkeletonData(entry.skeleton_data_name, atlas, entry.scale);
+    _skeletonData = SpineSkeletonData(entry.skeletonDataName, atlas, entry.scale);
 
     // Create an animation state buffer from the skeleton data.
     _animationStateData = SpineAnimationStateData(_skeletonData);
     _animationStateData.setDefaultMix(0.1f);
 
-    if (_skeletonData.hasAnimationsNamed(SmallList<StringView>{"jump"_sv, "walk"_sv}))
+    if (_skeletonData.hasAnimationsNamed(Array{"jump"_sv, "walk"_sv}))
     {
         _animationStateData.setMix("jump", "walk", 0.5f);
     }
@@ -208,12 +208,12 @@ void SpineDemo::switchToSpineEntry(u32 index)
     _skeleton.setAnimationState(_animationState);
 
     // Start playing the default initial animation of the skeleton.
-    _animationState.setAnimation(0, entry.initial_animation_name, true);
+    _animationState.setAnimation(0, entry.initialAnimationName, true);
 
     _camera.position = _skeleton.bounds().center() + Vec2(250, 0);
 
     // Update some UI properties.
-    _currentAnimationIndex = int(*_skeletonData.indexOfAnimation(entry.initial_animation_name));
+    _currentAnimationIndex = int(*_skeletonData.indexOfAnimation(entry.initialAnimationName));
 }
 
 void SpineDemo::onMouseWheelScrolled(const MouseWheelEvent& event)
