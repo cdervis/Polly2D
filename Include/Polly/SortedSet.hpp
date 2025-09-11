@@ -100,19 +100,9 @@ class SortedSet
         return _tree.size();
     }
 
-    auto begin()
-    {
-        return _tree.begin();
-    }
-
     auto begin() const
     {
         return _tree.begin();
-    }
-
-    auto end()
-    {
-        return _tree.end();
     }
 
     auto end() const

@@ -872,7 +872,7 @@ class ListBase
 
         for (; not(curr == last); ++curr)
         {
-            construct(curr, val);
+            std::construct_at(curr, val);
         }
 
         return curr;
@@ -885,15 +885,15 @@ class ListBase
             return;
         }
 
-        const auto new_capacity = calculateNewCapacity(request);
-        auto       new_begin    = allocateBuffer(new_capacity);
+        const auto newCapacity = calculateNewCapacity(request);
+        auto       newBegin    = allocateBuffer(newCapacity);
 
-        uninitializedMove(beginPtr(), endPtr(), new_begin);
+        uninitializedMove(beginPtr(), endPtr(), newBegin);
 
         wipe();
 
-        setDataPtr(new_begin);
-        setCapacity(new_capacity);
+        setDataPtr(newBegin);
+        setCapacity(newCapacity);
     }
 
     T* eraseAt(T* pos)

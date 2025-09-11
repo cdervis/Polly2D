@@ -30,6 +30,27 @@ enum class ImageFormat
     R32G32B32A32Float = 4,
 };
 
+/// Defines the intended usage for an image.
+enum class ImageUsage
+{
+    /// The contents of the image can't be updated after its creation.
+    /// Images should be static in order to improve access performance, unless
+    /// there's a need to update them after creation.
+    Immutable,
+
+    /// The contents of the image can be updated after its creation.
+    /// This optimizes the image for normal update rates.
+    /// If you intend to update the contents of an image frequently, use
+    /// ImageUsage::FrequentlyUpdatable instead.
+    Updatable,
+
+    /// The contents of the image can be updated after its creation.
+    FrequentlyUpdatable,
+
+    /// The image is used as a canvas.
+    Canvas,
+};
+
 /// Represents a 2D image.
 class Image
 {
@@ -43,12 +64,9 @@ class Image
     /// @param height The height of the image, in pixels.
     /// @param format The pixel format of the image.
     /// @param data The data of the image.
-    /// @param isStatic If true, the contents of the image can't be updated after its creation.
-    ///                 Images should be static in order to improve access performance, unless
-    ///                 there's a need to update them after creation.
     ///
     /// @throw Error If the image couldn't be created due to a backend error.
-    explicit Image(u32 width, u32 height, ImageFormat format, const void* data, bool isStatic = true);
+    explicit Image(ImageUsage usage, u32 width, u32 height, ImageFormat format, const void* data);
 
     /// Loads a 2D image from memory.
     ///
@@ -70,13 +88,6 @@ class Image
     /// @throw Error If the image asset doesn't exist or couldn't be read or loaded.
     explicit Image(StringView assetName);
 
-    /// Creates a 2D image to be used as a canvas.
-    ///
-    /// @param width The width of the image, in pixels.
-    /// @param height The height of the image, in pixels.
-    /// @param format The pixel format of the image.
-    explicit Image(u32 width, u32 height, ImageFormat format);
-
     /// Gets the name of the image, as stored in the game's assets.
     StringView assetName() const;
 
@@ -87,6 +98,15 @@ class Image
     ///
     /// @note This name will additionally appear in graphics debuggers.
     void setDebuggingLabel(StringView name);
+
+    void updateData(u32 x, u32 y, u32 width, u32 height, const void* data, bool shouldUpdateImmediately);
+
+    bool supportsImmediateUpdate() const;
+
+    void clear(Color color, bool shouldUpdateImmediately);
+
+    /// Gets the intended usage of the image.
+    ImageUsage usage() const;
 
     /// Gets a value indicating whether the image is a canvas.
     bool isCanvas() const;

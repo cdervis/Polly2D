@@ -9,6 +9,7 @@
 #include "Polly/Array.hpp"
 #include "Polly/AudioDevice.hpp"
 #include "Polly/BinaryReader.hpp"
+#include "Polly/BitColors.hpp"
 #include "Polly/BlendState.hpp"
 #include "Polly/ByteBlob.hpp"
 #include "Polly/Camera.hpp"

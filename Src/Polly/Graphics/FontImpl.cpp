@@ -240,14 +240,7 @@ const Font::Impl::RasterizedGlyph& Font::Impl::rasterizeGlyph(const RasterizedGl
 
 #ifdef polly_have_gfx_metal
 
-        const auto& metalImage = static_cast<const MetalImage&>(*page.atlas.impl());
-        auto*       mtlTexture = metalImage.mtlTexture();
-
-        mtlTexture->replaceRegion(
-            MTL::Region(xInPage, yInPage, bitmapWidth, bitmapHeight),
-            0,
-            _glyphBufferRGBA.data(),
-            imageRowPitch(bitmapWidth, metalImage.format()));
+        page.atlas.updateData(xInPage, yInPage, bitmapWidth, bitmapHeight, _glyphBufferRGBA.data(), true);
 
 #elif polly_have_gfx_d3d11
 
@@ -447,7 +440,7 @@ void Font::Impl::appendNewPage()
         .width  = width,
         .height = height,
         .pack   = BinPack(width, height),
-        .atlas  = Image(width, height, ImageFormat::R8G8B8A8UNorm, nullptr, false),
+        .atlas  = Image(ImageUsage::Updatable, width, height, ImageFormat::R8G8B8A8UNorm, nullptr),
     };
 
     const auto imageLabel = formatString("{}_Page{}", assetName(), _pages.size());

@@ -67,6 +67,7 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
     _mtlCommandQueue = NS::TransferPtr(_mtlDevice->newCommandQueue());
 
     // Determine capabilities.
+    // https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf
     auto caps = PainterCapabilities();
     {
         if (_mtlDevice->supportsFamily(MTL::GPUFamilyApple3))
@@ -80,6 +81,7 @@ MetalPainter::MetalPainter(Window::Impl& windowImpl, GamePerformanceStats& perfo
 
         caps.maxCanvasWidth  = caps.maxImageExtent;
         caps.maxCanvasHeight = caps.maxImageExtent;
+        caps.maxScissorRects = 16;
     }
 
     // Create THE Metal shader library that contains all built-in Metal shaders.
@@ -368,35 +370,45 @@ void MetalPainter::onSetScissorRects(Span<Rectangle> scissorRects)
 
     flush();
 
-    auto mtlScissorRects = List<MTL::ScissorRect, 4>();
-
-    for (const auto& rect : scissorRects)
+    if (scissorRects.isEmpty())
     {
-        mtlScissorRects.add(
+        const auto viewport = currentViewport();
+
+        frameData.renderEncoder->setScissorRect(
             MTL::ScissorRect{
-                .x      = static_cast<NS::UInteger>(rect.x),
-                .y      = static_cast<NS::UInteger>(rect.y),
-                .width  = static_cast<NS::UInteger>(rect.width),
-                .height = static_cast<NS::UInteger>(rect.height),
+                .x      = NS::UInteger(viewport.x),
+                .y      = NS::UInteger(viewport.y),
+                .width  = NS::UInteger(viewport.width),
+                .height = NS::UInteger(viewport.height),
             });
     }
+    else
+    {
+        auto mtlScissorRects = List<MTL::ScissorRect, 4>();
 
-    frameData.renderEncoder->setScissorRects(mtlScissorRects.data(), mtlScissorRects.size());
-}
+        for (const auto& rect : scissorRects)
+        {
+            mtlScissorRects.add(
+                MTL::ScissorRect{
+                    .x      = NS::UInteger(rect.x),
+                    .y      = NS::UInteger(rect.y),
+                    .width  = NS::UInteger(rect.width),
+                    .height = NS::UInteger(rect.height),
+                });
+        }
 
-UniquePtr<Image::Impl> MetalPainter::createCanvas(u32 width, u32 height, ImageFormat format)
-{
-    return makeUnique<MetalImage>(*this, width, height, format);
+        frameData.renderEncoder->setScissorRects(mtlScissorRects.data(), mtlScissorRects.size());
+    }
 }
 
 UniquePtr<Image::Impl> MetalPainter::createImage(
+    ImageUsage  usage,
     u32         width,
     u32         height,
     ImageFormat format,
-    const void* data,
-    bool        isStatic)
+    const void* data)
 {
-    return makeUnique<MetalImage>(*this, width, height, format, data, isStatic);
+    return makeUnique<MetalImage>(*this, usage, width, height, format, data);
 }
 
 void MetalPainter::spriteQueueLimitReached()

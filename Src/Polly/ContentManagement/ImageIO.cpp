@@ -95,6 +95,6 @@ UniquePtr<Image::Impl> ImageIO::tryLoadMisc(Painter::Impl& device, Span<u8> memo
 
     const auto format = isHDR ? ImageFormat::R32G32B32A32Float : ImageFormat::R8G8B8A8UNorm;
 
-    return device.createImage(width, height, format, imageData, true);
+    return device.createImage(ImageUsage::Immutable, width, height, format, imageData);
 }
 } // namespace Polly
