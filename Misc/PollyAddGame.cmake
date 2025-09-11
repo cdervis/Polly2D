@@ -90,7 +90,7 @@ function(polly_add_game)
         if (ANDROID)
             set(asset_archive_filename ${CMAKE_ANDROID_ASSETS_DIRECTORIES}/${asset_archive_name})
         else ()
-            set(asset_archive_filename ${binary_dir}/${asset_archive_name})
+            set(asset_archive_filename ${binary_dir}/Bin/${asset_archive_name})
         endif ()
 
         target_sources(${target_name} PRIVATE ${asset_archive_filename})
