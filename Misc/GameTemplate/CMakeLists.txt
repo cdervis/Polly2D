@@ -12,7 +12,7 @@ set(company_name "MyCompany")
 set(game_version 0.0.1)
 
 # Set the version of Polly to fetch and use.
-set(polly_version 0.9.1)
+set(polly_version 0.9.2)
 
 # We need the Python interpreter for building the game's assets.
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
